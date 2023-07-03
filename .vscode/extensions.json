@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "bungcip.better-toml",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ExecutableBookProject.myst-highlight",
+    "ms-python.black-formatter",
+    "ms-python.python",
+    "streetsidesoftware.code-spell-checker"
+  ],
+  "unwantedRecommendations": []
+}
