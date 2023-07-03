@@ -13,9 +13,15 @@ extensions = [
     "autodoc2",
     # Markdown and MyST support
     "myst_parser",
+    # Shorthands for linking to external resources
+    "sphinx.ext.extlinks",
 ]
 
 exclude_patterns = []
+
+# === External resources ===
+
+extlinks = {"link:repo": ("https://github.com/secretflow/%s", "secretflow/%s")}
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),

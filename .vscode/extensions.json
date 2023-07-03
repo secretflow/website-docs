@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "bungcip.better-toml",
+    "christian-kohler.path-intellisense",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "ExecutableBookProject.myst-highlight",
