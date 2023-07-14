@@ -15,6 +15,8 @@ extensions = [
     "myst_parser",
     # Shorthands for linking to external resources
     "sphinx.ext.extlinks",
+    # For PyData theme only
+    "sphinx_togglebutton",
 ]
 
 exclude_patterns = []
@@ -70,3 +72,9 @@ myst_enable_extensions = [
 # === Autodoc ===
 
 autodoc2_packages = []
+
+# === Demo only ===
+
+html_sidebars = {
+    "spu/index": [],
+}
