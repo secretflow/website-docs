@@ -9,3 +9,4 @@ pytablewriter
 linkify-it-py
 mdutils
 pydata-sphinx-theme
+spu

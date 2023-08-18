@@ -76,6 +76,7 @@ jobs:
           branch: 'docs/${{ matrix.project }}'
           delete-branch: true
           title: 'chore(${{ matrix.project }}): Update docs'
+          token: ${{ secrets.PAT }}
           body: |
             This PR updates documentation artifacts for ${{ matrix.project }}.
 
