@@ -4,3 +4,4 @@ sphinx-copybutton
 sphinx-togglebutton
 sphinx-inline-tabs
 pydata-sphinx-theme
+sf-heu

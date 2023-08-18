@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   build:
@@ -21,16 +22,18 @@ jobs:
           - kuscia
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Create temporary directory
+        run: mkdir -p ${{ github.workspace }}/build
       - name: Checkout project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: secretflow/${{ matrix.project }}
-          ref: master
-          path: ${{ matrix.project }}
-
+          path: ${{ github.workspace }}/build/${{ matrix.project }}
       - name: Patch config
-        run: rsync -av ./patches/${{ matrix.project }}/. ./${{ matrix.project }}/
+        run: |
+          cp -rf ${{ github.workspace }}/patches/${{ matrix.project }}/* ${{ github.workspace }}/build/${{ matrix.project }}/
 
       - uses: actions/setup-python@v4
         with:
@@ -42,20 +45,37 @@ jobs:
             ${{ github.workspace }}/vendor/secretflow_doctools-0.0.1-py3-none-manylinux_2_17_x86_64.whl
 
       - name: Install Python dependencies
-        working-directory: ${{ matrix.project }}
+        working-directory: build/${{ matrix.project }}
         run: |
           python -m pip install --upgrade pip
-          pip install \
-            -r requirements.txt \
-            -r docs/requirements.txt \
-            ${{ github.workspace }}/vendor/secretflow_doctools-0.0.1-py3-none-manylinux_2_17_x86_64.whl
+          pip install ${{ github.workspace }}/vendor/secretflow_doctools-0.0.1-py3-none-manylinux_2_17_x86_64.whl
 
-      - name: 'Build docs: en-US'
-        working-directory: ${{ matrix.project }}
-        run: |
-          python -m sphinx -T -E -b mdx -D language=en docs docs/_build/mdx/en-US
+      - name: "Get project's commit SHA"
+        id: get-project-sha
+        working-directory: build/${{ matrix.project }}
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
-      - name: 'Build docs: zh-CN'
-        working-directory: ${{ matrix.project }}
+      - name: 'Build docs'
+        working-directory: build/${{ matrix.project }}
+        run: ./build_docs.sh
+
+      - name: 'Copy artifacts'
         run: |
-          python -m sphinx -T -E -b mdx -D language=zh_CN docs docs/_build/mdx/zh-Hans
+          rm -rf ${{ github.workspace }}/artifacts/${{ matrix.project }}/latest/*
+          cp -rf ${{ github.workspace }}/build/${{ matrix.project }}/docs/_build/mdx/* ${{ github.workspace }}/artifacts/${{ matrix.project }}/latest/
+
+      - name: 'Create pull request'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          add-paths: |
+            artifacts/${{ matrix.project }}/latest
+          commit-message: 'chore(${{ matrix.project }}): Update docs to ${{ steps.get-project-sha.outputs.sha }}'
+          branch: 'docs/${{ matrix.project }}'
+          delete-branch: true
+          title: 'chore(${{ matrix.project }}): Update docs'
+          body: |
+            This PR updates the documentation for ${{ matrix.project }}.
+
+            Generated from [`${{ steps.get-project-sha.outputs.sha }}`][commit]
+
+            [commit]: https://github.com/secretflow/${{ matrix.project }}/commit/${{ steps.get-project-sha.outputs.sha }}
