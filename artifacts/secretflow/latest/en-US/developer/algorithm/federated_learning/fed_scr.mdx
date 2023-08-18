@@ -1,0 +1,243 @@
+:target{#strategy-fedscr}
+
+# Strategy: FedSCR
+
+:target{#overview}
+
+## Overview
+
+<table>
+  <thead>
+    <tr>
+      <td>
+
+      </td>
+
+      <td>
+        Sparse method
+      </td>
+
+      <td>
+        Quant method
+      </td>
+
+      <td>
+        Residual
+      </td>
+
+      <td>
+        Encoding
+      </td>
+
+      <td>
+        Upstream
+      </td>
+
+      <td>
+        Downstream
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        FedSCR
+      </td>
+
+      <td>
+        structured threshold
+      </td>
+
+      <td>
+        None
+      </td>
+
+      <td>
+        Yes
+      </td>
+
+      <td>
+        None
+      </td>
+
+      <td>
+        Yes
+      </td>
+
+      <td>
+        No
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+
+      </td>
+
+      <td>
+        Handle None-IID
+      </td>
+
+      <td>
+        Handle Dropping/Skipping
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        Generality
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+
+      </td>
+
+      <td>
+        Adaptive threshold
+      </td>
+
+      <td>
+        None
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        Only Conv-models
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+The main motivation of FedSCR is to selectively send back some important updates. The main contributions are as follows:
+
+1. Conduct empirical research on the pattern of parameter update in convolutional networks, and find that the parameter gradients “in the same filter” and “in the same channel” often have a strong correlation;
+2. According to the conclusion in (1), some “unimportant” (absolute value and lower than threshold) filter or channel parameters will be selectively not transmitted in upstream as a method of sparsity;
+3. The adaptive FedSCR is proposed for the non-iid situation, which can control each client to have a different threshold according to the heterogeneity;
+
+:target{#empirical-research}
+
+## Empirical Research
+
+It is observed that in the training process of the convolutional neural network, there is a strong correlation between the parameters corresponding to the same channel under the same filter:
+
+![fed\_scr\_1](../../../_assets/fed_scr_1.jpg)
+
+The figure shows the visualization of the parameter gradient value of a fixed layer when epoch=1/15/50/100: where every three rows corresponds to a filter of the layer, and every three columns in a filter corresponds to a channel of the input of the layer, you can A large correlation between parameters in the same row/column is observed:
+
+1. The update gradients of weights in the same filter/channel are very similar;
+2. When a parameter is close to fitting, other parameters in the same filter/channel have a high probability of being close to fitting;
+
+:target{#compression-design}
+
+## Compression Design
+
+:target{#sparsity-method-core-structure-related}
+
+### Sparsity Method（Core, structure-related）
+
+The core idea is to filter out “unimportant parameters” by filter and channel when clients upload updates;
+Filtering method: Add the absolute value of the gradient corresponding to each filter/channel. If the sum is less than the threshold, the update gradient corresponding to this filter/channel will not be uploaded in this round, but will be placed in the Residual;
+
+:target{#mathematical}
+
+### mathematical
+
+Calculate the sum of the absolute values of gradients corresponding to a Channel:
+
+<Math>
+  $$
+
+  C^{k,l}_f(n)=\sum_{j=0}^{F_l}|u^{k,l}_{j,i,;,;}(n)|
+
+  $$
+</Math>
+
+Calculate the sum of the absolute gradient values corresponding to a Filter:
+
+<Math>
+  $$
+
+  F^{k,l}_f(n)=\sum_{j=0}^{C*l}|u^{k,l}*{i,j,;,;}(n)|
+
+  $$
+</Math>
+
+If C/F \< threshold, set this channel/filter to 0;
+
+:target{#pseudo-code-compression}
+
+### Pseudo Code (Compression)
+
+![algo](../../../_assets/fed_scr_algo.jpg)
+
+:target{#adaptive-fedscr}
+
+## Adaptive FedSCR
+
+In order to target the data distribution of non-iid, adaptive FedSCR is proposed. The purpose is to allow each client to adjust each client according to its own parameter updates (Weight Divergence, Significance of Local Updates) and global data distribution (Impact of Data Distribution). The threshold used by the client for sparseness
+
+:target{#convergence-proof}
+
+## Convergence Proof
+
+reference:[Structure-Based Communication Reduction for Federated Learning](https://ieeexplore.ieee.org/document/9303442/figures#figures)
+
+:target{#experiment}
+
+## Experiment
+
+:target{#on-threshold}
+
+### on threshold
+
+![scr\_exp\_1](../../../_assets/fed_scr_exp_1.jpg)
+
+:target{#on-convergence}
+
+### on Convergence
+
+![scr\_exp\_2](../../../_assets/fed_scr_exp_2.jpg)
+
+![scr\_exp\_3](../../../_assets/fed_scr_exp_3.jpg)
+
+:target{#on-convergence-non-iid-compare-with-fedstc}
+
+### on Convergence (non-iid, compare with FedSTC)
+
+![scr\_exp\_4](../../../_assets/fed_scr_exp_4.jpg)
+
+:target{#on-accuracy}
+
+### on accuracy
+
+![scr\_exp\_5](../../../_assets/fed_scr_exp_5.png)
+
+:target{#reference}
+
+## Reference
+
+[Structure-Based Communication Reduction for Federated Learning](https://ieeexplore.ieee.org/document/9303442/)

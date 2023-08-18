@@ -1,0 +1,982 @@
+:target{#teeu-getting-started-guide}
+
+# TEEU 上手指南
+
+可信执行环境(Trusted Execution Environment，TEE) 是一种基于硬件的隐私保护技术。它保证了执行代码的真实性，运行时状态(如 CPU 寄存器、内存和敏感 I/O)的完整性，以及存储在内存中的代码、数据和运行时状态的机密性。此外，还应能够向第三方提供远程认证，以证明其可靠性。
+
+TEEU(<code>TEE</code> processing <code>U</code>nit)是 SecretFlow 中的 TEE 设备，通过 TEEU，用户可以方便的把数据放在TEE内进行计算，并且达到保护数据完整和安全的目的。作为 SecretFlow 设备层的一员，TEEU丰富了隐语的设备层能力，并且给明密文混合计算带来了更多组合和可能。举一些例子，比如可以把水平联邦模型权重聚合放置到TEEU内进行从而保护梯度聚合过程的安全，亦或者使用 TEEU 来快速生成 SPDZ 协议的离线因子来进行MPC的加速。更多可能性等待您的探索。
+
+目前隐语提供了仿真和非仿真两种使用 TEEU 的模式，建议您从仿真模式开始，有助于您快速成功上手。
+
+:target{#simulation-mode}
+
+## 1.1 仿真模式
+
+为了方便用户在没有真实 TEE 环境的情况下对 TEEU 进行尝试，SecretFlow 提供了 TEEU 仿真模式，这意味着您可以在普通机器上仍然可以尝试 TEEU 的功能。在仿真模式下，代码编写和使用体感与非仿真模式几乎无差别，因此建议可以先使用仿真模式进行快速实验验证。
+
+注意，由于并没有使用真正的 TEE 环境，因此仿真模式缺乏远程认证和内存加密隔离等依赖 TEE 环境的安全特性，无法保护数据的完整性与机密性。仿真模式并不是安全的，不能用于生产上，请牢记这一点。
+
+:target{#pre-work}
+
+### 前置工作
+
+:target{#understand-the-secretflow-deployment-of-multi-ray-cluster-mode}
+
+#### 了解多ray集群模式的SecretFlow部署
+
+出于安全原因，运行在 TEE 里的 Ray 是独立的集群，因此目前 SecretFlow 仅支持在多个 Ray 集群模式下使用 TEEU。您可以事先阅读[SecretFlow部署文档](../getting_started/deployment.mdx#production)了解多个 Ray 集群的部署。
+
+:target{#prepare-to-run-the-simulated-teeu-machine}
+
+#### 准备运行仿真 TEEU 的机器
+
+目前 SecretFlow TEEU 仅提供 docker 镜像，由于基础技术的一些限制，目前 TEE 程序需要较大内存才能运行成功，您需要确保 docker 容器可使用内存至少大于 30GB。
+
+:target{#deploy-authmanager}
+
+#### 部署 AuthManager
+
+AuthManager是负责授权管理的模块。
+
+1. 下载 docker 镜像
+
+```shell
+docker pull secretflow/authmanager-ubuntu-sim-release:latest
+```
+
+2. 进入 docker 镜像
+
+```shell
+docker run -it --net host secretflow/authmanager-ubuntu-sim-release:latest
+```
+
+3. （可选）配置 TLS
+
+AuthManager 默认启用 TLS，如果您只是为了本机仿真，可以关闭TLS功能，具体方法为编辑 config.yaml 文件，将 <code>enable\_tls</code> 设置为 false。
+
+4. 启动服务
+
+```shell
+occlum run /bin/auth-manager --config_path /host/config.yaml
+```
+
+默认端口号是8835。如果发生端口冲突，请修改为其他未占用端口。
+
+:target{#example-teeu-secure-aggregation}
+
+### 示例：TEEU 安全聚合
+
+在联邦学习场景下，如何安全的聚合来自多个参与方的数据是一个常见的问题。使用 TEEU 可以很方便的获得安全聚合能力，下面示例演示了如何使用 TEEU 进行安全聚合。我们假设 Alice 和 Bob 作为数据提供方，Carol 作为 TEEU 的提供方提供安全聚合计算服务。
+
+:target{#write-secure-aggregation-code}
+
+#### 编写安全聚合代码
+
+下面这段代码演示了 Alice 和 Bob 分别生成了一个 numpy array，然后发送给 Carol 持有的 TEEU 进行安全聚合（求平均值）。最后为了验证正确性，对原始值明文聚合和 TEEU 聚合进行了结果比对，两者结果应该是一致的。
+
+```python
+import numpy as np
+
+def average(data):
+    return np.average(data, axis=1)
+
+alice = sf.PYU('alice')
+bob = sf.PYU('bob')
+
+from secretflow.device import TEEU
+
+# mrenclave can be omitted in simulation mode.
+teeu = TEEU('carol', mr_enclave='')
+
+a = alice(lambda: np.random.rand(4, 3))()
+b = bob(lambda: np.random.rand(4, 3))()
+
+# Transfer data to teeu.
+a_teeu = a.to(teeu, allow_funcs=average)
+b_teeu = b.to(teeu, allow_funcs=average)
+
+# TEEU runs average.
+avg_val = teeu(average)([a_teeu, b_teeu])
+print(sf.reveal(avg_val))
+
+a = sf.reveal(a)
+b = sf.reveal(b)
+np.testing.assert_equal(avg_val, average([a, b]) )
+```
+
+:target{#alice-runs-the-code}
+
+#### Alice 运行代码
+
+1. 启动 ray 主节点
+
+下列命令假设Alice的ray主节点监听地址为 192.168.0.10:10000，请根据实际情况修改。
+
+```bash
+ray start --head --node-ip-address="192.168.0.10" --port="10000" --include-dashboard=False --disable-usage-stats
+```
+
+2. 生成公私钥对
+
+因为 Alice 的数据需要加密发送给 TEEU，所以需要事先生成一对公私钥。您可以执行下列代码生成公私钥，公私钥以 pem 格式分别存放在当前目录的 private\_key.pem，public\_key.pem。
+
+```bash
+openssl genrsa -3 -out private_key.pem 3072
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+```
+
+3. 执行代码
+
+在安全聚合代码的前面加上SecretFlow初始化相关代码，得到下列的代码。首先您需要对代码中的配置项进行修改。
+
+- 代码中假设 Alice 通信地址为 192.168.0.10:20001，请您根据实际情况修改
+- 您需要填写填充正确的 <code>auth\_manager\_config</code>
+  - <code>host</code>为 AuthManager 的服务监听地址
+  - <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
+
+假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Alice 的机器上执行 <code>python demo.py</code>。
+
+```python
+import secretflow as sf
+
+cluster_config = {
+    'parties': {
+        'alice': {'address': '192.168.0.10:20001', 'listen_address': '0.0.0.0:20001'},
+        'bob': {'address': '192.168.0.20:20001', 'listen_address': '0.0.0.0:20001'},
+        'carol': {'address': '192.168.0.30:20001', 'listen_address': '0.0.0.0:20001'},
+    },
+    'self_party': 'alice',
+}
+
+party_key_pair = {
+    'alice': {'private_key': './private_key.pem', 'public_key': './public_key.pem'}
+}
+
+auth_manager_config = {
+    'host': 'host of AuthManager',
+    'ca_cert': 'path_of_AuthManager_ca_certificate',
+    'mr_enclave': ''
+}
+
+# Connect to Alice's ray
+sf.init(
+    address='192.168.0.10:10000',
+    cluster_config=cluster_config,
+    party_key_pair=party_key_pair,
+    auth_manager_config=auth_manager_config,
+    tee_simulation=True,
+)
+
+import numpy as np
+
+def average(data):
+    return np.average(data, axis=1)
+
+from secretflow.device import TEEU
+
+alice = sf.PYU('alice')
+bob = sf.PYU('bob')
+# mrenclave can be omitted in simulation mode.
+teeu = TEEU('carol', mr_enclave='')
+
+a = alice(lambda: np.random.rand(4, 3))()
+b = bob(lambda: np.random.rand(4, 3))()
+
+# Transfer data to teeu.
+a_teeu = a.to(teeu, allow_funcs=average)
+b_teeu = b.to(teeu, allow_funcs=average)
+
+# TEEU runs average.
+avg_val = teeu(average)([a_teeu, b_teeu])
+print(sf.reveal(avg_val))
+
+
+a = sf.reveal(a)
+b = sf.reveal(b)
+np.testing.assert_equal(avg_val, average([a, b]) )
+```
+
+:target{#bob-runs-the-code}
+
+#### Bob 运行代码
+
+1. 启动 ray 主节点
+
+下列命令假设 Bob 的Ray主节点监听在 192.168.0.20:10000，请根据实际情况修改。
+
+```bash
+ray start --head --node-ip-address="192.168.0.20" --port="10000" --include-dashboard=False --disable-usage-stats
+```
+
+2. 生成公私钥对
+
+因为 Bob 的数据需要加密发送给 TEEU，所以需要事先生成一对公私钥。您可以执行下列代码生成公私钥，公私钥以 pem 格式分别存放在当前目录的 private\_key.pem，public\_key.pem。
+
+```bash
+openssl genrsa -3 -out private_key.pem 3072
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+```
+
+3. 运行代码
+
+与 Alice 类似，在安全聚合代码的前面加上 SecretFlow 初始化相关代码，得到下列的代码
+
+- 代码中假设 Bob 通信地址为 192.168.0.20:20001，请您根据实际情况修改
+- 您需要填写填充正确的 <code>auth\_manager\_config</code>
+- <code>host</code>为 AuthManager 的服务监听地址
+- <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
+
+假设我们把代码保存为 [demo.py](http://demo.py)，然后在Bob的机器上执行 <code>python demo.py</code>。
+
+```python
+import secretflow as sf
+
+cluster_config = {
+    'parties': {
+        'alice': {'address': '192.168.0.10:20001', 'listen_address': '0.0.0.0:20001'},
+        'bob': {'address': '192.168.0.20:20001', 'listen_address': '0.0.0.0:20001'},
+        'carol': {'address': '192.168.0.30:20001', 'listen_address': '0.0.0.0:20001'},
+    },
+    'self_party': 'bob',
+}
+
+party_key_pair = {
+    'bob': {'private_key': './private_key.pem', 'public_key': './public_key.pem'}
+}
+
+auth_manager_config = {
+    'host': 'host of AuthManager',
+    'ca_cert': 'path_of_AuthManager_ca_certificate',
+    'mr_enclave': ''
+}
+
+# Connect to Bob's ray
+sf.init(
+    address='192.168.0.20:10000',
+    cluster_config=cluster_config,
+    party_key_pair=party_key_pair,
+    auth_manager_config=auth_manager_config,
+    tee_simulation=True,
+)
+
+import numpy as np
+
+def average(data):
+    return np.average(data, axis=1)
+
+from secretflow.device import TEEU
+
+alice = sf.PYU('alice')
+bob = sf.PYU('bob')
+# mrenclave can be omitted in simulation mode.
+teeu = TEEU('carol', mr_enclave='')
+
+a = alice(lambda: np.random.rand(4, 3))()
+b = bob(lambda: np.random.rand(4, 3))()
+
+# Transfer data to teeu.
+a_teeu = a.to(teeu, allow_funcs=average)
+b_teeu = b.to(teeu, allow_funcs=average)
+
+# TEEU runs average.
+avg_val = teeu(average)([a_teeu, b_teeu])
+avg_val = sf.reveal(avg_val)
+print(avg_val)
+
+
+a = sf.reveal(a)
+b = sf.reveal(b)
+np.testing.assert_equal(avg_val, average([a, b]) )
+```
+
+:target{#carol-runs-code-executed-in-tee}
+
+#### Carol 运行代码（在TEE中执行）
+
+启动容器
+
+```bash
+docker run -it --network host secretflow/secretflow-teeu:latest
+```
+
+---
+
+提示：
+
+如果屏幕显示诸如 “Failed to open Intel SGX device”, “Error, call sgx\_create\_enclave QE fail”, “Failed to load QE3\ 等是符合预期的，因为我们在使用仿真模式运行。
+
+---
+
+同理，在安全聚合代码的前面加上 SecretFlow 初始化相关代码，得到下列的代码。与前面有所区别，Carol 的代码需要在 TEE 中运行，因此需要进行一些额外的步骤。首先您需要对代码中的配置项进行修改。
+
+1. 代码中假设 Carol 通信地址为 192.168.0.30:20001，请您根据实际情况修改
+2. 您需要填写填充正确的 <code>auth\_manager\_config</code>
+
+- <code>host</code>为 AuthManager 的服务监听地址
+- <code>ca\_cert</code> 为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
+
+修改完毕后，请把该文件保存至 /root/occlum\_instance/image/root/demo.py
+
+```python
+# Generate tls cert and key at first.
+from tls_cert import generate_self_signed_tls_certs
+
+generate_self_signed_tls_certs('/root/server.crt', '/root/server.key')
+
+import secretflow as sf
+
+cluster_config = {
+    'parties': {
+        'alice': {'address': '192.168.0.10:20001', 'listen_address': '0.0.0.0:20001'},
+        'bob': {'address': '192.168.0.20:20001', 'listen_address': '0.0.0.0:20001'},
+        'carol': {'address': '192.168.0.30:20001', 'listen_address': '0.0.0.0:20001'},
+    },
+    'self_party': 'carol',
+}
+
+auth_manager_config = {
+    'host': 'host of AuthManager',
+    'ca_cert': 'path_of_AuthManager_ca_certificate',
+    'mr_enclave': ''
+}
+
+# Start a local Ray.
+sf.init(
+    address='local',
+    cluster_config=cluster_config,
+    auth_manager_config=auth_manager_config,
+    tee_simulation=True,
+    _temp_dir="/host/tmp/ray",
+    _plasma_directory="/tmp",
+)
+
+import numpy as np
+
+def average(data):
+    return np.average(data, axis=1)
+
+from secretflow.device import TEEU
+
+alice = sf.PYU('alice')
+bob = sf.PYU('bob')
+# mrenclave can be omitted in simulation mode.
+teeu = TEEU('carol', mr_enclave='')
+
+a = alice(lambda: np.random.rand(4, 3))()
+b = bob(lambda: np.random.rand(4, 3))()
+
+# Transfer data to teeu.
+a_teeu = a.to(teeu, allow_funcs=average)
+b_teeu = b.to(teeu, allow_funcs=average)
+
+# TEEU runs average.
+avg_val = teeu(average)([a_teeu, b_teeu])
+print(sf.reveal(avg_val))
+
+
+a = sf.reveal(a)
+b = sf.reveal(b)
+np.testing.assert_equal(avg_val, average([a, b]) )
+```
+
+然后我们通过下列命令运行脚本。
+
+```bash
+cd /root/occlum_instance
+openssl genrsa -3 -out private_key.pem 3072
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+occlum build --sgx-mode sim --sign-key private_key.pem
+occlum run /bin/python /root/demo.py
+```
+
+---
+
+提示：
+
+因为Occlum缺乏部分内核功能，所以在Occlum上运行程序时，出现诸如 “Fail to open /proc/self/io”、 “Fail to open /proc/self/statm”和 “Fail to open /proc/loadavg”之类的警告日志是符合预期的。这并不会影响程序正确运行。
+
+---
+
+:target{#non-simulation-mode}
+
+## 1.2 非仿真模式
+
+:target{#about-non-simulation-mode}
+
+### 关于非仿真模式
+
+当需要使用真实的 TEE 环境保护计算过程中数据的机密性和完整性时，用户需要开启非仿真模式，此时远程认证以及内存加密等由 TEE 提供的安全机制将被开启。开启非仿真模式，用户需要持有当前 Secretflow TEEU 支持的 TEE 硬件，当前 Secretflow 仅支持 Intel SGX2.0，未来会支持更多 TEE 种类。当前SecretFlow TEEU仅支持在[Occlum](https://github.com/occlum/occlum)上运行，支持Intel SGX DCAP的远程认证模式.
+
+非仿真模式下，对于 Carol（TEEU 提供方）而言，需要额外进行一些步骤以保证 TEEU 运行在真实的 TEE 机器上，Alice 和 Bob 也需要进行一些额外的配置。
+
+:target{#prerequisites}
+
+### 运行前提
+
+您需要准备一台支持 SGX 2.0 的机器，我们假设您已经在该机器上安装好了操作系统和 SGX 驱动，并且安装了 docker 软件。
+
+由于基础技术的一些限制，目前 TEE 程序需要较大内存才能运行成功，您需要确保 docker 容器可使用内存至少大于 30GB。
+
+:target{#pre-deployment}
+
+### 前置部署
+
+:target{#deploy-intel-sgx-pccs-on-sgx-machine}
+
+#### <strong>在SGX机器上部署 Intel SGX PCCS</strong>
+
+参考 [Intel SGX PCCS Install Document](https://github.com/intel/SGXDataCenterAttestationPrimitives/tree/master/QuoteGeneration/pccs)。您可以按照文档进行安装。
+
+假设您把 PCCS 服务监听在 8081 端口（PPCS 默认的监听端口），后续文档将按照该端口进行描述，如果您修改了默认监听端口，则记得替换成实际端口。
+
+:target{#id1}
+
+#### 部署 AuthManager
+
+与仿真模式不同，非仿真模式需要关闭仿真标识。
+
+1. 下载 docker 镜像
+
+```shell
+docker pull secretflow/authmanager-ubuntu-release:latest
+```
+
+2. 进入 docker 镜像
+
+```shell
+docker run -it --net host -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provision:/dev/sgx/provision --privileged=true secreflow/authmanager-release-ubuntu:latest
+```
+
+3. 修改 PCCS 配置
+
+<code>/etc/sgx\_default\_qcnl.conf</code> 中 PCCS\_URL 配置为 PCCS 的实际部署服务地址。
+
+```properties
+# PCCS server address
+PCCS_URL=https://localhost:8081/sgx/certification/v3/
+
+
+# To accept insecure HTTPS certificate, set this option to FALSE
+USE_SECURE_CERT=FALSE
+
+
+# You can use Intel PCS to get quote verification collateral
+#COLLATERAL_SERVICE=https://api.trustedservices.intel.com/sgx/certification/v3/
+
+
+# If you use PCCS service to get quote verification collateral, you can specify which API version is to be used
+# The legacy 3.0 API will return CRLs in HEX encoded DER format, while the new 3.1 API will return raw DER format
+#PCCS_API_VERSION=3.1
+
+
+# Maximum retry times for QCNL. If RETRY is not defined or set to 0, no retry will be performed.
+# It will first wait one second and then for all forthcoming retries it will double the waiting time
+# By using RETRY_DELAY you disable this exponential backoff algorithm
+#RETRY_TIMES=6
+
+
+# Sleep this amount of seconds before each retry when a transfer has failed with a transient error
+#RETRY_DELAY=10
+```
+
+修改<code>occlum\_release/image/etc/kubetee/unified\_attestation.json</code>中 ua\_dcap\_pccs\_url 配置为实际的PCCS服务地址
+
+```json
+{
+    "ua_ias_url": "",
+    "ua_ias_spid": "",
+    "ua_ias_apk_key": "",
+    "ua_dcap_lib_path": "",
+    "ua_dcap_pccs_url": "https://localhost:8081/sgx/certification/v3/",
+    "ua_uas_url": "",
+    "ua_uas_app_key": "",
+    "ua_uas_app_secret": ""
+}
+```
+
+4. 配置 TLS
+
+我们建议您启用 TLS，配置方法参见[AuthManager](https://github.com/secretflow/authmanager)。
+
+5. 生成公私钥后，使用私钥进行 build。
+
+您首先需要生成一对公私钥，然后使用以下命令 build release 版本的 occlum。生成公私钥可以参考下列脚本，生成的公私钥分别存在当前目录的 private\_key.pem、public\_key.pem。请妥善保存您的私钥，不要泄露给其他人。
+
+```bash
+openssl genrsa -3 -out private_key.pem 3072
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+```
+
+生成公私钥后，使用私钥进行 build。
+
+```json
+occlum build -f --sign-key private_key.pem
+```
+
+6. 运行服务
+
+```shell
+occlum run /bin/auth-manager --config_path /host/config.yaml
+```
+
+默认端口为 8835，如果端口冲突了，则可以添加 <code>--port</code> 参数指定端口号。
+
+```shell
+occlum run /bin/auth-manager --config_path /host/config.yaml
+```
+
+6. 获取 AuthManager 的 mrenclave
+
+执行下列命令可以获得 AuthManager 的 mrenclave，mrenclave 可以理解为表征 AuthManager 代码、数据、运行环境等的度量值。输出内容为一串十六进制字符串，您可以保存下来，后续步骤会使用到。
+
+```bash
+occlum print mrenclave
+```
+
+:target{#id2}
+
+### 示例：TEEU 安全聚合
+
+在联邦学习场景下，如何安全的聚合来自多个参与方的数据是一个常见的问题。使用 TEEU 可以很方便的获得安全聚合能力，下面示例演示了如何使用 TEEU 进行安全聚合。我们假设 Alice 和 Bob 作为数据提供方，Carol 作为 TEEU 的提供方提供安全聚合计算服务。
+
+:target{#id3}
+
+#### 编写安全聚合代码
+
+下面这段代码演示了 Alice 和 Bob 分别生成了一个 numpy array，然后发送给 Carol 持有的 TEEU 进行安全聚合（求平均值）。最后为了验证正确性，对原始值明文聚合和 TEEU 聚合进行了结果比对，两者结果应该是一致的。
+
+```python
+import numpy as np
+
+def average(data):
+    return np.average(data, axis=1)
+
+from secretflow.device import TEEU
+
+alice = sf.PYU('alice')
+bob = sf.PYU('bob')
+teeu = TEEU('carol', mr_enclave='mrenclave_of_teeu')
+
+a = alice(lambda: np.random.rand(4, 3))()
+b = bob(lambda: np.random.rand(4, 3))()
+
+# Transfer data to teeu.
+a_teeu = a.to(teeu, allow_funcs=average)
+b_teeu = b.to(teeu, allow_funcs=average)
+
+# TEEU runs average.
+avg_val = teeu(average)([a_teeu, b_teeu])
+print(sf.reveal(avg_val))
+
+a = sf.reveal(a)
+b = sf.reveal(b)
+np.testing.assert_equal(avg_val, average([a, b]) )
+```
+
+:target{#id4}
+
+#### Carol 运行代码（在TEE中执行）
+
+1. 启动容器
+
+启动容器
+
+```bash
+docker run -it --network host --privileged -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provision:/dev/sgx/provision secretflow/secretflow-teeu:latest
+```
+
+进入容器后，默认所在位置为 /root/occlum\_instance。
+
+2. 修改配置文件 <code>/root/occlum\_instance/image/etc/kubetee/unified\_attestation.json</code> 。这个是 [jinzhao-attest](https://github.com/jinzhao-dev/jinzhao-attest) 需要的配置文件，对多种 TEE 的远程认证流程进行了封装，模板如下，将 <code>ua\_dcap\_pccs\_url</code>中的域名替换为部署的 PCCS 地址。
+
+```json
+{
+    "ua_ias_url": "",
+    "ua_ias_spid": "",
+    "ua_ias_apk_key": "",
+    "ua_dcap_lib_path": "",
+    "ua_dcap_pccs_url": "https://localhost:8081/sgx/certification/v3/",
+    "ua_uas_url": "",
+    "ua_uas_app_key": "",
+    "ua_uas_app_secret": "",
+    "ua_policy_str_tee_platform": "",
+    "ua_policy_hex_platform_hw_version": "",
+    "ua_policy_hex_platform_sw_version": "",
+    "ua_policy_hex_secure_flags": "",
+    "ua_policy_hex_platform_measurement": "",
+    "ua_policy_hex_boot_measurement": "",
+    "ua_policy_str_tee_identity": "",
+    "ua_policy_hex_ta_measurement": "",
+    "ua_policy_hex_ta_dyn_measurement": "",
+    "ua_policy_hex_signer": "",
+    "ua_policy_hex_prod_id": "",
+    "ua_policy_str_min_isvsvn": "",
+    "ua_policy_hex_user_data": "",
+    "ua_policy_bool_debug_disabled": "",
+    "ua_policy_hex_hash_or_pem_pubkey": "",
+    "ua_policy_hex_nonce": "",
+    "ua_policy_hex_spid": ""
+}
+```
+
+接下来修改<code>/etc/sgx\_default\_qcnl.conf</code>，将<code>PCCS\_URL</code>中的域名替换为前面部署的 PCCS 地址，并且设置 <code>USE\_SECURE\_CERT=FALSE</code> 。
+
+```json
+# PCCS server address
+PCCS_URL=https://localhost:8081/sgx/certification/v3/
+
+# To accept insecure HTTPS certificate, set this option to FALSE
+USE_SECURE_CERT=FALSE
+
+# You can use Intel PCS to get quote verification collateral
+#COLLATERAL_SERVICE=https://api.trustedservices.intel.com/sgx/certification/v3/
+
+# If you use PCCS service to get quote verification collateral, you can specify which API version is to be used
+# The legacy 3.0 API will return CRLs in HEX encoded DER format, while the new 3.1 API will return raw DER format
+#PCCS_API_VERSION=3.1
+
+# Maximum retry times for QCNL. If RETRY is not defined or set to 0, no retry will be performed.
+# It will first wait one second and then for all forthcoming retries it will double the waiting time
+# By using RETRY_DELAY you disable this exponential backoff algorithm
+#RETRY_TIMES=6
+
+# Sleep this amount of seconds before each retry when a transfer has failed with a transient error
+#RETRY_DELAY=10
+```
+
+3. 编写测试代码
+
+在安全聚合代码的前面加上 SecretFlow 初始化相关代码，得到下列的代码。Carol 的代码需要在 TEE 中运行，因此需要进行一些额外的步骤。
+
+首先您需要对代码中的配置项进行修改。
+
+- 代码中假设 Carol 通信地址为 192.168.0.30:20001，请您根据实际情况修改
+- 您需要填写填充正确的 <code>auth\_manager\_config</code>
+  - <code>host</code>为 AuthManager 的服务监听地址
+  - <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。（推荐启用 TLS）
+  - <code>mrenclave</code>为 AuthManager 模块的 mrenclave，在部署 AuthManager 的步骤中您应该已经获得了该值。
+
+请把修改的文件保存为 /root/occlum\_instance/image/root/demo.py。
+
+```python
+# Generate tls cert and key at first.
+from tls_cert import generate_self_signed_tls_certs
+
+generate_self_signed_tls_certs()
+
+
+import secretflow as sf
+
+cluster_config = {
+    'parties': {
+        'alice': {
+            'address': '192.168.0.10:20001',
+            'listen_address': '0.0.0.0:20001'
+    },
+        'bob': {
+            'address': '192.168.0.20:20001',
+            'listen_address': '0.0.0.0:20001'
+        },
+        'carol': {
+            'address': '192.168.0.30:20001',
+            'listen_address': '0.0.0.0:20001'
+        },
+    },
+    'self_party': 'carol'
+}
+
+
+auth_manager_config = {
+    'host': 'host of AuthManager',
+    'ca_cert': 'path_of_ca_certificate_of_AuthManager',
+    'mr_enclave': 'mrenclave of AuthManager',
+}
+
+# Carol starts a local ray inside tee.
+sf.init(
+    address='local', 
+    cluster_config=cluster_config, 
+    auth_manager_config=auth_manager_config,
+    _temp_dir="/host/tmp/ray",
+    _plasma_directory="/tmp",
+)
+
+import numpy as np
+
+def average(data):
+    return np.average(data, axis=1)
+
+from secretflow.device import TEEU
+
+alice = sf.PYU('alice')
+bob = sf.PYU('bob')
+# Carol can omit the mrenclave.
+teeu = TEEU('carol', mr_enclave='')
+
+a = alice(lambda: np.random.rand(4, 3))()
+b = bob(lambda: np.random.rand(4, 3))()
+
+# Transfer data to teeu.
+a_teeu = a.to(teeu, allow_funcs=average)
+b_teeu = b.to(teeu, allow_funcs=average)
+
+# TEEU runs average.
+avg_val = teeu(average)([a_teeu, b_teeu])
+print(sf.reveal(avg_val))
+
+a = sf.reveal(a)
+b = sf.reveal(b)
+np.testing.assert_equal(avg_val, average([a, b]) )
+```
+
+4. 构建occlum
+
+您首先需要生成一对公私钥，然后使用以下命令 build release 版本的 occlum。生成公私钥可以参考下列脚本，生成的公私钥分别存在当前目录的 private\_key.pem、public\_key.pem。请妥善保存您的私钥，不要泄露给其他人。
+
+```bash
+openssl genrsa -3 -out private_key.pem 3072
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+```
+
+生成公私钥后，使用私钥进行 build。
+
+```json
+occlum build -f --sign-key private_key.pem
+```
+
+5. 获取 TEEU 的 mrenclave
+
+执行下列命令可以获得 TEEU 的 MRENCLAVE，用于表征 TEEU 代码、数据、运行环境等的度量值。输出内容为一串十六进制字符串，您可以保存下来，后续步骤会使用到。
+
+```bash
+occlum print mrenclave
+```
+
+6. 运行代码
+
+执行下列命令运行脚本。
+
+```bash
+occlum run /bin/python /root/demo.py
+```
+
+:target{#id5}
+
+#### Alice 运行代码
+
+1. 启动 ray 主节点
+
+下列命令假设Alice的ray主节点监听地址为 192.168.0.10:10000，请根据实际情况修改。
+
+```bash
+ray start --head --node-ip-address="192.168.0.10" --port="10000" --include-dashboard=False --disable-usage-stats
+```
+
+2. 生成公私钥对
+
+因为 Alice 的数据需要加密发送给 TEEU，所以需要事先生成一对公私钥。您可以执行下列代码生成公私钥，公私钥以 pem 格式分别存放在当前目录的 private\_key.pem，public\_key.pem。
+
+```bash
+openssl genrsa -3 -out private_key.pem 3072
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+```
+
+3. 执行代码
+
+在安全聚合代码的前面加上 SecretFlow 初始化相关代码，得到下列的代码。您需要对代码进行配置：
+
+- 代码中假设 Alice 通信地址为 192.168.0.10:20001，请您根据实际情况修改
+- 您需要填写填充正确的 <code>auth\_manager\_config</code>
+  - <code>host</code>为 AuthManager 的服务监听地址
+  - <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。（推荐启用 TLS）
+  - <code>mrenclave</code>为 AuthManager 模块的 MRENCLAVE，在部署 AuthManager 的步骤中您应该已经获得了该值。
+- 使用前面获得的 TEEU 的 MRENCLAVE，填充正确的值: <code>teeu = TEEU('carol', mr\_enclave='mr\_enclave of TEEU')</code>
+
+配置完成后，假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Alice 的机器上执行 <code>python demo.py</code>。
+
+```python
+import secretflow as sf
+
+cluster_config = {
+    'parties': {
+        'alice': {'address': '192.168.0.10:20001', 'listen_address': '0.0.0.0:20001'},
+        'bob': {'address': '192.168.0.20:20001', 'listen_address': '0.0.0.0:20001'},
+        'carol': {'address': '192.168.0.30:20001', 'listen_address': '0.0.0.0:20001'},
+    },
+    'self_party': 'alice',
+}
+
+party_key_pair = {
+    'alice': {'private_key': './private_key.pem', 'public_key': './public_key.pem'}
+}
+
+
+auth_manager_config = {
+    'host': 'host of AuthManager',
+    'ca_cert': 'path_of_ca_certificate_of_AuthManager',
+    'mr_enclave': 'mrenclave of AuthManager',
+}
+
+# Connect to Alice's ray
+sf.init(
+    address='192.168.0.10:10000',
+    cluster_config=cluster_config,
+    party_key_pair=party_key_pair,
+    auth_manager_config=auth_manager_config,
+    tee_simulation=False,
+)
+
+
+import numpy as np
+
+def average(data):
+    return np.average(data, axis=1)
+
+from secretflow.device import TEEU
+
+alice = sf.PYU('alice')
+bob = sf.PYU('bob')
+teeu = TEEU('carol', mr_enclave='mrenclave_of_TEEU')
+
+a = alice(lambda: np.random.rand(4, 3))()
+b = bob(lambda: np.random.rand(4, 3))()
+a_teeu = a.to(teeu, allow_funcs=average)
+b_teeu = b.to(teeu, allow_funcs=average)
+
+avg_val = teeu(average)([a_teeu, b_teeu])
+print(sf.reveal(avg_val))
+
+
+a = sf.reveal(a)
+b = sf.reveal(b)
+np.testing.assert_equal(avg_val, average([a, b]) )
+```
+
+:target{#id6}
+
+#### Bob 运行代码
+
+1. 启动 ray 主节点
+
+下列命令假设 Bob 的Ray主节点监听在 192.168.0.20:10000，请根据实际情况修改。
+
+```bash
+ray start --head --node-ip-address="192.168.0.20" --port="100000" --include-dashboard=False --disable-usage-stats
+```
+
+2. 生成公私钥对
+
+因为 Bob 的数据需要加密发送给 TEEU，所以需要事先生成一对公私钥。您可以执行下列代码生成公私钥，公私钥以 pem 格式分别存放在当前目录的 private\_key.pem，public\_key.pem。
+
+```bash
+openssl genrsa -3 -out private_key.pem 3072
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+```
+
+3. 运行代码
+
+和 Alice 类似，在安全聚合代码的前面加上 SecretFlow 初始化相关代码，得到下列的代码。您需要对代码进行配置：
+
+- 代码中假设 Bob 通信地址为 192.168.0.20:20001，请您根据实际情况修改
+- 您需要填写填充正确的 <code>auth\_manager\_config</code>
+  - <code>host</code>为 AuthManager 的服务监听地址
+  - <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。（推荐启用 TLS）
+  - <code>mrenclave</code>为 AuthManager 模块的 MRENCLAVE，在部署 AuthManager 的步骤中您应该已经获得了该值。
+- 使用前面获得的 TEEU 的 MRENCLAVE，填充正确的值: <code>teeu = TEEU('carol', mr\_enclave='mr\_enclave of TEEU')</code>
+
+配置完成后，假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Bob 的机器上执行 <code>python demo.py</code>。
+
+```python
+import secretflow as sf
+
+cluster_config = {
+    'parties': {
+        'alice': {'address': '192.168.0.10:20001', 'listen_address': '0.0.0.0:20001'},
+        'bob': {'address': '192.168.0.20:20001', 'listen_address': '0.0.0.0:20001'},
+        'carol': {'address': '192.168.0.30:20001', 'listen_address': '0.0.0.0:20001'},
+    },
+    'self_party': 'bob',
+}
+
+party_key_pair = {
+    'bob': {'private_key': './private_key.pem', 'public_key': './public_key.pem'}
+}
+
+
+auth_manager_config = {
+    'host': 'host of AuthManager',
+    'ca_cert': 'path_of_ca_certificate_of_AuthManager',
+    'mr_enclave': 'mrenclave of AuthManager',
+}
+
+# Connect to Bob's ray
+sf.init(
+    address='192.168.0.20:10000',
+    cluster_config=cluster_config,
+    party_key_pair=party_key_pair,
+    auth_manager_config=auth_manager_config,
+    tee_simulation=False,
+)
+
+
+import numpy as np
+
+def average(data):
+    return np.average(data, axis=1)
+
+
+alice = sf.PYU('alice')
+bob = sf.PYU('bob')
+teeu = TEEU('carol', mr_enclave='mrenclave_of_TEEU')
+
+a = alice(lambda: np.random.rand(4, 3))()
+b = bob(lambda: np.random.rand(4, 3))()
+a_teeu = a.to(teeu, allow_funcs=average)
+b_teeu = b.to(teeu, allow_funcs=average)
+
+avg_val = teeu(average)([a_teeu, b_teeu])
+print(sf.reveal(avg_val))
+
+
+a = sf.reveal(a)
+b = sf.reveal(b)
+np.testing.assert_equal(avg_val, average([a, b]) )
+```
+
+:target{#summary}
+
+### 总结
+
+本章节演示了如何在真实的SGX 2.0机器上运行TEEU。相比仿真模式，非仿真模式的主要差别如下。
+
+1. 配置远程认证。
+
+- 部署 DCAS
+- 配置 <code>/etc/sgx\_default\_qcnl.conf</code>
+- 配置 <code>image/etc/kubetee/unified\_attestation.json</code>
+
+2. 启动AuthManager和SecretFlow TEE镜像时，需要挂载SGX相关设备。
+
+```bash
+docker run -it --network host --privileged -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provision:/dev/sgx/provision secretflow/secretflow-teeu:latest
+```
+
+3. 获取并填充AuthManager和TEEU的度量值（mrenclave）。
+
+- 在 <code>sf.init()</code> 的 <code>auth\_manager\_config</code> 参数里填充AuthManager的mrenclave。
+- 构建TEEU实例时填充mrenclave: <code>teeu = sf.TEEU(..., mr\_enclave='MRENCLAVE\_OF\_TEEU')</code> 。
+
+4. 在 <code>sf.init()</code> 时设置 <code>tee\_simulation=False</code> 。
+5. Build occlum时不要带参数 <code>--sgx-mode sim</code> 。
+
+:target{#more-examples}
+
+### 更多示例
+
+[在TEEU中运行XGBoost](teeu_xgboost.mdx)
+
+:target{#advanced-topics}
+
+## 1.3 高阶话题
+
+如果您希望进一步了解 TEEU，欢迎阅读面向开发者的文档[TEEU](../developer/design/teeu.mdx)，该文档介绍了 TEEU 背后的原理和设计思想。

@@ -1,0 +1,796 @@
+:target{#Customize-DataBuilder-on-SLModel-in-SecretFlow}
+
+# Customize DataBuilder on SLModel in SecretFlow
+
+The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+We support federated learning in vertical scenarios on SLModel in SecretFlow. In this tutorial, we will take DeepFM model for recommendation as an example to introduce how to customize a DataBuilder on SLModel.
+
+The main goal of this tutorial is to train DeepFM to show how to customize a DataBuilder on SLModel.
+
+<em>If you want to learn more about related content for DeepFM model and split plans, please move to related documents for DeepFM model.</em>
+
+:target{#Environment-Setting}
+
+## Environment Setting
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    %load_ext autoreload
+    %autoreload 2
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+    sf.init(['alice', 'bob', 'charlie'], address="local", log_to_driver=False)
+    alice, bob ,charlie = sf.PYU('alice'), sf.PYU('bob') , sf.PYU('charlie')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"The version of SecretFlow: 0.8.3b0\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Datasets}
+
+## Datasets
+
+We will use the classic dataset [MovieLens](https://secretflow-data.oss-accelerate.aliyuncs.com/datasets/movielens/ml-1m.zip) for introduction. MovieLens is an open recommendation system dataset that contains movie ratings and movie metadata information.
+
+And we split data into several pieces: - alice: “UserID”, “Gender”, “Age”, “Occupation”, “Zip-code” - bob: “MovieID”, “Rating”, “Title”, “Genres”, “Timestamp”
+
+:target{#Define-DataBuilders}
+
+## Define DataBuilders
+
+We customize a DataBuilder with the aim to meet higher level customization demands, as the existing FedDataFrame and FedNdarray did not provide the required functionality.
+
+In Split Learning(where all sides of the data need to be aligned), we only provide DataBuilder for CSV data for the time being. You can define what to do with each row of data in the custom DataBuilder. The operations in SLModel depend on the way you define it.
+
+The things you should notice here: - We read MovieLens dataset in CSV format. However, it needs to be treated as sparse features. The DataBuilder will convert each column into the form of dictionary. - Bob’s score was processed into binary form using threshold. - Custom functions can be defined in the DataBuilder and then applied to each column using dataset.map. - Only CSV format is supported in the vertical scenario due to the restriction that both sides of the data should be aligned. - It
+returns Dataset which has been defined Batch\_size and Repeat in the CSV mode so that SLModel can infer the Steps\_per\_epoch according to the Dataset.
+
+:target{id="1.-Download-the-dataset-and-convert-it-to-the-CSV-format."}
+
+### 1. Download the dataset and convert it to the CSV format.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    %%capture
+    %%!
+    wget https://secretflow-data.oss-accelerate.aliyuncs.com/datasets/movielens/ml-1m.zip
+    unzip ./ml-1m.zip
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Read the data from the dat format and convert it to the dictionary form.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    def load_data(filename, columns):
+        data = {}
+        with open(filename, "r", encoding="unicode_escape") as f:
+            for line in f:
+                ls = line.strip("\n").split("::")
+                data[ls[0]] = dict(zip(columns[1:], ls[1:]))
+        return data
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
+    ```python
+    users_data = load_data(
+            "./ml-1m/users.dat",
+            columns=["UserID", "Gender", "Age", "Occupation", "Zip-code"],
+        )
+    movies_data = load_data(
+            "./ml-1m/movies.dat", columns=["MovieID", "Title", "Genres"]
+        )
+    ratings_columns = ["UserID", "MovieID", "Rating", "Timestamp"]
+
+    rating_data = load_data(
+            "./ml-1m/ratings.dat", columns = ratings_columns
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
+    ```python
+    print(len(users_data))
+    print(len(movies_data))
+    print(len(rating_data))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"6040\n3883\n6040\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Next, we join user, movie and rating, split up and assemble them into ‘alice\_ml1m.csv’ and ‘bob\_ml1m.csv’.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
+    ```python
+    fed_csv = {
+        alice: "alice_ml1m.csv",
+        bob: "bob_ml1m.csv"
+    }
+    csv_writer_container = {
+        alice: open(fed_csv[alice], "w"),
+        bob: open(fed_csv[bob], "w")
+    }
+    part_columns = {
+        alice:["UserID", "Gender", "Age", "Occupation", "Zip-code"],
+        bob:["MovieID", "Rating", "Title", "Genres", "Timestamp"]
+    }
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
+    ```python
+    for device, writer in csv_writer_container.items():
+        writer.write("ID," + ",".join(part_columns[device]) + "\n")
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[16]:" stderr={false} type="input">
+    ```python
+    f = open("ml-1m/ratings.dat", "r", encoding="unicode_escape")
+
+    def _parse_example(feature, columns, index):
+        if "Title" in feature.keys():
+            feature["Title"] = feature["Title"].replace(",", "_")
+        if "Genres" in feature.keys():
+            feature["Genres"] = feature["Genres"].replace("|", " ")
+        values = []
+        values.append(str(index))
+        for c in columns:
+            values.append(feature[c])
+        return ",".join(values)
+
+    index = 0
+    num_sample = 1000
+    for line in f:
+        ls = line.strip().split("::")
+        rating = dict(zip(ratings_columns, ls))
+        rating.update(users_data.get(ls[0]))
+        rating.update(movies_data.get(ls[1]))
+        for device, columns in part_columns.items():
+            parse_f = _parse_example(rating, columns, index)
+            csv_writer_container[device].write(parse_f + "\n")
+        index += 1
+        if num_sample > 0 and index >= num_sample:
+            break
+    for w in csv_writer_container.values():
+        w.close()
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="So-we've-done-the-data-processing-and-splitting-up-by-now."}
+
+## So we’ve done the data processing and splitting up by now.
+
+And we output two files:
+
+```none
+Alice: alice_ml1m.csv and Bob: bob_ml1m.csv
+```
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[17]:" stderr={false} type="input">
+    ```python
+    ! head alice_ml1m.csv
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"ID,UserID,Gender,Age,Occupation,Zip-code\n0,1,F,1,10,48067\n1,1,F,1,10,48067\n2,1,F,1,10,48067\n3,1,F,1,10,48067\n4,1,F,1,10,48067\n5,1,F,1,10,48067\n6,1,F,1,10,48067\n7,1,F,1,10,48067\n8,1,F,1,10,48067\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
+    ```python
+    ! head bob_ml1m.csv
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"ID,MovieID,Rating,Title,Genres,Timestamp\n0,1193,5,One Flew Over the Cuckoo's Nest (1975),Drama,978300760\n1,661,3,James and the Giant Peach (1996),Animation Children's Musical,978302109\n2,914,3,My Fair Lady (1964),Musical Romance,978301968\n3,3408,4,Erin Brockovich (2000),Drama,978300275\n4,2355,5,Bug's Life_ A (1998),Animation Children's Comedy,978824291\n5,1197,3,Princess Bride_ The (1987),Action Adventure Comedy Romance,978302268\n6,1287,5,Ben-Hur (1959),Action Adventure Drama,978302039\n7,2804,5,Christmas Story_ A (1983),Comedy Drama,978300719\n8,594,4,Snow White and the Seven Dwarfs (1937),Animation Children's Musical,978302268\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="1.-Use-plaintext-engines-to-develop-Databuilders."}
+
+### 1. Use plaintext engines to develop Databuilders.
+
+Because the data for each side of the SLModel is different, DataBuilder needs to be developed separately.
+
+:target{id="Develop-Alice's-DataBuilder"}
+
+#### Develop Alice’s DataBuilder
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[19]:" stderr={false} type="input">
+    ```python
+    import pandas as pd
+    alice_df = pd.read_csv("alice_ml1m.csv",encoding="utf-8")
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[20]:" stderr={false} type="input">
+    ```python
+    alice_df["UserID"] = alice_df["UserID"].astype("string")
+    alice_df = alice_df.drop(columns="ID")
+    alice_df
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[20]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"UserID"}</th><th>{"Gender"}</th><th>{"Age"}</th><th>{"Occupation"}</th><th>{"Zip-code"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"0"}</th><td>{"1"}</td><td>{"F"}</td><td>{"1"}</td><td>{"10"}</td><td>{"48067"}</td>
+          </tr>
+
+          <tr>
+            <th>{"1"}</th><td>{"1"}</td><td>{"F"}</td><td>{"1"}</td><td>{"10"}</td><td>{"48067"}</td>
+          </tr>
+
+          <tr>
+            <th>{"2"}</th><td>{"1"}</td><td>{"F"}</td><td>{"1"}</td><td>{"10"}</td><td>{"48067"}</td>
+          </tr>
+
+          <tr>
+            <th>{"3"}</th><td>{"1"}</td><td>{"F"}</td><td>{"1"}</td><td>{"10"}</td><td>{"48067"}</td>
+          </tr>
+
+          <tr>
+            <th>{"4"}</th><td>{"1"}</td><td>{"F"}</td><td>{"1"}</td><td>{"10"}</td><td>{"48067"}</td>
+          </tr>
+
+          <tr>
+            <th>{"..."}</th><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td>
+          </tr>
+
+          <tr>
+            <th>{"995"}</th><td>{"10"}</td><td>{"F"}</td><td>{"35"}</td><td>{"1"}</td><td>{"95370"}</td>
+          </tr>
+
+          <tr>
+            <th>{"996"}</th><td>{"10"}</td><td>{"F"}</td><td>{"35"}</td><td>{"1"}</td><td>{"95370"}</td>
+          </tr>
+
+          <tr>
+            <th>{"997"}</th><td>{"10"}</td><td>{"F"}</td><td>{"35"}</td><td>{"1"}</td><td>{"95370"}</td>
+          </tr>
+
+          <tr>
+            <th>{"998"}</th><td>{"10"}</td><td>{"F"}</td><td>{"35"}</td><td>{"1"}</td><td>{"95370"}</td>
+          </tr>
+
+          <tr>
+            <th>{"999"}</th><td>{"10"}</td><td>{"F"}</td><td>{"35"}</td><td>{"1"}</td><td>{"95370"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"1000 rows × 5 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[21]:" stderr={false} type="input">
+    ```python
+    import tensorflow as tf
+    alice_dict = dict(alice_df)
+    data_set = (
+        tf.data.Dataset.from_tensor_slices(alice_dict).batch(32).repeat(1)
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[22]:" stderr={false} type="input">
+    ```python
+    data_set
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[22]:" stderr={false} type="output">
+    <pre>
+      {"<RepeatDataset element_spec={'UserID': TensorSpec(shape=(None,), dtype=tf.string, name=None), 'Gender': TensorSpec(shape=(None,), dtype=tf.string, name=None), 'Age': TensorSpec(shape=(None,), dtype=tf.int64, name=None), 'Occupation': TensorSpec(shape=(None,), dtype=tf.int64, name=None), 'Zip-code': TensorSpec(shape=(None,), dtype=tf.int64, name=None)}>\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="Develop-Bob's-DataBuilder"}
+
+#### Develop Bob’s DataBuilder
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[23]:" stderr={false} type="input">
+    ```python
+    bob_df = pd.read_csv("bob_ml1m.csv",encoding="utf-8")
+    bob_df = bob_df.drop(columns="ID")
+
+    bob_df["MovieID"] = bob_df["MovieID"].astype("string")
+
+    bob_df
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[23]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"MovieID"}</th><th>{"Rating"}</th><th>{"Title"}</th><th>{"Genres"}</th><th>{"Timestamp"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"0"}</th><td>{"1193"}</td><td>{"5"}</td><td>{"One Flew Over the Cuckoo's Nest (1975)"}</td><td>{"Drama"}</td><td>{"978300760"}</td>
+          </tr>
+
+          <tr>
+            <th>{"1"}</th><td>{"661"}</td><td>{"3"}</td><td>{"James and the Giant Peach (1996)"}</td><td>{"Animation Children's Musical"}</td><td>{"978302109"}</td>
+          </tr>
+
+          <tr>
+            <th>{"2"}</th><td>{"914"}</td><td>{"3"}</td><td>{"My Fair Lady (1964)"}</td><td>{"Musical Romance"}</td><td>{"978301968"}</td>
+          </tr>
+
+          <tr>
+            <th>{"3"}</th><td>{"3408"}</td><td>{"4"}</td><td>{"Erin Brockovich (2000)"}</td><td>{"Drama"}</td><td>{"978300275"}</td>
+          </tr>
+
+          <tr>
+            <th>{"4"}</th><td>{"2355"}</td><td>{"5"}</td><td>{"Bug's Life_ A (1998)"}</td><td>{"Animation Children's Comedy"}</td><td>{"978824291"}</td>
+          </tr>
+
+          <tr>
+            <th>{"..."}</th><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td>
+          </tr>
+
+          <tr>
+            <th>{"995"}</th><td>{"3704"}</td><td>{"2"}</td><td>{"Mad Max Beyond Thunderdome (1985)"}</td><td>{"Action Sci-Fi"}</td><td>{"978228364"}</td>
+          </tr>
+
+          <tr>
+            <th>{"996"}</th><td>{"1020"}</td><td>{"3"}</td><td>{"Cool Runnings (1993)"}</td><td>{"Comedy"}</td><td>{"978228726"}</td>
+          </tr>
+
+          <tr>
+            <th>{"997"}</th><td>{"784"}</td><td>{"3"}</td><td>{"Cable Guy_ The (1996)"}</td><td>{"Comedy"}</td><td>{"978230946"}</td>
+          </tr>
+
+          <tr>
+            <th>{"998"}</th><td>{"858"}</td><td>{"3"}</td><td>{"Godfather_ The (1972)"}</td><td>{"Action Crime Drama"}</td><td>{"978224375"}</td>
+          </tr>
+
+          <tr>
+            <th>{"999"}</th><td>{"1022"}</td><td>{"5"}</td><td>{"Cinderella (1950)"}</td><td>{"Animation Children's Musical"}</td><td>{"979775689"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"1000 rows × 5 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[24]:" stderr={false} type="input">
+    ```python
+    label = bob_df["Rating"]
+    data = bob_df.drop(columns="Rating")
+
+    def _parse_bob(row_sample, label):
+        import tensorflow as tf
+
+        y_t = label
+        y = tf.expand_dims(
+            tf.where(
+                y_t > 3,
+                tf.ones_like(y_t, dtype=tf.float32),
+                tf.zeros_like(y_t, dtype=tf.float32),
+            ),
+            axis=1,
+        )
+        return row_sample, y
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[25]:" stderr={false} type="input">
+    ```python
+    bob_dict = tuple([dict(data),label])
+    data_set = (tf.data.Dataset.from_tensor_slices(bob_dict).batch(32).repeat(1))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[26]:" stderr={false} type="input">
+    ```python
+    data_set = data_set.map(_parse_bob)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[27]:" stderr={false} type="input">
+    ```python
+    next(iter(data_set))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[27]:" stderr={false} type="output">
+    <pre>
+      {"({'MovieID': <tf.Tensor: shape=(32,), dtype=string, numpy=\n  array([b'1193', b'661', b'914', b'3408', b'2355', b'1197', b'1287',\n         b'2804', b'594', b'919', b'595', b'938', b'2398', b'2918', b'1035',\n         b'2791', b'2687', b'2018', b'3105', b'2797', b'2321', b'720',\n         b'1270', b'527', b'2340', b'48', b'1097', b'1721', b'1545', b'745',\n         b'2294', b'3186'], dtype=object)>,\n  'Title': <tf.Tensor: shape=(32,), dtype=string, numpy=\n  array([b\"One Flew Over the Cuckoo's Nest (1975)\",\n         b'James and the Giant Peach (1996)', b'My Fair Lady (1964)',\n         b'Erin Brockovich (2000)', b\"Bug's Life_ A (1998)\",\n         b'Princess Bride_ The (1987)', b'Ben-Hur (1959)',\n         b'Christmas Story_ A (1983)',\n         b'Snow White and the Seven Dwarfs (1937)',\n         b'Wizard of Oz_ The (1939)', b'Beauty and the Beast (1991)',\n         b'Gigi (1958)', b'Miracle on 34th Street (1947)',\n         b\"Ferris Bueller's Day Off (1986)\", b'Sound of Music_ The (1965)',\n         b'Airplane! (1980)', b'Tarzan (1999)', b'Bambi (1942)',\n         b'Awakenings (1990)', b'Big (1988)', b'Pleasantville (1998)',\n         b'Wallace & Gromit: The Best of Aardman Animation (1996)',\n         b'Back to the Future (1985)', b\"Schindler's List (1993)\",\n         b'Meet Joe Black (1998)', b'Pocahontas (1995)',\n         b'E.T. the Extra-Terrestrial (1982)', b'Titanic (1997)',\n         b'Ponette (1996)', b'Close Shave_ A (1995)', b'Antz (1998)',\n         b'Girl_ Interrupted (1999)'], dtype=object)>,\n  'Genres': <tf.Tensor: shape=(32,), dtype=string, numpy=\n  array([b'Drama', b\"Animation Children's Musical\", b'Musical Romance',\n         b'Drama', b\"Animation Children's Comedy\",\n         b'Action Adventure Comedy Romance', b'Action Adventure Drama',\n         b'Comedy Drama', b\"Animation Children's Musical\",\n         b\"Adventure Children's Drama Musical\",\n         b\"Animation Children's Musical\", b'Musical', b'Drama', b'Comedy',\n         b'Musical', b'Comedy', b\"Animation Children's\",\n         b\"Animation Children's\", b'Drama', b'Comedy Fantasy', b'Comedy',\n         b'Animation', b'Comedy Sci-Fi', b'Drama War', b'Romance',\n         b\"Animation Children's Musical Romance\",\n         b\"Children's Drama Fantasy Sci-Fi\", b'Drama Romance', b'Drama',\n         b'Animation Comedy Thriller', b\"Animation Children's\", b'Drama'],\n        dtype=object)>,\n  'Timestamp': <tf.Tensor: shape=(32,), dtype=int64, numpy=\n  array([978300760, 978302109, 978301968, 978300275, 978824291, 978302268,\n         978302039, 978300719, 978302268, 978301368, 978824268, 978301752,\n         978302281, 978302124, 978301753, 978302188, 978824268, 978301777,\n         978301713, 978302039, 978302205, 978300760, 978300055, 978824195,\n         978300103, 978824351, 978301953, 978300055, 978824139, 978824268,\n         978824291, 978300019])>},\n <tf.Tensor: shape=(32, 1), dtype=float32, numpy=\n array([[1.],\n        [0.],\n        [0.],\n        [1.],\n        [1.],\n        [0.],\n        [1.],\n        [1.],\n        [1.],\n        [1.],\n        [1.],\n        [1.],\n        [1.],\n        [1.],\n        [1.],\n        [1.],\n        [0.],\n        [1.],\n        [1.],\n        [1.],\n        [0.],\n        [0.],\n        [1.],\n        [1.],\n        [0.],\n        [1.],\n        [1.],\n        [1.],\n        [1.],\n        [0.],\n        [1.],\n        [1.]], dtype=float32)>)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="2.-Wrap-their-DataBuilders-separately."}
+
+### 2. Wrap their DataBuilders separately.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[28]:" stderr={false} type="input">
+    ```python
+    # alice
+    def create_dataset_builder_alice(
+        batch_size=128,
+        repeat_count=5,
+    ):
+        def dataset_builder(x):
+            import pandas as pd
+            import tensorflow as tf
+
+            x = [dict(t) if isinstance(t, pd.DataFrame) else t for t in x]
+            x = x[0] if len(x) == 1 else tuple(x)
+            data_set = (
+                tf.data.Dataset.from_tensor_slices(x).batch(batch_size).repeat(repeat_count)
+            )
+
+            return data_set
+
+        return dataset_builder
+
+    # bob
+    def create_dataset_builder_bob(
+        batch_size=128,
+        repeat_count=5,
+    ):
+        def _parse_bob(row_sample, label):
+            import tensorflow as tf
+
+            y_t = label["Rating"]
+            y = tf.expand_dims(
+                tf.where(
+                    y_t > 3,
+                    tf.ones_like(y_t, dtype=tf.float32),
+                    tf.zeros_like(y_t, dtype=tf.float32),
+                ),
+                axis=1,
+            )
+            return row_sample, y
+
+        def dataset_builder(x):
+            import pandas as pd
+            import tensorflow as tf
+
+            x = [dict(t) if isinstance(t, pd.DataFrame) else t for t in x]
+            x = x[0] if len(x) == 1 else tuple(x)
+            data_set = (
+                tf.data.Dataset.from_tensor_slices(x).batch(batch_size).repeat(repeat_count)
+            )
+
+            data_set = data_set.map(_parse_bob)
+
+            return data_set
+
+        return dataset_builder
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="3.-Construct-a-databuilder_dict."}
+
+### 3. Construct a databuilder\_dict.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[29]:" stderr={false} type="input">
+    ```python
+    data_builder_dict = {
+            alice: create_dataset_builder_alice(
+                batch_size=128,
+                repeat_count=5,
+            ),
+            bob: create_dataset_builder_bob(
+                batch_size=128,
+                repeat_count=5,
+            ),
+        }
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Define-DeepFM-Model-and-run-it}
+
+## Define DeepFM Model and run it
+
+:target{id="1.-Define-a-DeepFM-model."}
+
+### 1. Define a DeepFM model.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[30]:" stderr={false} type="input">
+    ```python
+    from secretflow.ml.nn.applications.sl_deep_fm import DeepFMbase, DeepFMfuse
+    from secretflow.ml.nn import SLModel
+    NUM_USERS = 6040
+    NUM_MOVIES = 3952
+    GENDER_VOCAB = ["F", "M"]
+    AGE_VOCAB = [1, 18, 25, 35, 45, 50, 56]
+    OCCUPATION_VOCAB = [i for i in range(21)]
+    GENRES_VOCAB = [
+        "Action",
+        "Adventure",
+        "Animation",
+        "Children's",
+        "Comedy",
+        "Crime",
+        "Documentary",
+        "Drama",
+        "Fantasy",
+        "Film-Noir",
+        "Horror",
+        "Musical",
+        "Mystery",
+        "Romance",
+        "Sci-Fi",
+        "Thriller",
+        "War",
+        "Western",
+    ]
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="2.-Define-Alice's-basenet."}
+
+### 2. Define Alice’s basenet.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[31]:" stderr={false} type="input">
+    ```python
+    def create_base_model_alice():
+
+        # Create model
+        def create_model():
+            import tensorflow as tf
+
+            def preprocess():
+                inputs = {
+                    "UserID": tf.keras.Input(shape=(1,), dtype=tf.string),
+                    "Gender": tf.keras.Input(shape=(1,), dtype=tf.string),
+                    "Age": tf.keras.Input(shape=(1,), dtype=tf.int64),
+                    "Occupation": tf.keras.Input(shape=(1,), dtype=tf.int64),
+                }
+                user_id_output = tf.keras.layers.Hashing(
+                    num_bins=NUM_USERS, output_mode="one_hot"
+                )
+                user_gender_output = tf.keras.layers.StringLookup(
+                    vocabulary=GENDER_VOCAB, output_mode="one_hot"
+                )
+
+                user_age_out = tf.keras.layers.IntegerLookup(
+                    vocabulary=AGE_VOCAB, output_mode="one_hot"
+                )
+                user_occupation_out = tf.keras.layers.IntegerLookup(
+                    vocabulary=OCCUPATION_VOCAB, output_mode="one_hot"
+                )
+
+                outputs = {
+                    "UserID": user_id_output(inputs["UserID"]),
+                    "Gender": user_gender_output(inputs["Gender"]),
+                    "Age": user_age_out(inputs["Age"]),
+                    "Occupation": user_occupation_out(inputs["Occupation"]),
+                }
+                return tf.keras.Model(inputs=inputs, outputs=outputs)
+
+            preprocess_layer = preprocess()
+            model = DeepFMbase(
+                dnn_units_size=[256, 32],
+                preprocess_layer=preprocess_layer,
+            )
+            model.compile(
+                loss=tf.keras.losses.binary_crossentropy,
+                optimizer=tf.keras.optimizers.Adam(),
+                metrics=[
+                    tf.keras.metrics.AUC(),
+                    tf.keras.metrics.Precision(),
+                    tf.keras.metrics.Recall(),
+                ],
+            )
+            return model  # need wrap
+
+        return create_model
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="3.Define-Bob's-basenet-and-fusenet."}
+
+### 3.Define Bob’s basenet and fusenet.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[32]:" stderr={false} type="input">
+    ```python
+    # bob model
+    def create_base_model_bob():
+        # Create model
+        def create_model():
+            import tensorflow as tf
+
+            # define preprocess layer
+            def preprocess():
+                inputs = {
+                    "MovieID": tf.keras.Input(shape=(1,), dtype=tf.string),
+                    "Genres": tf.keras.Input(shape=(1,), dtype=tf.string),
+                }
+
+                movie_id_out = tf.keras.layers.Hashing(
+                    num_bins=NUM_MOVIES, output_mode="one_hot"
+                )
+                movie_genres_out = tf.keras.layers.TextVectorization(
+                    output_mode='multi_hot', split="whitespace", vocabulary=GENRES_VOCAB
+                )
+                outputs = {
+                    "MovieID": movie_id_out(inputs["MovieID"]),
+                    "Genres": movie_genres_out(inputs["Genres"]),
+                }
+                return tf.keras.Model(inputs=inputs, outputs=outputs)
+
+            preprocess_layer = preprocess()
+
+            model = DeepFMbase(
+                dnn_units_size=[256, 32],
+                preprocess_layer=preprocess_layer,
+            )
+            model.compile(
+                loss=tf.keras.losses.binary_crossentropy,
+                optimizer=tf.keras.optimizers.Adam(),
+                metrics=[
+                    tf.keras.metrics.AUC(),
+                    tf.keras.metrics.Precision(),
+                    tf.keras.metrics.Recall(),
+                ],
+            )
+            return model  # need wrap
+
+        return create_model
+
+    def create_fuse_model():
+        # Create model
+        def create_model():
+            import tensorflow as tf
+
+            model = DeepFMfuse(dnn_units_size=[256, 256, 32])
+            model.compile(
+                loss=tf.keras.losses.binary_crossentropy,
+                optimizer=tf.keras.optimizers.Adam(),
+                metrics=[
+                    tf.keras.metrics.AUC(),
+                    tf.keras.metrics.Precision(),
+                    tf.keras.metrics.Recall(),
+                ],
+            )
+            return model
+
+        return create_model
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[33]:" stderr={false} type="input">
+    ```python
+    base_model_dict = {
+        alice: create_base_model_alice(),
+        bob: create_base_model_bob()
+    }
+    model_fuse = create_fuse_model()
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    from secretflow.data.vertical import read_csv as v_read_csv
+
+    vdf = v_read_csv(
+        {alice:"alice_ml1m.csv",
+         bob:"bob_ml1m.csv"},
+        keys="ID",
+        drop_keys="ID")
+    label = vdf["Rating"]
+
+    data = vdf.drop(columns=["Rating", "Timestamp", "Title", "Zip-code"])
+    data["UserID"] = data["UserID"].astype("string")
+    data["MovieID"] = data["MovieID"].astype("string")
+
+    sl_model = SLModel(
+                base_model_dict=base_model_dict,
+                device_y=bob,
+                model_fuse=model_fuse,
+            )
+    history = sl_model.fit(
+        data,
+        label,
+        epochs=5,
+        batch_size=128,
+        random_seed=1234,
+        dataset_builder=data_builder_dict,
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>

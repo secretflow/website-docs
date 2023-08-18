@@ -1,0 +1,573 @@
+:target{#teeu-example-xgboost}
+
+# TEE示例：XGBoost
+
+提示
+
+在阅读本文之前，强烈推荐先阅读 [TEEU上手指南](teeu.mdx) 。
+
+---
+
+TEEU(<code>TEE</code> processing <code>U</code>nit)是 SecretFlow 中的 TEE 设备，通过 TEEU，用户可以方便的把数据放在TEE内进行计算，并且达到保护数据完整和安全的目的
+
+本文将演示如何在TEEU中使用XGBoost训练模型。
+
+:target{#simulation-mode}
+
+## 1.1 仿真模式
+
+为了方便用户在没有真实 TEE 环境的情况下对 TEEU 进行尝试，SecretFlow 提供了 TEEU 仿真模式，这意味着您可以在普通机器上仍然可以尝试 TEEU 的功能。在仿真模式下，代码编写和使用体感与非仿真模式几乎无差别，因此建议可以先使用仿真模式进行快速实验验证。
+
+注意，由于并没有使用真正的 TEE 环境，因此仿真模式缺乏远程认证和内存加密隔离等依赖 TEE 环境的安全特性，无法保护数据的完整性与机密性。仿真模式并不是安全的，不能用于生产上，请牢记这一点。
+
+:target{#pre-work}
+
+### 前置工作
+
+:target{#understand-the-secretflow-deployment-of-multi-ray-cluster-mode}
+
+#### 了解多ray集群模式的SecretFlow部署
+
+出于安全原因，运行在 TEE 里的 Ray 是独立的集群，因此目前 SecretFlow 仅支持在多个 Ray 集群模式下使用 TEEU。您可以事先阅读[SecretFlow部署文档](../getting_started/deployment.mdx#production)了解多个 Ray 集群的部署。
+
+:target{#prepare-to-run-the-simulated-teeu-machine}
+
+#### 准备运行仿真 TEEU 的机器
+
+目前 SecretFlow TEEU 仅提供 docker 镜像，由于基础技术的一些限制，目前 TEE 程序需要较大内存才能运行成功，您需要确保 docker 容器可使用内存至少大于 30GB 或者可能更大，取决于TEEU要处理的数据大小。
+
+:target{#deploy-authmanager}
+
+#### 部署 AuthManager
+
+AuthManager是负责授权管理的模块。
+
+1. 下载 docker 镜像
+
+```shell
+docker pull secretflow/authmanager-release-sim-ubuntu:latest
+```
+
+2. 进入 docker 镜像
+
+```shell
+docker run -it --net host secretflow/authmanager-release-sim-ubuntu:latest
+```
+
+3. （可选）配置 TLS
+
+AuthManager 默认启用 TLS，如果您只是为了本机仿真，可以关闭TLS功能，具体方法为编辑 config.yaml 文件，将 <code>enable\_tls</code> 设置为 false。
+
+4. 启动服务
+
+```shell
+cd occlum_release
+occlum run /bin/auth-manager --config_path /host/config.yaml
+```
+
+默认端口号是8835。如果发生端口冲突，请修改为其他未占用端口。
+
+:target{#example-xgboost-in-teeu}
+
+### 示例：TEEU中运行XGBoost
+
+接下来，我们将演示如何在TEEU中合并多方的数据并且使用XGBoost训练。
+
+:target{#example-code}
+
+#### 示例代码
+
+假设Alice和Bob拥有相同的特征空间，但是样本空间互不重叠，各自拥有部分用户的特征，Alice和Bob打算使用TEEU安全地对他们的样本进行合并并且使用XGBoost训练出一个模型。与此同时，Carol作为TEEU的提供方。
+
+上述案例的核心代码如下。
+
+```python
+import secretflow as sf
+import numpy as np
+
+def xgb_demo(x_slices, y_slices):
+    """
+    Cancat the input x and y, then train them with XGBoost.
+    """
+    from sklearn.model_selection import train_test_split
+    import xgboost as xgb
+
+    # Concat x and y firstly.
+    x = np.concatenate(x_slices)
+    y = np.concatenate(y_slices)
+
+    x_train, x_test = train_test_split(x, random_state=0)
+    y_train, y_test = train_test_split(y, random_state=0)
+    dtrain = xgb.DMatrix(data=x_train, label=y_train)
+    dtest = xgb.DMatrix(data=x_test, label=y_test)
+    num_boost_round = 16
+    watchlist = [(dtest, "eval"), (dtrain, "train")]
+
+    booster = xgb.train(
+        {'num_parallel_tree': 4, 'subsample': 0.7, 'num_class': 3},
+        num_boost_round=num_boost_round,
+        dtrain=dtrain,
+        evals=watchlist,
+    )
+
+    preds = booster.predict(dtest)
+    labels = dtest.get_label()
+    error = sum(
+        1 for i in range(len(preds)) if int(preds[i] > 0.5) != labels[i]
+    ) / float(len(preds))
+
+    # `/host` in TEEU is mapped to the /root/occlum_instance in the docker container.
+    booster.save_model('/host/model.json')
+
+    return error
+
+
+def gen_data():
+    """
+    Generate random classified data for simulation.
+    """
+    from sklearn.datasets import make_classification
+
+    num_classes = 3
+    x, y = make_classification(n_samples=1000, n_informative=5,
+                           n_classes=num_classes)
+    return x, y
+
+# Alice generates its samples.
+x_a, y_a = alice(gen_data(), num_returns=2)()
+# Bob generates its samples.
+x_b, y_b = alice(gen_data(), num_returns=2)()
+
+from secretflow.device import TEEU
+
+# mrenclave can be omitted in simulation mode.
+teeu = TEEU('carol', mr_enclave='')
+
+# Transfer data to teeu.
+x_a_teeu = x_a.to(teeu, allow_funcs=xgb_demo)
+y_a_teeu = y_a.to(teeu, allow_funcs=xgb_demo)
+
+x_b_teeu = x_b.to(teeu, allow_funcs=xgb_demo)
+y_b_teeu = y_b.to(teeu, allow_funcs=xgb_demo)
+
+# Run xgb_demo.
+res = teeu(xgb_demo)([x_a_teeu, x_b_teeu], [y_a_teeu, y_b_teeu])
+
+print(f'Train error: {error}')
+```
+
+:target{#alice-runs-the-code}
+
+#### Alice运行代码
+
+1. 启动 ray 主节点
+
+下列命令假设Alice的ray主节点监听地址为 192.168.0.10:10000，请根据实际情况修改。
+
+```bash
+ray start --head --node-ip-address="192.168.0.10" --port="10000" --include-dashboard=False --disable-usage-stats
+```
+
+2. 生成公私钥对
+
+因为 Alice 的数据需要加密发送给 TEEU，所以需要事先生成一对公私钥。您可以执行下列代码生成公私钥，公私钥以 pem 格式分别存放在当前目录的 private\_key.pem，public\_key.pem。
+
+```bash
+openssl genrsa -3 -out private_key.pem 3072
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+```
+
+3. 执行代码
+
+在代码的前面加上SecretFlow初始化相关代码，得到下列的代码。首先您需要对代码中的配置项进行修改。
+
+- 代码中假设 Alice 通信地址为 192.168.0.10:20001，请您根据实际情况修改
+- 您需要填写填充正确的 <code>auth\_manager\_config</code>
+  - <code>host</code>为 AuthManager 的服务监听地址
+  - <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
+
+假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Alice 的机器上执行 <code>python demo.py</code>。
+
+```python
+import secretflow as sf
+
+cluster_config = {
+    'parties': {
+        'alice': {'address': '192.168.0.10:20001', 'listen_address': '0.0.0.0:20001'},
+        'bob': {'address': '192.168.0.20:20001', 'listen_address': '0.0.0.0:20001'},
+        'carol': {'address': '192.168.0.30:20001', 'listen_address': '0.0.0.0:20001'},
+    },
+    'self_party': 'alice',
+}
+
+party_key_pair = {
+    'alice': {'private_key': './private_key.pem', 'public_key': './public_key.pem'}
+}
+
+auth_manager_config = {
+    'host': 'host of AuthManager',
+    'ca_cert': 'path_of_AuthManager_ca_certificate',
+    'mr_enclave': ''
+}
+
+# Connect to alice's ray
+sf.init(
+    address='192.168.0.10:10000',
+    cluster_config=cluster_config,
+    party_key_pair=party_key_pair,
+    auth_manager_config=auth_manager_config,
+    tee_simulation=True,
+)
+
+import numpy as np
+
+def xgb_demo(x_slices, y_slices):
+    """
+    Cancat the input x and y, then train them with XGBoost.
+    """
+    from sklearn.model_selection import train_test_split
+    import xgboost as xgb
+
+    # Concat x and y firstly.
+    x = np.concatenate(x_slices)
+    y = np.concatenate(y_slices)
+
+    x_train, x_test = train_test_split(x, random_state=0)
+    y_train, y_test = train_test_split(y, random_state=0)
+    dtrain = xgb.DMatrix(data=x_train, label=y_train)
+    dtest = xgb.DMatrix(data=x_test, label=y_test)
+    num_boost_round = 16
+    watchlist = [(dtest, "eval"), (dtrain, "train")]
+
+    booster = xgb.train(
+        {'num_parallel_tree': 4, 'subsample': 0.7, 'num_class': 3},
+        num_boost_round=num_boost_round,
+        dtrain=dtrain,
+        evals=watchlist,
+    )
+
+    preds = booster.predict(dtest)
+    labels = dtest.get_label()
+    error = sum(
+        1 for i in range(len(preds)) if int(preds[i] > 0.5) != labels[i]
+    ) / float(len(preds))
+
+    # `/host` in TEEU is mapped to the /root/occlum_instance in the docker container.
+    booster.save_model('/host/model.json')
+
+    return error
+
+
+def gen_data():
+    """
+    Generate random classified data for simulation.
+    """
+    from sklearn.datasets import make_classification
+
+    num_classes = 3
+    x, y = make_classification(n_samples=1000, n_informative=5,
+                           n_classes=num_classes)
+    return x, y
+
+# Alice generates its samples.
+x_a, y_a = alice(gen_data(), num_returns=2)()
+# Bob generates its samples.
+x_b, y_b = alice(gen_data(), num_returns=2)()
+
+from secretflow.device import TEEU
+
+teeu = TEEU('carol', mr_enclave='')
+
+# Transfer data to teeu.
+x_a_teeu = x_a.to(teeu, allow_funcs=xgb_demo)
+y_a_teeu = y_a.to(teeu, allow_funcs=xgb_demo)
+
+x_b_teeu = x_b.to(teeu, allow_funcs=xgb_demo)
+y_b_teeu = y_b.to(teeu, allow_funcs=xgb_demo)
+
+# Run xgb_demo.
+res = teeu(xgb_demo)([x_a_teeu, x_b_teeu], [y_a_teeu, y_b_teeu])
+
+print(f'Train error: {error}')
+```
+
+:target{#bob-runs-the-code}
+
+#### Bob 运行代码
+
+1. 启动 ray 主节点
+
+下列命令假设 Bob 的Ray主节点监听在 192.168.0.20:10000，请根据实际情况修改。
+
+```bash
+ray start --head --node-ip-address="192.168.0.20" --port="100000" --include-dashboard=False --disable-usage-stats
+```
+
+2. 生成公私钥对
+
+因为 Bob 的数据需要加密发送给 TEEU，所以需要事先生成一对公私钥。您可以执行下列代码生成公私钥，公私钥以 pem 格式分别存放在当前目录的 private\_key.pem，public\_key.pem。
+
+```bash
+openssl genrsa -3 -out private_key.pem 3072
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+```
+
+3. 运行代码
+
+与 Alice 类似，在代码前面加上 SecretFlow 初始化相关代码，得到下列的代码
+
+- 代码中假设 Bob 通信地址为 192.168.0.20:20001，请您根据实际情况修改
+- 您需要填写填充正确的 <code>auth\_manager\_config</code>
+- <code>host</code>为 AuthManager 的服务监听地址
+- <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
+
+假设我们把代码保存为 [demo.py](http://demo.py)，然后在Bob的机器上执行 <code>python demo.py</code>。
+
+```python
+import secretflow as sf
+
+cluster_config = {
+    'parties': {
+        'alice': {'address': '192.168.0.10:20001', 'listen_address': '0.0.0.0:20001'},
+        'bob': {'address': '192.168.0.20:20001', 'listen_address': '0.0.0.0:20001'},
+        'carol': {'address': '192.168.0.30:20001', 'listen_address': '0.0.0.0:20001'},
+    },
+    'self_party': 'bob',
+}
+
+party_key_pair = {
+    'bob': {'private_key': './private_key.pem', 'public_key': './public_key.pem'}
+}
+
+auth_manager_config = {
+    'host': 'host of AuthManager',
+    'ca_cert': 'path_of_AuthManager_ca_certificate',
+    'mr_enclave': ''
+}
+
+# Connect to Bob's ray
+sf.init(
+    address='192.168.0.20:10000',
+    cluster_config=cluster_config,
+    party_key_pair=party_key_pair,
+    auth_manager_config=auth_manager_config,
+    tee_simulation=True,
+)
+
+import numpy as np
+
+def xgb_demo(x_slices, y_slices):
+    """
+    Cancat the input x and y, then train them with XGBoost.
+    """
+    from sklearn.model_selection import train_test_split
+    import xgboost as xgb
+
+    # Concat x and y firstly.
+    x = np.concatenate(x_slices)
+    y = np.concatenate(y_slices)
+
+    x_train, x_test = train_test_split(x, random_state=0)
+    y_train, y_test = train_test_split(y, random_state=0)
+    dtrain = xgb.DMatrix(data=x_train, label=y_train)
+    dtest = xgb.DMatrix(data=x_test, label=y_test)
+    num_boost_round = 16
+    watchlist = [(dtest, "eval"), (dtrain, "train")]
+
+    booster = xgb.train(
+        {'num_parallel_tree': 4, 'subsample': 0.7, 'num_class': 3},
+        num_boost_round=num_boost_round,
+        dtrain=dtrain,
+        evals=watchlist,
+    )
+
+    preds = booster.predict(dtest)
+    labels = dtest.get_label()
+    error = sum(
+        1 for i in range(len(preds)) if int(preds[i] > 0.5) != labels[i]
+    ) / float(len(preds))
+
+    # `/host` in TEEU is mapped to the /root/occlum_instance in the docker container.
+    booster.save_model('/host/model.json')
+
+    return error
+
+
+def gen_data():
+    """
+    Generate random classified data for simulation.
+    """
+    from sklearn.datasets import make_classification
+
+    num_classes = 3
+    x, y = make_classification(n_samples=1000, n_informative=5,
+                           n_classes=num_classes)
+    return x, y
+
+# Alice generates its samples.
+x_a, y_a = alice(gen_data(), num_returns=2)()
+# Bob generates its samples.
+x_b, y_b = alice(gen_data(), num_returns=2)()
+
+from secretflow.device import TEEU
+
+teeu = TEEU('carol', mr_enclave='')
+
+# Transfer data to teeu.
+x_a_teeu = x_a.to(teeu, allow_funcs=xgb_demo)
+y_a_teeu = y_a.to(teeu, allow_funcs=xgb_demo)
+
+x_b_teeu = x_b.to(teeu, allow_funcs=xgb_demo)
+y_b_teeu = y_b.to(teeu, allow_funcs=xgb_demo)
+
+# Run xgb_demo.
+res = teeu(xgb_demo)([x_a_teeu, x_b_teeu], [y_a_teeu, y_b_teeu])
+
+print(f'Train error: {error}')
+```
+
+:target{#carol-runs-code-executed-in-tee}
+
+#### Carol 运行代码（在TEE中执行）
+
+启动容器
+
+```bash
+docker run -it --network host secretflow/secretflow-teeu:latest
+```
+
+类似地，在代码前面加上 SecretFlow 初始化相关代码，得到下列的代码。但是与前面有所区别，因为Carol是在TEE中运行，因此需要一些额外的步骤。首先，你需要修改代码中的配置项。
+
+1. 代码中假设 Carol 通信地址为 192.168.0.30:20001，请您根据实际情况修改
+2. 您需要填写填充正确的 <code>auth\_manager\_config</code>
+
+- <code>host</code>为 AuthManager 的服务监听地址
+- <code>ca\_cert</code> 为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
+
+修改完毕后，请把该文件保存至 /root/occlum\_instance/image/root/demo.py
+
+```python
+# Generate tls cert and key at first.
+from tls_cert import generate_self_signed_tls_certs
+
+generate_self_signed_tls_certs('/root/server.crt', '/root/server.key')
+
+
+import secretflow as sf
+
+cluster_config = {
+    'parties': {
+        'alice': {'address': '192.168.0.10:20001', 'listen_address': '0.0.0.0:20001'},
+        'bob': {'address': '192.168.0.20:20001', 'listen_address': '0.0.0.0:20001'},
+        'carol': {'address': '192.168.0.30:20001', 'listen_address': '0.0.0.0:20001'},
+    },
+    'self_party': 'carol',
+}
+
+auth_manager_config = {
+    'host': 'host of AuthManager',
+    'ca_cert': 'path_of_AuthManager_ca_certificate',
+    'mr_enclave': ''
+}
+
+# Start a local Ray.
+sf.init(
+    address='local',
+    cluster_config=cluster_config,
+    auth_manager_config=auth_manager_config,
+    tee_simulation=True,
+    _temp_dir="/host/tmp/ray",
+    _plasma_directory="/tmp",
+)
+
+import numpy as np
+
+def xgb_demo(x_slices, y_slices):
+    """
+    Cancat the input x and y, then train them with XGBoost.
+    """
+    from sklearn.model_selection import train_test_split
+    import xgboost as xgb
+
+    # Concat x and y firstly.
+    x = np.concatenate(x_slices)
+    y = np.concatenate(y_slices)
+
+    x_train, x_test = train_test_split(x, random_state=0)
+    y_train, y_test = train_test_split(y, random_state=0)
+    dtrain = xgb.DMatrix(data=x_train, label=y_train)
+    dtest = xgb.DMatrix(data=x_test, label=y_test)
+    num_boost_round = 16
+    watchlist = [(dtest, "eval"), (dtrain, "train")]
+
+    booster = xgb.train(
+        {'num_parallel_tree': 4, 'subsample': 0.7, 'num_class': 3},
+        num_boost_round=num_boost_round,
+        dtrain=dtrain,
+        evals=watchlist,
+    )
+
+    preds = booster.predict(dtest)
+    labels = dtest.get_label()
+    error = sum(
+        1 for i in range(len(preds)) if int(preds[i] > 0.5) != labels[i]
+    ) / float(len(preds))
+
+    # `/host` in TEEU is mapped to the /root/occlum_instance in the docker container.
+    booster.save_model('/host/model.json')
+
+    return error
+
+
+def gen_data():
+    """
+    Generate random classified data for simulation.
+    """
+    from sklearn.datasets import make_classification
+
+    num_classes = 3
+    x, y = make_classification(n_samples=1000, n_informative=5,
+                           n_classes=num_classes)
+    return x, y
+
+# Alice generates its samples.
+x_a, y_a = alice(gen_data(), num_returns=2)()
+# Bob generates its samples.
+x_b, y_b = alice(gen_data(), num_returns=2)()
+
+from secretflow.device import TEEU
+
+teeu = TEEU('carol', mr_enclave='')
+
+# Transfer data to teeu.
+x_a_teeu = x_a.to(teeu, allow_funcs=xgb_demo)
+y_a_teeu = y_a.to(teeu, allow_funcs=xgb_demo)
+
+x_b_teeu = x_b.to(teeu, allow_funcs=xgb_demo)
+y_b_teeu = y_b.to(teeu, allow_funcs=xgb_demo)
+
+# Run xgb_demo.
+res = teeu(xgb_demo)([x_a_teeu, x_b_teeu], [y_a_teeu, y_b_teeu])
+
+print(f'Train error: {error}')
+```
+
+然后我们通过下列命令运行脚本。
+
+```bash
+cd /root/occlum_instance
+openssl genrsa -3 -out private_key.pem 3072
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+occlum build --sgx-mode sim --sign-key private_key.pem
+occlum run /bin/python3.8 /root/demo.py
+```
+
+当运行结束后，您可以在 <code>/root/occlum\_instance/model.json</code> 查阅模型文件。
+
+:target{#non-simulation-mode}
+
+## 1.2 非仿真模式
+
+当需要使用真实的 TEE 环境保护计算过程中数据的机密性和完整性时，用户需要开启非仿真模式，此时远程认证以及内存加密等由 TEE 提供的安全机制将被开启。开启非仿真模式，用户需要持有当前 Secretflow TEEU 支持的 TEE 硬件，当前 Secretflow 仅支持 Intel SGX2.0，未来会支持更多 TEE 种类。
+
+请查阅 [Non-simulation](teeu.mdx#summary) 了解如何在非仿真模式下运行。

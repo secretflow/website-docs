@@ -1,0 +1,1689 @@
+:target{#ppml-based-on-crypto}
+
+# PPML based on Crypto
+
+![](https://badgen.net/badge/\:update-to/\:Apr-2023/red) ![](https://badgen.net/badge/\:papers/:43/blue)
+
+Privacy-preserving machine learning (PPML) based on Cryptographic techniques has been attracting attention in recent years. A lot papers provide matchine learning as a service (MLaaS) mainly in two ways:
+
+- <strong>Inference</strong>: A company offers a trained ML model, and a customer is able to query a feature input to obtain the inference result.
+- <strong>Training</strong>: Multiple companies work together to train a high accuracy model using their datasets.
+
+The major concern is to keep the model (i.e., model parameters) and the input data (either training data or inference samples) secret.
+
+Existing works can be divided into different categories from different aspects. The commonly-adopted criterion are as follows:
+
+- <strong>Computation Setting</strong>: This denotes how many parties are involved in the computation (i.e., inference or training). Typically, there are 2PC, 3PC, 4PC and 4+ parties.
+- <strong>Security Model</strong>: This depicts the behavior of the adversary. e.g., semi-honest (or malicious) and honest-majority (or dishonest-majority).
+- <strong>Capability</strong>: This represents whether the work support inference or training.
+
+An overview of existing works is illustrated in the table below.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+
+      </td>
+
+      <td>
+        PPML
+      </td>
+
+      <td>
+        Capability
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        Threat Model
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        Techniques
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        Inference
+      </td>
+
+      <td>
+        Training
+      </td>
+
+      <td>
+        Semi-honest
+      </td>
+
+      <td>
+        Malicious
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        ABY
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        OT & GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        SecureML
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        HE & GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        MiniONN
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        HE & GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        GAZELLE
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        HE & GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        EzPC
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        XONN
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        QUOTIENT
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        OT & GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        MP2ML
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        HE & GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        CrypTFlow2
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        HE & OT & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        Delphi
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        HE & GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        GALA
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        HE & GC
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        QuantizedNN
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        Abort
+      </td>
+
+      <td>
+        HE & OT & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        GForce
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        HE & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        ABY 2.0
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        OT & GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        MUSE
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        Malicious clients
+      </td>
+
+      <td>
+        HE & GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        SIRNN
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        SS & OT
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        SecFloat
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        SS & OT
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        Cheetah
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        HE & SS & OT
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        PRNNInfer
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        HE
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        AriaNN
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        FSS & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        Pika
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        FSS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        Fusion
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        Malicious servers
+      </td>
+
+      <td>
+        SS & ZKP
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        SIMC
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        Malicious clients
+      </td>
+
+      <td>
+        SS & HE & OT & GC
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        2PC
+      </td>
+
+      <td>
+        Squirrel
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        SS & HE & OT
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        Chameleon
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        ABY3
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        ASTRA
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        Abort
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        SecureNN
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        BLAZE
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        Fairness
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        QuantizedNN
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        Abort
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        CrypTFlow
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        SWIFT
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        GOD
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        Falcon
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        Abort
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        CryptGPU
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        SecQuantizedNN
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        Piranha
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        pMPL
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        GOD (privileged party)
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        PEA
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        SS & DP
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        3PC
+      </td>
+
+      <td>
+        LLAMA
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        FSS & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        4PC
+      </td>
+
+      <td>
+        FLASH
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        GOD
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        4PC
+      </td>
+
+      <td>
+        SWIFT
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        GOD
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        4PC
+      </td>
+
+      <td>
+        Trident
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        Fairness
+      </td>
+
+      <td>
+        GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        4PC
+      </td>
+
+      <td>
+        Fantastic Four
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        GOD
+      </td>
+
+      <td>
+        SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        4PC
+      </td>
+
+      <td>
+        Tetrad
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        ✔
+      </td>
+
+      <td>
+        GOD
+      </td>
+
+      <td>
+        GC & SS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+> Note: one paper may be included in several categories (e.g. a paper that supports training naturally supports inference).
+
+:target{#table-of-contents}
+
+## Table of Contents
+
+- [2PC](#two-party-computation-2pc)
+  - Inference
+  - Training
+- [3PC](#three-party-computation-3pc)
+  - Inference
+  - Training
+- [4PC](#four-party-computation-4pc)
+  - Training
+
+:target{#two-party-computation-2pc}
+
+## Two-party Computation (2PC)
+
+:target{#secure-inference}
+
+### <a id="2pc-infer" />Secure Inference
+
+- Fusion: Efficient and Secure Inference Resilient to Malicious Servers.
+  <em>Caiqin Dong, Jian Weng, Jia-Nan Liu, Yue Zhang, Yao Tong, Anjia Yang, Yudan Cheng, Shun Hu</em>
+  NDSS 2023, [eprint](https://www.ndss-symposium.org/ndss-paper/fusion-efficient-and-secure-inference-resilient-to-malicious-servers/)
+- SIMC: ML Inference Secure Against Malicious Clients at Semi-Honest Cost.
+  <em>Nishanth Chandran, Divya Gupta, Sai Lakshmi Bhavana Obbattu, Akash Shah</em>
+  USENIX 2022, [eprint](https://eprint.iacr.org/2021/1538)
+- Private and Reliable Neural Network Inference.
+  <em>Nikola Jovanovic, Marc Fischer, Samuel Steffen, Martin T. Vechev</em>
+  CCS 2022, [eprint](https://doi.org/10.48550/arXiv.2210.15614)
+- Cheetah: Lean and Fast Secure Two-Party Deep Neural Network Inference.
+  <em>Zhicong Huang, Wen-jie Lu, Cheng Hong, Jiansheng Ding</em>
+  USENIX 2022, [eprint](https://eprint.iacr.org/2022/207)
+- SIRNN: A Math Library for Secure RNN Inference.
+  <em>Deevashwer Rathee, Mayank Rathee, Rahul Kranti Kiran Goli, Divya Gupta, Rahul Sharma, Nishanth Chandran, Aseem Rastogi</em>
+  S\&P 2021, [eprint](https://eprint.iacr.org/2021/459)
+- Muse: Secure Inference Resilient to Malicious Clients.
+  <em>Ryan Lehmkuhl, Pratyush Mishra, Akshayaram Srinivasan, Raluca Ada Popa</em>
+  S\&P 2021, [eprint](https://eprint.iacr.org/2021/1040)
+- GForce: GPU-Friendly Oblivious and Rapid Neural Network Inference.
+  <em>Lucien K. L. Ng, Sherman S. M. Chow</em>
+  USENIX 2021, [eprint](https://www.usenix.org/conference/usenixsecurity21/presentation/ng)
+- GALA: Greedy ComputAtion for Linear Algebra in Privacy-Preserved Neural Networks.
+  <em>Qiao Zhang, Chunsheng Xin, Hongyi Wu</em>
+  NDSS 2021, [eprint](https://arxiv.org/abs/2105.01827)
+- Delphi: A Cryptographic Inference Service for Neural Networks.
+  <em>Pratyush Mishra, Ryan Lehmkuhl, Akshayaram Srinivasan, Wenting Zheng, Raluca Ada Popa</em>
+  USENIX 2020, [eprint](https://eprint.iacr.org/2020/050)
+- CrypTFlow2: Practical 2-Party Secure Inference.
+  <em>Deevashwer Rathee, Mayank Rathee, Nishant Kumar, Nishanth Chandran, Divya Gupta, Aseem Rastogi, Rahul Sharma</em>
+  CCS 2020, [eprint](https://eprint.iacr.org/2020/1002)
+- MP2ML: A mixed-protocol machine learning framework for private inference.
+  <em>Fabian Boemer, Rosario Cammarota, Daniel Demmler, Thomas Schneider, Hossein Yalame</em>
+  ARES 2020, [eprint](https://eprint.iacr.org/2020/721)
+- XONN: XNOR-based Oblivious Deep Neural Network Inference.
+  <em>M. Sadegh Riazi, Mohammad Samragh, Hao Chen, Kim Laine, Kristin E. Lauter, Farinaz Koushanfar</em>
+  USENIX 2019, [eprint](https://eprint.iacr.org/2019/171)
+- EzPC: Programmable and efficient secure two-party computation for machine learning.
+  <em>Nishanth Chandran, Divya Gupta, Aseem Rastogi, Rahul Sharma, Shardul Tripathi</em>
+  EuroS\&P 2019, [eprint](https://doi.org/10.1109/EuroSP.2019.00043)
+- GAZELLE: A Low Latency Framework for Secure Neural Network Inference.
+  <em>Chiraag Juvekar, Vinod Vaikuntanathan, Anantha P. Chandrakasan</em>
+  USENIX 2018, [eprint](http://eprint.iacr.org/2018/073)
+- Oblivious Neural Network Predictions via MiniONN Transformations.
+  <em>Jian Liu, Mika Juuti, Yao Lu, N. Asokan</em>
+  CCS 2017, [eprint](http://eprint.iacr.org/2017/452)
+
+:target{#secure-training}
+
+### <a id="2pc-train" />Secure Training
+
+- Squirrel: A Scalable Secure Two-Party Computation Framework for Training Gradient Boosting Decision Tree.
+  <em>Wen-jie Lu, Zhicong Huang, Qizhi Zhang, Yuchen Wang, Cheng Hong</em>
+  USENIX 2023, [eprint](https://eprint.iacr.org/2023/527.pdf)
+- AriaNN: Low-Interaction Privacy-Preserving Deep Learning via Function Secret Sharing.
+  <em>Théo Ryffel, Pierre Tholoniat, David Pointcheval, Francis R. Bach</em>
+  PETS 2022, [eprint](https://arxiv.org/abs/2006.04593)
+- Pika: Secure Computation using Function Secret Sharing over Rings.
+  <em>Sameer Wagh</em>
+  PETS 2022, [eprint](https://eprint.iacr.org/2022/826)
+- SecFloat: Accurate Floating-Point meets Secure 2-Party Computation.
+  <em>Deevashwer Rathee, Anwesh Bhattacharya, Rahul Sharma, Divya Gupta, Nishanth Chandran, Aseem Rastogi</em>
+  S\&P 2022, [eprint](https://eprint.iacr.org/2022/322)
+- Piranha: A GPU Platform for Secure Computation.
+  <em>Jean-Luc Watson, Sameer Wagh, Raluca Ada Popa</em>
+  USENIX 2022, [eprint](https://eprint.iacr.org/2022/892)
+- ABY2.0: Improved Mixed-Protocol Secure Two-Party Computation.
+  <em>Arpita Patra, Thomas Schneider, Ajith Suresh, Hossein Yalame</em>
+  USENIX 2021, [eprint](https://eprint.iacr.org/2020/1225)
+- QUOTIENT: Two-party secure neural network training and prediction.
+  <em>Nitin Agrawal, Ali Shahin Shamsabadi, Matt J. Kusner, Adrià Gascón</em>
+  CCS 2019, [eprint](http://arxiv.org/abs/1907.03372)
+- SecureML: A System for Scalable Privacy-Preserving Machine Learning.
+  <em>Payman Mohassel, Yupeng Zhang</em>
+  S\&P 2017, [eprint](http://eprint.iacr.org/2017/396)
+- ABY - A Framework for Efficient Mixed-Protocol Secure Two-Party Computation.
+  <em>Daniel Demmler, Thomas Schneider, Michael Zohner</em>
+  NDSS 2015, [eprint](https://www.ndss-symposium.org/ndss2015/aby---framework-efficient-mixed-protocol-secure-two-party-computation)
+
+:target{#three-party-computation-3pc}
+
+## Three-party Computation (3PC)
+
+:target{#id1}
+
+### <a id="3pc-infer" />Secure Inference
+
+- LLAMA: A Low Latency Math Library for Secure Inference.
+  <em>Kanav Gupta, Deepak Kumaraswamy, Nishanth Chandran, Divya Gupta</em>
+  PETS 2022, [eprint](https://eprint.iacr.org/2022/793)
+- CrypTFlow: Secure TensorFlow Inference.
+  <em>Nishant Kumar, Mayank Rathee, Nishanth Chandran, Divya Gupta, Aseem Rastogi, Rahul Sharma</em>
+  S\&P 2020, [eprint](http://arxiv.org/abs/1909.07814)
+- Secure evaluation of quantized neural networks.
+  <em>Anders P. K. Dalskov, Daniel Escudero, Marcel Keller</em>
+  PETS 2020, [eprint](https://eprint.iacr.org/2019/131)
+- Chameleon: a hybrid secure computation framework for machine learning applications.
+  <em>M. Sadegh Riazi, Christian Weinert, Oleksandr Tkachenko, Ebrahim M. Songhori, Thomas Schneider, Farinaz Koushanfar</em>
+  AsiaCCS 2018, [eprint](http://arxiv.org/abs/1801.03239)
+
+:target{#id2}
+
+### <a id="3pc-train" />Secure Training
+
+- Private, Efficient, and Accurate: Protecting Models Trained by Multi-party Learning with Differential Privacy
+  <em>Wenqiang Ruan, Mingxin Xu, Wenjing Fang, Li Wang, Lei Wang, Weili Han</em>
+  S\&P 2023, [eprint](https://doi.org/10.48550/arXiv.2208.08662)
+- Efficient decision tree training with new data structure for secure multi-party computation.
+  <em>Koki Hamada, Dai Ikarashi, Ryo Kikuchi, Koji Chida</em>
+  PETS 2023, [eprint](https://arxiv.org/abs/2112.12906)
+- Multi-Party Replicated Secret Sharing over a Ring with Applications to Privacy-Preserving Machine Learning.
+  <em>Alessandro N. Baccarini, Marina Blanton, Chen Yuan</em>
+  PETS 2023, [eprint](https://eprint.iacr.org/2020/1577)
+- Convolutions in Overdrive: Maliciously Secure Convolutions for MPC.
+  <em>Marc Rivinius, Pascal Reisert, Sebastian Hasler, Ralf Küsters</em>
+  PETS 2023, [eprint](https://eprint.iacr.org/2023/359)
+- pMPL: A Robust Multi-Party Learning Framework with a Privileged Party.
+  <em>Lushan Song, Jiaxuan Wang, Zhexuan Wang, Xinyu Tu, Guopeng Lin, Wenqiang Ruan, Haoqi Wu, Weili Han</em>
+  CCS 2022, [eprint](https://doi.org/10.48550/arXiv.2210.00486)
+- Piranha: A GPU Platform for Secure Computation.
+  <em>Jean-Luc Watson, Sameer Wagh, Raluca Ada Popa</em>
+  USENIX 2022, [eprint](https://eprint.iacr.org/2022/892)
+- Secure Quantized Training for Deep Learning.
+  <em>Marcel Keller, Ke Sun</em>
+  ICML 2022, [eprint](https://eprint.iacr.org/2022/933)
+- SWIFT: super-fast and robust privacy-preserving machine learning.
+  <em>Nishat Koti, Mahak Pancholi, Arpita Patra, Ajith Suresh</em>
+  USENIX 2021, [eprint](https://eprint.iacr.org/2020/592)
+- CryptGPU: Fast Privacy-Preserving Machine Learning on the GPU.
+  <em>Sijun Tan, Brian Knott, Yuan Tian, David J. Wu</em>
+  S\&P 2021, [eprint](https://eprint.iacr.org/2021/533)
+- Falcon: Honest-Majority Maliciously Secure Framework for Private Deep Learning.
+  <em>Sameer Wagh, Shruti Tople, Fabrice Benhamouda, Eyal Kushilevitz, Prateek Mittal, Tal Rabin</em>
+  PETS 2021, [eprint](https://arxiv.org/abs/2004.02229)
+- BLAZE: Blazing Fast Privacy-Preserving Machine Learning.
+  <em>Arpita Patra, Ajith Suresh</em>
+  NDSS 2020, [eprint](https://eprint.iacr.org/2020/042)
+- SecureNN: 3-Party Secure Computation for Neural Network Training.
+  <em>Sameer Wagh, Divya Gupta, Nishanth Chandran</em>
+  PETS 2019, [eprint](https://eprint.iacr.org/2018/442)
+- ASTRA: High Throughput 3PC over Rings with Application to Secure Prediction.
+  <em>Harsh Chaudhari, Ashish Choudhury, Arpita Patra, Ajith Suresh</em>
+  CCSW 2019, [eprint](https://eprint.iacr.org/2019/429)
+- ABY3: A Mixed Protocol Framework for Machine Learning.
+  <em>Payman Mohassel, Peter Rindal</em>
+  CCS 2018, [eprint](https://eprint.iacr.org/2018/403)
+
+:target{#four-party-computation-4pc}
+
+## Four-party Computation (4PC)
+
+:target{#id3}
+
+### <a id="4pc-train" />Secure Training
+
+- Tetrad: Actively Secure 4PC for Secure Training and Inference.
+  <em>Nishat Koti, Arpita Patra, Rahul Rachuri, Ajith Suresh</em>
+  NDSS 2022, [eprint](https://eprint.iacr.org/2021/755)
+- Fantastic Four: Honest-Majority Four-Party Secure Computation With Malicious Security.
+  <em>Anders P. K. Dalskov, Daniel Escudero, Marcel Keller</em>
+  USENIX 2021, [eprint](https://eprint.iacr.org/2020/1330)
+- Trident: Efficient 4PC Framework for Privacy Preserving Machine Learning.
+  <em>Harsh Chaudhari, Rahul Rachuri, Ajith Suresh</em>
+  NDSS 2020, [eprint](http://arxiv.org/abs/1912.02631)
+- SWIFT: super-fast and robust privacy-preserving machine learning.
+  <em>Nishat Koti, Mahak Pancholi, Arpita Patra, Ajith Suresh</em>
+  USENIX 2021, [eprint](https://eprint.iacr.org/2020/592)
+- FLASH: Fast and Robust Framework for Privacy-preserving Machine Learning.
+  <em>Megha Byali, Harsh Chaudhari, Arpita Patra, Ajith Suresh</em>
+  PETS 2020, [eprint](https://eprint.iacr.org/2019/1365)

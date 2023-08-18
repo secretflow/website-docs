@@ -1,0 +1,155 @@
+:target{#user-guide}
+
+# 用户指南
+
+:target{#preprocessing}
+
+## 预处理
+
+隐语提供了多种工具方法和类，可以将原始特征转换为更适合后续流程（比如训练）的数据形式。
+
+<SphinxDesign type="grid-container">
+  <SphinxDesign type="grid-row">
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="preprocessing/DataFrame">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            DataFrame
+          </SphinxDesign>
+
+          > 隐语通过DataFrame来封装联合数据。DataFrame包含了多方的数据，并且支持水平和垂直切分。
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            WeightOfEnvidenceEncoding (WOE)
+          </SphinxDesign>
+
+          > 隐语为垂直切分的数据提供了WOE编码功能。
+        </SphinxDesign>
+
+        <span />
+      </SphinxDesign>
+    </SphinxDesign>
+  </SphinxDesign>
+</SphinxDesign>
+
+:target{#private-set-intersection-psi}
+
+## 隐私求交
+
+SecretFlow SPU目前支持ECDH-PSI, KKRT16-PSI和BC22-PCG-PSI。 详情请查看 [隐私集合求交](psi.mdx)。
+
+<SphinxDesign type="grid-container">
+  <SphinxDesign type="grid-row">
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="psi">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            隐私求交
+          </SphinxDesign>
+
+          > 隐私求交（PSI）是一种多方安全技术，它可以让两方来计算加密数据的交集。
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+  </SphinxDesign>
+</SphinxDesign>
+
+:target{#mpc-machine-learning}
+
+## MPC机器学习
+
+通过多方安全计算技术和同态加密技术，SecretFlow提供了MPC建模能力。
+
+<SphinxDesign type="grid-container">
+  <SphinxDesign type="grid-row">
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="mpc_ml/linear_model">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Linear Models
+          </SphinxDesign>
+
+          > 线性模型(线性回归)/广义线性模型(逻辑回归）假定目标值的均值是特征值的线性组合（或线性组合的映射）。
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="mpc_ml/decision_tree">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Decision trees
+          </SphinxDesign>
+
+          > 决策树是一种非参数（non-parametric）监督式学习，可以用于分类和回归。
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="mpc_ml/feature_eng">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Feature Engineering
+          </SphinxDesign>
+
+          > 特征工程包括皮尔逊积矩相关系数（Pearson product-moment correlation coefficient）、方差膨胀系数(variance inflation factor，VIF)和回归模型系数的显著性检验（Hypothesis Testing for Regression Coefficients）。
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+  </SphinxDesign>
+</SphinxDesign>
+
+:target{#federated-learning}
+
+## 联邦学习
+
+在联邦学习中，多个拥有本地数据的设备可以在没有交互原始数据的情况下训练机器学习模型。
+
+<SphinxDesign type="grid-container">
+  <SphinxDesign type="grid-row">
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="federated_learning/horizontal_federated_learning/index">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Horizontal Federated Learning
+          </SphinxDesign>
+
+          > 适用于多个参与方特征空间相同但是样本ID不同的场景。
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="federated_learning/vertical_federated_learning/index">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Vertical Federated Learning
+          </SphinxDesign>
+
+          > 适用于多个参与方样本ID相同但是特征空间不同的场景。
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="federated_learning/mix_federated_learning">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Mix Federated Learning
+          </SphinxDesign>
+
+          > 适用于一部分参与方特征空间相同但是样本ID不同，而另一部分参与方样本ID相同但是特征空间不同的场景。
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+  </SphinxDesign>
+</SphinxDesign>
+
+<TableOfContents />

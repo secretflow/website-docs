@@ -1,0 +1,186 @@
+:target{#使用-SPU-基于-GPT-2-生成文本}
+
+# 使用 SPU 基于 GPT-2 生成文本
+
+在 [Neural Network with SPU](nn_with_spu.mdx) lab 中，我们展示了如何使用 SecretFlow/SPU 训练一个神经网络模型。
+
+在本 lab 中，我们展示如何使用 SPU 基于一个预训练的 [GPT-2](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)  模型生成文本。
+
+首先，我们展示如何使用 JAX 和 Hugging Face transformers 库基于预训练 GPT-2 模型生成文本。然后，我们展示如何通过少量代码修改在 SPU 上生成文本。
+
+> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+> 本教程可能需要比 16c48g 更多的资源。
+
+:target{#使用-JAX/Flax-通过-GPT-2-生成文本}
+
+## 使用 JAX/Flax 通过 GPT-2 生成文本
+
+:target{#安装-transformers-库}
+
+### 安装 transformers 库
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    import sys
+    !{sys.executable} -m pip install transformers[flax]
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+> The JAX version required by transformers is not satisfied with SPU. But it’s ok to run with the conflicted JAX with SPU in this example.
+
+:target{#加载预训练-GPT-2-模型}
+
+### 加载预训练 GPT-2 模型
+
+请参考 [该文档](https://huggingface.co/docs/transformers/main/en/model_doc/gpt2) 获取更多 Flax 运行 GPT-2 的细节。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    from transformers import AutoTokenizer, FlaxGPT2LMHeadModel, GPT2Config
+
+    tokenizer = AutoTokenizer.from_pretrained("gpt2")
+    pretrained_model = FlaxGPT2LMHeadModel.from_pretrained("gpt2")
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#定义文本生成函数}
+
+### 定义文本生成函数
+
+我们使用 [贪心搜索策略](https://huggingface.co/blog/how-to-generate) 来生成文本。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    def text_generation(input_ids, params):
+        config = GPT2Config()
+        model = FlaxGPT2LMHeadModel(config=config)
+
+        for _ in range(10):
+            outputs = model(input_ids=input_ids, params=params)
+            next_token_logits = outputs[0][0, -1, :]
+            next_token = jnp.argmax(next_token_logits)
+            input_ids = jnp.concatenate([input_ids, jnp.array([[next_token]])], axis=1)
+        return input_ids
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#在-CPU-上生成文本}
+
+### 在 CPU 上生成文本
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    import jax.numpy as jnp
+
+    inputs_ids = tokenizer.encode(
+        'I enjoy walking with my cute dog', return_tensors='jax'
+    )
+    outputs_ids = text_generation(inputs_ids, pretrained_model.params)
+
+    print('-'*65 + '\nRun on CPU:\n' + '-'*65)
+    print(tokenizer.decode(outputs_ids[0], skip_special_tokens=True))
+    print('-'*65)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"-----------------------------------------------------------------\nRun on CPU:\n-----------------------------------------------------------------\nI enjoy walking with my cute dog, but I'm not sure if I'll ever\n-----------------------------------------------------------------\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+这里我们生成了 10 个 tokens。请记住生成的文本，我们接下来会在 SPU 上生成文本。
+
+:target{#在-SPU-上生成文本}
+
+### 在 SPU 上生成文本
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+
+    sf.init(['alice', 'bob', 'carol'], address='local')
+
+    alice, bob = sf.PYU('alice'), sf.PYU('bob')
+    conf = sf.utils.testing.cluster_def(['alice', 'bob', 'carol'])
+    conf['runtime_config']['fxp_exp_mode']=1
+    conf['runtime_config']['experimental_disable_mmul_split']=True
+    spu = sf.SPU(conf)
+
+    def get_model_params():
+        pretrained_model = FlaxGPT2LMHeadModel.from_pretrained("gpt2")
+        return pretrained_model.params
+
+    def get_token_ids():
+        tokenizer = AutoTokenizer.from_pretrained("gpt2")
+        return tokenizer.encode('I enjoy walking with my cute dog', return_tensors='jax')
+
+
+    model_params = alice(get_model_params)()
+    input_token_ids = bob(get_token_ids)()
+
+    device = spu
+    model_params_, input_token_ids_ = model_params.to(device), input_token_ids.to(device)
+
+    output_token_ids = spu(text_generation)(input_token_ids_, model_params_)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...\nTo disable this warning, you can either:\n        - Avoid using `tokenizers` before the fork if possible\n        - Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)\nhuggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...\nTo disable this warning, you can either:\n        - Avoid using `tokenizers` before the fork if possible\n        - Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)\nhuggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...\nTo disable this warning, you can either:\n        - Avoid using `tokenizers` before the fork if possible\n        - Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...\nTo disable this warning, you can either:\n        - Avoid using `tokenizers` before the fork if possible\n        - Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)\nhuggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...\nTo disable this warning, you can either:\n        - Avoid using `tokenizers` before the fork if possible\n        - Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_run pid=2109408)"}</span>{" [2023-06-15 17:08:24.221] [info] [thread_pool.cc:30] Create a fixed thread pool with size 127\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#检查-SPU-的输出}
+
+### 检查 SPU 的输出
+
+As you can see, it’s very easy to run GPT-2 inference on SPU. Now let’s reveal the generated text from SPU program.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    outputs_ids = sf.reveal(output_token_ids)
+    print('-'*65 + '\nRun on SPU:\n' + '-'*65)
+    print(tokenizer.decode(outputs_ids[0], skip_special_tokens=True))
+    print('-'*65)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=2121303)"}</span>{" 2023-06-15 17:09:32.011 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 127\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=2121301)"}</span>{" 2023-06-15 17:09:32.011 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 127\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=carol) pid=2121304)"}</span>{" 2023-06-15 17:09:32.011 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 127\n-----------------------------------------------------------------\nRun on SPU:\n-----------------------------------------------------------------\nI enjoy walking with my cute dog, but I'm not sure if I'll ever\n-----------------------------------------------------------------\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+可以发现，SPU 生成的文本与 CPU 生成的文本是完全一致的！
+
+本教程到此结束。

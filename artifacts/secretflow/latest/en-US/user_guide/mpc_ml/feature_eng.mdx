@@ -1,0 +1,390 @@
+:target{#Feature-Engineering}
+
+# Feature Engineering
+
+> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+It is recommended to use [jupyter](https://jupyter.org/) to run this tutorial.
+
+Secretflow provides a variety of tools to analyze the statistics of the dataset in order to improve the quality of results from the machine learning process.
+
+:target{#Preparation}
+
+## Preparation
+
+Initialize secretflow and create two parties alice and bob.
+
+> 💡 Before using preprocessing, you may need to get to know secretflow’s [DataFrame](../preprocessing/DataFrame.mdx).
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+
+    sf.init(['alice', 'bob'], address='local')
+    alice = sf.PYU('alice')
+    bob = sf.PYU('bob')
+
+    spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Data-Preparation}
+
+## Data Preparation
+
+Here we use linear as example data.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
+    ```python
+    from secretflow.utils.simulation.datasets import load_linear
+
+    vdf = load_linear(parts={alice: (1, 4), bob: (18, 22)})
+
+    label_data = vdf["y"]
+    vdf = vdf.drop(columns="y")
+
+    print(f"orig ds in alice:\n {sf.reveal(vdf.partitions[alice].data)}")
+    print(f"orig ds in bob:\n {sf.reveal(vdf.partitions[bob].data)}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"orig ds in alice:\n             x1        x2        x3\n0    -0.514226  0.730010 -0.730391\n1    -0.725537  0.482244 -0.823223\n2     0.608353 -0.071102 -0.775098\n3    -0.686642  0.160470  0.914477\n4    -0.198111  0.212909  0.950474\n...        ...       ...       ...\n9995 -0.367246 -0.296454  0.558596\n9996  0.010913  0.629268 -0.384093\n9997 -0.238097  0.904069 -0.344859\n9998  0.453686 -0.375173  0.899238\n9999 -0.776015 -0.772112  0.012110\n\n[10000 rows x 3 columns]\norig ds in bob:\n            x18       x19       x20\n0     0.810261  0.048303  0.937679\n1     0.312728  0.526637  0.589773\n2     0.039087 -0.753417  0.516735\n3    -0.855979  0.250944  0.979465\n4    -0.238805  0.243109 -0.121446\n...        ...       ...       ...\n9995 -0.847253  0.069960  0.786748\n9996 -0.502486 -0.076290 -0.604832\n9997 -0.424209  0.434947  0.998955\n9998  0.914291 -0.473056  0.616257\n9999 -0.602927 -0.021368  0.885519\n\n[10000 rows x 3 columns]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Pearson-product-moment-correlation-coefficient}
+
+## Pearson product-moment correlation coefficient
+
+The Pearson product-moment correlation coefficient is used to measure the degree of correlation (linear correlation) between two variables X and Y.
+
+The Pearson product-moment correlation coefficient between two variables is defined as the covariance of the two variables divided by the product of their standard deviations:
+
+<Math>
+  $$
+  \rho_{X,Y}=\frac{cov(X, Y)}{\sigma_X \sigma_Y}=\frac{(X-\mu_X)(Y-\mu_Y)}{\sigma_X \sigma_Y}
+
+
+  $$
+</Math>
+
+<Math>
+  $$
+  \mu_X= \mathbb{E}(X), \sigma_X^2=\mathbb{E}[(X-\mathbb{E}(X))^2]=\mathbb{E}(X^2)-\mathbb{E}^2(X)
+
+
+  $$
+</Math>
+
+The Pearson product-moment correlation coefficient for samples(features) from dataset, usually represented by the lowercase letter r:
+
+<Math>
+  $$
+  r=\frac{\sum^n_{i=1}(X_i-\bar{X})(Y_i-\bar{Y})}{\sqrt{\sum^n_{i=1}(X_i-\bar{X})^2} \sqrt{\sum^n_{i=1}(Y_i-\bar{Y})^2}}
+
+
+  $$
+</Math>
+
+Its value is between -1 and 1. <InlineMath>$r>0$</InlineMath> corresponds to a positive correlation between features, otherwise it is a negative correlation; the larger the <InlineMath>$|r|$</InlineMath>, the greater the degree of correlation.
+
+:target{#SSVertPearsonR}
+
+### SSVertPearsonR
+
+SecretFlow provides <code>SSVertPearsonR</code> for calculating Pearson product-moment correlation coefficient of Vertical DataFrame using secret sharing.
+
+SSVertPearsonR will standardize input dataset first. After standardized, all features’ variance is 1 and the mean is 0, the calculation is simplified to:
+
+<Math>
+  $$
+  r=\frac{1}{n-1}X^TX
+
+
+  $$
+</Math>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats import SSVertPearsonR
+
+    v_pearsonr = SSVertPearsonR(spu)
+    corr = v_pearsonr.pearsonr(vdf)
+    print(f"corr: \n {corr}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"corr:\n [[ 1.0001000e+00  2.4262429e-03 -5.3907027e-03 -7.7360502e-04\n  -7.4419454e-03 -1.0678579e-02]\n [ 2.4262429e-03  1.0001000e+00 -5.4155029e-03 -2.0672032e-03\n   4.3277428e-03  3.7399144e-03]\n [-5.3907027e-03 -5.4155029e-03  1.0001000e+00  6.2504560e-03\n  -3.7937090e-03  7.3285382e-03]\n [-7.7360502e-04 -2.0672032e-03  6.2504560e-03  1.0001000e+00\n  -1.0416691e-02  1.0044558e-02]\n [-7.4419454e-03  4.3277428e-03 -3.7937090e-03 -1.0416691e-02\n   1.0001000e+00 -1.3045982e-02]\n [-1.0678579e-02  3.7399144e-03  7.3285382e-03  1.0044558e-02\n  -1.3045982e-02  1.0001000e+00]]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Variance-inflation-factor}
+
+## Variance inflation factor
+
+Variance Inflation Factor (VIF) was used to detect multicollinearity between variables. In a linear statistical model, the variance inflation factor (VIF) of a coefficient is equal to the quotient of the variance of that coefficient in a multivariate model and the variance of that coefficient in a model with only one variable. In simple terms, it refers to the ratio of the variance when there is multicollinearity among the explanatory variables (features) to the variance when there is no
+multicollinearity.
+
+:target{#SSVertVIF}
+
+### SSVertVIF
+
+SecretFlow provides <code>SSVertVIF</code> for calculating variance inflation factor of Vertical DataFrame using secret sharing.
+
+The vif value of the j-th feature is:
+
+<Math>
+  $$
+  VIF_j = (X^TX)^{-1}_{jj}(n-1)var(X_j)
+
+
+  $$
+</Math>
+
+Notice:
+
+The analytical solution of matrix inversion in secret sharing is very expensive, so this method uses Newton iteration to find approximate solution.
+
+When there is multicollinearity in the input dataset, the XTX matrix is not full rank, and the analytical solution for the inverse of the XTX matrix does not exist.
+
+The VIF results of these linear correlational columns calculated by statsmodels are INF, indicating that the correlation is infinite. However, this method will get a large VIF value (>>1000) on these columns, which can also correctly reflect the strong correlation of these columns.
+
+When there are constant columns in the data, the VIF result calculated by statsmodels is NAN, and the result of this method is also a large VIF value (>> 1000), means these columns need to be removed before training.
+
+Therefore, although the results of this method cannot be completely consistent with statemodels that calculations in plain text, but they can still correctly reflect the correlation of the input data columns.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[16]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats import SSVertVIF
+
+    v_vif = SSVertVIF(spu)
+    vif = v_vif.vif(vdf)
+    print(f"vif: \n{vif}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"vif:\n[0.9999169 0.9997679 0.9999169 0.9999169 1.0000659 1.0002149]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Hypothesis-Testing-for-Regression-Coefficients}
+
+## Hypothesis Testing for Regression Coefficients
+
+Linear / logistic regression variable significance test for all features (explanatory variables) use to judge whether the parameter is significant, that is, whether the independent variable can effectively predict the variation of the dependent variable, so as to determine whether the corresponding explanatory variable should be included in the model.
+
+:target{#Hypothesis-Testing-for-linear-Regression-Coefficients}
+
+### Hypothesis Testing for linear Regression Coefficients
+
+For linear regression <InlineMath>$y=Xω$</InlineMath> (X contains a constant term), use the t-test to test whether the regression term coefficients have zero values.
+
+Assume:
+
+<Math>
+  $$
+  \hat{ω}=(X^T X)^{-1} X^T y=ω+(X^T X)^{-1} X^T ε
+
+
+  $$
+</Math>
+
+<Math>
+  $$
+  E(\hat{ω})=ω
+
+
+  $$
+</Math>
+
+<Math>
+  $$
+  Var(\hat{ω} )=σ^2 (X^T X)^{-1}
+
+
+  $$
+</Math>
+
+In the case where the five assumptions made by OLS are all established, the statistic:
+
+<Math>
+  $$
+  t_j=\frac{\hat{ω}_j- ω_j}{s.e.(ω_j )}=\frac{\hat{ω}_j - ω_j}{\sqrt{\hat{σ}^2 (X^T X)_{jj}^{-1}}}  \sim t_{n-k}
+
+
+  $$
+</Math>
+
+where n is sample size, k is feature size.
+
+The null and alternative hypotheses tested are:
+
+<Math>
+  $$
+   \begin{aligned}
+  & H_0:ω_j=0 (j=1,2,⋯,k) \\ & H_1:ω_j≠0
+  \end{aligned}
+  $$
+</Math>
+
+Bring the null hypothesis of the test into <InlineMath>$t_j$</InlineMath> :
+
+<Math>
+  $$
+  t_j=\frac{\hat{ω}_j}{s.e.(ω_j )}=\frac{\hat{ω}_j}{\sqrt{\hat{σ}^2 (X^T X)_{jj}^{-1}}}  \sim t_{n-k}
+
+
+  $$
+</Math>
+
+:target{#Hypothesis-Testing-for-Logistic-Regression-Coefficients}
+
+### Hypothesis Testing for Logistic Regression Coefficients
+
+For logistic regression
+
+<Math>
+  $$
+   P(y=1|x)=π(x)=1/(1+e^{-ωx} ) \\
+  P(y=0|x)=1-π(x)=1/(1+e^{ωx} )
+  $$
+</Math>
+
+The null and alternative hypotheses tested are:
+
+<Math>
+  $$
+   \begin{aligned}
+  & H_0:ω_j=0 (j=1,2,⋯,k) \\
+  & H_1:ω_j≠0
+  \end{aligned}
+  $$
+</Math>
+
+Wald test <InlineMath>$Wald=(\hat{ω}_k/SE(\hat{ω}_k ) )^2$</InlineMath> fits a chi-square distribution with 1 degree of freedom.
+
+Where <InlineMath>$SE(\hat{ω}_k )$</InlineMath> is the standard error of <InlineMath>$ω_k$</InlineMath>, which is the square root of the diagonal elements of the variance-covariance matrix:
+
+<Math>
+  $$
+  SE(\hat{ω}_k )={Cov(\hat{ω}_{kk})}^{1/2}
+
+
+  $$
+</Math>
+
+The variance and covariance matrices of the model parameters are the values ​​of the inverse of the Hessian matrix of the log-likelihood function at <InlineMath>$\hat{ω}$</InlineMath>:
+
+<Math>
+  $$
+  Cov(\hat{ω}) =H^{-1}=\frac{∂^2 l(ω)}{∂ω^2}|_{\hat{ω}}
+
+
+  $$
+</Math>
+
+Where:
+
+<Math>
+  $$
+  H_{kr}=\frac{∂^2l(ω)}{∂ω_k ∂ω_r}=∑_{i=1}^mx_{ik}π(x_i)[π(x_i )-1]x_{ir}
+
+
+  $$
+</Math>
+
+The Hessian matrix is ​​expressed as <InlineMath>$H=X^T A X$</InlineMath>, A is a n\*n matrix, where:
+
+<Math>
+  $$
+   \begin{aligned}
+  & A_{ii} = π(x_{i})[π(x_{i}) - 1] \\
+  & A_{ij} = 0 , i≠j
+  \end{aligned}
+  $$
+</Math>
+
+Available:
+
+<Math>
+  $$
+   \begin{aligned}
+  Wald & = (\hat{ω}_k/SE(\hat{ω}_k ) )^2 \\
+  & = \hat{ω}_k^2 /Cov(\hat{ω}_{kk}) \\
+  & = \hat{ω}_k^2 / H^{-1}_{kk} \\
+  & = \hat{ω}_k^2 / (X^T \Lambda X )^{-1}_{kk}
+  \end{aligned}
+  $$
+</Math>
+
+:target{#SSPValue}
+
+### SSPValue
+
+SecretFlow provides <code>SSPValue</code> for calculating P-Value of hypothesis testing using secret sharing.
+
+For linear regression:
+
+- calculate prediction residuals <InlineMath>$\hat{ε}=Xω - y$</InlineMath>
+- calculate <InlineMath>$\hat{σ}^2=\hat{ε}^T\hat{ε} /(n-k)$</InlineMath>
+- get <InlineMath>$(X^T X)^{-1}$</InlineMath> by Newton iteration
+- <InlineMath>$t^2= ω^2 / \hat{σ}^2(X^T X)_{jj}^{-1}$</InlineMath>
+- <InlineMath>$p =2 * (1 - t_{n-k}.cdf(|t|))$</InlineMath>
+
+For logistic regression:
+
+- calculate <InlineMath>$H=X^TAX$</InlineMath>
+- get <InlineMath>$H^{-1}$</InlineMath> by Newton iteration
+- calculate <InlineMath>$z^2=ω^2/H^{-1}_{kk}$</InlineMath>
+- <InlineMath>$p = 2 * (1 - norm.cdf(|z|))$</InlineMath>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[19]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats import SSPValue
+    from secretflow.ml.linear.ss_sgd import SSRegression
+
+    # first, get a LR model
+    model = SSRegression(spu)
+    model.fit(
+        vdf,
+        label_data,
+        3,      # epochs
+        0.3,    # Learning rate
+        64,     # batch_size
+        't1',   # sig_type
+        'logistic',  # reg_type
+        'l2',   # penalty
+        0.5,    # l2_norm
+    )
+    spu_model = model.save_model()
+
+    sspv = SSPValue(spu)
+    pvalues = sspv.pvalues(vdf, label_data, spu_model)
+    print(f"logistic pvalue: \n{pvalues}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"logistic pvalue:\n[9.46532264e-08 0.00000000e+00 0.00000000e+00 0.00000000e+00\n 8.21281902e-07 0.00000000e+00 0.00000000e+00]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>

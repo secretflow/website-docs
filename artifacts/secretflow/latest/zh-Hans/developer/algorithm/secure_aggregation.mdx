@@ -1,0 +1,379 @@
+:target{#安全聚合}
+
+# 安全聚合
+
+> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+推荐使用 [jupyter](https://jupyter.org/) 运行教程里的代码。
+
+安全聚合可以表述为：多个参数方在不暴露各自私有数据的前提下合作完成聚合值计算（比如求和）。
+
+安全聚合是联邦学习中的重要概念。学术界对此已经有较多研究。隐语在水平联邦学习（梯度/权重聚合）、数据处理（比如数据探查、预处理）等方面使用了安全聚合。
+
+下面将介绍隐语使用的安全聚合方案。
+
+:target{#数据准备}
+
+## 数据准备
+
+初始化SecretFlow。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # In case you have a running SecretFlow runtime already.
+    sf.shutdown()
+
+    sf.init(['alice', 'bob'], address='local')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+准备测试数据。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import numpy as np
+
+    arr0, arr1 = np.random.rand(2, 3), np.random.rand(2, 3)
+    print('arr0:\n', arr0, '\narr1:\n', arr1)
+
+    print('Sum:\n', np.sum([arr0, arr1], axis=0))
+    print('Average:\n', np.average([arr0, arr1], axis=0))
+    print('Min:\n', np.min([arr0, arr1], axis=0))
+    print('Max:\n', np.max([arr0, arr1], axis=0))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"arr0:\n [[0.53867365 0.69040348 0.42628929]\n [0.76128941 0.5444343  0.7680543 ]]\narr1:\n [[0.74303296 0.7274792  0.47244091]\n [0.88295957 0.80091356 0.82681861]]\nSum:\n [[1.28170662 1.41788268 0.8987302 ]\n [1.64424898 1.34534786 1.59487291]]\nAverage:\n [[0.64085331 0.70894134 0.4493651 ]\n [0.82212449 0.67267393 0.79743646]]\nMin:\n [[0.53867365 0.69040348 0.42628929]\n [0.76128941 0.5444343  0.7680543 ]]\nMax:\n [[0.74303296 0.7274792  0.47244091]\n [0.88295957 0.80091356 0.82681861]]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+创建alice和bob两个参与方。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    alice, bob = sf.PYU('alice'), sf.PYU('bob')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#聚合操作}
+
+## 聚合操作
+
+隐语提供了多种 <cite>Aggregator</cite> 供用户选择，每种 <cite>Aggregator</cite> 均提供了sum（求和）和average（求平均）方法。
+
+:target{#基于SPU的安全聚合。}
+
+### 基于SPU的安全聚合。
+
+[SPU](../design/spu.mdx) 是隐语中的一种安全设备，其基本原理是 [MPC](https://en.wikipedia.org/wiki/Secure_multi-party_computation) 。隐语基于SPU实现了安全聚合，下面将介绍如何使用。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    # Create an spu device.
+    spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
+
+    # Create an aggregator instance using this spu.
+    spu_aggr = sf.security.aggregation.SPUAggregator(spu)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    # Simulate that alice and bob hold data respectively
+    a = alice(lambda: arr0)()
+    b = bob(lambda: arr1)()
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    # Sum the data.
+    sf.reveal(spu_aggr.sum([a, b], axis=0))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="output">
+    <pre>
+      {"array([[1.2817066 , 1.4178827 , 0.89873016],\n       [1.644249  , 1.3453479 , 1.594873  ]], dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    # Average the data.
+    sf.reveal(spu_aggr.average([a, b], axis=0))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="output">
+    <pre>
+      {"array([[0.6408533 , 0.70894134, 0.44936508],\n       [0.8221245 , 0.67267394, 0.7974364 ]], dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Masking-with-One-Time-Pads}
+
+### Masking with One-Time Pads
+
+<cite>Masking with One-Time Pads</cite> 的原理描述如下：参与方两两之间分别协商掩码值，然后使用掩码值来掩藏各自的私有数据，每个参与方输出
+
+<Math>
+  $$
+  y_u = x_u + \sum_{u < v}s_{u,v} - \sum_{u > v}s_{u,v}\ mod\ R
+
+
+  $$
+</Math>
+
+聚合之后掩码值正好互相抵消，从而可以得到正确的结果。
+
+<Math>
+  $$
+  \sum y = \sum x
+
+
+  $$
+</Math>
+
+<LineBlock>
+  举个例子，假设参与方Alice、Bob、Carol分别持有 <InlineMath>$x_1, x_2, x_3$</InlineMath> ，分别协商出掩码值 <InlineMath>$s_{a,b}, s_{a,c}, s_{b,c}$</InlineMath>，然后各自输出 <InlineMath>$y_1 = x_1 + s_{a,b} + s_{a,c}$</InlineMath>
+
+  <InlineMath>$y_2 = x_2 - s_{a,b} + s_{b,c}$</InlineMath>
+
+  <InlineMath>$y_3 = x_3 - s_{a,c} - s_{b,c}$</InlineMath>
+
+  容易得到
+</LineBlock>
+
+> <Math>
+>   $$
+>   y_1 + y_2 + y_3 = x_1 + s_{a,b} + s_{a,c} + x_2 - s_{a,b} + s_{b,c} + x_3 - s_{a,c} - s_{b,c} = x_1 + x_2 + x_3
+>
+>
+>   $$
+> </Math>
+
+<cite>Masking with One-Time Pads</cite> 基于半诚实假设且不支持掉线，更多信息可以参考  [Practical Secure Aggregation for Privacy-Preserving Machine Learning](https://eprint.iacr.org/2017/281.pdf)
+
+> <strong>Warning:</strong> The SecureAggregator uses [numpy.random.PCG64](https://numpy.org/doc/stable/reference/random/bit_generators/pcg64.html#numpy.random.PCG64). There are many discussions of whether PCG is a CSPRNG (e.g. [https://crypto.stackexchange.com/questions/77101/is-the-pcg-prng-a-csprng-or-why-not](https://crypto.stackexchange.com/questions/77101/is-the-pcg-prng-a-csprng-or-why-not)), we prefer a conservative strategy unless a further security analysis came up. Therefore we recommend users to use a standardized CSPRNG in industrial scenarios.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    # Create a secure aggregator instance with alice and bob,
+    # where alice is responsible for performing aggregate computing operations.
+    secure_aggr = sf.security.aggregation.SecureAggregator(device=alice, participants=[alice, bob])
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    # Sum the data.
+    sf.reveal(secure_aggr.sum([a, b], axis=0))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="output">
+    <pre>
+      {"array([[1.28170395, 1.41788101, 0.89872742],\n       [1.64424515, 1.34534454, 1.59486771]])\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    # Average the data.
+    sf.reveal(secure_aggr.average([a, b], axis=0))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="output">
+    <pre>
+      {"array([[0.64085197, 0.70894051, 0.44936371],\n       [0.82212257, 0.67267227, 0.79743385]])\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#明文聚合（仅用作测试，请勿在生产中使用）}
+
+### 明文聚合（仅用作测试，请勿在生产中使用）
+
+<strong>PlainAggregator仅用作测试，请勿在生产中使用。</strong>
+
+为了方便本地模拟，隐语也提供了明文聚合方式。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
+    ```python
+    # Create a plaintext aggregator instance and alice is responsible for performing aggregation.
+    plain_aggr = sf.security.aggregation.PlainAggregator(alice)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
+    ```python
+    # Sum the data.
+    sf.reveal(plain_aggr.sum([a, b], axis=0))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="output">
+    <pre>
+      {"array([[1.2817066 , 1.4178827 , 0.89873016],\n       [1.644249  , 1.3453479 , 1.594873  ]], dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
+    ```python
+    # Average the data.
+    sf.reveal(plain_aggr.average([a, b], axis=0))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="output">
+    <pre>
+      {"array([[0.6408533 , 0.70894134, 0.44936508],\n       [0.8221245 , 0.67267394, 0.7974365 ]], dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#比较}
+
+## 比较
+
+隐语还提供了多种 <cite>Comparator</cite> 用来进行安全比较，比如求最大最小值。举个例子，比如在水平联邦场景下，数据处理时全局的极值会通过安全比较来获得，不会暴露参与方的私有信息。
+
+:target{#基于SPU的安全比较}
+
+### 基于SPU的安全比较
+
+隐语基于SPU实现了安全比较，下面将展示如何使用。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
+    ```python
+    # Create an spu comparator instance.
+    spu_com = sf.security.compare.SPUComparator(spu)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[16]:" stderr={false} type="input">
+    ```python
+    # Get the minimum.
+    sf.reveal(spu_com.min([a, b], axis=0))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[16]:" stderr={false} type="output">
+    <pre>
+      {"array([[0.53867364, 0.69040346, 0.4262893 ],\n       [0.7612894 , 0.5444343 , 0.7680543 ]], dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
+    ```python
+    # Get the maximum.
+    sf.reveal(spu_com.max([a, b], axis=0))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[18]:" stderr={false} type="output">
+    <pre>
+      {"array([[0.743033  , 0.7274792 , 0.4724409 ],\n       [0.88295954, 0.8009136 , 0.8268186 ]], dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#明文比较（仅作为测试用，请勿在生产中使用）}
+
+### 明文比较（仅作为测试用，请勿在生产中使用）
+
+<strong>PlainComparator仅作为测试用，请勿在生产中使用。</strong>
+
+为了方便本地模拟，隐语也提供了明文比较方式。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[19]:" stderr={false} type="input">
+    ```python
+    # Create a plaintext comparator instance and alice is responsible for performing the comparison.
+    plain_com = sf.security.compare.PlainComparator(alice)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[21]:" stderr={false} type="input">
+    ```python
+    # Get the minimum.
+    sf.reveal(plain_com.min([a, b], axis=0))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[21]:" stderr={false} type="output">
+    <pre>
+      {"array([[0.53867364, 0.69040346, 0.4262893 ],\n       [0.7612894 , 0.5444343 , 0.7680543 ]], dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[22]:" stderr={false} type="input">
+    ```python
+    # Get the maximum.
+    sf.reveal(plain_com.max([a, b], axis=0))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[22]:" stderr={false} type="output">
+    <pre>
+      {"array([[0.743033  , 0.7274792 , 0.4724409 ],\n       [0.88295954, 0.8009136 , 0.8268186 ]], dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#收尾}
+
+## 收尾
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[23]:" stderr={false} type="input">
+    ```python
+    sf.shutdown()
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#总结}
+
+## 总结
+
+本文讲述了隐语中的安全聚合方案。隐语提供了多种安全聚合方法，用户可以根据需要自行选择合适的方案。其中明文聚合和明文比较仅作为测试目的，请勿在生产中使用。

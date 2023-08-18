@@ -1,0 +1,323 @@
+:target{#基于Puma框架的GPT2安全推理}
+
+# 基于Puma框架的GPT2安全推理
+
+在本 lab 中，我们展示如何使用 Puma 基于一个预训练的 [GPT-2](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)  模型安全生成文本。
+
+首先，我们展示如何使用 JAX 和 Hugging Face transformers 库基于预训练 GPT-2 模型生成文本。然后，我们展示如何通过少量代码修改在 Puma 上生成文本。
+
+> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+> 本教程可能需要比 16c48g 更多的资源。
+
+:target{#Puma-是什么？}
+
+## Puma 是什么？
+
+Puma 是一个快速且准确的端到端安全三方安全Transformer模型推理框架。 Puma 为 <InlineMath>$\mathsf{GeLU}`和 :math:$</InlineMath>mathsf\{Softmax}\`等开销较大的复杂非线性函数设计了高质量的近似函数，这在保证模型性能的同时大大减少了安全推理的开销。除此之外，我们还设计了安全的 <InlineMath>$\mathsf{Embedding}`和 :math:$</InlineMath>mathsf\{LayerNorm}\`算子实现，从而在不改变模型结构的前提下实现安全推理。Puma 比之前当前最优的方案之一 MPCFormer（ICLR 2023）高效2倍左右，并且在不对提供的模型微调的前提下达到了和明文同水平的准确率等指标（之前的安全Transformer推理框架均需要在改变模型结构后进一步微调）。
+
+:target{#使用-JAX/Flax-通过-GPT-2-生成文本}
+
+## 使用 JAX/Flax 通过 GPT-2 生成文本
+
+:target{#安装-transformers-库}
+
+### 安装 transformers 库
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    import sys
+    !{sys.executable} -m pip install transformers[flax]
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+> The JAX version required by transformers is not satisfied with SPU. But it’s ok to run with the conflicted JAX with SPU in this example.
+
+:target{#加载预训练-GPT-2-模型%22}
+
+### 加载预训练 GPT-2 模型”
+
+请参考 [该文档](https://huggingface.co/docs/transformers/main/en/model_doc/gpt2) 获取更多 Flax 运行 GPT-2 的细节。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    from transformers import AutoTokenizer, FlaxGPT2LMHeadModel, GPT2Config
+
+    tokenizer = AutoTokenizer.from_pretrained("gpt2")
+    pretrained_model = FlaxGPT2LMHeadModel.from_pretrained("gpt2")
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+为了劫持GPT2模型中的 GeLU 函数，需要将\`\`self.act\`\`修改为\`jax.nn.gelu\`\` 。例如，将\`\`transformers/src/transformers/models/gpt2/modeling\_flax\_gpt2.py\`\`，296行
+
+```python
+hidden_states = self.act(hidden_states)
+```
+
+修改为
+
+```python
+hidden_states = jax.nn.gelu(hidden_states)
+```
+
+:target{#定义文本生成函数}
+
+### 定义文本生成函数
+
+我们使用 [贪心搜索策略](https://huggingface.co/blog/how-to-generate) 来生成文本。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    def text_generation(input_ids, params):
+        config = GPT2Config()
+        model = FlaxGPT2LMHeadModel(config=config)
+
+        for _ in range(10):
+            outputs = model(input_ids=input_ids, params=params)
+            next_token_logits = outputs[0][0, -1, :]
+            next_token = jnp.argmax(next_token_logits)
+            input_ids = jnp.concatenate([input_ids, jnp.array([[next_token]])], axis=1)
+        return input_ids
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#在-CPU-上生成文本}
+
+### 在 CPU 上生成文本
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    import jax.numpy as jnp
+
+    inputs_ids = tokenizer.encode(
+        'I enjoy walking with my cute dog', return_tensors='jax'
+    )
+    outputs_ids = text_generation(inputs_ids, pretrained_model.params)
+
+    print('-'*65 + '\nRun on CPU:\n' + '-'*65)
+    print(tokenizer.decode(outputs_ids[0], skip_special_tokens=True))
+    print('-'*65)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"-----------------------------------------------------------------\nRun on CPU:\n-----------------------------------------------------------------\nI enjoy walking with my cute dog, but I'm not sure if I'll ever\n-----------------------------------------------------------------\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+这里我们生成了 10 个 tokens。请记住生成的文本，我们接下来会在 SPU 上生成文本。
+
+:target{#在-SPU-上生成文本}
+
+### 在 SPU 上生成文本
+
+:target{#引入需要的库并配置相关优化}
+
+#### 引入需要的库并配置相关优化
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+    from typing import Any, Callable, Dict, Optional, Tuple, Union
+    import jax.nn as jnn
+    import flax.linen as nn
+    from flax.linen.linear import Array
+    import jax
+    import argparse
+    import spu.utils.distributed as ppd
+    import spu.intrinsic as intrinsic
+    import spu.spu_pb2 as spu_pb2
+    from contextlib import contextmanager
+    copts = spu_pb2.CompilerOptions()
+    copts.enable_pretty_print = False
+    copts.xla_pp_kind = 2
+    # enable x / broadcast(y) -> x * broadcast(1/y)
+    copts.enable_optimize_denominator_with_broadcast = True
+    Array = Any
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#劫持-Softmax-，定义其优化函数}
+
+#### 劫持 Softmax ，定义其优化函数
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    def hack_softmax(x: Array,
+                axis: Optional[Union[int, Tuple[int, ...]]] = -1,
+                where: Optional[Array] = None,
+                initial: Optional[Array] = None) -> Array:
+
+        x_max = jnp.max(x, axis, where=where, initial=initial, keepdims=True)
+        x = x - x_max
+
+        # exp on large negative is clipped to zero
+        b = x > -14
+        nexp = jnp.exp(x)
+
+        divisor = jnp.sum(nexp, axis, where=where, keepdims=True)
+
+        return b * (nexp / divisor)
+
+    @contextmanager
+    def hack_softmax_context(msg: str, enabled: bool = False):
+        if not enabled:
+            yield
+            return
+        # hijack some target functions
+        raw_softmax = jnn.softmax
+        jnn.softmax = hack_softmax
+        yield
+        # recover back
+        jnn.softmax = raw_softmax
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#劫持-GeLU-，定义其优化函数}
+
+#### 劫持 GeLU ，定义其优化函数
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    def hack_gelu(x: Array,
+                axis: Optional[Union[int, Tuple[int, ...]]] = -1,
+                where: Optional[Array] = None,
+                initial: Optional[Array] = None) -> Array:
+
+        b0 = x < -4.0
+        b1 = x < -1.95
+        b2 = x > 3.0
+        b3 = b1 ^ b2 ^ True # x in [-1.95, 3.0]
+        b4 = b0 ^ b1 # x in [-4, -1.95]
+
+        # seg1 = a[3] * x^3 + a[2] * x^2 + a[1] * x + a[0]
+        # seg2 = b[6] * x^6 + b[4] * x^4 + b[2] * x^2 + b[1] * x + b[0]
+        a_coeffs = jnp.array([-0.5054031199708174, -0.42226581151983866, -0.11807612951181953, -0.011034134030615728])
+        b_coeffs = jnp.array([0.008526321541038084,  0.5, 0.3603292692789629, 0.0, -0.037688200365904236, 0.0, 0.0018067462606141187])
+        x2 = jnp.square(x)
+        x3 = jnp.multiply(x, x2)
+        x4 = jnp.square(x2)
+        x6 = jnp.square(x3)
+
+        seg1 = a_coeffs[3] * x3 + a_coeffs[2] * x2 + a_coeffs[1] * x + a_coeffs[0]
+        seg2 = b_coeffs[6] * x6 + b_coeffs[4] * x4 + b_coeffs[2] * x2 + b_coeffs[1] * x + b_coeffs[0]
+
+        ret = b2 * x + b4 * seg1 + b3 * seg2
+
+        return ret
+
+    @contextmanager
+    def hack_gelu_context(msg: str, enabled: bool = False):
+        if not enabled:
+            yield
+            return
+        # hijack some target functions
+        raw_gelu = jnn.gelu
+        jnn.gelu = hack_gelu
+        yield
+        # recover back
+        jnn.gelu = raw_gelu
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#针对GPT2模型启动-Puma}
+
+#### 针对GPT2模型启动 Puma
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    sf.init(['alice', 'bob', 'carol'], address='local')
+
+    alice, bob = sf.PYU('alice'), sf.PYU('bob')
+    conf = sf.utils.testing.cluster_def(['alice', 'bob', 'carol'])
+    conf['runtime_config']['protocol'] = 'ABY3'
+    conf['runtime_config']['field'] = 'FM64'
+    conf['runtime_config']['fxp_exp_mode'] = 0
+    conf['runtime_config']['fxp_exp_iters'] = 5
+
+    spu = sf.SPU(conf)
+
+    def get_model_params():
+        pretrained_model = FlaxGPT2LMHeadModel.from_pretrained("gpt2")
+        return pretrained_model.params
+
+    def get_token_ids():
+        tokenizer = AutoTokenizer.from_pretrained("gpt2")
+        return tokenizer.encode('I enjoy walking with my cute dog', return_tensors='jax')
+
+
+    model_params = alice(get_model_params)()
+    input_token_ids = bob(get_token_ids)()
+
+    device = spu
+    model_params_, input_token_ids_ = model_params.to(device), input_token_ids.to(device)
+
+    with hack_softmax_context("hijack jax softmax", enabled=True), hack_gelu_context("hack jax gelu", enabled=True):
+        output_token_ids = spu(text_generation, copts=copts)(input_token_ids_, model_params_)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...\nTo disable this warning, you can either:\n        - Avoid using `tokenizers` before the fork if possible\n        - Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)\nhuggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...\nTo disable this warning, you can either:\n        - Avoid using `tokenizers` before the fork if possible\n        - Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)\nhuggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...\nTo disable this warning, you can either:\n        - Avoid using `tokenizers` before the fork if possible\n        - Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...\nTo disable this warning, you can either:\n        - Avoid using `tokenizers` before the fork if possible\n        - Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)\nhuggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...\nTo disable this warning, you can either:\n        - Avoid using `tokenizers` before the fork if possible\n        - Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_run pid=2109408)"}</span>{" [2023-06-15 17:08:24.221] [info] [thread_pool.cc:30] Create a fixed thread pool with size 127\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#检查-Puma-的输出}
+
+### 检查 Puma 的输出
+
+As you can see, it’s very easy to run GPT-2 inference on Puma. Now let’s reveal the generated text from Puma.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    outputs_ids = sf.reveal(output_token_ids)
+    print('-'*65 + '\nRun on SPU:\n' + '-'*65)
+    print(tokenizer.decode(outputs_ids[0], skip_special_tokens=True))
+    print('-'*65)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=2121303)"}</span>{" 2023-06-15 17:09:32.011 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 127\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=2121301)"}</span>{" 2023-06-15 17:09:32.011 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 127\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=carol) pid=2121304)"}</span>{" 2023-06-15 17:09:32.011 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 127\n-----------------------------------------------------------------\nRun on SPU:\n-----------------------------------------------------------------\nI enjoy walking with my cute dog, but I'm not sure if I'll ever\n-----------------------------------------------------------------\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+可以发现，Puma 生成的文本与 CPU 生成的文本是完全一致的！
+
+本教程到此结束。更多关于Puma的测试，请参考https\://github.com/secretflow/spu/tree/main/examples/python/ml/flax\_llama7b

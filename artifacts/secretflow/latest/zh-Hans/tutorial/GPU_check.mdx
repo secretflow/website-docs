@@ -1,0 +1,502 @@
+:target{#GPU检查}
+
+# GPU检查
+
+:target{#检查NVIDIA驱动}
+
+## 检查NVIDIA驱动
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    !nvidia-smi
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Thu May 18 03:47:56 2023\n+-----------------------------------------------------------------------------+\n| NVIDIA-SMI 520.61.05    Driver Version: 520.61.05    CUDA Version: 11.8     |\n|-------------------------------+----------------------+----------------------+\n| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |\n|                               |                      |               MIG M. |\n|===============================+======================+======================|\n|   0  Tesla T4            Off  | 00000000:00:07.0 Off |                    0 |\n| N/A   45C    P0    27W /  70W |      2MiB / 15360MiB |      6%      Default |\n|                               |                      |                  N/A |\n+-------------------------------+----------------------+----------------------+\n\n+-----------------------------------------------------------------------------+\n| Processes:                                                                  |\n|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |\n|        ID   ID                                                   Usage      |\n|=============================================================================|\n|  No running processes found                                                 |\n+-----------------------------------------------------------------------------+\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#在-PyTorch-中检查GPU}
+
+## 在 PyTorch 中检查GPU
+
+:target{#导入-PyTorch-以检查-GPU-设备}
+
+### 导入 PyTorch 以检查 GPU 设备
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import torch
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#检查-PyTorch-的版本}
+
+### 检查 PyTorch 的版本
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    torch.__version__
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="output">
+    <pre>
+      {"'2.0.0+cu117'\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#检查PyTorch是否能调用GPU}
+
+### 检查PyTorch是否能调用GPU
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    torch.cuda.is_available()
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="output">
+    <pre>
+      {"True\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#在PyTorch中检查计算机的GPU的数量}
+
+### 在PyTorch中检查计算机的GPU的数量
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    gpu_num = torch.cuda.device_count()
+    print(gpu_num)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"1\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#在PyTorch中检查计算机的GPU型号}
+
+### 在PyTorch中检查计算机的GPU型号
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    for i in range(gpu_num):
+        print('GPU {}.: {}'.format(i,torch.cuda.get_device_name(i)))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"GPU 0.: Tesla T4\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#在-TensorFlow-中检查GPU}
+
+## 在 TensorFlow 中检查GPU
+
+:target{#导入-TensorFlow-检查-GPU-设备}
+
+### 导入 TensorFlow 检查 GPU 设备
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    import tensorflow as tf
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#检查-TensorFlow-的版本}
+
+### 检查 TensorFlow 的版本
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    tf.__version__
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="output">
+    <pre>
+      {"'2.12.0'\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#检查TensorFlow是否能调用GPU}
+
+### 检查TensorFlow是否能调用GPU
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    tf.test.is_gpu_available()
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"WARNING:tensorflow:From /tmp/ipykernel_3029/337460670.py:1: is_gpu_available (from tensorflow.python.framework.test_util) is deprecated and will be removed in a future version.\nInstructions for updating:\nUse `tf.config.list_physical_devices('GPU')` instead.\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="output">
+    <pre>
+      {"True\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#在TensorFlow中检查物理GPU}
+
+### 在TensorFlow中检查物理GPU
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    tf.config.list_physical_devices('GPU')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="output">
+    <pre>
+      {"[PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#在TensorFlow中检查计算机的GPU型号}
+
+### 在TensorFlow中检查计算机的GPU型号
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    from tensorflow.python.client import device_lib
+
+    local_device_protos = device_lib.list_local_devices()
+    for x in local_device_protos:
+        if x.device_type == 'GPU':
+            print(x.physical_device_desc)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"device: 0, name: Tesla T4, pci bus id: 0000:00:07.0, compute capability: 7.5\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#在-jax和jaxlib-中检查GPU}
+
+## 在 jax和jaxlib 中检查GPU
+
+:target{#导入-Jax-和-jaxlib-以检查-GPU-设备}
+
+### 导入 Jax 和 jaxlib 以检查 GPU 设备
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
+    ```python
+    import jax
+    import jaxlib
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#检查jax和jaxlib的版本}
+
+### 检查jax和jaxlib的版本
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
+    ```python
+    jax.__version__
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="output">
+    <pre>
+      {"'0.4.1'\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
+    ```python
+    jaxlib.__version__
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="output">
+    <pre>
+      {"'0.4.1'\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#从-jax-的默认后端检查所有设备}
+
+### 从 jax 的默认后端检查所有设备
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
+    ```python
+    jax.devices()
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[15]:" stderr={false} type="output">
+    <pre>
+      {"[StreamExecutorGpuDevice(id=0, process_index=0, slice_index=0)]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#查看jax的设备总数}
+
+### 查看jax的设备总数
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[16]:" stderr={false} type="input">
+    ```python
+    jax.device_count()
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[16]:" stderr={false} type="output">
+    <pre>
+      {"1\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#查看jax后端关联的JAX进程数}
+
+### 查看jax后端关联的JAX进程数
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[17]:" stderr={false} type="input">
+    ```python
+    jax.process_count()
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[17]:" stderr={false} type="output">
+    <pre>
+      {"1\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#检查jaxlib的后端}
+
+### 检查jaxlib的后端
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
+    ```python
+    from jax.lib import xla_bridge
+    print(xla_bridge.get_backend().platform)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"gpu\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#运行一个线性回归的样例来验证Jax能正常运行}
+
+### 运行一个线性回归的样例来验证Jax能正常运行
+
+样例代码来自\`https\://www\.secretflow\.org.cn/docs/secretflow/zh\_CN/tutorial/lr\_with\_spu.html \<[https://www.secretflow.org.cn/docs/secretflow/zh\_CN/tutorial/lr\_with\_spu.html](https://www.secretflow.org.cn/docs/secretflow/zh_CN/tutorial/lr_with_spu.html)>\`#### 加载数据集
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[19]:" stderr={false} type="input">
+    ```python
+    import numpy as np
+    from sklearn.datasets import load_breast_cancer
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import Normalizer
+
+
+    def breast_cancer(party_id=None, train: bool = True) -> (np.ndarray, np.ndarray):
+        x, y = load_breast_cancer(return_X_y=True)
+        x = (x - np.min(x)) / (np.max(x) - np.min(x))
+        x_train, x_test, y_train, y_test = train_test_split(
+            x, y, test_size=0.2, random_state=42
+        )
+
+        if train:
+            if party_id:
+                if party_id == 1:
+                    return x_train[:, :15], _
+                else:
+                    return x_train[:, 15:], y_train
+            else:
+                return x_train, y_train
+        else:
+            return x_test, y_test
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#定义模型}
+
+#### 定义模型
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[20]:" stderr={false} type="input">
+    ```python
+    import jax.numpy as jnp
+
+
+    def sigmoid(x):
+        return 1 / (1 + jnp.exp(-x))
+
+
+    # Outputs probability of a label being true.
+    def predict(W, b, inputs):
+        return sigmoid(jnp.dot(inputs, W) + b)
+
+
+    # Training loss is the negative log-likelihood of the training examples.
+    def loss(W, b, inputs, targets):
+        preds = predict(W, b, inputs)
+        label_probs = preds * targets + (1 - preds) * (1 - targets)
+        return -jnp.mean(jnp.log(label_probs))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#定义训练步骤}
+
+#### 定义训练步骤
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[21]:" stderr={false} type="input">
+    ```python
+    from jax import grad
+
+
+    def train_step(W, b, x1, x2, y, learning_rate):
+        x = jnp.concatenate([x1, x2], axis=1)
+        Wb_grad = grad(loss, (0, 1))(W, b, x, y)
+        W -= learning_rate * Wb_grad[0]
+        b -= learning_rate * Wb_grad[1]
+        return W, b
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#构建拟合函数}
+
+#### 构建拟合函数
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[22]:" stderr={false} type="input">
+    ```python
+    def fit(W, b, x1, x2, y, epochs=1, learning_rate=1e-2):
+        for _ in range(epochs):
+            W, b = train_step(W, b, x1, x2, y, learning_rate=learning_rate)
+        return W, b
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#验证模型}
+
+#### 验证模型
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[23]:" stderr={false} type="input">
+    ```python
+    from sklearn.metrics import roc_auc_score
+
+
+    def validate_model(W, b, X_test, y_test):
+        y_pred = predict(W, b, X_test)
+        return roc_auc_score(y_test, y_pred)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#训练模型}
+
+#### 训练模型
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[24]:" stderr={false} type="input">
+    ```python
+    %matplotlib inline
+
+    # Load the data
+    x1, _ = breast_cancer(party_id=1,train=True)
+    x2, y = breast_cancer(party_id=2,train=True)
+
+    # Hyperparameter
+    W = jnp.zeros((30,))
+    b = 0.0
+    epochs = 10
+    learning_rate = 1e-2
+
+    # Train the model
+    W, b = fit(W, b, x1, x2, y, epochs=10, learning_rate=1e-2)
+
+    # Validate the model
+    X_test, y_test = breast_cancer(train=False)
+    auc=validate_model(W,b, X_test, y_test)
+    print(f'auc={auc}')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"auc=0.9880445463478545\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+正如您看到的，警告信息
+
+> No GPU/TPU found, falling back to CPU. (Set TF\_CPP\_MIN\_LOG\_LEVEL=0 and rerun for more info.)
+
+doesn’t appear, which indicate the jax run the code in GPU
+
+:target{#导入SecretFlow以验证此环境中未报告任何错误}
+
+## 导入SecretFlow以验证此环境中未报告任何错误
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[25]:" stderr={false} type="input">
+    ```python
+    import secretflow
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>

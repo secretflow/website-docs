@@ -1,0 +1,3285 @@
+:target{#component-specification}
+
+# Component Specification
+
+:target{#table-of-contents}
+
+## Table of Contents
+
+:target{#cluster-proto}
+
+### cluster.proto
+
+- Messages
+  - [SFClusterConfig](#sfclusterconfig)
+  - SFClusterConfig.PrivateConfig
+  - SFClusterConfig.PublicConfig
+  - SFClusterConfig.RayFedConfig
+  - SFClusterConfig.SPUConfig
+  - [SFClusterDesc](#sfclusterdesc)
+  - SFClusterDesc.DeviceDesc
+  - [StorageConfig](#storageconfig)
+  - StorageConfig.LocalFSConfig
+
+:target{#data-proto}
+
+### data.proto
+
+- Messages
+  - [DeviceObjectCollection](#deviceobjectcollection)
+  - DeviceObjectCollection.DeviceObject
+  - [DistData](#distdata)
+  - DistData.DataRef
+  - [IndividualTable](#individualtable)
+  - [SystemInfo](#systeminfo)
+  - [TableSchema](#tableschema)
+  - [VerticalTable](#verticaltable)
+
+:target{#comp-proto}
+
+### comp.proto
+
+- Messages
+  - [Attribute](#attribute)
+  - [AttributeDef](#attributedef)
+  - AttributeDef.AtomicAttrDesc
+  - AttributeDef.UnionAttrGroupDesc
+  - [CompListDef](#complistdef)
+  - [ComponentDef](#componentdef)
+  - [IoDef](#iodef)
+  - IoDef.TableAttrDef
+- Enums
+  - [AttrType](#attrtype)
+
+:target{#evaluation-proto}
+
+### evaluation.proto
+
+- Messages
+  - [NodeEvalParam](#nodeevalparam)
+  - [NodeEvalResult](#nodeevalresult)
+
+:target{#report-proto}
+
+### report.proto
+
+- Messages
+  - [Descriptions](#descriptions)
+  - Descriptions.Item
+  - [Div](#div)
+  - Div.Child
+  - [Report](#report)
+  - [Tab](#tab)
+  - [Table](#table)
+  - Table.HeaderItem
+  - Table.Row
+
+:target{#id1}
+
+## cluster.proto
+
+Proto file: [secretflow/protos/component/cluster.proto](https://github.com/secretflow/secretflow/tree/main/secretflow/protos/component/cluster.proto)
+
+:target{#messages}
+
+### Messages
+
+:target{#sfclusterconfig}
+
+#### SFClusterConfig
+
+Runtime Config for a SecretFlow cluster.
+Besides intrinsic SFClusterDesc, dynamic network configs are provided.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> SFClusterDesc</span>](#sfclusterdesc)
+      </td>
+
+      <td>
+        Intrinsic properties.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        public\_config
+      </td>
+
+      <td>
+        &#x20;SFClusterConfig.PublicConfig
+      </td>
+
+      <td>
+        Dynamic runtime public configs.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        private\_config
+      </td>
+
+      <td>
+        &#x20;SFClusterConfig.PrivateConfig
+      </td>
+
+      <td>
+        Dynamic runtime private configs.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#sfclusterconfig-privateconfig}
+
+#### SFClusterConfig.PrivateConfig
+
+Different for each party.
+Private and unique to each party.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        self\_party
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ray\_head\_addr
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage\_config
+      </td>
+
+      <td>
+        [<span> StorageConfig</span>](#storageconfig)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#sfclusterconfig-publicconfig}
+
+#### SFClusterConfig.PublicConfig
+
+Public and shared to all parties.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        rayfed\_config
+      </td>
+
+      <td>
+        &#x20;SFClusterConfig.RayFedConfig
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        spu\_configs
+      </td>
+
+      <td>
+        repeated SFClusterConfig.SPUConfig
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#sfclusterconfig-rayfedconfig}
+
+#### SFClusterConfig.RayFedConfig
+
+Addresses for the RayFed cluster of each party.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        parties
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        addresses
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        listen\_addresses
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#sfclusterconfig-spuconfig}
+
+#### SFClusterConfig.SPUConfig
+
+Contains addresses for one SPU device.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Should match SPU name in SFClusterDesc.devices.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parties
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        addresses
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        listen\_addresses
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#sfclusterdesc}
+
+#### SFClusterDesc
+
+Intrinsic properties of a SecretFlow cluster, including:
+
+- Version info.
+- Parties: who participate in the computation.
+- Secret devices including  and their configs.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        sf\_version
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        SecretFlow version.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        py\_version
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Python version.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parties
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        Joined entities. e.g. \[“alice”, “bob”,…].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        devices
+      </td>
+
+      <td>
+        repeated SFClusterDesc.DeviceDesc
+      </td>
+
+      <td>
+        Description of secret devices
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#sfclusterdesc-devicedesc}
+
+#### SFClusterDesc.DeviceDesc
+
+Description for a secret device.
+
+- PYUs do not need to claim since they are plaintext devices.
+- Notes for config:
+  At this moment, you have to provide a JSON string for different devices.
+  We are going to formalize this part in future.
+  - Example SPU config:
+
+```json
+{
+    "runtime_config": {
+        "protocol": "REF2K",
+        "field": "FM64"
+    },
+    "link_desc": {
+        "connect_retry_times": 60,
+        "connect_retry_interval_ms": 1000,
+        "brpc_channel_protocol": "http",
+        "brpc_channel_connection_type": "pooled",
+        "recv_timeout_ms": 1200000,
+        "http_timeout_ms": 1200000
+    }
+}
+```
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Name of the device.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Supported: SPU, HEU, TEEU.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parties
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        Parties of device.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        config
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Specific config for the secret device.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#storageconfig}
+
+#### StorageConfig
+
+A StorageConfig specifies the root for all data for one party.
+
+- At this moment, only local\_fs is supported. We would support OSS, database
+  in future.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Supported: local\_fs.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        local\_fs
+      </td>
+
+      <td>
+        &#x20;StorageConfig.LocalFSConfig
+      </td>
+
+      <td>
+        local\_fs config.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#storageconfig-localfsconfig}
+
+#### StorageConfig.LocalFSConfig
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        wd
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Working directory.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#enums}
+
+### Enums
+
+:target{#id2}
+
+## data.proto
+
+Proto file: [secretflow/protos/component/data.proto](https://github.com/secretflow/secretflow/tree/main/secretflow/protos/component/data.proto)
+
+:target{#id3}
+
+### Messages
+
+:target{#deviceobjectcollection}
+
+#### DeviceObjectCollection
+
+Descibes public storage info for a collection of Device Objects.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        objs
+      </td>
+
+      <td>
+        repeated DeviceObjectCollection.DeviceObject
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        public\_info
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Any public information.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#deviceobjectcollection-deviceobject}
+
+#### DeviceObjectCollection.DeviceObject
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Supported: <code>spu | pyu</code>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data\_ref\_idxs
+      </td>
+
+      <td>
+        repeated int32
+      </td>
+
+      <td>
+        Index of data\_ref in the parent DistData message.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#distdata}
+
+#### DistData
+
+A public record for a general distributed data.
+
+The type of this distributed data, should be meaningful to components.
+
+The concrete data format (include public and private parts) is defined by
+other protos.
+
+Suggested names, i.e.
+
+- sf.table.vertical\_table      represent a secretflow vertical table
+- sf.model.\*                   represent a secretflow models.
+- sf.rule.\*                    represent a secretflow rules.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        The name of this distributed data.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        sys\_info
+      </td>
+
+      <td>
+        [<span> SystemInfo</span>](#systeminfo)
+      </td>
+
+      <td>
+        Describe the system information that used to generate this distributed data.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        meta
+      </td>
+
+      <td>
+        &#x20;google.protobuf.Any
+      </td>
+
+      <td>
+        Public information, known to all parties. i.e. VerticalTable
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data\_refs
+      </td>
+
+      <td>
+        repeated DistData.DataRef
+      </td>
+
+      <td>
+        Remote data references.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#distdata-dataref}
+
+#### DistData.DataRef
+
+A reference to a data that is stored in the remote path.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        uri
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        The path information relative to StorageConfig of the party.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        The owner party.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        format
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        The storage format, i.e. csv.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#individualtable}
+
+#### IndividualTable
+
+IndividualTable describes a table owned by a single party.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        schema
+      </td>
+
+      <td>
+        [<span> TableSchema</span>](#tableschema)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        num\_lines
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        If -1, the number is unknown.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#systeminfo}
+
+#### SystemInfo
+
+Describe the application related to data.
+
+- SCQL, GRM related meta information should be here.
+- You can add more field here, when another application is added.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        app\_name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        The application name. Supported: <code>secretflow</code>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        secretflow
+      </td>
+
+      <td>
+        [<span> SFClusterDesc</span>](#sfclusterdesc)
+      </td>
+
+      <td>
+        For secretflow.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tableschema}
+
+#### TableSchema
+
+The schema of a table.
+
+- A col must be one of <code>id | feature | label</code>. By default, it should be a
+  feature.
+- All names must match the regexp <code>\[A-Za-z0-9.]\[A-Za-z0-9\_>./]\*</code>.
+- All data type must be one of
+  <code>component.data\_utils.SUPPORTED\_VTABLE\_DATA\_TYPE</code>, including
+  <code>i8 | i16 | i32 | i64 | u8 | u16 | u32 | u64 | f16 | f32 | f64 | str</code>.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        ids
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        Id column name(s). Optional, can be empty.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        features
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        Feature column name(s).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        labels
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        Label column name(s). Optional, can be empty.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        id\_types
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        Id column data type(s). Len(id) should match len(id\_types).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        feature\_types
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        Feature column data type(s). Len(features) should match len(feature\_types).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        label\_types
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        Label column data type(s). Len(labels) should match len(label\_types).
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#verticaltable}
+
+#### VerticalTable
+
+VerticalTable describes a vertical virtual table from multiple parties.
+
+> TODO: move this to secretflow/protos/builtin/
+
+> Guide: if some type is only required to be handle inside a specific system,
+> for instance woe.rule file in engine, we don’t need to define a new type
+> here.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        schemas
+      </td>
+
+      <td>
+        [<span>repeated TableSchema</span>](#tableschema)
+      </td>
+
+      <td>
+        The vertical partitioned slices’ schema. Must match data\_refs in the parent DistData message.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        num\_lines
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        If -1, the number is unknown.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id4}
+
+### Enums
+
+:target{#id5}
+
+## comp.proto
+
+Proto file: [secretflow/protos/component/comp.proto](https://github.com/secretflow/secretflow/tree/main/secretflow/protos/component/comp.proto)
+
+:target{#id6}
+
+### Messages
+
+:target{#attribute}
+
+#### Attribute
+
+The value of an attribute
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        f
+      </td>
+
+      <td>
+        &#x20;float
+      </td>
+
+      <td>
+        FLOAT
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        i64
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        INT NOTE(junfeng): “is” is preserved by Python. Replaced with “i64”.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        s
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        STRING
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        b
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        BOOL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        fs
+      </td>
+
+      <td>
+        repeated float
+      </td>
+
+      <td>
+        FLOATS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        i64s
+      </td>
+
+      <td>
+        repeated int64
+      </td>
+
+      <td>
+        INTS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ss
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        STRINGS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bs
+      </td>
+
+      <td>
+        repeated bool
+      </td>
+
+      <td>
+        BOOLS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        is\_na
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Indicates the value is missing explicitly.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#attributedef}
+
+#### AttributeDef
+
+Describe an attribute.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        prefixes
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        Indicates the ancestors of a node, e.g. <code>\[name\_a, name\_b, name\_c]</code> means the path prefixes of current Attribute is <code>name\_a/name\_b/name\_c/</code>. Only <code>^\[a-zA-Z0-9\_.-]\*\$</code> is allowed. <code>input</code> and <code>output</code> are reserved.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Must be unique in the same level just like Linux file systems. Only <code>^\[a-zA-Z0-9\_.-]\*\$</code> is allowed. <code>input</code> and <code>output</code> are reserved.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        [<span> AttrType</span>](#attrtype)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        atomic
+      </td>
+
+      <td>
+        &#x20;AttributeDef.AtomicAttrDesc
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        union
+      </td>
+
+      <td>
+        &#x20;AttributeDef.UnionAttrGroupDesc
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#attributedef-atomicattrdesc}
+
+#### AttributeDef.AtomicAttrDesc
+
+Extras for an atomic attribute.
+Including: <code>AT\_FLOAT | AT\_INT | AT\_STRING | AT\_BOOL | AT\_FLOATS | AT\_INTS | AT\_STRINGS | AT\_BOOLS</code>.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        list\_min\_length\_inclusive
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        Only valid when type is <code>AT\_FLOATS | AT\_INTS | AT\_STRINGS | AT\_BOOLS</code>.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        list\_max\_length\_inclusive
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        Only valid when type is <code>AT\_FLOATS | AT\_INTS | AT\_STRINGS | AT\_BOOLS</code>.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        is\_optional
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        default\_value
+      </td>
+
+      <td>
+        [<span> Attribute</span>](#attribute)
+      </td>
+
+      <td>
+        A reasonable default for this attribute if the user does not supply a value.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        allowed\_values
+      </td>
+
+      <td>
+        [<span> Attribute</span>](#attribute)
+      </td>
+
+      <td>
+        Only valid when type is <code>AT\_FLOAT | AT\_INT | AT\_STRING | AT\_FLOATS | AT\_INTS | AT\_STRINGS</code>. Please use list fields of AtomicParameter, i.e. <code>ss</code>, <code>i64s</code>, <code>fs</code>. If the attribute is a list, allowed\_values is applied to each element.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        has\_lower\_bound
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Only valid when type is <code>AT\_FLOAT | AT\_INT | AT\_FLOATS | AT\_INTS </code>. If the attribute is a list, lower\_bound is applied to each element.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        lower\_bound
+      </td>
+
+      <td>
+        [<span> Attribute</span>](#attribute)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        lower\_bound\_inclusive
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        has\_upper\_bound
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Only valid when type is <code>AT\_FLOAT | AT\_INT | AT\_FLOATS | AT\_INTS </code>. If the attribute is a list, upper\_bound is applied to each element.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        upper\_bound
+      </td>
+
+      <td>
+        [<span> Attribute</span>](#attribute)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        upper\_bound\_inclusive
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#attributedef-unionattrgroupdesc}
+
+#### AttributeDef.UnionAttrGroupDesc
+
+Extras for a union attribute group.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        default\_selection
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        The default selected child.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#complistdef}
+
+#### CompListDef
+
+A list of components
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        version
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        comps
+      </td>
+
+      <td>
+        [<span>repeated ComponentDef</span>](#componentdef)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#componentdef}
+
+#### ComponentDef
+
+The definition of a comp.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domain
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Namespace of the comp.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Should be unique among all comps of the same domain.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        version
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Version of the comp.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attrs
+      </td>
+
+      <td>
+        [<span>repeated AttributeDef</span>](#attributedef)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inputs
+      </td>
+
+      <td>
+        [<span>repeated IoDef</span>](#iodef)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        outputs
+      </td>
+
+      <td>
+        [<span>repeated IoDef</span>](#iodef)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#iodef}
+
+#### IoDef
+
+Define an input/output for component.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        should be unique among all IOs of the component.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        types
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        Must be one of DistData.type in data.proto
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attrs
+      </td>
+
+      <td>
+        repeated IoDef.TableAttrDef
+      </td>
+
+      <td>
+        Only valid for tables. The attribute path for a TableAttrDef is <code>\{input|output}/\{IoDef name}/\{TableAttrDef name}</code>.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#iodef-tableattrdef}
+
+#### IoDef.TableAttrDef
+
+An extra attribute for a table.
+
+If provided in a IoDef, e.g.
+
+```json
+{
+  "name": "feature",
+  "types": [
+      "int",
+      "float"
+  ],
+  "col_min_cnt_inclusive": 1,
+  "col_max_cnt": 3,
+  "attrs": [
+      {
+          "name": "bucket_size",
+          "type": "AT_INT"
+      }
+  ]
+}
+```
+
+means after a user provide a table as IO, they should also specify
+cols as “feature”:
+
+- col\_min\_cnt\_inclusive is 1: At least 1 col to be selected.
+- col\_max\_cnt\_inclusive is 3: At most 3 cols to be selected.
+  And afterwards, user have to fill an int attribute called bucket\_size for
+  each selected cols.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Must be unique among all attributes for the table.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        types
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        Accepted col data types. Please check DistData.VerticalTable in data.proto.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        col\_min\_cnt\_inclusive
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        inclusive
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        col\_max\_cnt\_inclusive
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attrs
+      </td>
+
+      <td>
+        [<span>repeated AttributeDef</span>](#attributedef)
+      </td>
+
+      <td>
+        extra attribute for specified col.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id7}
+
+### Enums
+
+:target{#attrtype}
+
+#### AttrType
+
+Supported attribute types.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        AT\_UNDEFINED
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_FLOAT
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        FLOAT
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_INT
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        INT
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_STRING
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        STRING
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_BOOL
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        BOOL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_FLOATS
+      </td>
+
+      <td>
+        5
+      </td>
+
+      <td>
+        FLOATS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_INTS
+      </td>
+
+      <td>
+        6
+      </td>
+
+      <td>
+        INTS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_STRINGS
+      </td>
+
+      <td>
+        7
+      </td>
+
+      <td>
+        STRINGS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_BOOLS
+      </td>
+
+      <td>
+        8
+      </td>
+
+      <td>
+        BOOLS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_STRUCT\_GROUP
+      </td>
+
+      <td>
+        9
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_UNION\_GROUP
+      </td>
+
+      <td>
+        10
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_SF\_TABLE\_COL
+      </td>
+
+      <td>
+        11
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id8}
+
+## evaluation.proto
+
+Proto file: [secretflow/protos/component/evaluation.proto](https://github.com/secretflow/secretflow/tree/main/secretflow/protos/component/evaluation.proto)
+
+:target{#id9}
+
+### Messages
+
+:target{#nodeevalparam}
+
+#### NodeEvalParam
+
+Evaluate a node.
+
+- comp.evaluate(NodeEvalParam, SFClusterConfig) -> NodeEvalResult
+
+NodeEvalParam contains all the information to evaluate a component.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domain
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Domain of the component.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Name of the component.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        version
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Version of the component.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attr\_paths
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        The path of attributes. The attribute path for a TableAttrDef is <code>\{input|output}/\{IoDef name}/\{TableAttrDef name}</code>.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attrs
+      </td>
+
+      <td>
+        [<span>repeated Attribute</span>](#attribute)
+      </td>
+
+      <td>
+        The value of the attribute. Must match attr\_paths.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inputs
+      </td>
+
+      <td>
+        [<span>repeated DistData</span>](#distdata)
+      </td>
+
+      <td>
+        The input data, the order of inputs must match inputs in ComponentDef. NOTE: Names of DistData doesn’t need to match those of inputs in ComponentDef definition.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        output\_uris
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        The output data uris, the order of output\_uris must match outputs in ComponentDef.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#nodeevalresult}
+
+#### NodeEvalResult
+
+NodeEvalResult contains outputs of a component evaluation.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        outputs
+      </td>
+
+      <td>
+        [<span>repeated DistData</span>](#distdata)
+      </td>
+
+      <td>
+        Output data.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id10}
+
+### Enums
+
+:target{#id11}
+
+## report.proto
+
+Proto file: [secretflow/protos/component/report.proto](https://github.com/secretflow/secretflow/tree/main/secretflow/protos/component/report.proto)
+
+:target{#id12}
+
+### Messages
+
+:target{#descriptions}
+
+#### Descriptions
+
+Displays multiple read-only fields in groups.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Name of the Descriptions.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        items
+      </td>
+
+      <td>
+        repeated Descriptions.Item
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#descriptions-item}
+
+#### Descriptions.Item
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Name of the field.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        [<span> AttrType</span>](#attrtype)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        value
+      </td>
+
+      <td>
+        [<span> Attribute</span>](#attribute)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#div}
+
+#### Div
+
+A division or a section of a page.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Name of the Div.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        children
+      </td>
+
+      <td>
+        repeated Div.Child
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#div-child}
+
+#### Div.Child
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Supported: descriptions, table, div.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        descriptions
+      </td>
+
+      <td>
+        [<span> Descriptions</span>](#descriptions)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        table
+      </td>
+
+      <td>
+        [<span> Table</span>](#table)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        div
+      </td>
+
+      <td>
+        [<span> Div</span>](#div)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#report}
+
+#### Report
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Name of the Report.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tabs
+      </td>
+
+      <td>
+        [<span>repeated Tab</span>](#tab)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        err\_code
+      </td>
+
+      <td>
+        &#x20;int32
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        err\_detail
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Structed error detail (JSON encoded message).
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tab}
+
+#### Tab
+
+A page of a report.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Name of the Tab.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        divs
+      </td>
+
+      <td>
+        [<span>repeated Div</span>](#div)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#table}
+
+#### Table
+
+Displays rows of data.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Name of the Table.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        headers
+      </td>
+
+      <td>
+        repeated Table.HeaderItem
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        rows
+      </td>
+
+      <td>
+        repeated Table.Row
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#table-headeritem}
+
+#### Table.HeaderItem
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        [<span> AttrType</span>](#attrtype)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#table-row}
+
+#### Table.Row
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        items
+      </td>
+
+      <td>
+        [<span>repeated Attribute</span>](#attribute)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id13}
+
+### Enums
