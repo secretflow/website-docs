@@ -5,4 +5,4 @@ nbsphinx
 sphinx_design
 sphinxcontrib-mermaid
 
-spu
+spu==0.4.1b1
