@@ -1,0 +1,11 @@
+sphinx>=7
+autodocsumm
+linkify-it-py
+matplotlib
+mdutils==1.6.0
+myst-parser
+nbsphinx
+pytablewriter
+sphinx_design
+sphinx-intl
+sphinx-markdown-parser

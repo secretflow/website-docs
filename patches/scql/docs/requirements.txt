@@ -1,0 +1,11 @@
+sphinx>=7
+myst-parser
+rstcheck
+nbsphinx
+sphinx-autobuild
+pydata-sphinx-theme
+sphinx-markdown-parser
+pytablewriter
+linkify-it-py
+sphinx_design
+sphinx-intl

@@ -1,0 +1,61 @@
+name: Build docs
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - secretflow
+          - spu
+          - heu
+          - interconnection
+          - scql
+          - kuscia
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Checkout project
+        uses: actions/checkout@v2
+        with:
+          repository: secretflow/${{ matrix.project }}
+          ref: master
+          path: ${{ matrix.project }}
+
+      - name: Patch config
+        run: rsync -av ./patches/${{ matrix.project }}/. ./${{ matrix.project }}/
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8.x'
+          cache: 'pip'
+          cache-dependency-path: |
+            ${{ matrix.project }}/requirements.txt
+            ${{ matrix.project }}/docs/requirements.txt
+            ${{ github.workspace }}/vendor/secretflow_doctools-0.0.1-py3-none-manylinux_2_17_x86_64.whl
+
+      - name: Install Python dependencies
+        working-directory: ${{ matrix.project }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install \
+            -r requirements.txt \
+            -r docs/requirements.txt \
+            ${{ github.workspace }}/vendor/secretflow_doctools-0.0.1-py3-none-manylinux_2_17_x86_64.whl
+
+      - name: 'Build docs: en-US'
+        working-directory: ${{ matrix.project }}
+        run: |
+          python -m sphinx -T -E -b mdx -D language=en docs docs/_build/mdx/en-US
+
+      - name: 'Build docs: zh-CN'
+        working-directory: ${{ matrix.project }}
+        run: |
+          python -m sphinx -T -E -b mdx -D language=zh_CN docs docs/_build/mdx/zh-Hans
