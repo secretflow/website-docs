@@ -6,3 +6,6 @@ build
 *.pickle
 objects.inv
 .buildinfo
+
+.python-version
+.venv
