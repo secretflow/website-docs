@@ -1,0 +1,1268 @@
+:target{#scql-config-manual}
+
+# SCQL Config Manual
+
+This configuration manual is designed to help users understand the various configuration options available for the SCQL system. It can be divided into two parts: SCDB configuration options and Engine configuration options.
+
+:target{#scdb-configuration-options}
+
+## SCDB configuration options
+
+In SCDB, configuration parameters are provided as yaml file.
+
+:target{#example-for-scdb}
+
+### Example for SCDB
+
+```yaml
+scdb_host: http://localhost:8080
+port: 8080
+protocol: http
+query_result_callback_timeout: 200ms
+session_expire_time: 1h
+session_expire_check_time: 100ms
+password_check: true
+log_level: debug
+security_compromise:
+  reveal_group_mark: false
+storage:
+  type: mysql
+  conn_str: user_name:pass_word@tcp(127.0.0.1:3306)/db_name?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_idle_time: 2m
+  conn_max_lifetime: 5m
+grm:
+  grm_mode: stdgrm
+  host: http://your-grm-host
+  timeout: 5s
+engine:
+    timeout: 120s
+    protocol: http
+    content_type: application/json
+    spu:
+      protocol: SEMI2K
+      field: FM64
+      sigmoid_mode: SIGMOID_REAL
+```
+
+:target{#config-in-scdb}
+
+### Config in SCDB
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Default
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        scdb\_host
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The callback URL for the engine to notify SCDB
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        port
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The listening port of the SCDB server
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        protocol
+      </td>
+
+      <td>
+        http
+      </td>
+
+      <td>
+        The transfer protocol of SCDB server, supports HTTP/HTTPS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        query\_result\_callback\_timeout
+      </td>
+
+      <td>
+        200ms
+      </td>
+
+      <td>
+        Timeout for SCDB to notify the query result
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        session\_expire\_time
+      </td>
+
+      <td>
+        48h
+      </td>
+
+      <td>
+        The expiration duration of a session
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        session\_expire\_check\_time
+      </td>
+
+      <td>
+        1h
+      </td>
+
+      <td>
+        The cleanup interval of expired session
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        password\_check
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        Whether to validate password strength when create a user
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        log\_level
+      </td>
+
+      <td>
+        info
+      </td>
+
+      <td>
+        The type and severity of a logged event
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        security\_compromise.reveal\_group\_mark
+      </td>
+
+      <td>
+        false
+      </td>
+
+      <td>
+        Whether to reveal group\_mark directly for group by
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tls.cert\_file
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Certificate file path to enable TSL, supports crt/pem type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tls.key\_file
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Private key file path to enable TSL, supports key/pem type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.type
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Database kind in SCDB, supports MYSQL/SQLite3
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.conn\_str
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Used to connect to a database
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.max\_idle\_conns
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Maximum number of connections in idle connection pool
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.max\_open\_conns
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Maximum number of open connections to the database
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.conn\_max\_idle\_time
+      </td>
+
+      <td>
+        \-1s
+      </td>
+
+      <td>
+        Maximum amount of time a connection may be idle
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.conn\_max\_lifetime
+      </td>
+
+      <td>
+        \-1s
+      </td>
+
+      <td>
+        Maximum amount of time a connection may be reused
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        grm.grm\_mode
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The grm service type, support toygrm/stdgrm
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        grm.host
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The host of stdgrm
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        grm.timeout
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Timeout for SCDB to get info from stdgrm
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        grm.toy\_grm\_conf
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The config file path of toygrm
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.timeout
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Timeout for SCDB to send message to engine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.protocol
+      </td>
+
+      <td>
+        https
+      </td>
+
+      <td>
+        The transfer protocol of Engine, support http/https
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.content\_type
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The original media type in post body from SCDB to engine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.spu.protocol
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The mpc protocol for engine to work with
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.spu.field
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        A security parameter type for engine to work with
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.spu.sigmoid\_mode
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The sigmoid approximation method for engine to work with
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#config-for-securitycompromise}
+
+#### Config for SecurityCompromise
+
+SCDB provides some security compromise options, which can be selectively enabled when the security risk is acceptable to speed up the overall operation.
+
+1. reveal\_group\_mark:
+
+> default disable, if enabled, SCDB will expose grouping information(size of each group) when calculating group-by-aggregation, thereby avoiding the overhead caused by pre-shuffle.  <code>risk</code>: group size will be leaked, which is equivalent to the result of count(\*)
+
+A typical config of security\_compromise can be like:
+
+```yaml
+security_compromise:
+  reveal_group_mark: false
+```
+
+:target{#config-for-storage}
+
+#### Config for Storage
+
+Database in SCDB is used to storage the SCQL system data, such as CCL and user information, currently SCDB support MySQL/SQLite3. You can connect to a database by setting <cite>conn\_str</cite> and <cite>type</cite> in the storage config.
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>type</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      The database type, which can be set as mysql/sqlite. And MySQL is recommended, which has been fully tested.
+    </dd>
+
+    <dt>
+      <DefinitionList.Term><span>conn\_str</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      MySQL string format:
+
+      >       <LineBlock>
+      >         \[username\[:password]@]\[protocol\[(address)]]/dbname\[?param1=value1&…\&paramN=valueN]
+      >
+      >         <em>see</em> [dsn-data-source-name](https://github.com/go-sql-driver/mysql#dsn-data-source-name) <em>for more infos</em>.
+      >       </LineBlock>
+
+      MySQL string example:
+
+      > user\:pass\@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4\&parseTime=True\&loc=Local\&interpolateParams=true
+
+      SQLite3 string format:
+
+      > more infos: [https://github.com/mattn/go-sqlite3#connection-string](https://github.com/mattn/go-sqlite3#connection-string).
+
+      SQLite3 string example:
+
+      > scdb.db
+    </dd>
+  </dl>
+</DefinitionList>
+
+A typical config of storage can be like:
+
+```yaml
+storage:
+  type: mysql
+  conn_str: user_name:pass_word@tcp(127.0.0.1:3306)/db_name?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_idle_time: 2m
+  conn_max_lifetime: 5m
+```
+
+<Container type="note">
+  To handle time.Time correctly, you need to include parseTime as a parameter. To fully support UTF-8 encoding, you need to change charset=utf8 to charset=utf8mb4
+</Container>
+
+:target{#password-check}
+
+#### PassWord Check
+
+<code>password\_check</code> serves to validate password strength. For ALTER USER, CREATE USER statements, if it’s true, the password should be at least 16 characters which including a number, a lowercase letter, a uppercase letter and a special character.
+
+:target{#config-for-grm}
+
+#### Config for GRM
+
+In addition to being provided by developers, GRM services can also be simulated by reading local JSON files, which is used for testing and development, you can choose them as follows.
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>stdgrm</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      If you want to use your own developed GRM service, grm\_mode need to be set as stdgrm.
+    </dd>
+  </dl>
+</DefinitionList>
+
+```yaml
+grm:
+  grm_mode: stdgrm
+  host: ${host of grm service} # eg. http://localhost:8080
+  timeout: ${timeout of grm service} # eg. 2m
+```
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>toygrm</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      If you want to directly mock a GRM service from a json file, except set grm\_mode as toygrm, toy\_grm\_conf also need to be set.
+    </dd>
+  </dl>
+</DefinitionList>
+
+```yaml
+grm:
+  grm_mode: toygrm
+  toy_grm_conf: ${file path of toy grm config} # eg. toy_grm.json
+```
+
+:target{#config-for-tls}
+
+#### Config for TLS
+
+If you need to enable TLS in SCDB, please refer to the following configuration.
+
+```yaml
+scdb_host: ${host of scdb service}  # eg. https://localhost:8080
+protocol: https
+tls:
+  cert_file: ${file path of server cert}  # eg. path_of_server_cert.pem
+  key_file: ${file path of server key}  # eg. path_of_server_key.pem
+engine:
+  protocol: https
+```
+
+Additionally, it is necessary to configure the engine to work with SSL, please refer [Config for SSL](#config-for-ssl).
+
+:target{#config-for-spu}
+
+#### Config for SPU
+
+SCQL supports different mpc protocol powered by SPU, you can choose different mpc protocol by setting SPU runtime config. Protocol <strong>SEMI2K</strong> is suggested, which is fully tested and support multi parties. See [SPU runtime config](https://www.secretflow.org.cn/docs/spu/en/reference/runtime_config.html) to get more information.
+
+```yaml
+spu:
+  protocol: SEMI2K
+  field: FM64
+  sigmoid_mode: SIGMOID_REAL
+```
+
+:target{#engine-configuration-options}
+
+## Engine configuration options
+
+SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
+
+:target{#example-for-engine}
+
+### Example for Engine
+
+```default
+# Config for Brpc server
+--listen_port=8003
+# Config for datasource
+--datasource_router=embed
+--embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"${connection_str}"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
+```
+
+:target{#config-in-engine}
+
+### Config in Engine
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Default
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        log\_dir
+      </td>
+
+      <td>
+        logs
+      </td>
+
+      <td>
+        The directory to save log file
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        log\_enable\_console\_logger
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        Whether logging to stdout while logging to file
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        peer\_engine\_protocol
+      </td>
+
+      <td>
+        <cite>http\:proto</cite>
+      </td>
+
+      <td>
+        The rpc protocol between engine and engine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        peer\_engine\_connection\_type
+      </td>
+
+      <td>
+        pooled
+      </td>
+
+      <td>
+        The rpc connection type between engine and engine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        peer\_engine\_timeout\_ms
+      </td>
+
+      <td>
+        300000
+      </td>
+
+      <td>
+        The rpc timeout between engine and engine, unit: ms
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        peer\_engine\_max\_retry
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        Rpc max retries(not including the first rpc) between engine and engine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        peer\_engine\_enable\_ssl\_as\_client
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        Whether enable ssl encryption when send message to another engine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        peer\_engine\_enable\_ssl\_client\_verification
+      </td>
+
+      <td>
+        false
+      </td>
+
+      <td>
+        Whether enable certificate verification when send message to another engine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        peer\_engine\_ssl\_client\_ca\_certificate
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The trusted CA file to verify certificate when send message to another engine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        link\_recv\_timeout\_ms
+      </td>
+
+      <td>
+        30000
+      </td>
+
+      <td>
+        The max time that engine will wait for message come from another engine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_protocol
+      </td>
+
+      <td>
+        <cite>http\:proto</cite>
+      </td>
+
+      <td>
+        The rpc protocol between engine and SCDB
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_connection\_type
+      </td>
+
+      <td>
+        pooled
+      </td>
+
+      <td>
+        The rpc connection type between engine and SCDB
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_timeout\_ms
+      </td>
+
+      <td>
+        5000
+      </td>
+
+      <td>
+        The rpc timeout between engine and SCDB, unit: ms
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_max\_retry
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        Rpc max retries(not including the first rpc) between engine and SCDB
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_enable\_ssl\_as\_client
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        Whether enable ssl encryption when send message to SCDB
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_enable\_ssl\_client\_verification
+      </td>
+
+      <td>
+        false
+      </td>
+
+      <td>
+        Whether enable certificate verification when send message to SCDB
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_ssl\_client\_ca\_certificate
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The trusted CA file to verify certificate when send message to SCDB
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        listen\_port
+      </td>
+
+      <td>
+        8003
+      </td>
+
+      <td>
+        The listening port of engine service
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_builtin\_service
+      </td>
+
+      <td>
+        false
+      </td>
+
+      <td>
+        Whether enable brpc builtin service
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        internal\_port
+      </td>
+
+      <td>
+        9527
+      </td>
+
+      <td>
+        The listening port of brpc builtin services
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        idle\_timeout\_s
+      </td>
+
+      <td>
+        30
+      </td>
+
+      <td>
+        Idle connection close delay in seconds between the engine and SCDB, unit: s
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        server\_enable\_ssl
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        Whether enable SSL when engine work as a server
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        server\_ssl\_certificate
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Certificate file path to enable SSL when engine work as a server
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        server\_ssl\_private\_key
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Private key file path to enable SSL when engine work as a server
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_client\_authorization
+      </td>
+
+      <td>
+        false
+      </td>
+
+      <td>
+        Whether check requests’ http header when engine work as a server
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        auth\_credential
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Authorization credential used to check requests’ http header
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_scdb\_authorization
+      </td>
+
+      <td>
+        false
+      </td>
+
+      <td>
+        Whether to authenticate the identity of SCDB
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine\_credential
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Credential used to authenticate SCDB
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        session\_timeout\_s
+      </td>
+
+      <td>
+        1800
+      </td>
+
+      <td>
+        Expiration duration of a session between engine and SCDB, unit: s
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datasource\_router
+      </td>
+
+      <td>
+        embed
+      </td>
+
+      <td>
+        The datasource router type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        embed\_router\_conf
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Configuration for embed router in json format
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        db\_connection\_info
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Connection string used to connect to mysql
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_he\_schema\_type\_ou
+      </td>
+
+      <td>
+        false
+      </td>
+
+      <td>
+        Whether to use OU to speed up HeSum, use ZPaillier by default for security, see: [heu/ou](https://www.secretflow.org.cn/docs/heu/latest/zh-Hans/getting_started/algo_choice#ou-paillier)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#config-for-datasource}
+
+#### Config for datasource
+
+datasources(MySQL/SQLite3/PostgreSQL/CSVDB) are where the SCQLEngine gets its data from.
+
+<em>datasource\_router</em> is design to support multi datasources, currently only supported: embed.
+
+embed\_router is initialized with <em>embed\_router\_conf</em> first, a json string like:
+
+```default
+"datasources": [
+  {
+    "id": "ds001",
+    "name": "mysql db for scql",
+    "kind": "MYSQL",
+    "connection_str": "${connection_str}"
+  }
+],
+"rules":[
+  {
+    "db": "*",
+    "table": "*",
+    "datasource_id": "ds001"
+  }
+]
+```
+
+if <em>embed\_router\_conf</em> is empty, embed\_router will try to initialized with <em>db\_connection\_info</em>.
+
+:target{#embed-router}
+
+##### Embed router
+
+datasources in embed\_router\_conf contain informations for connecting MySQL/SQLite3/PostgreSQL/CSVDB:
+
+> id: unique id of datasource.
+>
+> name: custom description help to distinguish datasources.
+>
+> kind: datasource type, currently support MySQL/SQLite3/PostgreSQL/CSVDB.
+>
+> connection\_str: string used to connect MySQL/SQLite3/PostgreSQL/CSVDB.
+>
+> > <DefinitionList>
+> >   <dl>
+> >     <dt>
+> >       <DefinitionList.Term><span>MySQL Connection string format:</span></DefinitionList.Term>
+> >     </dt>
+> >
+> >     <dd>
+> >       \<str> == \<assignment> | \<assignment> ‘;’ \<str>
+> >       \<assignment> == \<name> ‘=’ \<value>
+> >       \<name> == ‘host’ | ‘port’ | ‘user’ | ‘password’ | ‘db’ | ‘compress’ | ‘auto-reconnect’ | ‘reset’ | ‘fail-readonly’
+> >       \<value> == \[\~;]\*
+> >     </dd>
+> >
+> >     <dt>
+> >       <DefinitionList.Term><span>MySQL Connection string e.g:</span></DefinitionList.Term>
+> >     </dt>
+> >
+> >     <dd>
+> >       “db=$\{db};user=$\{user};password=$\{password};host=$\{host}”
+> >     </dd>
+> >
+> >     <dt>
+> >       <DefinitionList.Term><span>SQLite3 Connection string format:</span></DefinitionList.Term>
+> >     </dt>
+> >
+> >     <dd>
+> >       more infos: [https://www.sqlite.org/c3ref/open.html](https://www.sqlite.org/c3ref/open.html)
+> >     </dd>
+> >
+> >     <dt>
+> >       <DefinitionList.Term><span>SQLite3 Connection string e.g:</span></DefinitionList.Term>
+> >     </dt>
+> >
+> >     <dd>
+> >       “[file\:data\_test.db?mode=memory\&cache=shared](file:///data_test.db.mdx?mode=memory\&cache=shared)”
+> >     </dd>
+> >
+> >     <dt>
+> >       <DefinitionList.Term><span>PostgreSQL Connection string format:</span></DefinitionList.Term>
+> >     </dt>
+> >
+> >     <dd>
+> >       \<str> == \<assignment> | \<assignment> ‘ ‘ \<str>
+> >       \<assignment> == \<name> ‘=’ \<value>
+> >       \<name> == ‘host’ | ‘port’ | ‘user’ | ‘password’ | ‘dbname’ | ‘connect\_timeout’
+> >       \<value> == \[\~;]\*
+> >     </dd>
+> >
+> >     <dt>
+> >       <DefinitionList.Term><span>PostgreSQL Connection string e.g:</span></DefinitionList.Term>
+> >     </dt>
+> >
+> >     <dd>
+> >       “db=$\{db};user=$\{user};password=$\{password};host=$\{host}”
+> >     </dd>
+> >
+> >     <dt>
+> >       <DefinitionList.Term><span>CSVDB Connection string format:</span></DefinitionList.Term>
+> >     </dt>
+> >
+> >     <dd>
+> >       Since connection\_str is an object in another json object, the format is a converted json string corresponding to [CsvdbConf](https://github.com/secretflow/scql/tree/main/engine/datasource/csvdb_conf.proto)
+> >     </dd>
+> >
+> >     <dt>
+> >       <DefinitionList.Term><span>CSVDB Connection string e.g:</span></DefinitionList.Term>
+> >     </dt>
+> >
+> >     <dd>
+> >       “\{\\"db\_name\\":\\"csvdb\\",\\"tables\\":\[\{\\"table\_name\\":\\"staff\\",\\"data\_path\\":\\"test.csv\\",\\"columns\\":\[\{\\"column\_name\\":\\"id\\",\\"column\_type\\":\\"1\\"}]}]}”
+> >     </dd>
+> >   </dl>
+> > </DefinitionList>
+
+:target{#routing-rules}
+
+##### Routing rules
+
+embed\_router’s rules support wildcard ‘\*’, when given a table in format: <em>database\_name\:table\_name</em>,
+embed\_router will route to the corresponding datasource by:
+
+```default
+1. find the exact rules first, whose `${db}:${table}` equals to database_name:table_name;
+2. try the database_name:* rules;
+3. try *:table_name in the end.
+```
+
+Once found, SCQLEngine will try to connect database with datasource’s information correspond to the <em>datasource\_id</em>.
+
+:target{#config-for-brpc-server}
+
+#### Config for Brpc server
+
+SCQLEngine uses <strong>Brpc</strong> to communicate with SCDB and other peer SCQLEngines, each SCQLEngine will start a Brpc service on <em>local-host\:listen\_port</em> to receive data from outside. If you want to enable Brpc builtin services, add FLAGS:
+
+```default
+--enable_builtin_service=true
+--internal_port=9527
+```
+
+:target{#config-for-ssl}
+
+#### Config for SSL
+
+If you want to enable SSL in Engine, add FLAGS as follows. Additionally, it may be necessary to configure SCDB work with TLS please refer [Config for TLS](#config-for-tls).
+
+```default
+--server_enable_ssl=true
+--server_ssl_certificate=${file path of cert}
+--server_ssl_private_key=${file path of key}
+--peer_engine_enable_ssl_as_client=true
+--scdb_enable_ssl_as_client=true
+```

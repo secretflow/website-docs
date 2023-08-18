@@ -1,0 +1,2175 @@
+:target{#scql-api}
+
+# SCQL API
+
+SCQL 支持两种类型的 API：同步和异步。同步接口适用于执行快速查询，例如 DDL、DML 和简单的 DQL。而异步接口则推荐用于耗时较多的 DQL。
+
+:target{#asynchronous}
+
+## 异步接口
+
+:target{#public-submit-query}
+
+### public/submit\_query
+
+将 query（DDL/DML/DQL）提交给 SCQL，SCQL 将立即返回一个可用于获取结果的会话 ID，并在后台处理查询。
+
+:target{#request}
+
+#### 请求
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        是否必需
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [RequestHeader](#requestheader)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        共同的请求头
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        user
+      </td>
+
+      <td>
+        [SCDBCredential](#scdbcredential)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        用户信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        query
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        待执行的 SQL 语句
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        :target{#callback-url}
+
+        query\_result\_callback\_url
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        用于返回查询结果的回调URL。更多信息请参考 [<span>异步发送结果</span>](#async-send-result)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        biz\_request\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        业务请求 ID，在每个业务操作中通常是唯一的
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        db\_name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        当前数据库名称
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#response}
+
+#### 响应
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [Status](#status)
+      </td>
+
+      <td>
+        更多信息请参考 [Status code](#status-code)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        :target{#session-id}
+
+        scdb\_session\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        会话的唯一 ID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#example}
+
+#### 示例
+
+如果需要执行 <cite>show databases</cite>，请求和响应的消息结构应该如下所示：
+
+- 请求
+
+```javascript
+{
+    "user": {
+        "user": {
+            "account_system_type": "NATIVE_USER",
+            "native_user": { "name": "someuser", "password": "somepassword" }
+        },
+        "grm_token": "sometoken"
+    },
+    "query": "show databases;",
+    "biz_request_id": "1234"
+}
+```
+
+- 响应
+
+```javascript
+{
+    "status": {
+        "code": 0,
+        "message": "",
+        "details": []
+    },
+    "scdb_session_id": "some_session_id"
+}
+```
+
+:target{#public-fetch-result}
+
+### public/fetch\_result
+
+通过 session ID 获取之前提交的 query 的结果，如果之前的提交的 query 还在运行中，返回 <cite>NOT\_READY</cite>。
+
+:target{#id1}
+
+#### 请求
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        是否必需
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [RequestHeader](#requestheader)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        共同的请求头
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        user
+      </td>
+
+      <td>
+        [SCDBCredential](#scdbcredential)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        用户信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_session\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        在 SCDB 中提交查询时返回的会话 ID，与 submit\_query 响应中的 [session\_id](#session-id) 一致
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id2}
+
+#### 响应
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [Status](#status)
+      </td>
+
+      <td>
+        更多信息请参考 [Status code](#status-code)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        out\_columns
+      </td>
+
+      <td>
+        [Tensor](#tensor) list
+      </td>
+
+      <td>
+        query 的运行结果
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_session\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        与 submit\_query 中的 response 中的 [session\_id](#session-id) 一致
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        affected\_rows
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        受影响的行数
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id3}
+
+#### 示例
+
+如果需要获取 <cite>show databases</cite> 的结果，可以发送如下的请求。
+
+```javascript
+{
+    "user": {
+        "user": {
+            "account_system_type": "NATIVE_USER",
+            "native_user": { "name": "some_user", "password": "some_password" }
+        },
+        "grm_token": "some_token"
+    },
+    "scdb_session_id": "some_session_id"
+}
+```
+
+如果成功，将收到带有状态码 0 的响应，如下所示：
+
+```javascript
+{
+    "status": {
+        "code": 0,
+        "message": "",
+        "details": []
+    },
+    "out_columns": [
+        {
+            "name": "Database",
+            "shape": {
+                "dim": [
+                    {
+                        "dim_value": "1"
+                    },
+                    {
+                        "dim_value": "1"
+                    }
+                ]
+            },
+            "elem_type": "STRING",
+            "option": "VALUE",
+            "annotation": null,
+            "int32_data":[],
+            "int64_data":[],
+            "float_data":[],
+            "double_data":[],
+            "bool_data":[],
+            "string_data": ["scdb"]
+        }
+    ],
+    "scdb_session_id": "some_session_id",
+    "affected_rows": "0"
+}
+```
+
+如果结果尚未准备好，响应将会是：
+
+```javascript
+{
+    "status": {
+        "code": 104,
+        "message": "result not ready, please retry later",
+        "details": []
+    },
+    "out_columns": [],
+    "scdb_session_id": "some_session_id",
+    "affected_rows": "0"
+}
+```
+
+:target{#asynchronous-send-result}
+
+### 异步发送结果
+
+如果用户配置了 [query\_result\_callback\_url](#callback-url)， SCDB 在获取到结果后会主动向用户发送消息，返回之前查询的结果。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        是否必需
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [Status](#status)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        更多信息请参考 [Status code](#status-code)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        out\_columns
+      </td>
+
+      <td>
+        [Tensor](#tensor) list
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        Query 运行结果，更多信息请参考 [Tensor](#tensor)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_session\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        在 SCDB 中提交查询时返回的会话 ID，与 submit\_query 响应中的 [session\_id](#session-id) 一致
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        affected\_rows
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        受影响的行数
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#synchronous}
+
+## 同步接口
+
+:target{#public-submit-and-get}
+
+### public/submit\_and\_get
+
+向 SCQL 提交查询，SCQL 将等待所有任务完成后再将结果返回给用户。
+
+:target{#id4}
+
+#### 请求
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        是否必需
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [RequestHeader](#requestheader)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        共同的请求头
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        user
+      </td>
+
+      <td>
+        [SCDBCredential](#scdbcredential)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        用户信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        query
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        待执行的 SQL 语句
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        biz\_request\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        业务请求 ID，在每个业务操作中通常是唯一的
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        db\_name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        当前数据库名称
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id5}
+
+#### 响应
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [Status](#status)
+      </td>
+
+      <td>
+        更多信息请参考 [Status code](#status-code)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        out\_columns
+      </td>
+
+      <td>
+        [Tensor](#tensor) list
+      </td>
+
+      <td>
+        Query 运行结果，更多信息请参考 [Tensor](#tensor)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_session\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        SCDB 会话 id
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        affected\_rows
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        受影响的行数
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id6}
+
+#### 示例
+
+如果需要提交 <cite>show databases</cite> 查询，可以发送如下的请求：
+
+```javascript
+{
+    "user": {
+        "user": {
+            "account_system_type": "NATIVE_USER",
+            "native_user": { "name": "someuser", "password": "somepassword" }
+        },
+        "grm_token": "sometoken"
+    },
+    "query": "show databases;",
+    "biz_request_id": "1234",
+    "db_name": "scdb"
+}
+```
+
+如果成功，将收到以下响应：
+
+```javascript
+{
+    "status": {
+        "code": 0,
+        "message": "",
+        "details": []
+    },
+    "out_columns": [
+        {
+            "name": "Database",
+            "shape": {
+                "dim": [
+                    {
+                        "dim_value": "1"
+                    },
+                    {
+                        "dim_value": "1"
+                    }
+                ]
+            },
+            "elem_type": "STRING",
+            "option": "VALUE",
+            "annotation": null,
+            "int32_data":[],
+            "int64_data":[],
+            "float_data":[],
+            "double_data":[],
+            "bool_data":[],
+            "string_data": ["scdb"]
+        }
+    ],
+    "scdb_session_id": "some_session_id",
+    "affected_rows": "0"
+}
+```
+
+:target{#message-structure}
+
+## Message Structure
+
+:target{#requestheader}
+
+### RequestHeader
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        是否必需
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        custom\_headers
+      </td>
+
+      <td>
+        map\<string, string>
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义消息头
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#scdbcredential}
+
+### SCDBCredential
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        是否必需
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        user
+      </td>
+
+      <td>
+        [User](#user)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        用户信息，包含密码和用户名
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        grm\_token
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        GRM 中用户的唯一标识符
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#user}
+
+#### User
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        是否必需
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        account\_system\_type
+      </td>
+
+      <td>
+        [AccountSystemType](#accountsystemtype)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        账号类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        native\_user
+      </td>
+
+      <td>
+        [NativeUser](#nativeuser)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        本地用户信息
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#nativeuser}
+
+##### NativeUser
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        是否必需
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        用户名
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        password
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        密码
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tensor}
+
+### Tensor
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        是否必需
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        Tensor 名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        shape
+      </td>
+
+      <td>
+        [TensorShape](#tensorshape)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        通常为 \[M] （一个包含 M 个元素的向量）
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        elem\_type
+      </td>
+
+      <td>
+        [PrimitiveDataType](#primitivedatatype)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        tensor 中存储的数据的类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        option
+      </td>
+
+      <td>
+        [TensorOptions](#tensoroptions)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        tensor 配置项
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        annotation
+      </td>
+
+      <td>
+        [TensorAnnotation](#tensorannotation)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        携带物理状态信息，如果 option 为 Reference，则必须存在
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        int32\_data
+      </td>
+
+      <td>
+        int32 list
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        用于存储 int8, int16, int32 类型的数据
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        int64\_data
+      </td>
+
+      <td>
+        int64 list
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        用于存储 int64 类型的数据
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        float\_data
+      </td>
+
+      <td>
+        float list
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        用于存储 float32 类型的数据
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        double\_data
+      </td>
+
+      <td>
+        double list
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        用于存储 float64 类型的数据
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bool\_data
+      </td>
+
+      <td>
+        bool list
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        用于存储 bool 类型的数据
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        string\_data
+      </td>
+
+      <td>
+        string list
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        用于存储 string 和 datetime 类型的数据
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tensorshape}
+
+#### TensorShape
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        是否必需
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        dim
+      </td>
+
+      <td>
+        [TensorShape\_Dimension](#tensorshape-dimension) list
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td />
+    </tr>
+  </tbody>
+</table>
+
+:target{#tensorshape-dimension}
+
+##### TensorShape\_Dimension
+
+TensorShape\_Dimension 可以是 dim\_value 或 dim\_param。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        dim\_value
+      </td>
+
+      <td>
+        int64
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        dim\_param
+      </td>
+
+      <td>
+        string
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tensorannotation}
+
+#### TensorAnnotation
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        是否必需
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [TensorStatus](#tensorstatus)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        tensor 状态
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#status}
+
+### Status
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        是否必需
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        code
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        状态码，更多信息请参考 [Status code](#status-code)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Messages
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        用于记录错误信息的消息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        details
+      </td>
+
+      <td>
+        protobuf.Any list
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        携带额外补充错误细节的消息列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#enum-values}
+
+## Enum Values
+
+:target{#accountsystemtype}
+
+### AccountSystemType
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        数值
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        UNKNOWN
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        未知账号类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        NATIVE\_USER
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        本地用户类型
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#primitivedatatype}
+
+### PrimitiveDataType
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        数值
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        PrimitiveDataType\_UNDEFINED
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        未定义的数据类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        INT8
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        8-bit 有符号整型类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        INT16
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        16-bit 有符号整型类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        INT32
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        32-bit 有符号整型类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        INT64
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        64-bit 有符号整型类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        FLOAT32
+      </td>
+
+      <td>
+        5
+      </td>
+
+      <td>
+        32-bit 浮点数类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        FLOAT64
+      </td>
+
+      <td>
+        6
+      </td>
+
+      <td>
+        64-bit 浮点数类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        BOOL
+      </td>
+
+      <td>
+        7
+      </td>
+
+      <td>
+        bool 类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        STRING
+      </td>
+
+      <td>
+        8
+      </td>
+
+      <td>
+        string 类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DATETIME
+      </td>
+
+      <td>
+        9
+      </td>
+
+      <td>
+        datetime 类型，参考 MySQL中的 [datetime](https://dev.mysql.com/doc/refman/8.0/en/datetime.html)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        TIMESTAMP
+      </td>
+
+      <td>
+        10
+      </td>
+
+      <td>
+        timestamp 类型，单位为秒，从 ‘1970-01-01 00:00:00’ UTC 开始计时
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tensoroptions}
+
+### TensorOptions
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        数值
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        VALUE
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        含数据的 tensor
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        REFERENCE
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        含引用（URI）的 tensor
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        VARIABLE
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        tensor 变量（声明）
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tensorstatus}
+
+### TensorStatus
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        数值
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        TENSORSTATUS\_UNKNOWN
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        未知
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        TENSORSTATUS\_PRIVATE
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        私密
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        TENSORSTATUS\_SECRET
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        秘密，通常为秘密共享的形式
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        TENSORSTATUS\_CIPHER
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        密文，通常为同态加密密文
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        TENSORSTATUS\_PUBLIC
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        公开
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#status-code}
+
+## Status Code
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        错误码
+      </td>
+
+      <td>
+        状态码
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        0
+      </td>
+
+      <td>
+        Code\_OK
+      </td>
+
+      <td>
+        成功
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        100
+      </td>
+
+      <td>
+        Code\_BAD\_REQUEST
+      </td>
+
+      <td>
+        无效的请求体
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        101
+      </td>
+
+      <td>
+        Code\_UNAUTHENTICATED
+      </td>
+
+      <td>
+        用户身份验证失败
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        102
+      </td>
+
+      <td>
+        Code\_SQL\_PARSE\_ERROR
+      </td>
+
+      <td>
+        无效的 SCQL 语句
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        103
+      </td>
+
+      <td>
+        Code\_INVALID\_ARGUMENT
+      </td>
+
+      <td>
+        请求包含无效参数
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        104
+      </td>
+
+      <td>
+        Code\_NOT\_READY
+      </td>
+
+      <td>
+        结果未准备好
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        131
+      </td>
+
+      <td>
+        Code\_DDL\_PERMISSION\_DENIED
+      </td>
+
+      <td>
+        用户没有执行 DDL 的权限
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        132
+      </td>
+
+      <td>
+        Code\_GRM\_RESOURCE\_PERMISSION\_DENIED
+      </td>
+
+      <td>
+        用户在 grm 上权限不足
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        140
+      </td>
+
+      <td>
+        Code\_NOT\_FOUND
+      </td>
+
+      <td>
+        一般未找到错误
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        141
+      </td>
+
+      <td>
+        Code\_SESSION\_NOT\_FOUND
+      </td>
+
+      <td>
+        SCDB 会话未找到
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        160
+      </td>
+
+      <td>
+        Code\_CCL\_CHECK\_FAILED
+      </td>
+
+      <td>
+        CCL 校验失败
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        201
+      </td>
+
+      <td>
+        Code\_STORAGE\_ERROR
+      </td>
+
+      <td>
+        SCDB DB 错误
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        300
+      </td>
+
+      <td>
+        Code\_INTERNAL
+      </td>
+
+      <td>
+        服务器内部错误
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        320
+      </td>
+
+      <td>
+        Code\_UNKNOWN\_ENGINE\_ERROR
+      </td>
+
+      <td>
+        引擎发生未知错误
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        332
+      </td>
+
+      <td>
+        Code\_ENGINE\_RUNSQL\_ERROR
+      </td>
+
+      <td>
+        运行 RunSQL 时引擎发生未知错误
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        340
+      </td>
+
+      <td>
+        Code\_NOT\_SUPPORTED
+      </td>
+
+      <td>
+        不支持该功能
+      </td>
+    </tr>
+  </tbody>
+</table>

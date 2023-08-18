@@ -1,0 +1,949 @@
+:target{#global-resource-manager}
+
+# 全局资源管理器 (GRM)
+
+:target{#overview}
+
+## 概述
+
+全局资源管理器（GRM）用于管理安全协作系统中的全局数据。 GRM 管理的全局数据包括参与方、表规格、SCQL 引擎 endpoints 等信息。
+
+:target{#why-grm}
+
+### 为什么需要 GRM？
+
+SCQL 系统只负责安全协作分析，它不拥有或管理数据。
+
+在执行查询时，SCQL 需要知道以下信息。
+
+1. 查询中涉及的表规格信息包括表的列和数据源类型等详细的信息。
+2. 数据拥有方的节点元数据，如 SCQL 引擎 endpoints 。
+3. 参与方身份管理。
+
+:target{#api}
+
+## API
+
+GRM 服务是一个 HTTP 服务，可以用 C++/Java/Go/Python/… 等任何语言实现，其 request 和 response 均为 JSON 格式（对应的 [Protocol Buffer definition](https://github.com/secretflow/scql/blob/main/api/grm.proto))。
+
+GRM 服务将在 [client](https://github.com/secretflow/scql/blob/main/pkg/grm/stdgrm/standard_grm.go) 调用
+
+:target{#verifytableownership}
+
+### /VerifyTableOwnership
+
+当创建表时，SCQL 需要验证持有 token 的用户是否拥有 TID 指定的表。
+
+:target{#request}
+
+#### 请求
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        tid
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        用户在创建表时提供的表标识符，更多信息请阅读 [<span>Create table</span>](scql_manual.mdx#create-table)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        token
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        用来验证用户身份的 token
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#response}
+
+#### 响应
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [Status](#status)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        响应的状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        is\_owner
+      </td>
+
+      <td>
+        bool
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        当 bool 值为 true 时：用户是表的所有者
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#status}
+
+##### 状态
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        code
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        The status code, 0 means success
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Messages
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Message for recording the error information.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        details
+      </td>
+
+      <td>
+        protobuf.Any list
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        A list of messages for error details
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#example}
+
+#### 示例
+
+请求
+
+```javascript
+{
+    "tid": "some_tid",
+    "token": "some_token"
+}
+```
+
+响应
+
+```javascript
+{
+    "status": {
+        "code": 0,
+        "message": "",
+        "details": []
+    },
+    "is_owner": true
+}
+```
+
+:target{#gettablemeta}
+
+### /GetTableMeta
+
+在创建表的过程中，在确认所有权后，SCQL 需要从 grm 服务中获取表结构。
+
+:target{#id1}
+
+#### 请求
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        tid
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        唯一的表标识符
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        request\_party
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        请求的发起方
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        token
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        用来验证用户身份的 token
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id2}
+
+#### 响应
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [Status](#status)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        响应的状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        schema
+      </td>
+
+      <td>
+        [TableSchema](#tableschema)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        表的结构
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tableschema}
+
+##### 表结构
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        db\_name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        表所属的数据库的名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        table\_name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        表的名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        columns
+      </td>
+
+      <td>
+        [ColumnDesc](#columndesc) list
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        表中的列信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        db\_type
+      </td>
+
+      <td>
+        [DataSourceKind](#datasourcekind)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        The type of backend data source. Supported values in [DataSourceKind](#datasourcekind)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#columndesc}
+
+###### ColumnDesc
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        列的名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        列值的类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        描述
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        列的描述
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#datasourcekind}
+
+###### DataSourceKind
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Value
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        UNKNOWN
+      </td>
+
+      <td>
+        Default MySQL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        MYSQL
+      </td>
+
+      <td>
+        MySQL backend
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        SQLITE
+      </td>
+
+      <td>
+        SQLite backend
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        POSTGRESQL
+      </td>
+
+      <td>
+        Postgres backend
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        CSVDB
+      </td>
+
+      <td>
+        CSV backend
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id3}
+
+#### 示例
+
+请求
+
+```javascript
+{
+    "tid": "1"
+    "request_party": "some_party",
+    "token": "some_token",
+}
+```
+
+响应
+
+```javascript
+{
+    "status": {
+        "code": 0,
+        "message": "",
+        "details": []
+    },
+    "schema" {
+        "db_name": "some_da_name",
+        "db_type": 1,
+        "table_name": "some_table_name"
+        "columns": [
+            {
+                "name": "col1",
+                "type": "long"
+            },
+            {
+                "name": "col2",
+                "type": "string"
+            }
+        ]
+    }
+}
+```
+
+:target{#getengines}
+
+### /GetEngines
+
+在执行持有令牌 (token) 的用户提交的 DQL 时，SCQL 需要获得相关方的 SCQL 引擎信息。
+
+:target{#id4}
+
+#### 请求
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        party\_codes
+      </td>
+
+      <td>
+        string list
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        需要获得 SCQL 引擎信息的参与方
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        token
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        用来验证用户身份的 token
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id5}
+
+#### 响应
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [Status](#status)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        响应的状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine\_infos
+      </td>
+
+      <td>
+        [EngineInfo](#engineinfo) list
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        engine\_infos\[i] 对应请求中 .party\_codes\[i] 的参与方的 SCQL 引擎信息
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#engineinfo}
+
+##### EngineInfo
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        endpoints
+      </td>
+
+      <td>
+        string list
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        SCQL 引擎的统一资源定位符（URL）
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        credential
+      </td>
+
+      <td>
+        string list
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        用于 SCQL 引擎验证 SCDB 身份的凭证
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id6}
+
+#### 示例
+
+请求
+
+```javascript
+{
+    "party_codes": ["party1", "party2"],
+    "token": "some_token"
+}
+```
+
+响应
+
+```javascript
+{
+    "status": {
+        "code": 0,
+        "message": "",
+        "details": []
+    },
+   "engine_infos": [
+        {
+            "endpoints": ["party1_url"],
+            "credential": ["party1_credential"]
+        },
+        {
+            "endpoints": ["party2_url"],
+            "credential": ["party2_credential"]
+        }
+   ]
+}
+```

@@ -1,0 +1,397 @@
+:target{#scql-implementation-status}
+
+# SCQL Implementation Status
+
+:target{#select-statement}
+
+## SELECT Statement
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        syntax
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <LineBlock>
+          join
+
+          <br />
+        </LineBlock>
+      </td>
+
+      <td>
+        <LineBlock>
+          partial
+
+          <br />
+        </LineBlock>
+      </td>
+
+      <td>
+        <LineBlock>
+          \- currently only inner join is supported
+
+          \- keyword <code>using</code> is not supported yet
+        </LineBlock>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        where clause
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        group by clause
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        having clause
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        union/union all clause
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        distinct clause
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        limit clause
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        order by clause
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td />
+    </tr>
+  </tbody>
+</table>
+
+:target{#functions-and-operators}
+
+## Functions and Operators
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Category
+      </td>
+
+      <td>
+        Functions and Operators
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        aggregation
+      </td>
+
+      <td>
+        sum
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        aggregation
+      </td>
+
+      <td>
+        count
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        aggregation
+      </td>
+
+      <td>
+        avg
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        aggregation
+      </td>
+
+      <td>
+        min
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        aggregation
+      </td>
+
+      <td>
+        max
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        arithmetic
+      </td>
+
+      <td>
+        +,-,\*,/,div
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+        div means <code>integer division</code>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        logical
+      </td>
+
+      <td>
+        logical\_and,logical\_or,not
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        compare
+      </td>
+
+      <td>
+        \<,\<=,>,>=
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        string data comparison is not supported
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        compare
+      </td>
+
+      <td>
+        \=, !=
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        in
+      </td>
+
+      <td>
+        in, not in
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        all arguments should be of the same type
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#data-source}
+
+## Data Source
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Database Type
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        MySQL
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        PostgreSQL
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        CSV
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        Data stored in csv files
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<Container type="warning">
+  SCQL supports different databases as data source, but there may be minor differences in the results due to data type differences built in databases. Please choose backend database with caution.
+</Container>

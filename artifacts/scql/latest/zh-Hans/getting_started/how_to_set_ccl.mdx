@@ -1,0 +1,378 @@
+:target{#ccl-setting-suggestions}
+
+# CCL 配置建议
+
+本文档将给出一些典型场景下 CCL 配置示例。在实际场景中您可以根据您的需求进行 CCL 配置。
+
+:target{#pre-knowledge}
+
+## 预备知识
+
+什么是 SCQL CCL？请参阅 [SCQL CCL](../reference/scql_ccl_intro.mdx)。
+
+Grant CCL 语法，请参阅 [Grant/Revoke CCL](../reference/scql_manual.mdx#scql-grant-revoke)。
+
+:target{#examples}
+
+## 示例
+
+本小节将根据不同的查询场景示例给出 CCL 配置建议。
+
+下面以 Alice 和 Bob 的联合分析为例进行说明，参与方 Alice 拥有表 <code>t1</code>，该表包含字段 <code>id</code>，<code>credit\_rank</code>，<code>income</code>，<code>join\_date</code> 和 <code>age</code>。参与方 Bob 拥有表 <code>t2</code>，该表包含字段 <code>id</code>，<code>age</code>，<code>order\_amount</code>，<code>is\_active</code>，<code>admin\_date</code>，<code>out\_date</code>。
+
+如下所示，我们以三元组的形式展示 CCL 配置。
+
+<code>\<src\_column, dest\_party, constraint></code>
+
+这意味着 <code>dest\_party</code> 对 <code>src\_column</code> 的访问约束为 <code>constraint</code>。若参与方存在多列相同的 CCL，它将缩写为如下形式。
+
+<code>\<\[src\_column1,src\_column2,...], dest\_party, constraint></code>。
+
+:target{#get-intersection-case}
+
+### 求交场景
+
+:target{#get-the-intersection-of-ids-using-join}
+
+#### 使用 join 获取 ids 的交集
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>Alice 表 t1 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Bob, PLAINTEXT\_AFTER\_JOIN></code>
+      - <code>\<id, Alice, PLAINTEXT></code>
+    </dd>
+
+    <dt>
+      <DefinitionList.Term><span>Bob 表 t2 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Alice, PLAINTEXT\_AFTER\_JOIN></code>
+      - <code>\<id, Bob, PLAINTEXT></code>
+    </dd>
+  </dl>
+</DefinitionList>
+
+```SQL
+-- Both Alice and Bob can get the intersection of ids
+select t1.id from t1 join t2 on t1.id = t2.id;
+```
+
+:target{#get-ids-both-in-t1-id-and-in-t2-id-using-in}
+
+#### 使用 in 获取 t1.id 和 t2.id 中均存在的 id
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>Alice 表 t1 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Bob, PLAINTEXT\_AFTER\_COMPARE></code>
+      - <code>\<id, Alice, PLAINTEXT></code>
+    </dd>
+
+    <dt>
+      <DefinitionList.Term><span>Bob 表 t2 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Alice, PLAINTEXT\_AFTER\_COMPARE></code>
+      - <code>\<id, Bob, PLAINTEXT></code>
+    </dd>
+  </dl>
+</DefinitionList>
+
+```SQL
+-- Both Alice and Bob can get the results
+-- Alice get the results by executing this query
+select id from t1 where t1.id in (select id from t2);
+-- Bob get the results by executing this query
+select id from t2 where t2.id in (select id from t1);
+```
+
+<strong>更严格的 CCL</strong>
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>Alice 表 t1 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Bob, ENCRYPTED\_ONLY></code>
+      - <code>\<id, Alice, PLAINTEXT></code>
+    </dd>
+
+    <dt>
+      <DefinitionList.Term><span>Bob 表 t2 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Alice, PLAINTEXT\_AFTER\_COMPARE></code>
+      - <code>\<id, Bob, PLAINTEXT></code>
+    </dd>
+  </dl>
+</DefinitionList>
+
+```SQL
+-- Only Alice can get the results. An error occurs when Bob executes this query
+select id from t1 where t1.id in (select id from t2);
+```
+
+:target{#aggregation-case}
+
+### 聚合场景
+
+:target{#analyze-data-using-aggregation-functions-with-group-by}
+
+#### 使用带有 group by 的聚合函数进行数据分析
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>Alice 表 t1 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Bob, PLAINTEXT\_AFTER\_JOIN></code>
+      - <code>\<\[id, age, income, credit\_rank], Alice, PLAINTEXT></code>
+      - <code>\<\[age, income], Bob, PLAINTEXT\_AFTER\_AGGREGATE></code>
+      - <code>\<credit\_rank, Bob, PLAINTEXT\_AFTER\_GROUP\_BY></code>
+    </dd>
+
+    <dt>
+      <DefinitionList.Term><span>Bob 表 t2 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Alice, PLAINTEXT\_AFTER\_JOIN></code>
+      - <code>\<\[id, age, order\_amount, is\_active], Bob, PLAINTEXT></code>
+      - <code>\<\[age, order\_amount], Alice, PLAINTEXT\_AFTER\_AGGREGATE></code>
+      - <code>\<is\_active, Alice, PLAINTEXT\_AFTER\_GROUP\_BY></code>
+    </dd>
+  </dl>
+</DefinitionList>
+
+```SQL
+-- Query can be executed by user Alice/Bob and get the results
+select t1.credit_rank, t2.is_active, count(*), max(t1.age), min(t1.age), avg(t1.income), sum(t1.income) from t1 join t2 on t1.id = t2.id group by t1.credit_rank, t2.is_active having count(*) <= 5;
+select t1.credit_rank, t2.is_active, count(*), max(t2.age), min(t2.age), avg(t2.order_amount), sum(t2.order_amount) from t1 join t2 on t1.id = t2.id group by t1.credit_rank, t2.is_active having count(*) <= 5;
+```
+
+<strong>更严格的 CCL</strong>
+
+如果 Alice 不希望将 age/income 信息泄露给 Bob，那么 Alice 仅需将 group by key 的 CCL 约束设置为 <code>ENCRYPTED\_ONLY</code>。Bob 的 CCL 配置与先前配置保持一致，并按照如下设定修改 Alice 的 CCL 配置即可。
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>Alice 表 t1 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Bob, PLAINTEXT\_AFTER\_JOIN></code>
+      - <code>\<\[id, age, income, credit\_rank], Alice, PLAINTEXT></code>
+      - <code>\<\[age, income], Bob, ENCRYPTED\_ONLY></code>
+      - <code>\<credit\_rank, Bob, PLAINTEXT\_AFTER\_GROUP\_BY></code>
+    </dd>
+  </dl>
+</DefinitionList>
+
+```SQL
+-- Query can be executed by user Alice and get the results
+select t1.credit_rank, t2.is_active, count(*), max(t1.age), min(t1.age), avg(t1.income), sum(t1.income) from t1 join t2 on t1.id = t2.id group by t1.credit_rank, t2.is_active having count(*) <= 5;
+-- Query can be executed by user Alice/Bob and get the results
+select t1.credit_rank, t2.is_active, count(*), max(t2.age), min(t2.age), avg(t2.order_amount), sum(t2.order_amount) from t1 join t2 on t1.id = t2.id group by t1.credit_rank, t2.is_active having count(*) <= 5;
+```
+
+:target{#analyze-data-using-aggregation-functions-without-group-by}
+
+#### 使用不带有 group by 的聚合函数进行数据分析
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>Alice 表 t1 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Bob, PLAINTEXT\_AFTER\_JOIN></code>
+      - <code>\<\[id, age, income], Alice, PLAINTEXT></code>
+      - <code>\<\[age, income], Bob, PLAINTEXT\_AFTER\_AGGREGATE></code>
+    </dd>
+
+    <dt>
+      <DefinitionList.Term><span>Bob 表 t2 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Alice, PLAINTEXT\_AFTER\_JOIN></code>
+      - <code>\<\[id, age, order\_amount], Bob, PLAINTEXT></code>
+      - <code>\<\[age, order\_amount], Alice, PLAINTEXT\_AFTER\_AGGREGATE></code>
+    </dd>
+  </dl>
+</DefinitionList>
+
+<strong>不使用 group by 的查询</strong>
+
+```SQL
+-- Query can be executed by user Alice/Bob and get the results
+select count(*), max(t1.age), min(t1.age), avg(t1.income), sum(t1.income) from t1 join t2 on t1.id = t2.id;
+select count(*), max(t2.age), min(t2.age), avg(t2.order_amount), sum(t2.order_amount) from t1 join t2 on t1.id = t2.id;
+```
+
+:target{#filter-data-before-analyzing-it}
+
+### 在分析之前进行数据过滤
+
+:target{#case-1-filter-data}
+
+#### 场景 1：数据过滤
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>Alice 表 t1 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Bob, PLAINTEXT\_AFTER\_JOIN></code>
+      - <code>\<\[id, age, income, credit\_rank], Alice, PLAINTEXT></code>
+      - <code>\<age, Bob, PLAINTEXT\_AFTER\_COMPARE></code>
+      - <code>\<income, Bob, PLAINTEXT\_AFTER\_AGGREGATE></code>
+      - <code>\<credit\_rank, Bob, PLAINTEXT\_AFTER\_GROUP\_BY></code>
+    </dd>
+
+    <dt>
+      <DefinitionList.Term><span>Bob 表 t2 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Alice, PLAINTEXT\_AFTER\_JOIN></code>
+      - <code>\<\[id, age, order\_amount, is\_active], Bob, PLAINTEXT></code>
+      - <code>\<age, Alice, PLAINTEXT\_AFTER\_COMPARE></code>
+      - <code>\<order\_amount, Alice, PLAINTEXT\_AFTER\_AGGREGATE></code>
+      - <code>\<is\_active, Alice, PLAINTEXT\_AFTER\_GROUP\_BY></code>
+    </dd>
+  </dl>
+</DefinitionList>
+
+```SQL
+-- Query can be executed by user Alice/Bob and get the results
+select count(*), sum(t1.income) from t1 join t2 on t1.id = t2.id where t1.age > t2.age group by t1.credit_rank, t2.is_active having count(*) <= 5;
+select count(*), sum(t2.order_amount) from t1 join t2 on t1.id = t2.id where t1.age > t2.age group by t1.credit_rank, t2.is_active having count(*) <= 5;
+```
+
+:target{#case-2-get-the-results-of-compare-operators}
+
+#### 场景 2：获取比较运算操作的结果
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>Alice 表 t1 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Bob, PLAINTEXT\_AFTER\_JOIN></code>
+      - <code>\<\[id, income, join\_date], Alice, PLAINTEXT></code>
+      - <code>\<\[join\_date, income], Bob, PLAINTEXT\_AFTER\_COMPARE></code>
+    </dd>
+
+    <dt>
+      <DefinitionList.Term><span>Bob 表 t2 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<id, Alice, PLAINTEXT\_AFTER\_JOIN></code>
+      - <code>\<\[id, age, order\_amount, admin\_date, out\_date], Bob, PLAINTEXT></code>
+      - <code>\<\[age, admin\_date, out\_date], Alice, ENCRYPTED\_ONLY></code>
+      - <code>\<order\_amount, Alice, PLAINTEXT\_AFTER\_COMPARE></code>
+    </dd>
+  </dl>
+</DefinitionList>
+
+```SQL
+-- Query can be executed by user Bob and get the results
+select t2.id, t2.age, t2.age in (50, 60, 70) as r, (t1.join_date >= t2.admin_date) and (t1.join_date <= t2.out_date) as in_home from t1 join t2 on t1.id = t2.id where t1.income > t2.order_amount * 100;
+```
+
+:target{#data-insensitive-case-test-case}
+
+### 非敏感数据场景/测试场景
+
+如果数据并非敏感或者仅是测试用例，您可以将所有数据设置为 PLAINTEXT，那么几乎所有的查询都不会被 CCL checking 所拒绝。但是进行这样的配置时应该格外小心，否则其他用户可以很容易选择到您的所有数据。
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>Alice 表 t1 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<\[id, age, income, credit\_rank], Alice, PLAINTEXT></code>
+      - <code>\<\[id, age, income, credit\_rank], Bob, PLAINTEXT></code>
+    </dd>
+
+    <dt>
+      <DefinitionList.Term><span>Bob 表 t2 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<\[id, age, order\_amount, is\_active], Alice, PLAINTEXT></code>
+      - <code>\<\[id, age, order\_amount, is\_active], Bob, PLAINTEXT></code>
+    </dd>
+  </dl>
+</DefinitionList>
+
+```SQL
+-- Query can be executed by user Alice/Bob and get the results
+select t1.id from t1 join t2 on t1.id = t2.id;
+select count(*), max(t1.age), min(t2.age), avg(income), sum(order_amount) from t1 join t2 on t1.id = t2.id group by t1.credit_rank, t2.is_active having count(*);
+select max(t1.age), min(t2.age), avg(income), sum(order_amount) from t1 join t2 on t1.id = t2.id group by t1.credit_rank, t2.is_active having count(*) <= 5;
+select t1.age > t2.age, t1.income = t2.order_amount from t1 join t2 on t1.id = t2.id;
+select t1.age, t1.credit_rank from t1 join t2 on t1.id = t2.id where t1.age > t2.age;
+select t2.age, t2.order_amount from t1 join t2 on t1.id = t2.id where t1.age > t2.age;
+select t1.credit_rank + t2.order_amount, t1.credit_rank * t1.income > t2.is_active * t2.order_amount from t1 join t2 on t1.id = t2.id where t1.age + t2.age > 10 and t1.income + t2.order_amount > 3000;
+```
+
+:target{#encrypt-case}
+
+### Encrypt CCL 场景
+
+如果您认为数据极度敏感，那么您应当将这些数据设置为 <code>ENCRYPTED\_ONLY</code>， 这样的设定下仅能执行聚合函数的 count 操作。
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>Alice 表 t1 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<\[id, age, income, credit\_rank], Alice, PLAINTEXT></code>
+      - <code>\<\[id, age, income, credit\_rank], Bob, ENCRYPTED\_ONLY></code>
+    </dd>
+
+    <dt>
+      <DefinitionList.Term><span>Bob 表 t2 的 CCL 配置</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - <code>\<\[id, age, order\_amount, is\_active], Alice, ENCRYPTED\_ONLY></code>
+      - <code>\<\[id, age, order\_amount, is\_active], Bob, PLAINTEXT></code>
+    </dd>
+  </dl>
+</DefinitionList>
+
+```SQL
+-- Query can be executed by user Alice/Bob and get the results
+select count(*) from t2;
+select count(*) from t1;
+```

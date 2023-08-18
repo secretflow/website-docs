@@ -1,0 +1,293 @@
+:target{#scql-manual}
+
+# SCQL Manual
+
+:target{#scql-data-types}
+
+## SCQL Data Types
+
+SCQL supports frequently-used data types, as illustrated in the following table.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Data Type
+      </td>
+
+      <td>
+        Alias
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>integer</code>
+      </td>
+
+      <td>
+        <code>int</code>, <code>long</code>, <code>int64</code>
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        <code>float</code>
+      </td>
+
+      <td>
+        <code>double</code>
+      </td>
+
+      <td>
+        both storage and computation are done in type float32
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>string</code>
+      </td>
+
+      <td>
+        <code>str</code>
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        <code>datetime</code>
+      </td>
+
+      <td />
+
+      <td>
+        not supported yet, coming soon
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>timestamp</code>
+      </td>
+
+      <td />
+
+      <td>
+        not supported yet, coming soon
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#scql-statements}
+
+## SCQL Statements
+
+SCQL is compatible with most MySQL syntax, which makes it easy to use. For syntax differences between SCQL and MySQL, please read [MySQL Compatibility](mysql_compatibility.mdx).
+
+:target{#create-drop-alter-user-statement}
+
+### CREATE/DROP/ALTER USER Statement
+
+```SQL
+CREATE USER [IF NOT EXISTS] user PARTY_CODE party_code IDENTIFIED BY 'auth_string'
+
+DROP USER [IF EXISTS] user
+
+ALTER USER [IF EXISTS] user IDENTIFIED BY 'new_auth_string'
+```
+
+Examples:
+
+```SQL
+-- create an user named alice,
+-- with password `alice123`,
+-- belongs to party `party_alice`
+CREATE USER alice PARTY_CODE "party_alice" IDENTIFIED BY "alice123";
+
+-- drop user alice
+DROP USER alice;
+
+-- change user alice password
+ALTER USER alice IDENTIFIED BY "new_password";
+```
+
+:target{#create-drop-database-statement}
+
+### CREATE/DROP DATABASE Statement
+
+```SQL
+CREATE DATABASE [IF NOT EXISTS] database;
+
+DROP DATABASE [IF EXISTS] database;
+```
+
+Examples:
+
+```SQL
+-- create db `db_test`
+CREATE DATABASE db_test;
+
+-- drop db `db_test`
+DROP DATABASE db_test;
+```
+
+:target{#create-drop-table-statement}
+
+### CREATE/DROP TABLE Statement
+
+```SQL
+CREATE TABLE [IF NOT EXISTS] tbl_name TID [=] value
+
+DROP TABLE [IF EXISTS] tbl_name
+```
+
+<Container type="note">
+  Create table here means mapping ‘tbl\_name’ to the existing physic table, which is specified by ‘TID’ and located on the relevant parties.
+  In SCQL, user runs queries on virtual table, which helps simplify privilege control and usage.
+</Container>
+
+Examples:
+
+```SQL
+-- create a table `ta` in database `db_test`,
+-- the new table references the table with TID = `table-id` in GRM,
+-- SCQL would fetch the table schema from GRM with given `TID`.
+CREATE TABLE db_test.ta TID="table-id";
+
+DROP TABLE db_test.ta;
+```
+
+:target{#grant-revoke-statement}
+
+### GRANT/REVOKE Statement
+
+```SQL
+GRANT
+extend_priv_type [(column_list)]
+  [, extend_priv_type[(column_list)]] ...
+ON priv_level
+TO user
+
+REVOKE [IF EXISTS]
+extend_priv_type [(column_list)]
+  [, extend_priv_type[(column_list)]] ...
+ON priv_level
+FROM user
+
+extend_priv_type:
+    priv_type | SELECT [CCL level]
+```
+
+Examples:
+
+```SQL
+-- GRANT privileges
+GRANT CREATE VIEW on db.* to alice;
+GRANT SHOW, DESCRIBE ON db.* TO 'someuser'@'somehost';
+-- GRANT CCL
+GRANT SELECT PLAINTEXT_AFTER_JOIN(column) on db.table to user;
+-- REVOKE CCL
+REVOKE SELECT PLAINTEXT_AFTER_AGGREGATE(column) ON db.table FROM user;
+```
+
+:target{#show-describe-statement}
+
+### SHOW/DESCRIBE Statement
+
+```SQL
+SHOW DATABASES;
+
+SHOW TABLES;
+
+SHOW GRANTS on <db_name> FOR <user>;
+
+DESCRIBE <db_name>.<table_name>;
+```
+
+:target{#select-statement}
+
+### SELECT Statement
+
+```SQL
+SELECT [DISTINCT] select_expr [, select_expr] ...
+[FROM table_reference]
+[WHERE where_condition]
+[GROUP BY column]
+
+select_expr:
+    col_reference [AS alias]
+
+col_reference:
+    column
+| agg_function(column)
+
+column:
+    *
+| db_name.tbl_name.col_name field_as_name_opt
+| alias.col_name field_as_name_opt
+| expression field_as_name_opt
+
+field_as_name_opt:
+    ""
+| field_as_name
+
+field_as_name:
+    identifier
+| "AS" identifier
+
+table_reference:
+    table_factor
+| join_table
+| union_table
+
+table_factor:
+    db_name.tbl_name [[AS] alias]
+
+join_table:
+    table_reference [INNER] JOIN table_factor [join_specification]
+
+union_table:
+    select_expr
+    | UNION [ALL] union_table
+
+join_specification:
+    ON search_condition
+
+expression:
+    expression "SUPPORTED_OP" expression
+    | "NOT" expression
+    | predicate_expr
+
+predicate_expr:
+    column InOrNotOp '(' expression_list ')'
+    | column InOrNotOp sub_select
+    | column
+
+sub_select:
+    '(' select_stmt ')'
+```
+
+<strong>Limitation:</strong>
+
+- <code>JOIN</code> only supports
+  > - <code>INNER JOIN</code>
+
+:target{#functions-and-operators}
+
+## Functions and Operators
+
+<Container type="todo_node" id="id2" title={"Todo"}>
+  this part is not ready, please check later
+</Container>
