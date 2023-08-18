@@ -1,0 +1,317 @@
+:target{#使用-SPU-进行逻辑回归}
+
+# 使用 SPU 进行逻辑回归
+
+> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+[SPU](https://www.secretflow.org.cn/docs/spu/en/) 是一个特定领域的编译器和运行时套件，提供可证明的安全计算服务。SPU编译器使用 [XLA](https://www.tensorflow.org/xla) 作为前端IR，支持多种AI框架（如Tensorflow、JAX和PyTorch）。SPU 编译器将 XLA 转换为可由 SPU 运行时解释的 IR。 目前 SPU 团队强烈推荐使用 [JAX](https://github.com/google/jax) 作为前端。
+
+:target{#学习目标：}
+
+## 学习目标：
+
+After doing this lab, you’ll know how to:
+
+- 如何使用 JAX 编写逻辑回归训练程序。
+- 如何轻松地将 JAX 程序转换为 SPU(MPC) 程序。
+
+在本实验室中，我们选择 [Breast Cancer](https://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+\(diagnostic\)) 作为数据集。 我们需要通过 30 个特征来判断癌症是恶性还是良性。 在 MPC 程序中，两方共同训练模型，每一方提供一半的特征（15）。
+
+While, first, let’s just forget MPC settings and just write a Logistic Regression training program with JAX directly.
+
+:target{#使用-JAX-训练模型}
+
+## 使用 JAX 训练模型
+
+:target{#加载数据集}
+
+### 加载数据集
+
+我们将在使用“breast\_cancer”标准化后将整个数据集拆分为训练和测试子集。 如果 <code>train</code> 是 <code>True</code>，返回训练子集，另外，为了模拟垂直数据集拆分的训练，还需要提供“party\_id”参数。 否则，返回测试子集。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    import numpy as np
+    from sklearn.datasets import load_breast_cancer
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import Normalizer
+
+
+    def breast_cancer(party_id=None, train: bool = True) -> (np.ndarray, np.ndarray):
+        x, y = load_breast_cancer(return_X_y=True)
+        x = (x - np.min(x)) / (np.max(x) - np.min(x))
+        x_train, x_test, y_train, y_test = train_test_split(
+            x, y, test_size=0.2, random_state=42
+        )
+
+        if train:
+            if party_id:
+                if party_id == 1:
+                    return x_train[:, :15], _
+                else:
+                    return x_train[:, 15:], y_train
+            else:
+                return x_train, y_train
+        else:
+            return x_test, y_test
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#定义模型}
+
+### 定义模型
+
+First, let’s define the loss function, which is a negative log-likelihood in our case.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import jax.numpy as jnp
+
+
+    def sigmoid(x):
+        return 1 / (1 + jnp.exp(-x))
+
+
+    # Outputs probability of a label being true.
+    def predict(W, b, inputs):
+        return sigmoid(jnp.dot(inputs, W) + b)
+
+
+    # Training loss is the negative log-likelihood of the training examples.
+    def loss(W, b, inputs, targets):
+        preds = predict(W, b, inputs)
+        label_probs = preds * targets + (1 - preds) * (1 - targets)
+        return -jnp.mean(jnp.log(label_probs))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Second, let’s define a single train step with SGD optimizer. Just to remind you, x1 represents 15 features from one party while x2 represents the other 15 features from the other party.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    from jax import grad
+
+
+    def train_step(W, b, x1, x2, y, learning_rate):
+        x = jnp.concatenate([x1, x2], axis=1)
+        Wb_grad = grad(loss, (0, 1))(W, b, x, y)
+        W -= learning_rate * Wb_grad[0]
+        b -= learning_rate * Wb_grad[1]
+        return W, b
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Last, let’s build everything together as a <code>fit</code> method which returns the model and losses of each epoch.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    def fit(W, b, x1, x2, y, epochs=1, learning_rate=1e-2):
+        for _ in range(epochs):
+            W, b = train_step(W, b, x1, x2, y, learning_rate=learning_rate)
+        return W, b
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#验证模型}
+
+### 验证模型
+
+我们可以使用 AUC 来验证二元分类模型。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    from sklearn.metrics import roc_auc_score
+
+
+    def validate_model(W, b, X_test, y_test):
+        y_pred = predict(W, b, X_test)
+        return roc_auc_score(y_test, y_pred)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#试试！}
+
+### 试试！
+
+Let’s put everything we have together and train a LR model!
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    %matplotlib inline
+
+    # Load the data
+    x1, _ = breast_cancer(party_id=1,train=True)
+    x2, y = breast_cancer(party_id=2,train=True)
+
+    # Hyperparameter
+    W = jnp.zeros((30,))
+    b = 0.0
+    epochs = 10
+    learning_rate = 1e-2
+
+    # Train the model
+    W, b = fit(W, b, x1, x2, y, epochs=10, learning_rate=1e-2)
+
+    # Validate the model
+    X_test, y_test = breast_cancer(train=False)
+    auc=validate_model(W,b, X_test, y_test)
+    print(f'auc={auc}')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"auc=0.9878807730101539\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+请记住这里的 AUC，因为我们想用 SPU 做类似的事情！
+
+:target{#使用-SPU-训练模型}
+
+## 使用 SPU 训练模型
+
+在这一部分，我们将向您展示如何安全地使用 MPC 进行类似的训练！
+
+:target{#初始化环境}
+
+### 初始化环境
+
+我们将在我们的物理环境中初始化三个虚拟设备。 - alice, bob：两个用于本地明文计算的 PYU 设备。- spu：SPU 设备由 alice 和 bob 组成，用于 MPC 安全计算。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+
+    sf.init(['alice', 'bob'], address='local')
+
+    alice, bob = sf.PYU('alice'), sf.PYU('bob')
+    spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id1}
+
+### 加载数据集
+
+我们指示 alice 和 bob 分别加载训练子集。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    x1, _ = alice(breast_cancer)(party_id=1)
+    x2, y = bob(breast_cancer)(party_id=2)
+
+    x1, x2, y
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="output">
+    <pre>
+      {"(<secretflow.device.device.pyu.PYUObject at 0x7f74b6586a30>,\n <secretflow.device.device.pyu.PYUObject at 0x7f74b58fd6d0>,\n <secretflow.device.device.pyu.PYUObject at 0x7f74b58fd8e0>)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+在训练之前，我们需要将超参数和所有数据传递给 SPU 设备。 SecretFlow 提供两种方法： - secretflow\.to：将 PythonObject 或 DeviceObject 传输到特定设备。 - DeviceObject.to：将 DeviceObject 传输到特定设备。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    device = spu
+
+    W = jnp.zeros((30,))
+    b = 0.0
+
+    W_, b_, x1_, x2_, y_ = (
+        sf.to(alice, W).to(device),
+        sf.to(alice, b).to(device),
+        x1.to(device),
+        x2.to(device),
+        y.to(device),
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#训练模型}
+
+### 训练模型
+
+现在我们准备好用 SPU 训练一个 LR 模型。 经过训练，损失和模型是仍然保密的 SPU 对象。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    W_, b_ = device(
+        fit,
+        static_argnames=['epochs'],
+        num_returns_policy=sf.device.SPUCompilerNumReturnsPolicy.FROM_USER,
+        user_specified_num_returns=2,
+    )(W_, b_, x1_, x2_, y_, epochs=10, learning_rate=1e-2)
+
+    W_, b_
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="output">
+    <pre>
+      {"(<secretflow.device.device.spu.SPUObject at 0x7f7608ad88e0>,\n <secretflow.device.device.spu.SPUObject at 0x7f7608ad83a0>)\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime pid=1525949)"}</span>{" 2023-03-14 12:59:46.548 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 127\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=1525959)"}</span>{" 2023-03-14 12:59:46.548 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 127\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#揭示结果}
+
+### 揭示结果
+
+为了检查训练的模型，我们需要将 SPUObject(secret) 转换为 Python object(明文)。 SecretFlow 提供 <code>sf.reveal</code> 将任何 DeviceObject 转换为 Python object。
+
+> 请小心使用 <code>sf.reveal</code>，因为它可能导致秘密泄露。
+
+Finally, let’s validate the model with AUC.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    auc = validate_model(sf.reveal(W_), sf.reveal(b_), X_test, y_test)
+    print(f'auc={auc}')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"auc=0.987880773010154\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+你可能会发现 SPU 训练程序中的模型达到了与 JAX 程序相同的 AUC。
+
+实验到此结束。

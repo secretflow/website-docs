@@ -1,0 +1,353 @@
+:target{#Using-Custom-DataBuilder-in-SecretFlow-(TensorFlow)}
+
+# Using Custom DataBuilder in SecretFlow (TensorFlow)
+
+The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+In this tutorial, we will show you how to load data and train model using the custom DataBuilder schema in the multi-party secure environment of SecretFlow. This tutorial will use the image classification task of the Flower dataset to introduce, how to use the custom DataBuilder to complete federated learning.
+
+:target{#Environment-Setting}
+
+## Environment Setting
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    %load_ext autoreload
+    %autoreload 2
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+    sf.init(['alice', 'bob', 'charlie'], address="local", log_to_driver=False)
+    alice, bob ,charlie = sf.PYU('alice'), sf.PYU('bob') , sf.PYU('charlie')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Interface-Introduction}
+
+## Interface Introduction
+
+We support custom DataBuilder reads in SecretFlow’s <code>FLModel</code> to make it easier for users to handle data inputs more flexibly according to their needs. Let’s use an example to demonstrate how to use the custom DataBuilder for federated model training.
+
+Steps to use DataBuilder:
+
+1. Use the single-machine version engine (TensorFlow, PyTorch) to develop and get the Builder function of the Dataset.
+2. Wrap the Builder functions of each party to get <code>create\_dataset\_builder</code> function. <em>Note: The dataset\_builder needs to pass in the stage parameter.</em>
+3. Build the data\_builder\_dict \[PYU, dataset\_builder].
+4. Pass the obtained data\_builder\_dict to the <code>dataset\_builder</code> of the <code>fit</code> function. At the same time, the x parameter position is passed into the required input in dataset\_builder (eg: the input passed in this example is the actual image path used).
+
+Using DataBuilder in FLModel requires a pre-defined <code>data\_builder\_dict</code>. Need to be able to return <code>tf.dataset</code> and <code>steps\_per\_epoch</code>. And the steps\_per\_epoch returned by all parties must be consistent.
+
+```python
+data_builder_dict =
+        {
+            alice: create_alice_dataset_builder(
+                batch_size=32,
+            ), # create_alice_dataset_builder must return (Dataset, steps_per_epoch)
+            bob: create_bob_dataset_builder(
+                batch_size=32,
+            ), # create_bob_dataset_builder must return (Dataset, steps_per_epochstep_per_epochs)
+        }
+```
+
+:target{#Download-Data}
+
+## Download Data
+
+Flower Dataset Introduction: The Flower dataset consists of 4323 color images of 5 different types of flowers (daisy, dandelion, rose, sunflower, and tulip). Each flower has images from multiple angles and different lighting conditions, and the resolution of each image is 320x240. This dataset is commonly used for training and testing of image classification and machine learning algorithms. The number of each category in the dataset is as follows: daisy (633), dandelion (898), rose (641),
+sunflower (699), and tulip (852).
+
+Download link: [http://download.tensorflow.org/example\_images/flower\_photos.tgz](http://download.tensorflow.org/example_images/flower_photos.tgz)
+
+![flower\_dataset\_demo.png](../_assets/flower_dataset_demo.png)
+
+:target{#Download-Data-and-Unzip}
+
+### Download Data and Unzip
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    import tempfile
+    import tensorflow as tf
+
+    _temp_dir = tempfile.mkdtemp()
+    path_to_flower_dataset = tf.keras.utils.get_file(
+        "flower_photos",
+        "https://secretflow-data.oss-accelerate.aliyuncs.com/datasets/tf_flowers/flower_photos.tgz",
+        untar=True,
+        cache_dir=_temp_dir,
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Downloading data from https://secretflow-data.oss-accelerate.aliyuncs.com/datasets/tf_flowers/flower_photos.tgz\n67588319/67588319 [==============================] - 1s 0us/step\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Next let’s start building a custom DataBuilder
+
+:target{id="1.-Develop-DataBuilder-with-single-machine-version-engine"}
+
+## 1. Develop DataBuilder with single-machine version engine
+
+When we develop DataBuilder, we are free to follow the logic of single-machine development. The purpose is to build a <code>tf.dataset</code> object.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    import math
+    import tensorflow as tf
+
+    img_height = 180
+    img_width = 180
+    batch_size = 32
+    # In this example, we use the TensorFlow interface for development.
+    data_set = tf.keras.utils.image_dataset_from_directory(
+        path_to_flower_dataset,
+        validation_split=0.2,
+        subset="both",
+        seed=123,
+        image_size=(img_height, img_width),
+        batch_size=batch_size,
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Found 436 files belonging to 5 classes.\nUsing 349 files for training.\nUsing 87 files for validation.\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    train_set = data_set[0]
+    test_set = data_set[1]
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    print(type(train_set),type(test_set))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"<class 'tensorflow.python.data.ops.dataset_ops.BatchDataset'> <class 'tensorflow.python.data.ops.dataset_ops.BatchDataset'>\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    x,y = next(iter(train_set))
+    print(f"x.shape = {x.shape}")
+    print(f"y.shape = {y.shape}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"x.shape = (32, 180, 180, 3)\ny.shape = (32,)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="2.-Wrap-the-developed-DataBuilder"}
+
+## 2. Wrap the developed DataBuilder
+
+The DataBuilder we developed needs to be distributed to each execution machine for execution, and we need to wrap them in order to serialize. Note: <strong>FLModel requires the incoming DataBuilder return two results (data\_set, steps\_per\_epoch).</strong>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    def create_dataset_builder(
+            batch_size=32,
+        ):
+        def dataset_builder(folder_path, stage="train"):
+            import math
+
+            import tensorflow as tf
+
+            img_height = 180
+            img_width = 180
+            data_set = tf.keras.utils.image_dataset_from_directory(
+                folder_path,
+                validation_split=0.2,
+                subset="both",
+                seed=123,
+                image_size=(img_height, img_width),
+                batch_size=batch_size,
+            )
+            if stage == "train":
+                train_dataset = data_set[0]
+                train_step_per_epoch = math.ceil(
+                    len(data_set[0].file_paths) / batch_size
+                )
+                return train_dataset, train_step_per_epoch
+            elif stage == "eval":
+                eval_dataset = data_set[1]
+                eval_step_per_epoch = math.ceil(
+                    len(data_set[1].file_paths) / batch_size
+                )
+                return eval_dataset, eval_step_per_epoch
+
+        return dataset_builder
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="3.-Build-dataset_builder_dict"}
+
+## 3. Build dataset\_builder\_dict
+
+In the horizontal scenario, the logic for all parties to process data is the same, so we only need a wrapped DataBuilder construction method. Next we build the <code>dataset\_builder\_dict</code>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    data_builder_dict = {
+        alice: create_dataset_builder(
+            batch_size=32,
+        ),
+        bob: create_dataset_builder(
+            batch_size=32,
+        ),
+    }
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="4.-After-get-dataset_builder_dict,-we-can-pass-it-into-the-model-for-use"}
+
+## 4. After get dataset\_builder\_dict, we can pass it into the model for use
+
+Next we define the model and use the custom data constructed above for training
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    def create_conv_flower_model(input_shape, num_classes, name='model'):
+        def create_model():
+            from tensorflow import keras
+            # Create model
+
+            model = keras.Sequential(
+                [
+                    keras.Input(shape=input_shape),
+                    tf.keras.layers.Rescaling(1.0 / 255),
+                    tf.keras.layers.Conv2D(32, 3, activation='relu'),
+                    tf.keras.layers.MaxPooling2D(),
+                    tf.keras.layers.Conv2D(32, 3, activation='relu'),
+                    tf.keras.layers.MaxPooling2D(),
+                    tf.keras.layers.Conv2D(32, 3, activation='relu'),
+                    tf.keras.layers.MaxPooling2D(),
+                    tf.keras.layers.Flatten(),
+                    tf.keras.layers.Dense(128, activation='relu'),
+                    tf.keras.layers.Dense(num_classes),
+                ]
+            )
+            # Compile model
+            model.compile(
+                loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                optimizer='adam',
+                metrics=["accuracy"],
+            )
+            return model
+
+        return create_model
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    from secretflow.ml.nn import FLModel
+    from secretflow.security.aggregation import SecureAggregator
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
+    ```python
+    device_list = [alice, bob]
+    aggregator = SecureAggregator(charlie,[alice,bob])
+
+    # prepare model
+    num_classes = 5
+    input_shape = (180, 180, 3)
+
+    # keras model
+    model = create_conv_flower_model(input_shape, num_classes)
+
+
+    fed_model = FLModel(
+        device_list=device_list,
+        model=model,
+        aggregator=aggregator,
+        backend="tensorflow",
+        strategy="fed_avg_w",
+        random_seed=1234,
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+The input of our constructed dataset builder is the path of the image dataset, so we need to set the input data as a <code>Dict</code> here.
+
+```python
+data = {
+    alice: folder_path_of_alice,
+    bob: folder_path_of_bob
+}
+```
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
+    ```python
+    data={
+            alice: path_to_flower_dataset,
+            bob: path_to_flower_dataset,
+        }
+    history = fed_model.fit(
+        data,
+        None,
+        validation_data=data,
+        epochs=5,
+        batch_size=32,
+        aggregate_freq=2,
+        sampler_method="batch",
+        random_seed=1234,
+        dp_spent_step_freq=1,
+        dataset_builder=data_builder_dict,
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Next, you can use your own dataset to try

@@ -1,0 +1,3661 @@
+:target{#secretflow-component-list}
+
+# SecretFlow组件列表
+
+Last update: Wed Jul 12 14:00:40 2023
+
+Version: 0.0.1
+
+SecretFlow官方组件。
+
+:target{#feature}
+
+## feature
+
+:target{#vert-woe-binning}
+
+### vert\_woe\_binning
+
+组件版本：0.0.1
+
+为垂直分割数据集生成权重信息（WOE）分箱规则。
+
+:target{#attrs}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        secure\_device\_type
+      </td>
+
+      <td>
+        使用 SPU（安全多方计算, MPC）或 HEU（同态加密, HE）来保护桶求和。
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：spu。可选：\[‘spu’，‘heu’]。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        binning\_method
+      </td>
+
+      <td>
+        如何对数值型特征进行分箱：“quantile”（等频）, “chimerge”（来自AAAI92-019的ChiMerge算法：[https://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf）](https://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf%EF%BC%89)
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：quantile。可选：\[‘quantile’，‘chimerge’]。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bin\_num
+      </td>
+
+      <td>
+        一个特征最大分箱数。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 10. 范围: (0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        positive\_label
+      </td>
+
+      <td>
+        标签中表示正例的值。
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 1.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        chimerge\_init\_bins
+      </td>
+
+      <td>
+        ChiMerge初始化分箱的最大bin数。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 100. 范围: (2, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        chimerge\_target\_bins
+      </td>
+
+      <td>
+        如果剩余分箱数量小于或等于此值，则停止合并。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 10. 范围: \[2, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        chimerge\_target\_pvalue
+      </td>
+
+      <td>
+        如果剩余分箱中最大的p值大于此值，则停止合并。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.1. 范围: (0.0, 1.0].
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#inputs}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        用于生成规则的输入数据集。
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+        额外的表属性。 (0) feature\_selects - 应该对哪些特征进行分箱。要选择的最小数量（包括在内）：1。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#outputs}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        woe\_rule
+      </td>
+
+      <td>
+        输出WOE规则
+      </td>
+
+      <td>
+        \[‘sf.rule.woe\_binning’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#vert-woe-substitution}
+
+### vert\_woe\_substitution
+
+组件版本：0.0.1
+
+使用WOE替代规则替代数据集的值。
+
+:target{#id1}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        需要进行替代的垂直分区数据集。
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        woe\_rule
+      </td>
+
+      <td>
+        WOE替代规则。
+      </td>
+
+      <td>
+        \[‘sf.rule.woe\_binning’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id2}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        output\_data
+      </td>
+
+      <td>
+        输出的替代之后的数据集
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ml-eval}
+
+## ml.eval
+
+:target{#biclassification-eval}
+
+### biclassification\_eval
+
+组件版本：0.0.1
+
+数据集上二分类模型的统计评估。
+
+1. summary\_report: SummaryReport
+2. group\_reports: List\[GroupReport]
+3. eq\_frequent\_bin\_report: List\[EqBinReport]
+4. eq\_range\_bin\_report: List\[EqBinReport]
+5. head\_report: List\[PrReport]
+   reports for fpr = 0.001, 0.005, 0.01, 0.05, 0.1, 0.2
+
+:target{#id3}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        bucket\_size
+      </td>
+
+      <td>
+        分桶数。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 10. 范围: \[1, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        min\_item\_cnt\_per\_bucket
+      </td>
+
+      <td>
+        每个桶的最小项目数。如果任何一个桶不满足要求，则会引发错误。出于安全原因，我们要求此参数至少为5。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 5. 范围: \[5, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id4}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        labels
+      </td>
+
+      <td>
+        labels
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’, ‘sf.table.individual’]
+      </td>
+
+      <td>
+        额外的表属性。(0) col - 在数据集中要使用的列名。如果未提供，则默认使用数据集的标签。要选择的最大列数量（包括在内）：1。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        predictions
+      </td>
+
+      <td>
+        predictions
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’, ‘sf.table.individual’]
+      </td>
+
+      <td>
+        额外的表属性。(0) col - 在数据集中要使用的列名。如果未提供，则默认使用数据集的标签。要选择的最大列数量（包括在内）：1。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id5}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        reports
+      </td>
+
+      <td>
+        输出报告
+      </td>
+
+      <td>
+        \[‘sf.report’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#prediction-bias-eval}
+
+### prediction\_bias\_eval
+
+组件版本：0.0.1
+
+计算预测偏差，即预测平均值 - 标签平均值
+
+:target{#id6}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        bucket\_num
+      </td>
+
+      <td>
+        桶数量
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 10. 范围: \[1, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        min\_item\_cnt\_per\_bucket
+      </td>
+
+      <td>
+        每个桶的最小项目数。如果任何一个桶不满足要求，则会引发错误。出于安全原因，我们要求此参数至少为2。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 2. 范围: \[2, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bucket\_method
+      </td>
+
+      <td>
+        分桶方式
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: equal\_width. 允许值: \[‘equal\_width’, ‘equal\_frequency’].
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id7}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        labels
+      </td>
+
+      <td>
+        labels
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’, ‘sf.table.individual’]
+      </td>
+
+      <td>
+        额外的表属性。(0) col - 在数据集中要使用的列名。如果未提供，则默认使用数据集的标签。要选择的最大列数量（包括在内）：1。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        predictions
+      </td>
+
+      <td>
+        predictions
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’, ‘sf.table.individual’]
+      </td>
+
+      <td>
+        额外的表属性。(0) col - 在数据集中要使用的列名。如果未提供，则默认使用数据集的标签。要选择的最大列数量（包括在内）：1。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id8}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        result
+      </td>
+
+      <td>
+        输出报告
+      </td>
+
+      <td>
+        \[‘sf.report’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-pvalue}
+
+### ss\_pvalue
+
+组件版本：0.0.1
+
+通过使用秘密共享计算垂直分区数据集上的LR模型训练的P值。对于大型数据集（大于10w个样本和200个特征），建议使用\[Ring size: 128，Fxp: 40]选项来 SPU 设备。
+
+:target{#id9}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        model
+      </td>
+
+      <td>
+        输入模型
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_sgd’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        输入数据集
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id10}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        report
+      </td>
+
+      <td>
+        输出报告
+      </td>
+
+      <td>
+        \[‘sf.report’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ml-predict}
+
+## ml.predict
+
+:target{#sgb-predict}
+
+### sgb\_predict
+
+组件版本：0.0.1
+
+使用SGB模型进行预测。
+
+:target{#id11}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        receiver
+      </td>
+
+      <td>
+        接收方
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        默认 .
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        pred\_name
+      </td>
+
+      <td>
+        预测值列名
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：pred.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_ids
+      </td>
+
+      <td>
+        是否将ids列保存到输出预测表中。如果为true，则输入feature\_dataset必须包含id列，并且接收方必须是id所有者。
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：False。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_label
+      </td>
+
+      <td>
+        是否将真实标签列保存到输出预测表中。如果为true，则输入的feature\_dataset必须包含标签列，并且接收方必须是标签所有者。
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：False。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id12}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        model
+      </td>
+
+      <td>
+        model
+      </td>
+
+      <td>
+        \[‘sf.model.sgb’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        feature\_dataset
+      </td>
+
+      <td>
+        输入特征数据集。
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id13}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        pred
+      </td>
+
+      <td>
+        输出预测值
+      </td>
+
+      <td>
+        \[‘sf.table.individual’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-sgd-predict}
+
+### ss\_sgd\_predict
+
+组件版本：0.0.1
+
+使用 SS-SGD 模型预测
+
+:target{#id14}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        batch\_size
+      </td>
+
+      <td>
+        在一次迭代中使用的训练样本数量。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 1024. 范围: (0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        receiver
+      </td>
+
+      <td>
+        接收方
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        默认 .
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        pred\_name
+      </td>
+
+      <td>
+        预测值列名
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：pred.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_ids
+      </td>
+
+      <td>
+        是否将ids列保存到输出预测表中。如果为true，则输入feature\_dataset必须包含id列，并且接收方必须是id所有者。
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：False。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_label
+      </td>
+
+      <td>
+        是否将真实标签列保存到输出预测表中。如果为true，则输入的feature\_dataset必须包含标签列，并且接收方必须是标签所有者。
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：False。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id15}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        model
+      </td>
+
+      <td>
+        输入模型
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_sgd’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        feature\_dataset
+      </td>
+
+      <td>
+        输入特征数据集。
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id16}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        pred
+      </td>
+
+      <td>
+        输出预测值
+      </td>
+
+      <td>
+        \[‘sf.table.individual’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-xgb-predict}
+
+### ss\_xgb\_predict
+
+组件版本：0.0.1
+
+使用 SS-XGB 模型预测
+
+:target{#id17}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        receiver
+      </td>
+
+      <td>
+        接收方
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        默认 .
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        pred\_name
+      </td>
+
+      <td>
+        预测值列名
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：pred.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_ids
+      </td>
+
+      <td>
+        是否将ids列保存到输出预测表中。如果为true，则输入feature\_dataset必须包含id列，并且接收方必须是id所有者。
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：False。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_label
+      </td>
+
+      <td>
+        是否将真实标签列保存到输出预测表中。如果为true，则输入的feature\_dataset必须包含标签列，并且接收方必须是标签所有者。
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：False。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id18}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        model
+      </td>
+
+      <td>
+        输入模型
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_xgb’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        feature\_dataset
+      </td>
+
+      <td>
+        输入特征。
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id19}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        pred
+      </td>
+
+      <td>
+        输出预测值
+      </td>
+
+      <td>
+        \[‘sf.table.individual’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ml-train}
+
+## ml.train
+
+:target{#sgb-train}
+
+### sgb\_train
+
+组件版本：0.0.1
+
+此方法使用秘密共享，为垂直分区的数据集设置提供了分类和回归树提升(也称为GBDT、GBM)。
+
+- SGB是SecureBoost的缩写。与更安全的SS-XGB相比，SecureBoost专注于保护标签持有人。
+- 详情请见：[https://arxiv.org/pdf/2005.08479.pdf。](https://arxiv.org/pdf/2005.08479.pdf%E3%80%82)
+
+:target{#id20}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        num\_boost\_round
+      </td>
+
+      <td>
+        boosting轮数
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 10. 范围: \[1, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        max\_depth
+      </td>
+
+      <td>
+        树的最大深度。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 5. 范围: \[1, 16].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        learning\_rate
+      </td>
+
+      <td>
+        用于更新的步长缩小，以防止过拟合。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.1. 范围: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        objective
+      </td>
+
+      <td>
+        指定学习目标。
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: logistic. 可选: \[‘linear’, ‘logistic’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        reg\_lambda
+      </td>
+
+      <td>
+        权重的L2正则化项。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.1. 范围: \[0.0, 10000.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        gamma
+      </td>
+
+      <td>
+        大于0表示启用预修剪枝。如果节点的增益小于此值，则会被修剪。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.1. 范围: \[0.0, 10000.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        subsample
+      </td>
+
+      <td>
+        训练实例的子采样比率。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 1.0. 范围: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        colsample\_by\_tree
+      </td>
+
+      <td>
+        构建每棵树时列的子样本比率
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 1.0. 范围: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        sketch\_eps
+      </td>
+
+      <td>
+        这大致转化为O(1 / sketch\_eps)个桶。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.1. 范围: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        base\_score
+      </td>
+
+      <td>
+        所有实例的初始预测分数，全局偏差。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.0. 范围: \[0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        seed
+      </td>
+
+      <td>
+        伪随机数生成器的种子。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 42. 范围: \[0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        fixed\_point\_parameter
+      </td>
+
+      <td>
+        由 heu 编码的任何浮点数, 将乘以一个刻度并取四舍五入, scale = 2 \*\* fixed\_point\_parameter。值越大可能意味着数值精度越高, 但太大会导致溢出问题。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 20. 范围: \[0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id21}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        train\_dataset
+      </td>
+
+      <td>
+        输入训练数据集
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id22}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        output\_model
+      </td>
+
+      <td>
+        输出模型
+      </td>
+
+      <td>
+        \[‘sf.model.sgb’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-sgd-train}
+
+### ss\_sgd\_train
+
+组件版本：0.0.1
+
+使用秘密共享，通过小批量SGD训练求解器，在垂直划分数据集上训练线性和逻辑回归线性模型。
+
+- SS-SGD是秘密共享SGD训练的缩写
+
+:target{#id23}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        epochs
+      </td>
+
+      <td>
+        完整遍历训练数据的次数。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 10. 范围: \[1, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        learning\_rate
+      </td>
+
+      <td>
+        每次迭代中的步长。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.1. 范围: (0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        batch\_size
+      </td>
+
+      <td>
+        在一次迭代中使用的训练样本数量。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 1024. 范围: (0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        sig\_type
+      </td>
+
+      <td>
+        Sigmoid近似类型。
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: t1. 可选: \[‘real’, ‘t1’, ‘t3’, ‘t5’, ‘df’, ‘sr’, ‘mix’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        reg\_type
+      </td>
+
+      <td>
+        回归类型
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: logistic. 可选: \[‘linear’, ‘logistic’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        penalty
+      </td>
+
+      <td>
+        要使用的惩罚项(又称正则化项)。
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: None. 可选: \[‘None’, ‘l1’, ‘l2’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        l2\_norm
+      </td>
+
+      <td>
+        L2正则化项。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.5. 范围: \[0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        eps
+      </td>
+
+      <td>
+        如果权重的变化率小于此阈值，该模型被认为是收敛的，训练提前停止。0表示禁用。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.001. 范围: (0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id24}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        train\_dataset
+      </td>
+
+      <td>
+        输入训练数据集
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id25}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        output\_model
+      </td>
+
+      <td>
+        输出模型
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_sgd’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-xgb-train}
+
+### ss\_xgb\_train
+
+组件版本：0.0.1
+
+此方法使用秘密共享，为垂直分区的数据集设置提供了分类和回归树提升(也称为GBDT、GBM)。
+
+- SS-XGB是秘密分享XGB的缩写。
+- 详情请见：[https://arxiv.org/pdf/2005.08479.pdf。](https://arxiv.org/pdf/2005.08479.pdf%E3%80%82)
+
+:target{#id26}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        num\_boost\_round
+      </td>
+
+      <td>
+        boosting轮数
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 10. 范围: \[1, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        max\_depth
+      </td>
+
+      <td>
+        树的最大深度。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 5. 范围: \[1, 16].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        learning\_rate
+      </td>
+
+      <td>
+        用于更新的步长缩减，以防止过度拟合。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.1. 范围: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        objective
+      </td>
+
+      <td>
+        指定学习目标。
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: logistic. 可选: \[‘linear’, ‘logistic’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        reg\_lambda
+      </td>
+
+      <td>
+        权重的L2正则化项。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.1. 范围: \[0.0, 10000.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        subsample
+      </td>
+
+      <td>
+        训练实例的子采样比率。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.1. 范围: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        colsample\_by\_tree
+      </td>
+
+      <td>
+        构建每棵树时列的子样本比率
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.1. 范围: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        sketch\_eps
+      </td>
+
+      <td>
+        这大致转化为O(1 / sketch\_eps)个桶。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.1. 范围: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        base\_score
+      </td>
+
+      <td>
+        所有实例的初始预测分数，全局偏差。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.0. 范围: \[0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        seed
+      </td>
+
+      <td>
+        伪随机数生成器的种子。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 42. 范围: \[0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id27}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        train\_dataset
+      </td>
+
+      <td>
+        训练数据集
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id28}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        output\_model
+      </td>
+
+      <td>
+        输出模型
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_xgb’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#preprocessing}
+
+## preprocessing
+
+:target{#feature-filter}
+
+### feature\_filter
+
+组件版本：0.0.1
+
+从数据集中删除特征
+
+:target{#id29}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        in\_ds
+      </td>
+
+      <td>
+        输入数据集
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+        额外的表属性。(0) drop\_features - 要删除的特征。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id30}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        out\_ds
+      </td>
+
+      <td>
+        筛选特征后的输出数据集。
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#psi}
+
+### psi
+
+组件版本：0.0.1
+
+两方之间的PSI（隐私保护交集计算）。
+
+:target{#id31}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        protocol
+      </td>
+
+      <td>
+        PSI 协议
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: ECDH\_PSI\_2PC. 可选: \[‘ECDH\_PSI\_2PC’, ‘KKRT\_PSI\_2PC’, ‘BC22\_PSI\_2PC’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bucket\_size
+      </td>
+
+      <td>
+        在隐私保护交集计算中指定哈希桶大小。较大的值消耗更多内存。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 1048576. 范围: (0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ecdh\_curve\_type
+      </td>
+
+      <td>
+        ECDH PSI的曲线类型。
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: CURVE\_FOURQ. 可选: \[‘CURVE\_25519’, ‘CURVE\_FOURQ’, ‘CURVE\_SM2’, ‘CURVE\_SECP256K1’].
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id32}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        receiver\_input
+      </td>
+
+      <td>
+        Input for receiver
+      </td>
+
+      <td>
+        \[‘sf.table.individual’]
+      </td>
+
+      <td>
+        额外的表属性。(0) key - 用于连接的列。如果未提供，则将使用数据集的ID。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        sender\_input
+      </td>
+
+      <td>
+        发送方的输入
+      </td>
+
+      <td>
+        \[‘sf.table.individual’]
+      </td>
+
+      <td>
+        额外的表属性。(0) key - 用于连接的列。如果未提供，则将使用数据集的ID。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id33}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        psi\_output
+      </td>
+
+      <td>
+        输出
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#train-test-split}
+
+### train\_test\_split
+
+组件版本：0.0.1
+
+将数据集随机切分成训练集和测试集。
+
+- 请参阅：[https://scikit-learn.org/stable/modules/generated/sklearn.model\_selection.train\_test\_split.html](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
+
+:target{#id34}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        train\_size
+      </td>
+
+      <td>
+        要包含在训练子集中的数据集的比例。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.75. 范围: \[0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        test\_size
+      </td>
+
+      <td>
+        要包含在测试子集中的数据集的比例。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.25. 范围: \[0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        random\_state
+      </td>
+
+      <td>
+        指定随机种子
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 1024. 范围: (0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        shuffle
+      </td>
+
+      <td>
+        是否在拆分之前对数据进行洗牌。
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: True.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id35}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        输入数据集
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id36}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        train
+      </td>
+
+      <td>
+        输出训练数据集
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        test
+      </td>
+
+      <td>
+        输出测试数据集
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#stats}
+
+## stats
+
+:target{#ss-pearsonr}
+
+### ss\_pearsonr
+
+组件版本：0.0.1
+
+使用秘密共享计算垂直分区数据集的Pearson积矩相关系数。
+
+- 对于大型数据集（大于10w个样本和200个特征），建议使用\[Ring size: 128，Fxp: 40]选项来 SPU 设备。
+
+:target{#id37}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        输入数据集
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+        额外的表属性。(0) feature\_selects - 指定要计算相关系数的特征。如果为空，将使用所有特征。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id38}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        report
+      </td>
+
+      <td>
+        输出报告
+      </td>
+
+      <td>
+        \[‘sf.report’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-vif}
+
+### ss\_vif
+
+组件版本：0.0.1
+
+使用秘密共享计算垂直分区数据集的方差膨胀因子（VIF）。
+
+- 对于大型数据集（大于10w个样本和200个特征），建议使用\[Ring size: 128，Fxp: 40]选项来 SPU 设备。
+
+:target{#id39}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        输入数据集
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+        额外的表属性。(0) feature\_selects - 指定要计算VIF的特征。如果为空，将使用所有特征。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id40}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        report
+      </td>
+
+      <td>
+        输出报告
+      </td>
+
+      <td>
+        \[‘sf.report’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#table-statistics}
+
+### table\_statistics
+
+组件版本：0.0.1
+
+获取统计信息表，包括每列的
+
+1. datatype
+2. total\_count
+3. count
+4. count\_na
+5. min
+6. max
+7. var
+8. std
+9. sem
+10. skewness
+11. kurtosis
+12. q1
+13. q2
+14. q3
+15. moment\_2
+16. moment\_3
+17. moment\_4
+18. central\_moment\_2
+19. central\_moment\_3
+20. central\_moment\_4
+21. sum
+22. sum\_2
+23. sum\_3
+24. sum\_4
+
+- moment\_2 表示 E\[X^2].
+- central\_moment\_2 表示 E\[(X - mean(X))^2].
+- sum\_2 表示 sum(X^2).
+
+:target{#id41}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        输入数据。
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’, ‘sf.table.individual’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id42}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        report
+      </td>
+
+      <td>
+        输出报告
+      </td>
+
+      <td>
+        \[‘sf.report’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>

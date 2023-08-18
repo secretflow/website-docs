@@ -1,0 +1,202 @@
+:target{#水平联邦XGBoost}
+
+# 水平联邦XGBoost
+
+> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+在本教程中，我们将学习如何使用 <cite>SecretFlow</cite> 来训练水平联邦的树模型。Secretflow 为水平场景提供了 <code>tree modeling</code> 能力（<code>SFXgboost</code>），<code>SFXgboost</code> 类似于 <code>XGBoost</code>，您可以轻松地将现有的 XGBoost 程序转换为 <cite>SecretFlow</cite> 的联合模型。
+
+:target{#Xgboost}
+
+## Xgboost
+
+XGBoost 是一个优化的分布式梯度提升库，旨在高效、灵活和便携。 它在 Gradient Boosting 框架下实现机器学习算法。
+
+官方文档 <del id="id2">\`XGBoost tutorials\<https\://xgboost.readthedocs.io/en/latest/tutorials/index.html>\`\_\_</del> 。
+
+:target{#准备secretflow-devices}
+
+### 准备secretflow devices
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    %load_ext autoreload
+    %autoreload 2
+
+    import secretflow as sf
+
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+
+    sf.init(['alice', 'bob', 'charlie'], address='local')
+    alice, bob, charlie = sf.PYU('alice'), sf.PYU('bob'), sf.PYU('charlie')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#XGBoost示例}
+
+### XGBoost示例
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import xgboost as xgb
+    import pandas as pd
+    from secretflow.utils.simulation.datasets import dataset
+
+    df = pd.read_csv(dataset('dermatology'))
+    df.fillna(value=0)
+    print(df.dtypes)
+    y = df['class']
+    y = y - 1
+    x = df.drop(columns="class")
+    dtrain = xgb.DMatrix(x, y)
+    dtest = dtrain
+    params = {
+        'max_depth': 4,
+        'objective': 'multi:softmax',
+        'min_child_weight': 1,
+        'max_bin': 10,
+        'num_class': 6,
+        'eval_metric': 'merror',
+    }
+    num_round = 4
+    watchlist = [(dtrain, 'train')]
+    bst = xgb.train(params, dtrain, num_round, evals=watchlist, early_stopping_rounds=2)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"erythema                                      int64\nscaling                                       int64\ndefinite_borders                              int64\nitching                                       int64\nkoebner_phenomenon                            int64\npolygonal_papules                             int64\nfollicular_papules                            int64\noral_mucosal_involvement                      int64\nknee_and_elbow_involvement                    int64\nscalp_involvement                             int64\nfamily_history                                int64\nmelanin_incontinence                          int64\neosinophils_in_the_infiltrate                 int64\npnl_infiltrate                                int64\nfibrosis_of_the_papillary_dermis              int64\nexocytosis                                    int64\nacanthosis                                    int64\nhyperkeratosis                                int64\nparakeratosis                                 int64\nclubbing_of_the_rete_ridges                   int64\nelongation_of_the_rete_ridges                 int64\nthinning_of_the_suprapapillary_epidermis      int64\nspongiform_pustule                            int64\nmunro_microabcess                             int64\nfocal_hypergranulosis                         int64\ndisappearance_of_the_granular_layer           int64\nvacuolisation_and_damage_of_basal_layer       int64\nspongiosis                                    int64\nsaw-tooth_appearance_of_retes                 int64\nfollicular_horn_plug                          int64\nperifollicular_parakeratosis                  int64\ninflammatory_monoluclear_inflitrate           int64\nband-like_infiltrate                          int64\nage                                         float64\nclass                                         int64\ndtype: object\n[0]     train-merror:0.01913\n[1]     train-merror:0.01366\n[2]     train-merror:0.01366\n[3]     train-merror:0.00820\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#那么，我们在SecretFlow中应该怎么做联邦XGBoost呢}
+
+### 那么，我们在SecretFlow中应该怎么做联邦XGBoost呢
+
+1. 使用基于迭代的federate binning方法联合各方数据计算全局分桶信息，作为candidate splits进入后续的建树流程。
+
+2. 数据输入到各个Client xgboost引擎中，计算G & H。
+
+3. 进行联邦建树流程
+
+   1. 进行数据reassign，分配到待分裂的节点上；
+   2. 根据之前计算好的binning分桶计算sum\_of\_grad 和sum\_of\_hess；
+   3. 发送给server端，server端做secure aggregation，挑选分裂信息发送回client端；
+   4. Clients更新本地模型；
+
+4. 完成训练，并保存模型。
+
+在 Secretflow 环境中创建 3 个实体 \[Alice, Bob, Charlie]， <code>Alice</code> 和 <code>Bob</code> 是客户端， <code>Charlie</code> 是服务器，那么你可以愉快地开始 <code>Federate Boosting</code> 。了。
+
+:target{#准备数据}
+
+### 准备数据
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    from secretflow.data.horizontal import read_csv
+    from secretflow.security.aggregation import SecureAggregator
+    from secretflow.security.compare import SPUComparator
+    from secretflow.utils.simulation.datasets import load_dermatology
+
+    aggr = SecureAggregator(charlie, [alice, bob])
+    spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
+    comp = SPUComparator(spu)
+    data = load_dermatology(parts=[alice, bob], aggregator=aggr, comparator=comp)
+    data.fillna(value=0, inplace=True)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#准备超参}
+
+### 准备超参
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    params = {
+        # XGBoost parameter tutorial
+        # https://xgboost.readthedocs.io/en/latest/parameter.html
+        'max_depth': 4,  # max depth
+        'eta': 0.3,  # learning rate
+        'objective': 'multi:softmax',  # objection function，support "binary:logistic","reg:logistic","multi:softmax","multi:softprob","reg:squarederror"
+        'min_child_weight': 1,  # The minimum value of weight
+        'lambda': 0.1,  # L2 regularization term on weights (xgb's lambda)
+        'alpha': 0,  # L1 regularization term on weights (xgb's alpha)
+        'max_bin': 10,  # Max num of binning
+        'num_class': 6,  # Only required in multi-class classification
+        'gamma': 0,  # Same to min_impurity_split,The minimux gain for a split
+        'subsample': 1.0,  # Subsample rate by rows
+        'colsample_bytree': 1.0,  # Feature selection rate by tree
+        'colsample_bylevel': 1.0,  # Feature selection rate by level
+        'eval_metric': 'merror',  # supported eval metric：
+        # 1. rmse
+        # 2. rmsle
+        # 3. mape
+        # 4. logloss
+        # 5. error
+        # 6. error@t
+        # 7. merror
+        # 8. mlogloss
+        # 9. auc
+        # 10. aucpr
+        # Special params in SFXgboost
+        # Required
+        'hess_key': 'hess',  # Required, Mark hess columns, optionally choosing a column name that is not in the data set
+        'grad_key': 'grad',  # Required，Mark grad columns, optionally choosing a column name that is not in the data set
+        'label_key': 'class',  # Required，ark label columns, optionally choosing a column name that is not in the data set
+    }
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#创建SFXgboost}
+
+### 创建SFXgboost
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    from secretflow.ml.boost.homo_boost import SFXgboost
+
+    bst = SFXgboost(server=charlie, clients=[alice, bob])
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+运行SFXgboost
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    bst.train(data, data, params=params, num_boost_round=6)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(HomoBooster pid=3817964)"}</span>{" [0] train-merror:0.01366    valid-merror:0.01366\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817954)"}</span>{" [0] train-merror:0.01366    valid-merror:0.01366\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817963)"}</span>{" [0] train-merror:0.01366    valid-merror:0.01366\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817964)"}</span>{" [1] train-merror:0.00820    valid-merror:0.00820\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817954)"}</span>{" [1] train-merror:0.00820    valid-merror:0.00820\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817963)"}</span>{" [1] train-merror:0.00820    valid-merror:0.00820\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817964)"}</span>{" [2] train-merror:0.00820    valid-merror:0.00820\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817954)"}</span>{" [2] train-merror:0.00820    valid-merror:0.00820\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817963)"}</span>{" [2] train-merror:0.00820    valid-merror:0.00820\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817964)"}</span>{" [3] train-merror:0.01093    valid-merror:0.01093\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817954)"}</span>{" [3] train-merror:0.01093    valid-merror:0.01093\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817963)"}</span>{" [3] train-merror:0.01093    valid-merror:0.01093\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817964)"}</span>{" [4] train-merror:0.00820    valid-merror:0.00820\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817954)"}</span>{" [4] train-merror:0.00820    valid-merror:0.00820\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817963)"}</span>{" [4] train-merror:0.00820    valid-merror:0.00820\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817964)"}</span>{" [5] train-merror:0.00546    valid-merror:0.00546\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817954)"}</span>{" [5] train-merror:0.00546    valid-merror:0.00546\n"}<span className="ansi-cyan-fg">{"(HomoBooster pid=3817963)"}</span>{" [5] train-merror:0.00546    valid-merror:0.00546\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+到这里我们的联邦XGBoost训练就已经完成，bst就是我们这里构建好的FedBoost对象。
+
+:target{#总结}
+
+## 总结
+
+- 本教程介绍如何使用树模型进行训练等。
+- SFXgboost 封装了联邦子树模型的建树逻辑。经过 SFXgboost 训练的模型仍然与 XGBoost 兼容，我们可以直接使用现有的基础设施进行在线预测等。
+- 下一步，您可以将自己的数据应用在SFXgboost上面，只需要follow这个文档即可完成。

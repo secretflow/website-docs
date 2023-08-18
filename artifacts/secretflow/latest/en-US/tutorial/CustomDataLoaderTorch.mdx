@@ -1,0 +1,397 @@
+:target{#Using-Custom-DataBuilder-in-SecretFlow-(Torch)}
+
+# Using Custom DataBuilder in SecretFlow (Torch)
+
+The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+This tutorial will demonstrate how to use the custom DataBuilder mode to load data and train models in the multi-party secure environment of SecretFlow.
+
+The tutorial will use the image classification task of the Flower dataset to illustrate how to utilize the custom DataBuilder for federated learning in SecretFlow.
+
+:target{#Environment-Setup}
+
+## Environment Setup
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    %load_ext autoreload
+    %autoreload 2
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+    sf.init(['alice', 'bob', 'charlie'], address="local", log_to_driver=False)
+    alice, bob ,charlie = sf.PYU('alice'), sf.PYU('bob') , sf.PYU('charlie')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Interface-Introduction}
+
+## Interface Introduction
+
+In SecretFlow, we have supported the ability to customize the DataBuilder for reading in the <code>FLModel</code>. This allows users to handle data input more flexibly according to their specific requirements.
+
+Below, we provide an example to demonstrate how to use the custom DataBuilder for federated model training.
+
+Steps for using DataBuilder:
+
+1. Develop the DataBuilder function for constructing the DataLoader under the PyTorch engine in the single-machine version. <em>Note: The dataset\_builder function requires the ‘stage’ parameter.</em>
+
+2) Wrap the DataBuilder functions of each party to obtain create\_dataset\_builder.
+
+3. Construct data\_builder\_dict \[PYU, dataset\_builder].
+
+4) Pass the obtained data\_builder\_dict as an argument to the <code>dataset\_builder</code> in the <code>fit</code> function. At this point, provide the required input to the dataset\_builder in the <code>x</code> parameter position. (For example, in this case, the input provided is the actual image paths used.)
+
+In FLModel, using DataBuilder requires predefining a databuilder dictionary, which needs to be able to return <code>tf.dataset</code> and <code>steps\_per\_epoch</code>. Moreover, the <code>steps\_per\_epoch</code> returned by each party must remain consistent.
+
+```python
+data_builder_dict =
+        {
+            alice: create_alice_dataset_builder(
+                batch_size=32,
+            ), # create_alice_dataset_builder must return (Dataset, steps_per_epoch)
+            bob: create_bob_dataset_builder(
+                batch_size=32,
+            ), # create_bob_dataset_builder must return (Dataset, steps_per_epochstep_per_epochs)
+        }
+```
+
+:target{#Download-Data}
+
+## Download Data
+
+Introduction to the Flower Dataset: The Flower dataset is a collection of 4323 color images containing 5 different types of flowers(namely, tulips, daffodils, irises, lilies, and sunflowers). Each flower category comprises multiple images captured from various angles and under different lighting conditions. The resolution of each image is 320x240. This dataset is commonly used for image classification and training/testing machine learning algorithms. The number of samples in each category is as
+follows: daisies (633), dandelions (898), roses (641), sunflowers (699), and tulips (852).
+
+Download link\:http\://download.tensorflow\.org/example\_images/flower\_photos.tgz ![flower\_dataset\_demo.png](https://www.secretflow.org.cn/static/flower_dataset_demo.553ea776.png)
+
+:target{#Download-data-and-extract}
+
+### Download data and extract
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    # The TensorFlow interface is reused to download images , and the output is a folder, as shown in the following figure.
+    import tempfile
+    import tensorflow as tf
+
+    _temp_dir = tempfile.mkdtemp()
+    path_to_flower_dataset = tf.keras.utils.get_file(
+        "flower_photos",
+        "https://secretflow-data.oss-accelerate.aliyuncs.com/datasets/tf_flowers/flower_photos.tgz",
+        untar=True,
+        cache_dir=_temp_dir,
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Downloading data from https://secretflow-data.oss-accelerate.aliyuncs.com/datasets/tf_flowers/flower_photos.tgz\n67588319/67588319 [==============================] - 1s 0us/step\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="Next,-we-proceed-to-construct-a-custom-DataBuilder."}
+
+# Next, we proceed to construct a custom DataBuilder.
+
+:target{id="1.-Develop-DataBuilder-using-a-single-machine-engine."}
+
+## 1. Develop DataBuilder using a single-machine engine.
+
+In the development of the <code>DataBuilder</code>, we are free to follow the logic of single-machine development. The objective is to construct a <code>Dataloader</code> object in <code>Torch</code>.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    import math
+
+    import numpy as np
+    from torch.utils.data import DataLoader
+    from torch.utils.data.sampler import SubsetRandomSampler
+    from torchvision import datasets, transforms
+
+    # parameter
+    batch_size = 32
+    shuffle = True
+    random_seed = 1234
+    train_split = 0.8
+
+    # Define dataset
+    flower_transform = transforms.Compose(
+        [
+            transforms.Resize((180, 180)),
+            transforms.ToTensor(),
+        ]
+    )
+    flower_dataset = datasets.ImageFolder(path_to_flower_dataset, transform=flower_transform)
+    dataset_size = len(flower_dataset)
+    # Define sampler
+
+    indices = list(range(dataset_size))
+    if shuffle:
+        np.random.seed(random_seed)
+        np.random.shuffle(indices)
+    split = int(np.floor(train_split * dataset_size))
+    train_indices, val_indices = indices[:split], indices[split:]
+    train_sampler = SubsetRandomSampler(train_indices)
+    valid_sampler = SubsetRandomSampler(val_indices)
+
+    # Define databuilder
+    train_loader = DataLoader(
+        flower_dataset, batch_size=batch_size, sampler=train_sampler
+    )
+    valid_loader = DataLoader(
+        flower_dataset, batch_size=batch_size, sampler=valid_sampler
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    x,y = next(iter(train_loader))
+    print(f"x.shape = {x.shape}")
+    print(f"y.shape = {y.shape}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"x.shape = torch.Size([32, 3, 180, 180])\ny.shape = torch.Size([32])\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="2.Wrap-the-developed-DataBuilder."}
+
+## 2.Wrap the developed DataBuilder.
+
+The DataBuilder we have developed needs to be distributed and executed on various computing machines during runtime. To facilitate serialization, we need to wrap them.
+
+It is essential to consider the following points: - FLModel requires that the input to DataBuilder must include the stage parameter (stage=”train”). - FLModel requires that the passed DataBuilder must return two results, namely, <code>data\_set</code> and <code>steps\_per\_epoch</code>.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    def create_dataset_builder(
+            batch_size=32,
+            train_split=0.8,
+            shuffle=True,
+            random_seed=1234,
+        ):
+            def dataset_builder(x, stage="train"):
+                """
+                """
+                import math
+
+                import numpy as np
+                from torch.utils.data import DataLoader
+                from torch.utils.data.sampler import SubsetRandomSampler
+                from torchvision import datasets, transforms
+
+                # Define dataset
+                flower_transform = transforms.Compose(
+                    [
+                        transforms.Resize((180, 180)),
+                        transforms.ToTensor(),
+                    ]
+                )
+                flower_dataset = datasets.ImageFolder(x, transform=flower_transform)
+                dataset_size = len(flower_dataset)
+                # Define sampler
+
+                indices = list(range(dataset_size))
+                if shuffle:
+                    np.random.seed(random_seed)
+                    np.random.shuffle(indices)
+                split = int(np.floor(train_split * dataset_size))
+                train_indices, val_indices = indices[:split], indices[split:]
+                train_sampler = SubsetRandomSampler(train_indices)
+                valid_sampler = SubsetRandomSampler(val_indices)
+
+                # Define databuilder
+                train_loader = DataLoader(
+                    flower_dataset, batch_size=batch_size, sampler=train_sampler
+                )
+                valid_loader = DataLoader(
+                    flower_dataset, batch_size=batch_size, sampler=valid_sampler
+                )
+
+                # Return
+                if stage == "train":
+                    train_step_per_epoch = math.ceil(split / batch_size)
+
+                    return train_loader, train_step_per_epoch
+                elif stage == "eval":
+                    eval_step_per_epoch = math.ceil((dataset_size - split) / batch_size)
+                    return valid_loader, eval_step_per_epoch
+
+            return dataset_builder
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="3.-Construct-the-dataset_builder_dict."}
+
+## 3. Construct the dataset\_builder\_dict.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    #prepare dataset dict
+    data_builder_dict = {
+        alice: create_dataset_builder(
+            batch_size=32,
+            train_split=0.8,
+            shuffle=False,
+            random_seed=1234,
+        ),
+        bob: create_dataset_builder(
+            batch_size=32,
+            train_split=0.8,
+            shuffle=False,
+            random_seed=1234,
+        ),
+    }
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="4.-Once-we-obtain-the-dataset_builder_dict,-we-can-proceed-with-federated-training-using-it."}
+
+## 4. Once we obtain the <code>dataset\_builder\_dict</code>, we can proceed with federated training using it.
+
+Next, we define a FLModel with a Torch backend for training.
+
+:target{#Define-the-Model-Architecture}
+
+### Define the Model Architecture
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    from secretflow.ml.nn.utils import BaseModule
+
+    class ConvRGBNet(BaseModule):
+        def __init__(self, *args, **kwargs) -> None:
+            super().__init__(*args, **kwargs)
+            self.network = nn.Sequential(
+                nn.Conv2d(
+                    in_channels=3, out_channels=16, kernel_size=3, stride=1, padding=1
+                ),
+                nn.ReLU(),
+                nn.MaxPool2d(2, 2),
+                nn.Conv2d(16, 16, kernel_size=3, stride=1, padding=1),
+                nn.ReLU(),
+                nn.MaxPool2d(2, 2),
+                nn.Flatten(),
+                nn.Linear(16 * 45 * 45, 128),
+                nn.ReLU(),
+                nn.Linear(128, 5),
+            )
+
+        def forward(self, xb):
+            return self.network(xb)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    from secretflow.ml.nn import FLModel
+    from secretflow.security.aggregation import SecureAggregator
+    from torch import nn, optim
+    from torchmetrics import Accuracy, Precision
+    from secretflow.ml.nn.fl.utils import metric_wrapper, optim_wrapper
+    from secretflow.ml.nn.utils import TorchModel
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    device_list = [alice, bob]
+    aggregator = SecureAggregator(charlie,[alice,bob])
+    # prepare model
+    num_classes = 5
+
+    input_shape = (180, 180, 3)
+    # torch model
+    loss_fn = nn.CrossEntropyLoss
+    optim_fn = optim_wrapper(optim.Adam, lr=1e-3)
+    model_def = TorchModel(
+        model_fn=ConvRGBNet,
+        loss_fn=loss_fn,
+        optim_fn=optim_fn,
+        metrics=[
+            metric_wrapper(
+                Accuracy, task="multiclass", num_classes=num_classes, average='micro'
+            ),
+            metric_wrapper(
+                Precision, task="multiclass", num_classes=num_classes, average='micro'
+            ),
+        ],
+    )
+
+    fed_model = FLModel(
+        device_list=device_list,
+        model=model_def,
+        aggregator=aggregator,
+        backend="torch",
+        strategy="fed_avg_w",
+        random_seed=1234,
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+The input to our constructed dataset builder is the path to the image dataset; hence, here, we need to set the input data as a <code>Dict</code>.
+
+```python
+data = {
+    alice: folder_path_of_alice,
+    bob: folder_path_of_bob
+}
+```
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    data={
+            alice: path_to_flower_dataset,
+            bob: path_to_flower_dataset,
+        }
+    history = fed_model.fit(
+        data,
+        None,
+        validation_data=data,
+        epochs=5,
+        batch_size=32,
+        aggregate_freq=2,
+        sampler_method="batch",
+        random_seed=1234,
+        dp_spent_step_freq=1,
+        dataset_builder=data_builder_dict
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>

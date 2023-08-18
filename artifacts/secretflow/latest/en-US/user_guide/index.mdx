@@ -1,0 +1,163 @@
+:target{#user-guide}
+
+# User Guide
+
+:target{#preprocessing}
+
+## Preprocessing
+
+SecretFlow provides several common utility functions/classes to change raw
+features into a representation for more suitable for the downstream pipeline.
+
+<SphinxDesign type="grid-container">
+  <SphinxDesign type="grid-row">
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="preprocessing/DataFrame">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            DataFrame
+          </SphinxDesign>
+
+          > Secretflow provides federated data encapsulation in the form of DataFrame.
+          > DataFrame is composed of data blocks of multiple parties and supports horizontal or vertical partitioned data.
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            WeightOfEnvidenceEncoding (WOE)
+          </SphinxDesign>
+
+          > Secretflow provides WOE Encoding for vertical datasets.
+        </SphinxDesign>
+
+        <span />
+      </SphinxDesign>
+    </SphinxDesign>
+  </SphinxDesign>
+</SphinxDesign>
+
+:target{#private-set-intersection-psi}
+
+## Private Set Intersection(PSI)
+
+SecretFlow SPU now supports ECDH-PSI, KKRT16-PSI, and BC22-PCG-PSI.
+Please check [Private Set Intersection(PSI)](psi.mdx) for details.
+
+<SphinxDesign type="grid-container">
+  <SphinxDesign type="grid-row">
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="psi">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Private Set Intersection(PSI)
+          </SphinxDesign>
+
+          > Private set intersection is a secure multiparty computation cryptographic technique that
+          > allows two parties holding sets to compare encrypted versions of these sets in order to
+          > compute the intersection.
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+  </SphinxDesign>
+</SphinxDesign>
+
+:target{#mpc-machine-learning}
+
+## MPC Machine Learning
+
+SecretFlow provides a variety of MPC modeling capabilities
+through the MPC security protocol and HE homomorphic encryption.
+
+<SphinxDesign type="grid-container">
+  <SphinxDesign type="grid-row">
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="mpc_ml/linear_model">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Linear Models
+          </SphinxDesign>
+
+          > a set of methods intended for regression in which the mean of target value is expected to be
+          > a linear combination of the features (or a map of linear combinations).
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="mpc_ml/decision_tree">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Decision trees
+          </SphinxDesign>
+
+          > Decision Trees (DTs) are a non-parametric supervised learning method used for classification and regression.
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="mpc_ml/feature_eng">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Feature Engineering
+          </SphinxDesign>
+
+          > Feature Engineering includes <strong>Pearson product-moment correlation coefficient</strong>, <strong>Variance Inflation Factor (VIF)</strong> and <strong>Hypothesis Testing for linear Regression Coefficients</strong>.
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+  </SphinxDesign>
+</SphinxDesign>
+
+:target{#federated-learning}
+
+## Federated Learning
+
+Federated learning is a machine learning technique that trains an algorithm across multiple decentralized edge devices or servers holding local data samples, without exchanging them.
+
+<SphinxDesign type="grid-container">
+  <SphinxDesign type="grid-row">
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="federated_learning/horizontal_federated_learning/index">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Horizontal Federated Learning
+          </SphinxDesign>
+
+          > For cases that multi participants share the same feature space but differ in sample ID.
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="federated_learning/vertical_federated_learning/index">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Vertical Federated Learning
+          </SphinxDesign>
+
+          > For cases that multi participants share the same sample ID space but differ in feature space.
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+
+    <SphinxDesign type="grid-item">
+      <SphinxDesign type="card" href="federated_learning/mix_federated_learning">
+        <SphinxDesign type="card-body">
+          <SphinxDesign type="card-title">
+            Mix Federated Learning
+          </SphinxDesign>
+
+          > For cases that parts of participants share the same sample ID space but differ in feature space,
+          > where others share the same feature space but differ in sample ID.
+        </SphinxDesign>
+      </SphinxDesign>
+    </SphinxDesign>
+  </SphinxDesign>
+</SphinxDesign>
+
+<TableOfContents />

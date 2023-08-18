@@ -1,0 +1,3669 @@
+:target{#secretflow-component-list}
+
+# SecretFlow Component List
+
+Last update: Wed Jul 12 14:00:40 2023
+
+Version: 0.0.1
+
+First-party SecretFlow components.
+
+:target{#feature}
+
+## feature
+
+:target{#vert-woe-binning}
+
+### vert\_woe\_binning
+
+Component version: 0.0.1
+
+Generate Weight of Evidence (WOE) binning rules for vertical partitioning datasets.
+
+:target{#attrs}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        secure\_device\_type
+      </td>
+
+      <td>
+        Use SPU(Secure multi-party computation or MPC) or HEU(Homomorphic encryption or HE) to secure bucket summation.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: spu. Allowed: \[‘spu’, ‘heu’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        binning\_method
+      </td>
+
+      <td>
+        How to bin features with numeric types: “quantile”(equal frequency)/“chimerge”(ChiMerge from AAAI92-019: [https://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf](https://www.aaai.org/Papers/AAAI/1992/AAAI92-019.pdf))
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: quantile. Allowed: \[‘quantile’, ‘chimerge’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bin\_num
+      </td>
+
+      <td>
+        Max bin counts for one features.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 10. Range: (0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        positive\_label
+      </td>
+
+      <td>
+        Which value represent positive value in label.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 1.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        chimerge\_init\_bins
+      </td>
+
+      <td>
+        Max bin counts for initialization binning in ChiMerge.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 100. Range: (2, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        chimerge\_target\_bins
+      </td>
+
+      <td>
+        Stop merging if remaining bin counts is less than or equal to this value.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 10. Range: \[2, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        chimerge\_target\_pvalue
+      </td>
+
+      <td>
+        Stop merging if biggest pvalue of remaining bins is greater than this value.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.1. Range: (0.0, 1.0].
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#inputs}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        Input dataset for generating rule.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+        Extra table attributes.(0) feature\_selects - which features should be binned. Min column number to select(inclusive): 1.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#outputs}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        woe\_rule
+      </td>
+
+      <td>
+        Output WOE rule.
+      </td>
+
+      <td>
+        \[‘sf.rule.woe\_binning’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#vert-woe-substitution}
+
+### vert\_woe\_substitution
+
+Component version: 0.0.1
+
+Substitute datasets’ value by WOE substitution rules.
+
+:target{#id1}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        Vertical partitioning dataset to be substituted.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        woe\_rule
+      </td>
+
+      <td>
+        WOE substitution rule.
+      </td>
+
+      <td>
+        \[‘sf.rule.woe\_binning’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id2}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        output\_data
+      </td>
+
+      <td>
+        Output substituted dataset.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ml-eval}
+
+## ml.eval
+
+:target{#biclassification-eval}
+
+### biclassification\_eval
+
+Component version: 0.0.1
+
+Statistics evaluation for a bi-classification model on a dataset.
+
+1. summary\_report: SummaryReport
+2. group\_reports: List\[GroupReport]
+3. eq\_frequent\_bin\_report: List\[EqBinReport]
+4. eq\_range\_bin\_report: List\[EqBinReport]
+5. head\_report: List\[PrReport]
+   reports for fpr = 0.001, 0.005, 0.01, 0.05, 0.1, 0.2
+
+:target{#id3}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        bucket\_size
+      </td>
+
+      <td>
+        Number of buckets.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 10. Range: \[1, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        min\_item\_cnt\_per\_bucket
+      </td>
+
+      <td>
+        Min item cnt per bucket. If any bucket doesn’t meet the requirement, error raises. For security reasons, we require this parameter to be at least 5.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 5. Range: \[5, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id4}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        labels
+      </td>
+
+      <td>
+        labels
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’, ‘sf.table.individual’]
+      </td>
+
+      <td>
+        Extra table attributes.(0) col - The column name to use in the dataset. If not provided, the label of dataset will be used by default. Max column number to select(inclusive): 1.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        predictions
+      </td>
+
+      <td>
+        predictions
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’, ‘sf.table.individual’]
+      </td>
+
+      <td>
+        Extra table attributes.(0) col - The column name to use in the dataset. If not provided, the label of dataset will be used by default. Max column number to select(inclusive): 1.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id5}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        reports
+      </td>
+
+      <td>
+        Output report.
+      </td>
+
+      <td>
+        \[‘sf.report’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#prediction-bias-eval}
+
+### prediction\_bias\_eval
+
+Component version: 0.0.1
+
+Calculate prediction bias, ie. average of predictions - average of labels.
+
+:target{#id6}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        bucket\_num
+      </td>
+
+      <td>
+        Num of bucket.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 10. Range: \[1, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        min\_item\_cnt\_per\_bucket
+      </td>
+
+      <td>
+        Min item cnt per bucket. If any bucket doesn’t meet the requirement, error raises. For security reasons, we require this parameter to be at least 2.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 2. Range: \[2, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bucket\_method
+      </td>
+
+      <td>
+        Bucket method.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: equal\_width. Allowed: \[‘equal\_width’, ‘equal\_frequency’].
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id7}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        labels
+      </td>
+
+      <td>
+        labels
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’, ‘sf.table.individual’]
+      </td>
+
+      <td>
+        Extra table attributes.(0) col - The column name to use in the dataset. If not provided, the label of dataset will be used by default. Max column number to select(inclusive): 1.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        predictions
+      </td>
+
+      <td>
+        predictions
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’, ‘sf.table.individual’]
+      </td>
+
+      <td>
+        Extra table attributes.(0) col - The column name to use in the dataset. If not provided, the label of dataset will be used by default. Max column number to select(inclusive): 1.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id8}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        result
+      </td>
+
+      <td>
+        Output report.
+      </td>
+
+      <td>
+        \[‘sf.report’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-pvalue}
+
+### ss\_pvalue
+
+Component version: 0.0.1
+
+Calculate P-Value for LR model training on vertical partitioning dataset by using secret sharing.
+For large dataset(large than 10w samples & 200 features),
+recommend to use \[Ring size: 128, Fxp: 40] options for SPU device.
+
+:target{#id9}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        model
+      </td>
+
+      <td>
+        Input model.
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_sgd’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        Input dataset.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id10}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        report
+      </td>
+
+      <td>
+        Output report.
+      </td>
+
+      <td>
+        \[‘sf.report’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ml-predict}
+
+## ml.predict
+
+:target{#sgb-predict}
+
+### sgb\_predict
+
+Component version: 0.0.1
+
+Predict using SGB model.
+
+:target{#id11}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        receiver
+      </td>
+
+      <td>
+        Party of receiver.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Default: .
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        pred\_name
+      </td>
+
+      <td>
+        Name for prediction column
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: pred.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_ids
+      </td>
+
+      <td>
+        Whether to save ids columns into output prediction table. If true, input feature\_dataset must contain id columns, and receiver party must be id owner.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: False.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_label
+      </td>
+
+      <td>
+        Whether or not to save real label columns into output pred file. If true, input feature\_dataset must contain label columns and receiver party must be label owner.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: False.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id12}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        model
+      </td>
+
+      <td>
+        model
+      </td>
+
+      <td>
+        \[‘sf.model.sgb’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        feature\_dataset
+      </td>
+
+      <td>
+        Input feature dataset.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id13}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        pred
+      </td>
+
+      <td>
+        Output prediction
+      </td>
+
+      <td>
+        \[‘sf.table.individual’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-sgd-predict}
+
+### ss\_sgd\_predict
+
+Component version: 0.0.1
+
+Predict using the SS-SGD model.
+
+:target{#id14}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        batch\_size
+      </td>
+
+      <td>
+        The number of training examples utilized in one iteration.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 1024. Range: (0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        receiver
+      </td>
+
+      <td>
+        Party of receiver.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Default: .
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        pred\_name
+      </td>
+
+      <td>
+        Column name for predictions.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: pred.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_ids
+      </td>
+
+      <td>
+        Whether to save ids columns into output prediction table. If true, input feature\_dataset must contain id columns, and receiver party must be id owner.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: False.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_label
+      </td>
+
+      <td>
+        Whether or not to save real label columns into output pred file. If true, input feature\_dataset must contain label columns and receiver party must be label owner.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: False.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id15}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        model
+      </td>
+
+      <td>
+        Input model.
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_sgd’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        feature\_dataset
+      </td>
+
+      <td>
+        Input feature dataset.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id16}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        pred
+      </td>
+
+      <td>
+        Output prediction.
+      </td>
+
+      <td>
+        \[‘sf.table.individual’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-xgb-predict}
+
+### ss\_xgb\_predict
+
+Component version: 0.0.1
+
+Predict using the SS-XGB model.
+
+:target{#id17}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        receiver
+      </td>
+
+      <td>
+        Party of receiver.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Default: .
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        pred\_name
+      </td>
+
+      <td>
+        Column name for predictions.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: pred.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_ids
+      </td>
+
+      <td>
+        Whether to save ids columns into output prediction table. If true, input feature\_dataset must contain id columns, and receiver party must be id owner.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: False.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_label
+      </td>
+
+      <td>
+        Whether or not to save real label columns into output pred file. If true, input feature\_dataset must contain label columns and receiver party must be label owner.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: False.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id18}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        model
+      </td>
+
+      <td>
+        Input model.
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_xgb’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        feature\_dataset
+      </td>
+
+      <td>
+        Input features.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id19}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        pred
+      </td>
+
+      <td>
+        Output prediction.
+      </td>
+
+      <td>
+        \[‘sf.table.individual’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ml-train}
+
+## ml.train
+
+:target{#sgb-train}
+
+### sgb\_train
+
+Component version: 0.0.1
+
+Provides both classification and regression tree boosting (also known as GBDT, GBM)
+for vertical split dataset setting by using secure boost.
+
+- SGB is short for SecureBoost. Compared to its safer counterpart SS-XGB, SecureBoost focused on protecting label holder.
+- Check [https://arxiv.org/abs/1901.08755](https://arxiv.org/abs/1901.08755).
+
+:target{#id20}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        num\_boost\_round
+      </td>
+
+      <td>
+        Number of boosting iterations.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 10. Range: \[1, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        max\_depth
+      </td>
+
+      <td>
+        Maximum depth of a tree.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 5. Range: \[1, 16].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        learning\_rate
+      </td>
+
+      <td>
+        Step size shrinkage used in update to prevent overfitting.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.1. Range: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        objective
+      </td>
+
+      <td>
+        Specify the learning objective.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: logistic. Allowed: \[‘linear’, ‘logistic’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        reg\_lambda
+      </td>
+
+      <td>
+        L2 regularization term on weights.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.1. Range: \[0.0, 10000.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        gamma
+      </td>
+
+      <td>
+        Greater than 0 means pre-pruning enabled. If gain of a node is less than this value, it would be pruned.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.1. Range: \[0.0, 10000.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        subsample
+      </td>
+
+      <td>
+        Subsample ratio of the training instances.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 1.0. Range: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        colsample\_by\_tree
+      </td>
+
+      <td>
+        Subsample ratio of columns when constructing each tree.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 1.0. Range: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        sketch\_eps
+      </td>
+
+      <td>
+        This roughly translates into O(1 / sketch\_eps) number of bins.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.1. Range: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        base\_score
+      </td>
+
+      <td>
+        The initial prediction score of all instances, global bias.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.0. Range: \[0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        seed
+      </td>
+
+      <td>
+        Pseudorandom number generator seed.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 42. Range: \[0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        fixed\_point\_parameter
+      </td>
+
+      <td>
+        Any floating point number encoded by heu, will multiply a scale and take the round, scale = 2 \*\* fixed\_point\_parameter. larger value may mean more numerical accuracy, but too large will lead to overflow problem.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 20. Range: \[0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id21}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        train\_dataset
+      </td>
+
+      <td>
+        Input train dataset.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id22}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        output\_model
+      </td>
+
+      <td>
+        Output model.
+      </td>
+
+      <td>
+        \[‘sf.model.sgb’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-sgd-train}
+
+### ss\_sgd\_train
+
+Component version: 0.0.1
+
+Train both linear and logistic regression
+linear models for vertical partitioning dataset with mini batch SGD training solver by using secret sharing.
+
+- SS-SGD is short for secret sharing SGD training.
+
+:target{#id23}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        epochs
+      </td>
+
+      <td>
+        The number of complete pass through the training data.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 10. Range: \[1, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        learning\_rate
+      </td>
+
+      <td>
+        The step size at each iteration in one iteration.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.1. Range: (0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        batch\_size
+      </td>
+
+      <td>
+        The number of training examples utilized in one iteration.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 1024. Range: (0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        sig\_type
+      </td>
+
+      <td>
+        Sigmoid approximation type.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: t1. Allowed: \[‘real’, ‘t1’, ‘t3’, ‘t5’, ‘df’, ‘sr’, ‘mix’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        reg\_type
+      </td>
+
+      <td>
+        Regression type
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: logistic. Allowed: \[‘linear’, ‘logistic’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        penalty
+      </td>
+
+      <td>
+        The penalty(aka regularization term) to be used.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: None. Allowed: \[‘None’, ‘l1’, ‘l2’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        l2\_norm
+      </td>
+
+      <td>
+        L2 regularization term.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.5. Range: \[0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        eps
+      </td>
+
+      <td>
+        If the change rate of weights is less than this threshold, the model is considered to be converged, and the training stops early. 0 to disable.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.001. Range: (0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id24}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        train\_dataset
+      </td>
+
+      <td>
+        Input train dataset.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id25}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        output\_model
+      </td>
+
+      <td>
+        Output model
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_sgd’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-xgb-train}
+
+### ss\_xgb\_train
+
+Component version: 0.0.1
+
+This method provides both classification and regression tree boosting (also known as GBDT, GBM)
+for vertical partitioning dataset setting by using secret sharing.
+
+- SS-XGB is short for secret sharing XGB.
+- More details: [https://arxiv.org/pdf/2005.08479.pdf](https://arxiv.org/pdf/2005.08479.pdf)
+
+:target{#id26}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        num\_boost\_round
+      </td>
+
+      <td>
+        Number of boosting iterations.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 10. Range: \[1, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        max\_depth
+      </td>
+
+      <td>
+        Maximum depth of a tree.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 5. Range: \[1, 16].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        learning\_rate
+      </td>
+
+      <td>
+        Step size shrinkage used in updates to prevent overfitting.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.1. Range: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        objective
+      </td>
+
+      <td>
+        Specify the learning objective.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: logistic. Allowed: \[‘linear’, ‘logistic’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        reg\_lambda
+      </td>
+
+      <td>
+        L2 regularization term on weights.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.1. Range: \[0.0, 10000.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        subsample
+      </td>
+
+      <td>
+        Subsample ratio of the training instances.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.1. Range: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        colsample\_by\_tree
+      </td>
+
+      <td>
+        Subsample ratio of columns when constructing each tree.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.1. Range: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        sketch\_eps
+      </td>
+
+      <td>
+        This roughly translates into O(1 / sketch\_eps) number of bins.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.1. Range: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        base\_score
+      </td>
+
+      <td>
+        The initial prediction score of all instances, global bias.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.0. Range: \[0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        seed
+      </td>
+
+      <td>
+        Pseudorandom number generator seed.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 42. Range: \[0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id27}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        train\_dataset
+      </td>
+
+      <td>
+        Train dataset
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id28}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        output\_model
+      </td>
+
+      <td>
+        Output model.
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_xgb’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#preprocessing}
+
+## preprocessing
+
+:target{#feature-filter}
+
+### feature\_filter
+
+Component version: 0.0.1
+
+Drop features from the dataset.
+
+:target{#id29}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        in\_ds
+      </td>
+
+      <td>
+        Input dataset.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+        Extra table attributes.(0) drop\_features - Features to drop.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id30}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        out\_ds
+      </td>
+
+      <td>
+        Output dataset with filtered features.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#psi}
+
+### psi
+
+Component version: 0.0.1
+
+PSI between two parties.
+
+:target{#id31}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        protocol
+      </td>
+
+      <td>
+        PSI protocol.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: ECDH\_PSI\_2PC. Allowed: \[‘ECDH\_PSI\_2PC’, ‘KKRT\_PSI\_2PC’, ‘BC22\_PSI\_2PC’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bucket\_size
+      </td>
+
+      <td>
+        Specify the hash bucket size used in PSI. Larger values consume more memory.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 1048576. Range: (0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ecdh\_curve\_type
+      </td>
+
+      <td>
+        Curve type for ECDH PSI.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: CURVE\_FOURQ. Allowed: \[‘CURVE\_25519’, ‘CURVE\_FOURQ’, ‘CURVE\_SM2’, ‘CURVE\_SECP256K1’].
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id32}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        receiver\_input
+      </td>
+
+      <td>
+        Input for receiver
+      </td>
+
+      <td>
+        \[‘sf.table.individual’]
+      </td>
+
+      <td>
+        Extra table attributes.(0) key - Column(s) used to join. If not provided, ids of the dataset will be used.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        sender\_input
+      </td>
+
+      <td>
+        Input for sender
+      </td>
+
+      <td>
+        \[‘sf.table.individual’]
+      </td>
+
+      <td>
+        Extra table attributes.(0) key - Column(s) used to join. If not provided, ids of the dataset will be used.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id33}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        psi\_output
+      </td>
+
+      <td>
+        Output
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#train-test-split}
+
+### train\_test\_split
+
+Component version: 0.0.1
+
+Split datasets into random train and test subsets.
+
+- Please check: [https://scikit-learn.org/stable/modules/generated/sklearn.model\_selection.train\_test\_split.html](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
+
+:target{#id34}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        train\_size
+      </td>
+
+      <td>
+        Proportion of the dataset to include in the train subset.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.75. Range: \[0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        test\_size
+      </td>
+
+      <td>
+        Proportion of the dataset to include in the test subset.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.25. Range: \[0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        random\_state
+      </td>
+
+      <td>
+        Specify the random seed of the shuffling.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 1024. Range: (0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        shuffle
+      </td>
+
+      <td>
+        Whether to shuffle the data before splitting.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: True.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id35}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        Input dataset.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id36}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        train
+      </td>
+
+      <td>
+        Output train dataset.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        test
+      </td>
+
+      <td>
+        Output test dataset.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#stats}
+
+## stats
+
+:target{#ss-pearsonr}
+
+### ss\_pearsonr
+
+Component version: 0.0.1
+
+Calculate Pearson’s product-moment correlation coefficient for vertical partitioning dataset
+by using secret sharing.
+
+- For large dataset(large than 10w samples & 200 features), recommend to use \[Ring size: 128, Fxp: 40] options for SPU device.
+
+:target{#id37}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        Input dataset.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+        Extra table attributes.(0) feature\_selects - Specify which features to calculate correlation coefficient with. If empty, all features will be used
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id38}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        report
+      </td>
+
+      <td>
+        Output report.
+      </td>
+
+      <td>
+        \[‘sf.report’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-vif}
+
+### ss\_vif
+
+Component version: 0.0.1
+
+Calculate Variance Inflation Factor(VIF) for vertical partitioning dataset
+by using secret sharing.
+
+- For large dataset(large than 10w samples & 200 features), recommend to use \[Ring size: 128, Fxp: 40] options for SPU device.
+
+:target{#id39}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        Input dataset.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+        Extra table attributes.(0) feature\_selects - Specify which features to calculate VIF with. If empty, all features will be used.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id40}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        report
+      </td>
+
+      <td>
+        Output report.
+      </td>
+
+      <td>
+        \[‘sf.report’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#table-statistics}
+
+### table\_statistics
+
+Component version: 0.0.1
+
+Get a table of statistics,
+including each column’s
+
+1. datatype
+2. total\_count
+3. count
+4. count\_na
+5. min
+6. max
+7. var
+8. std
+9. sem
+10. skewness
+11. kurtosis
+12. q1
+13. q2
+14. q3
+15. moment\_2
+16. moment\_3
+17. moment\_4
+18. central\_moment\_2
+19. central\_moment\_3
+20. central\_moment\_4
+21. sum
+22. sum\_2
+23. sum\_3
+24. sum\_4
+
+- moment\_2 means E\[X^2].
+- central\_moment\_2 means E\[(X - mean(X))^2].
+- sum\_2 means sum(X^2).
+
+:target{#id41}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_data
+      </td>
+
+      <td>
+        Input data.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’, ‘sf.table.individual’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id42}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        report
+      </td>
+
+      <td>
+        Output report.
+      </td>
+
+      <td>
+        \[‘sf.report’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>

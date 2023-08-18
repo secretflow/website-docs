@@ -1,0 +1,2052 @@
+:target{#隐语SecretFlow金融风控全链路能力展示}
+
+# 隐语SecretFlow金融风控全链路能力展示
+
+> This tutorial is only available in Chinese.
+
+> Last updated: May 12, 2023
+>
+> 请使用v0.8.3或以上版本的隐语进行实验。
+>
+> 以下代码仅作为示例，请勿在生产环境直接使用。
+
+本次实验将会展示如何使用隐语进行在风控领域常用的Logistic Regeression模型和XGB模型的模型研发工作。
+
+隐语接下来将会开放模型部署和在线/离线模型预测功能，敬请期待。
+
+:target{#实验目标}
+
+## 实验目标
+
+在本次实验中，我们将会利用一个开源数据集训练一个金融风控场景常用的线性回归和XGB模型。在此过程中将包含以下步骤：
+
+- 样本对齐
+- 特征预处理
+- 数据分析
+- 模型训练
+- 模型预测
+- 模型评估
+
+请依次执行所有步骤确保实验可以顺利完成。
+
+:target{#实验前置工作}
+
+## 实验前置工作
+
+:target{#初始化隐语框架}
+
+### 初始化隐语框架
+
+在本次实验中，我们将会包含两个节点：<strong>alice</strong> 和 <strong>bob</strong> . 在真实业务场景，他们将会代表两个不同实体，他们之间的原始数据不被允许直接相互传输，但是他们的原始数据将会被一起用以研发一个模型。
+
+在下面的代码中，我们建立了一个 <strong>SecretFlow Cluster</strong>, 基于 <strong>alice</strong> 和 <strong>bob</strong> 两个节点，我们还创建了三个device：
+
+- alice: PYU device, 负责在alice侧的本地计算，计算输入、计算过程和计算结果仅alice可见
+- bob: PYU device, 负责在bob侧的本地计算，计算输入、计算过程和计算结果仅bob可见
+- spu: SPU device, 负责alice和bob之间的密态计算，计算输入和计算结果为密态，由alice和bob各掌握一个分片，计算过程为MPC计算，由alice和bob各自的SPU Runtime一起执行。
+
+> 如果你尚未理解以上的一些概念，比如SPU设备，请参考这篇[文档](../developer/design/architecture.mdx).
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+
+    sf.shutdown()
+    sf.init(['alice', 'bob'], address='local')
+    alice, bob = sf.PYU('alice'), sf.PYU('bob')
+    spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+在上面的log中，你应该发现，在<strong>spu</strong>的创建过程中，alice和bob两边都各有一个 <strong>SPURuntime</strong> 被建立并互相创建连接。
+
+:target{#数据集}
+
+### 数据集
+
+本次实验我们采用的原始数据是来自UCI的[Bank Marketing Data Set](https://archive.ics.uci.edu/ml/datasets/bank+marketing). 这个数据集汇集了一家葡萄牙银行机构电话营销的结果。
+
+我们添加了<strong>uid</strong>这一列用于接下来隐私求交的实验。
+
+我们首先看一下数据集所包含的信息。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import pandas as pd
+
+    # secretflow.utils.simulation.datasets contains mirrors of some popular open dataset.
+    from secretflow.utils.simulation.datasets import dataset
+
+    df = pd.read_csv(dataset('bank_marketing_full'), sep=';')
+    df['uid'] = df.index + 1
+
+    df
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[2]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"age"}</th><th>{"job"}</th><th>{"marital"}</th><th>{"education"}</th><th>{"default"}</th><th>{"balance"}</th><th>{"housing"}</th><th>{"loan"}</th><th>{"contact"}</th><th>{"day"}</th><th>{"month"}</th><th>{"duration"}</th><th>{"campaign"}</th><th>{"pdays"}</th><th>{"previous"}</th><th>{"poutcome"}</th><th>{"y"}</th><th>{"uid"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"0"}</th><td>{"58"}</td><td>{"management"}</td><td>{"married"}</td><td>{"tertiary"}</td><td>{"no"}</td><td>{"2143"}</td><td>{"yes"}</td><td>{"no"}</td><td>{"unknown"}</td><td>{"5"}</td><td>{"may"}</td><td>{"261"}</td><td>{"1"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"1"}</td>
+          </tr>
+
+          <tr>
+            <th>{"1"}</th><td>{"44"}</td><td>{"technician"}</td><td>{"single"}</td><td>{"secondary"}</td><td>{"no"}</td><td>{"29"}</td><td>{"yes"}</td><td>{"no"}</td><td>{"unknown"}</td><td>{"5"}</td><td>{"may"}</td><td>{"151"}</td><td>{"1"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"2"}</td>
+          </tr>
+
+          <tr>
+            <th>{"2"}</th><td>{"33"}</td><td>{"entrepreneur"}</td><td>{"married"}</td><td>{"secondary"}</td><td>{"no"}</td><td>{"2"}</td><td>{"yes"}</td><td>{"yes"}</td><td>{"unknown"}</td><td>{"5"}</td><td>{"may"}</td><td>{"76"}</td><td>{"1"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"3"}</td>
+          </tr>
+
+          <tr>
+            <th>{"3"}</th><td>{"47"}</td><td>{"blue-collar"}</td><td>{"married"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"1506"}</td><td>{"yes"}</td><td>{"no"}</td><td>{"unknown"}</td><td>{"5"}</td><td>{"may"}</td><td>{"92"}</td><td>{"1"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"4"}</td>
+          </tr>
+
+          <tr>
+            <th>{"4"}</th><td>{"33"}</td><td>{"unknown"}</td><td>{"single"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"1"}</td><td>{"no"}</td><td>{"no"}</td><td>{"unknown"}</td><td>{"5"}</td><td>{"may"}</td><td>{"198"}</td><td>{"1"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"5"}</td>
+          </tr>
+
+          <tr>
+            <th>{"..."}</th><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td>
+          </tr>
+
+          <tr>
+            <th>{"45206"}</th><td>{"51"}</td><td>{"technician"}</td><td>{"married"}</td><td>{"tertiary"}</td><td>{"no"}</td><td>{"825"}</td><td>{"no"}</td><td>{"no"}</td><td>{"cellular"}</td><td>{"17"}</td><td>{"nov"}</td><td>{"977"}</td><td>{"3"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"yes"}</td><td>{"45207"}</td>
+          </tr>
+
+          <tr>
+            <th>{"45207"}</th><td>{"71"}</td><td>{"retired"}</td><td>{"divorced"}</td><td>{"primary"}</td><td>{"no"}</td><td>{"1729"}</td><td>{"no"}</td><td>{"no"}</td><td>{"cellular"}</td><td>{"17"}</td><td>{"nov"}</td><td>{"456"}</td><td>{"2"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"yes"}</td><td>{"45208"}</td>
+          </tr>
+
+          <tr>
+            <th>{"45208"}</th><td>{"72"}</td><td>{"retired"}</td><td>{"married"}</td><td>{"secondary"}</td><td>{"no"}</td><td>{"5715"}</td><td>{"no"}</td><td>{"no"}</td><td>{"cellular"}</td><td>{"17"}</td><td>{"nov"}</td><td>{"1127"}</td><td>{"5"}</td><td>{"184"}</td><td>{"3"}</td><td>{"success"}</td><td>{"yes"}</td><td>{"45209"}</td>
+          </tr>
+
+          <tr>
+            <th>{"45209"}</th><td>{"57"}</td><td>{"blue-collar"}</td><td>{"married"}</td><td>{"secondary"}</td><td>{"no"}</td><td>{"668"}</td><td>{"no"}</td><td>{"no"}</td><td>{"telephone"}</td><td>{"17"}</td><td>{"nov"}</td><td>{"508"}</td><td>{"4"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"45210"}</td>
+          </tr>
+
+          <tr>
+            <th>{"45210"}</th><td>{"37"}</td><td>{"entrepreneur"}</td><td>{"married"}</td><td>{"secondary"}</td><td>{"no"}</td><td>{"2971"}</td><td>{"no"}</td><td>{"no"}</td><td>{"cellular"}</td><td>{"17"}</td><td>{"nov"}</td><td>{"361"}</td><td>{"2"}</td><td>{"188"}</td><td>{"11"}</td><td>{"other"}</td><td>{"no"}</td><td>{"45211"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"45211 rows × 18 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+该数据集包含了45211个样本，每一个样本代表了一个目标客户。
+
+每个样本包含16个feature，我们这里简单描述一下这个数据集所有的feature。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        feature
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        取值
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        uid
+      </td>
+
+      <td>
+        客户编码
+      </td>
+
+      <td>
+        数字
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        age
+      </td>
+
+      <td>
+        年龄
+      </td>
+
+      <td>
+        数字
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        job
+      </td>
+
+      <td>
+        工作类型
+      </td>
+
+      <td>
+        ‘admin.’,’blue-collar’,’entrepreneur’,’housemaid’,’management’,’retired’,’self-employed’,’services’,’student’,’technician’,’unemployed’,’unknown’
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        marital
+      </td>
+
+      <td>
+        婚姻状况
+      </td>
+
+      <td>
+        ‘divorced’,’married’,’single’,’unknown’
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        education
+      </td>
+
+      <td>
+        教育状况
+      </td>
+
+      <td>
+        ‘tertiary’, ‘secondary’, ‘unknown’, ‘primary’
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        default
+      </td>
+
+      <td>
+        是否有不良信用记录
+      </td>
+
+      <td>
+        ‘no’,’yes’,’unknown’
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        housing
+      </td>
+
+      <td>
+        是否有房贷
+      </td>
+
+      <td>
+        ‘no’,’yes’,’unknown’
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        loan
+      </td>
+
+      <td>
+        是否有个人贷款
+      </td>
+
+      <td>
+        ‘no’,’yes’,’unknown’
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        contact
+      </td>
+
+      <td>
+        联系方式
+      </td>
+
+      <td>
+        ‘cellular’,’telephone’
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        month
+      </td>
+
+      <td>
+        上次联系月份
+      </td>
+
+      <td>
+        ‘jan’, ‘feb’, ‘mar’, …, ‘nov’, ‘dec’
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        day
+      </td>
+
+      <td>
+        上次联系月日
+      </td>
+
+      <td>
+        数字
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        duration
+      </td>
+
+      <td>
+        上次沟通时间
+      </td>
+
+      <td>
+        数字
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        campaign
+      </td>
+
+      <td>
+        本次活动已经沟通的次数
+      </td>
+
+      <td>
+        数字
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        pdays
+      </td>
+
+      <td>
+        距离上次沟通经过的天数
+      </td>
+
+      <td>
+        数字
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        previous
+      </td>
+
+      <td>
+        在本次活动之前已经沟通的次数
+      </td>
+
+      <td>
+        数字
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        poutcome
+      </td>
+
+      <td>
+        之前活动的结果
+      </td>
+
+      <td>
+        ‘unknown’, ‘failure’, ‘other’, ‘success’
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+每个样本的label - y表示对于目标客户的营销结果（是否签订了定额存款合同），取值是’yes’,’no’。
+
+我们假定以上16个feature由两个机构分别掌握，具体如下。
+
+- alice: age, job, marital, education, default, balance, housing, loan
+- bob: contact, day, month, duration, campaign, pdays, previous, poutcome, y
+
+在真实业务场景中, alice和bob所掌握的数据可能是没有对齐的，为了模拟这种情况，我们将数据集shuffle之后，再随机各取90%来模拟这个状况。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    import numpy as np
+
+    df_alice = df.iloc[:, np.r_[0:8, -1]].sample(frac=0.9)
+
+    df_alice
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[3]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"age"}</th><th>{"job"}</th><th>{"marital"}</th><th>{"education"}</th><th>{"default"}</th><th>{"balance"}</th><th>{"housing"}</th><th>{"loan"}</th><th>{"uid"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"34307"}</th><td>{"30"}</td><td>{"self-employed"}</td><td>{"married"}</td><td>{"tertiary"}</td><td>{"no"}</td><td>{"2666"}</td><td>{"no"}</td><td>{"no"}</td><td>{"34308"}</td>
+          </tr>
+
+          <tr>
+            <th>{"39488"}</th><td>{"34"}</td><td>{"management"}</td><td>{"married"}</td><td>{"secondary"}</td><td>{"no"}</td><td>{"724"}</td><td>{"yes"}</td><td>{"no"}</td><td>{"39489"}</td>
+          </tr>
+
+          <tr>
+            <th>{"15177"}</th><td>{"29"}</td><td>{"management"}</td><td>{"married"}</td><td>{"tertiary"}</td><td>{"no"}</td><td>{"1"}</td><td>{"yes"}</td><td>{"no"}</td><td>{"15178"}</td>
+          </tr>
+
+          <tr>
+            <th>{"8390"}</th><td>{"42"}</td><td>{"technician"}</td><td>{"single"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"344"}</td><td>{"yes"}</td><td>{"no"}</td><td>{"8391"}</td>
+          </tr>
+
+          <tr>
+            <th>{"24188"}</th><td>{"58"}</td><td>{"technician"}</td><td>{"married"}</td><td>{"secondary"}</td><td>{"no"}</td><td>{"-942"}</td><td>{"yes"}</td><td>{"no"}</td><td>{"24189"}</td>
+          </tr>
+
+          <tr>
+            <th>{"..."}</th><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td>
+          </tr>
+
+          <tr>
+            <th>{"30242"}</th><td>{"29"}</td><td>{"services"}</td><td>{"married"}</td><td>{"primary"}</td><td>{"no"}</td><td>{"549"}</td><td>{"yes"}</td><td>{"no"}</td><td>{"30243"}</td>
+          </tr>
+
+          <tr>
+            <th>{"29936"}</th><td>{"31"}</td><td>{"technician"}</td><td>{"single"}</td><td>{"tertiary"}</td><td>{"no"}</td><td>{"665"}</td><td>{"yes"}</td><td>{"no"}</td><td>{"29937"}</td>
+          </tr>
+
+          <tr>
+            <th>{"13661"}</th><td>{"32"}</td><td>{"admin."}</td><td>{"single"}</td><td>{"secondary"}</td><td>{"yes"}</td><td>{"-17"}</td><td>{"no"}</td><td>{"no"}</td><td>{"13662"}</td>
+          </tr>
+
+          <tr>
+            <th>{"8968"}</th><td>{"41"}</td><td>{"management"}</td><td>{"married"}</td><td>{"tertiary"}</td><td>{"no"}</td><td>{"5"}</td><td>{"no"}</td><td>{"no"}</td><td>{"8969"}</td>
+          </tr>
+
+          <tr>
+            <th>{"23030"}</th><td>{"41"}</td><td>{"management"}</td><td>{"married"}</td><td>{"tertiary"}</td><td>{"no"}</td><td>{"725"}</td><td>{"no"}</td><td>{"no"}</td><td>{"23031"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"40690 rows × 9 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    df_bob = df.iloc[:, 8:].sample(frac=0.9)
+
+    df_bob
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[4]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"contact"}</th><th>{"day"}</th><th>{"month"}</th><th>{"duration"}</th><th>{"campaign"}</th><th>{"pdays"}</th><th>{"previous"}</th><th>{"poutcome"}</th><th>{"y"}</th><th>{"uid"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"21927"}</th><td>{"cellular"}</td><td>{"20"}</td><td>{"aug"}</td><td>{"210"}</td><td>{"2"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"21928"}</td>
+          </tr>
+
+          <tr>
+            <th>{"11391"}</th><td>{"unknown"}</td><td>{"19"}</td><td>{"jun"}</td><td>{"573"}</td><td>{"1"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"11392"}</td>
+          </tr>
+
+          <tr>
+            <th>{"26036"}</th><td>{"cellular"}</td><td>{"19"}</td><td>{"nov"}</td><td>{"266"}</td><td>{"2"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"26037"}</td>
+          </tr>
+
+          <tr>
+            <th>{"43335"}</th><td>{"cellular"}</td><td>{"22"}</td><td>{"mar"}</td><td>{"254"}</td><td>{"2"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"yes"}</td><td>{"43336"}</td>
+          </tr>
+
+          <tr>
+            <th>{"43222"}</th><td>{"cellular"}</td><td>{"5"}</td><td>{"mar"}</td><td>{"162"}</td><td>{"1"}</td><td>{"179"}</td><td>{"2"}</td><td>{"failure"}</td><td>{"no"}</td><td>{"43223"}</td>
+          </tr>
+
+          <tr>
+            <th>{"..."}</th><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td>
+          </tr>
+
+          <tr>
+            <th>{"28562"}</th><td>{"cellular"}</td><td>{"29"}</td><td>{"jan"}</td><td>{"146"}</td><td>{"2"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"28563"}</td>
+          </tr>
+
+          <tr>
+            <th>{"37451"}</th><td>{"cellular"}</td><td>{"13"}</td><td>{"may"}</td><td>{"777"}</td><td>{"2"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"37452"}</td>
+          </tr>
+
+          <tr>
+            <th>{"10843"}</th><td>{"unknown"}</td><td>{"17"}</td><td>{"jun"}</td><td>{"491"}</td><td>{"1"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"10844"}</td>
+          </tr>
+
+          <tr>
+            <th>{"17215"}</th><td>{"cellular"}</td><td>{"28"}</td><td>{"jul"}</td><td>{"68"}</td><td>{"3"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"17216"}</td>
+          </tr>
+
+          <tr>
+            <th>{"26220"}</th><td>{"cellular"}</td><td>{"20"}</td><td>{"nov"}</td><td>{"110"}</td><td>{"2"}</td><td>{"-1"}</td><td>{"0"}</td><td>{"unknown"}</td><td>{"no"}</td><td>{"26221"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"40690 rows × 10 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+我们这里将df\_alice和df\_bob保存为文件，作为alice和bob两方的原始输入。
+
+至此，我们完成了所有实验准备工作。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    import tempfile
+
+    _, alice_path = tempfile.mkstemp()
+    _, bob_path = tempfile.mkstemp()
+    df_alice.reset_index(drop=True).to_csv(alice_path, index=False)
+    df_bob.reset_index(drop=True).to_csv(bob_path, index=False)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#样本对齐（隐私求交）}
+
+## 样本对齐（隐私求交）
+
+显然，第一步我们需要将两边的数据对齐。 隐私求交（[Private Set Intersection](https://en.wikipedia.org/wiki/Private_set_intersection))是一种密码学方法，可以获取两个集合的交集，而不泄露任何其他信息。 在隐语中，SPU设备支持三种隐私求交算法:
+
+- [ECDH](https://ieeexplore.ieee.org/document/6234849/)：半诚实模型, 基于公钥密码学，原本适用于小数据集，但是隐语优化后已经能支持10亿量级的数据。
+- [KKRT](https://eprint.iacr.org/2016/799.pdf)：半诚实模型, 基于布谷鸟哈希（Cuckoo Hashing）以及高效不经意传输扩展（OT Extension），适用于大数据集（比如千万数据集）。
+- [BC22PCG](https://eprint.iacr.org/2022/334)：半诚实模型, 基于随机相关函数生成器，适用于大数据集。
+
+由于我们这里的数据集较小，我们这里采用的是ECDH方法。
+
+:target{#方式一：将隐私求交结果保存至文件}
+
+### 方式一：将隐私求交结果保存至文件
+
+在一些应用场景场景中，alice和bob可能在隐私求交之后将结果直接保存至文件中，之后再进行后续操作。这个时候，请调用<strong>psi\_csv</strong>接口。
+
+在以下代码中，我们分别制定了两边需要求交的key以及输入和输出路径。
+
+我们需要指定双方的输入文件和输出文件路径。对于ECDH来说，由于双方的地位是平等的，receiver并没有实际含义，你可以任意指定。我们需要设定正确的protocol。sort设为true之后，join的结果将会被排序。
+
+> 请阅读 psi\_csv 的文档。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    _, alice_psi_path = tempfile.mkstemp()
+    _, bob_psi_path = tempfile.mkstemp()
+
+    spu.psi_csv(
+        key="uid",
+        input_path={alice: alice_path, bob: bob_path},
+        output_path={alice: alice_psi_path, bob: bob_psi_path},
+        receiver="alice",
+        protocol="ECDH_PSI_2PC",
+        sort=True,
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:57.878 [info] [bucket_psi.cc:Init:228] bucket size set to 1048576\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:57.879 [info] [bucket_psi.cc:Run:97] Begin sanity check for input file: /tmp/tmp694nk0jt, precheck_switch:true\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:57.900 [info] [csv_checker.cc:CsvChecker:121] Executing duplicated scripts: LC_ALL=C sort --buffer-size=1G --temporary-directory=/tmp --stable selected-keys.1687175937879190715 | LC_ALL=C uniq -d > duplicate-keys.1687175937879190715\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:57.917 [info] [bucket_psi.cc:Run:115] End sanity check for input file: /tmp/tmp694nk0jt, size=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:57.917 [info] [bucket_psi.cc:RunPsi:419] Run psi protocol=1, self_items_count=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:57.917 [info] [cryptor_selector.cc:GetSodiumCryptor:45] Using libSodium\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:57.917 [info] [cipher_store.cc:DiskCipherStore:33] Disk cache choose num_bins=64\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:57.921 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:57.879 [info] [bucket_psi.cc:Init:228] bucket size set to 1048576\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:57.879 [info] [bucket_psi.cc:Run:97] Begin sanity check for input file: /tmp/tmpuk_ondd_, precheck_switch:true\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:57.901 [info] [csv_checker.cc:CsvChecker:121] Executing duplicated scripts: LC_ALL=C sort --buffer-size=1G --temporary-directory=/tmp --stable selected-keys.1687175937879550920 | LC_ALL=C uniq -d > duplicate-keys.1687175937879550920\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:57.917 [info] [bucket_psi.cc:Run:115] End sanity check for input file: /tmp/tmpuk_ondd_, size=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:57.917 [info] [bucket_psi.cc:RunPsi:419] Run psi protocol=1, self_items_count=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:57.917 [info] [cryptor_selector.cc:GetSodiumCryptor:45] Using libSodium\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:57.917 [info] [cipher_store.cc:DiskCipherStore:33] Disk cache choose num_bins=64\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:57.921 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:58.899 [info] [ecdh_psi.cc:MaskSelf:75] MaskSelf:root--finished, batch_count=10, self_item_count=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:58.908 [info] [ecdh_psi.cc:MaskPeer:119] MaskPeer:root--finished, batch_count=10, peer_item_count=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:58.864 [info] [ecdh_psi.cc:MaskSelf:75] MaskSelf:root--finished, batch_count=10, self_item_count=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:58.910 [info] [ecdh_psi.cc:RecvDualMaskedSelf:148] root recv last batch finished, batch_count=10\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:58.940 [info] [ecdh_psi.cc:RecvDualMaskedSelf:148] root recv last batch finished, batch_count=10\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:58.977 [info] [bucket_psi.cc:Run:178] Begin post filtering, indices.size=36623, should_sort=true\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:58.986 [info] [utils.cc:MultiKeySort:88] Executing sort scripts: tail -n +2 /tmp/tmp-sort-in-1687175938978090836 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=9,9 >>/tmp/tmp-sort-out-1687175938978090836\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:59.015 [info] [utils.cc:MultiKeySort:90] Finished sort scripts: tail -n +2 /tmp/tmp-sort-in-1687175938978090836 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=9,9 >>/tmp/tmp-sort-out-1687175938978090836, ret=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:58:59.015 [info] [bucket_psi.cc:Run:216] End post filtering, in=/tmp/tmp694nk0jt, out=/tmp/tmpsm2_cbxb\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="output">
+    <pre>
+      {"[{'party': 'alice', 'original_count': 40690, 'intersection_count': 36623},\n {'party': 'bob', 'original_count': 40690, 'intersection_count': 36623}]\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:58.939 [info] [ecdh_psi.cc:MaskPeer:119] MaskPeer:root--finished, batch_count=10, peer_item_count=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:58.976 [info] [bucket_psi.cc:Run:178] Begin post filtering, indices.size=36623, should_sort=true\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:58.985 [info] [utils.cc:MultiKeySort:88] Executing sort scripts: tail -n +2 /tmp/tmp-sort-in-1687175938977402931 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=10,10 >>/tmp/tmp-sort-out-1687175938977402931\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:59.012 [info] [utils.cc:MultiKeySort:90] Finished sort scripts: tail -n +2 /tmp/tmp-sort-in-1687175938977402931 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=10,10 >>/tmp/tmp-sort-out-1687175938977402931, ret=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:58:59.012 [info] [bucket_psi.cc:Run:216] End post filtering, in=/tmp/tmpuk_ondd_, out=/tmp/tmpktc3mmb9\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#方式二：将求交结果保存至VDataFrame}
+
+### 方式二：将求交结果保存至VDataFrame
+
+VDataFrame是隐语中保存垂直切分数据的数据结构，在接下来的任务中，我们将会不断使用VDataFrame的数据结构。
+
+由于在本次实验中，经过隐私求交之后，我们还有后续操作，所以我们在这里使用 <strong>data.vertical.read\_csv</strong> 来将原始数据隐私求交之后的结果直接转化为VDataFrame。
+
+> 请阅读data.vertical.read\_csv的文档。很多参数和psi\_csv是一致的，这里不再赘述。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    from secretflow.data.vertical import read_csv as v_read_csv
+
+    vdf = v_read_csv(
+        {alice: alice_path, bob: bob_path},
+        spu=spu,
+        keys="uid",
+        drop_keys="uid",
+        psi_protocl="ECDH_PSI_2PC",
+    )
+    vdf.columns
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:01.035 [info] [bucket_psi.cc:Init:228] bucket size set to 1048576\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:01.035 [info] [bucket_psi.cc:Run:97] Begin sanity check for input file: /tmp/tmp694nk0jt, precheck_switch:true\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:01.058 [info] [csv_checker.cc:CsvChecker:121] Executing duplicated scripts: LC_ALL=C sort --buffer-size=1G --temporary-directory=/tmp --stable selected-keys.1687175941035742943 | LC_ALL=C uniq -d > duplicate-keys.1687175941035742943\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:01.035 [info] [bucket_psi.cc:Init:228] bucket size set to 1048576\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:01.035 [info] [bucket_psi.cc:Run:97] Begin sanity check for input file: /tmp/tmpuk_ondd_, precheck_switch:true\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:01.058 [info] [csv_checker.cc:CsvChecker:121] Executing duplicated scripts: LC_ALL=C sort --buffer-size=1G --temporary-directory=/tmp --stable selected-keys.1687175941036362722 | LC_ALL=C uniq -d > duplicate-keys.1687175941036362722\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:01.086 [info] [bucket_psi.cc:Run:115] End sanity check for input file: /tmp/tmp694nk0jt, size=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:01.086 [info] [bucket_psi.cc:RunPsi:419] Run psi protocol=1, self_items_count=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:01.086 [info] [cryptor_selector.cc:GetSodiumCryptor:45] Using libSodium\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:01.086 [info] [cipher_store.cc:DiskCipherStore:33] Disk cache choose num_bins=64\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:01.086 [info] [bucket_psi.cc:Run:115] End sanity check for input file: /tmp/tmpuk_ondd_, size=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:01.086 [info] [bucket_psi.cc:RunPsi:419] Run psi protocol=1, self_items_count=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:01.086 [info] [cryptor_selector.cc:GetSodiumCryptor:45] Using libSodium\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:01.086 [info] [cipher_store.cc:DiskCipherStore:33] Disk cache choose num_bins=64\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:02.371 [info] [ecdh_psi.cc:MaskSelf:75] MaskSelf:root--finished, batch_count=10, self_item_count=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:02.480 [info] [ecdh_psi.cc:MaskSelf:75] MaskSelf:root--finished, batch_count=10, self_item_count=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:02.556 [info] [ecdh_psi.cc:MaskPeer:119] MaskPeer:root--finished, batch_count=10, peer_item_count=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:02.565 [info] [ecdh_psi.cc:RecvDualMaskedSelf:148] root recv last batch finished, batch_count=10\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:02.602 [info] [bucket_psi.cc:Run:178] Begin post filtering, indices.size=36623, should_sort=true\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:02.610 [info] [utils.cc:MultiKeySort:88] Executing sort scripts: tail -n +2 /tmp/tmp-sort-in-1687175942602523600 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=9,9 >>/tmp/tmp-sort-out-1687175942602523600\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:02.639 [info] [utils.cc:MultiKeySort:90] Finished sort scripts: tail -n +2 /tmp/tmp-sort-in-1687175942602523600 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=9,9 >>/tmp/tmp-sort-out-1687175942602523600, ret=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=12271)"}</span>{" 2023-06-19 19:59:02.640 [info] [bucket_psi.cc:Run:216] End post filtering, in=/tmp/tmp694nk0jt, out=/tmp/tmp694nk0jt.psi_output_13006\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:02.557 [info] [ecdh_psi.cc:RecvDualMaskedSelf:148] root recv last batch finished, batch_count=10\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:02.563 [info] [ecdh_psi.cc:MaskPeer:119] MaskPeer:root--finished, batch_count=10, peer_item_count=40690\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:02.600 [info] [bucket_psi.cc:Run:178] Begin post filtering, indices.size=36623, should_sort=true\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:02.608 [info] [utils.cc:MultiKeySort:88] Executing sort scripts: tail -n +2 /tmp/tmp-sort-in-1687175942600777595 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=10,10 >>/tmp/tmp-sort-out-1687175942600777595\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:02.637 [info] [utils.cc:MultiKeySort:90] Finished sort scripts: tail -n +2 /tmp/tmp-sort-in-1687175942600777595 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=10,10 >>/tmp/tmp-sort-out-1687175942600777595, ret=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=12278)"}</span>{" 2023-06-19 19:59:02.637 [info] [bucket_psi.cc:Run:216] End post filtering, in=/tmp/tmpuk_ondd_, out=/tmp/tmpuk_ondd_.psi_output_13006\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="output">
+    <pre>
+      {"Index(['age', 'job', 'marital', 'education', 'default', 'balance', 'housing',\n       'loan', 'contact', 'day', 'month', 'duration', 'campaign', 'pdays',\n       'previous', 'poutcome', 'y'],\n      dtype='object')\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#更多}
+
+### 更多
+
+我们在这里展示的是两方单键的隐私求交，隐语也支持三方和多键的隐私求交技术，想要了解更多信息，你可以：
+
+- 阅读这篇[文档](https://www.secretflow.org.cn/docs/spu/en/development/psi.html)了解隐语SPU的隐私求交能力。
+- 阅读该[教程](PSI_On_SPU.mdx)了解使用的例子。
+
+:target{#特征预处理}
+
+## 特征预处理
+
+一般情况下，我们都需要对用于建模的数据进行预处理，合理的预处理对模型训练效果非常关键。
+
+在开始特征预处理之前，我们先使用 <strong>stats.table\_statistics.table\_statistics</strong> 来查看一下特征总体情况，我们会在后面专门讨论全表统计模块。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats.table_statistics import table_statistics
+
+    pd.set_option('display.max_rows', None)
+    data_stats = table_statistics(vdf)
+    data_stats
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[8]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"datatype"}</th><th>{"total_count"}</th><th>{"count(non-NA count)"}</th><th>{"count_na(NA count)"}</th><th>{"na_ratio"}</th><th>{"min"}</th><th>{"max"}</th><th>{"mean"}</th><th>{"var(variance)"}</th><th>{"std(standard deviation)"}</th><th>{"..."}</th><th>{"moment_2"}</th><th>{"moment_3"}</th><th>{"moment_4"}</th><th>{"central_moment_2"}</th><th>{"central_moment_3"}</th><th>{"central_moment_4"}</th><th>{"sum"}</th><th>{"sum_2"}</th><th>{"sum_3"}</th><th>{"sum_4"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"age"}</th><td>{"int64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"18.0"}</td><td>{"95.0"}</td><td>{"40.973842"}</td><td>{"1.132227e+02"}</td><td>{"10.640615"}</td><td>{"..."}</td><td>{"1.792075e+03"}</td><td>{"8.352986e+04"}</td><td>{"4.136732e+06"}</td><td>{"1.132196e+02"}</td><td>{"8.235717e+02"}</td><td>{"4.271965e+04"}</td><td>{"1500585.0"}</td><td>{"6.563117e+07"}</td><td>{"3.059114e+09"}</td><td>{"1.514995e+11"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job"}</th><td>{"object"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"..."}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td>
+          </tr>
+
+          <tr>
+            <th>{"marital"}</th><td>{"object"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"..."}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td>
+          </tr>
+
+          <tr>
+            <th>{"education"}</th><td>{"object"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"..."}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td>
+          </tr>
+
+          <tr>
+            <th>{"default"}</th><td>{"object"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"..."}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td>
+          </tr>
+
+          <tr>
+            <th>{"balance"}</th><td>{"int64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-8019.0"}</td><td>{"102127.0"}</td><td>{"1364.172569"}</td><td>{"9.389804e+06"}</td><td>{"3064.278642"}</td><td>{"..."}</td><td>{"1.125051e+07"}</td><td>{"2.846731e+11"}</td><td>{"4.381241e+15"}</td><td>{"9.389547e+06"}</td><td>{"2.437076e+11"}</td><td>{"1.301696e+16"}</td><td>{"49960092.0"}</td><td>{"4.120276e+11"}</td><td>{"1.042558e+16"}</td><td>{"-5.566494e+18"}</td>
+          </tr>
+
+          <tr>
+            <th>{"housing"}</th><td>{"object"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"..."}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td>
+          </tr>
+
+          <tr>
+            <th>{"loan"}</th><td>{"object"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"..."}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td>
+          </tr>
+
+          <tr>
+            <th>{"contact"}</th><td>{"object"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"..."}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day"}</th><td>{"int64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"1.0"}</td><td>{"31.0"}</td><td>{"15.802528"}</td><td>{"6.931243e+01"}</td><td>{"8.325409"}</td><td>{"..."}</td><td>{"3.190304e+02"}</td><td>{"7.285526e+03"}</td><td>{"1.789105e+05"}</td><td>{"6.931054e+01"}</td><td>{"5.347452e+01"}</td><td>{"9.321046e+03"}</td><td>{"578736.0"}</td><td>{"1.168385e+07"}</td><td>{"2.668178e+08"}</td><td>{"6.552241e+09"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month"}</th><td>{"object"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"..."}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td>
+          </tr>
+
+          <tr>
+            <th>{"duration"}</th><td>{"int64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"0.0"}</td><td>{"3422.0"}</td><td>{"258.212681"}</td><td>{"6.502099e+04"}</td><td>{"254.992134"}</td><td>{"..."}</td><td>{"1.316930e+05"}</td><td>{"1.151632e+08"}</td><td>{"1.482931e+11"}</td><td>{"6.501921e+04"}</td><td>{"4.758080e+07"}</td><td>{"6.869341e+10"}</td><td>{"9456523.0"}</td><td>{"4.822993e+09"}</td><td>{"4.217621e+12"}</td><td>{"5.430939e+15"}</td>
+          </tr>
+
+          <tr>
+            <th>{"campaign"}</th><td>{"int64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"1.0"}</td><td>{"63.0"}</td><td>{"2.744778"}</td><td>{"9.337596e+00"}</td><td>{"3.055748"}</td><td>{"..."}</td><td>{"1.687115e+01"}</td><td>{"2.382004e+02"}</td><td>{"5.782482e+03"}</td><td>{"9.337341e+00"}</td><td>{"1.406350e+02"}</td><td>{"3.759602e+03"}</td><td>{"100522.0"}</td><td>{"6.178720e+05"}</td><td>{"8.723614e+06"}</td><td>{"2.117718e+08"}</td>
+          </tr>
+
+          <tr>
+            <th>{"pdays"}</th><td>{"int64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-1.0"}</td><td>{"871.0"}</td><td>{"40.501816"}</td><td>{"1.005977e+04"}</td><td>{"100.298386"}</td><td>{"..."}</td><td>{"1.169989e+04"}</td><td>{"3.916406e+06"}</td><td>{"1.531144e+09"}</td><td>{"1.005949e+04"}</td><td>{"2.627684e+06"}</td><td>{"1.003740e+09"}</td><td>{"1483298.0"}</td><td>{"4.284850e+08"}</td><td>{"1.434305e+11"}</td><td>{"5.607510e+13"}</td>
+          </tr>
+
+          <tr>
+            <th>{"previous"}</th><td>{"int64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"0.0"}</td><td>{"275.0"}</td><td>{"0.589302"}</td><td>{"5.796070e+00"}</td><td>{"2.407503"}</td><td>{"..."}</td><td>{"6.143189e+00"}</td><td>{"6.326302e+02"}</td><td>{"1.579898e+05"}</td><td>{"5.795912e+00"}</td><td>{"6.221789e+02"}</td><td>{"1.565110e+05"}</td><td>{"21582.0"}</td><td>{"2.249820e+05"}</td><td>{"2.316881e+07"}</td><td>{"5.786061e+09"}</td>
+          </tr>
+
+          <tr>
+            <th>{"poutcome"}</th><td>{"object"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"..."}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td>
+          </tr>
+
+          <tr>
+            <th>{"y"}</th><td>{"object"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"..."}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td><td>{"NaN"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"17 rows × 26 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    pd.reset_option('display.max_rows')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+在接下来，我们将会展示隐语以下特征预处理能力：
+
+- 值替换
+- 缺失值填充
+- WOE分组/分箱转换
+- one-hot编码
+- 标准化
+
+:target{#值替换}
+
+### 值替换
+
+我们先对以下特征做值替换：
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        feature
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        取值和值替换规则
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        education
+      </td>
+
+      <td>
+        教育状况
+      </td>
+
+      <td>
+        ‘tertiary’ -> 3, ‘secondary’ -> 2, ‘unknown’ -> 0, ‘primary’ -> 1
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        default
+      </td>
+
+      <td>
+        是否有不良信用记录
+      </td>
+
+      <td>
+        ‘no’ -> 0,’yes’ -> 1,’unknown’ -> NaN
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        housing
+      </td>
+
+      <td>
+        是否有房贷
+      </td>
+
+      <td>
+        ‘no’ -> 0,’yes’ -> 1,’unknown’ -> NaN
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        loan
+      </td>
+
+      <td>
+        是否有个人贷款
+      </td>
+
+      <td>
+        ‘no’ -> 0,’yes’ -> 1,’unknown’ -> NaN
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        month
+      </td>
+
+      <td>
+        上次联系月份
+      </td>
+
+      <td>
+        ‘jan’ -> 1, ‘feb’ -> 2, ‘mar’ -> 3, …, ‘nov’ -> 11, ‘dec’ ->12
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        y
+      </td>
+
+      <td>
+        label
+      </td>
+
+      <td>
+        ‘yes’ -> 1,’no’ -> 0
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+替换完之后，我们使用 <strong>sf.reveal</strong> 来查看效果，请注意在生产中，<strong>sf.reveal</strong> 将会直接泄露数据，需要严格限制和进行审计。
+
+> 在生产中，请严格限制<strong>sf.reveal</strong>的使用。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    vdf['education'] = vdf['education'].replace(
+        {'tertiary': 3, 'secondary': 2, 'primary': 1, 'unknown': np.NaN}
+    )
+
+    vdf['default'] = vdf['default'].replace({'no': 0, 'yes': 1, 'unknown': np.NaN})
+
+    vdf['housing'] = vdf['housing'].replace({'no': 0, 'yes': 1, 'unknown': np.NaN})
+
+    vdf['loan'] = vdf['loan'].replace({'no': 0, 'yes': 1, 'unknown': np.NaN})
+
+    vdf['month'] = vdf['month'].replace(
+        {
+            'jan': 1,
+            'feb': 2,
+            'mar': 3,
+            'apr': 4,
+            'may': 5,
+            'jun': 6,
+            'jul': 7,
+            'aug': 8,
+            'sep': 9,
+            'oct': 10,
+            'nov': 11,
+            'dec': 12,
+        }
+    )
+
+    vdf['y'] = vdf['y'].replace(
+        {
+            'no': 0,
+            'yes': 1,
+        }
+    )
+
+    print(sf.reveal(vdf.partitions[alice].data))
+    print(sf.reveal(vdf.partitions[bob].data))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"       age            job  marital  education  default  balance  housing  loan\n0       58     management  married        3.0        0     2143        1     0\n1       43     technician   single        2.0        0      593        1     0\n2       33     technician   single        2.0        0       56        0     0\n3       42     technician  married        2.0        0     8036        0     0\n4       38         admin.  married        1.0        0     1487        0     0\n...    ...            ...      ...        ...      ...      ...      ...   ...\n36618   46     technician  married        2.0        0      399        1     0\n36619   36  self-employed   single        3.0        0     4844        0     0\n36620   49     technician  married        2.0        0      378        0     0\n36621   49      housemaid  married        1.0        0     3376        0     0\n36622   40    blue-collar  married        1.0        0       48        0     0\n\n[36623 rows x 8 columns]\n       contact  day  month  duration  campaign  pdays  previous poutcome  y\n0      unknown    5      5       261         1     -1         0  unknown  0\n1      unknown    5      5        55         1     -1         0  unknown  0\n2      unknown    7      5       236         2     -1         0  unknown  0\n3      unknown    9      6       948         5     -1         0  unknown  0\n4      unknown    9      6       332         2     -1         0  unknown  0\n...        ...  ...    ...       ...       ...    ...       ...      ... ..\n36618  unknown    9      6       699         2     -1         0  unknown  0\n36619  unknown    9      6      1137         3     -1         0  unknown  1\n36620  unknown    9      6       189         2     -1         0  unknown  0\n36621  unknown    9      6       119         3     -1         0  unknown  0\n36622  unknown    9      6       100         5     -1         0  unknown  0\n\n[36623 rows x 9 columns]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#安全性讨论}
+
+#### 安全性讨论
+
+值替换操作由数据所有者的PYU Device执行，不会泄露数据。
+
+:target{#缺失值填充}
+
+### 缺失值填充
+
+接下来我们对缺失值进行填充。我们在这里均填充了众数，其他可选的策略还包括平均数、中位数等。
+
+其他可能的处理方法包括删除缺省的行, 或者可以使用数据完整的行作为训练集，以此来预测缺失值。
+
+替换完之后，我们使用 <strong>sf.reveal</strong> 来查看效果。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    vdf["education"] = vdf["education"].fillna(vdf["education"].mode())
+    vdf["default"] = vdf["default"].fillna(vdf["default"].mode())
+    vdf["housing"] = vdf["housing"].fillna(vdf["housing"].mode())
+    vdf["loan"] = vdf["loan"].fillna(vdf["loan"].mode())
+
+    print(sf.reveal(vdf.partitions[alice].data))
+    print(sf.reveal(vdf.partitions[bob].data))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"       age            job  marital  education  default  balance  housing  loan\n0       58     management  married        3.0        0     2143        1     0\n1       43     technician   single        2.0        0      593        1     0\n2       33     technician   single        2.0        0       56        0     0\n3       42     technician  married        2.0        0     8036        0     0\n4       38         admin.  married        1.0        0     1487        0     0\n...    ...            ...      ...        ...      ...      ...      ...   ...\n36618   46     technician  married        2.0        0      399        1     0\n36619   36  self-employed   single        3.0        0     4844        0     0\n36620   49     technician  married        2.0        0      378        0     0\n36621   49      housemaid  married        1.0        0     3376        0     0\n36622   40    blue-collar  married        1.0        0       48        0     0\n\n[36623 rows x 8 columns]\n       contact  day  month  duration  campaign  pdays  previous poutcome  y\n0      unknown    5      5       261         1     -1         0  unknown  0\n1      unknown    5      5        55         1     -1         0  unknown  0\n2      unknown    7      5       236         2     -1         0  unknown  0\n3      unknown    9      6       948         5     -1         0  unknown  0\n4      unknown    9      6       332         2     -1         0  unknown  0\n...        ...  ...    ...       ...       ...    ...       ...      ... ..\n36618  unknown    9      6       699         2     -1         0  unknown  0\n36619  unknown    9      6      1137         3     -1         0  unknown  1\n36620  unknown    9      6       189         2     -1         0  unknown  0\n36621  unknown    9      6       119         3     -1         0  unknown  0\n36622  unknown    9      6       100         5     -1         0  unknown  0\n\n[36623 rows x 9 columns]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id12}
+
+#### 安全性讨论
+
+所填充的缺失值由属于数据所有者的PYU Device执行，并在接下来的缺失值操作中由数据所有者的PYU Device使用，不会泄露数据。
+
+:target{#woe分箱}
+
+### woe分箱
+
+woe分箱用于将连续值替换为离散值。
+
+将连续型特征离散化的一个好处是可以有效地克服数据中隐藏的缺陷： 使模型结果更加稳定。例如，数据中的极端值是影响模型效果的一个重要因素。极端值导致模型参数过高或过低，或导致模型被虚假现象”迷惑”，把原来不存在的关系作为重要模式来学习。而离散化可以有效地减弱极端值和异常值的影响。
+
+变量duration的75%分位数远小于最大值，而且该变量的标准差相对也比较大。因此需要对变量duration进行离散化。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
+    ```python
+    from secretflow.preprocessing.binning.vert_woe_binning import VertWoeBinning
+    from secretflow.preprocessing.binning.vert_woe_substitution import VertWOESubstitution
+
+    binning = VertWoeBinning(spu)
+    woe_rules = binning.binning(
+        vdf,
+        binning_method="chimerge",
+        bin_num=4,
+        bin_names={alice: [], bob: ["duration"]},
+        label_name="y",
+    )
+
+    woe_sub = VertWOESubstitution()
+    vdf = woe_sub.substitution(vdf, woe_rules)
+
+    print(sf.reveal(vdf.partitions[alice].data))
+    print(sf.reveal(vdf.partitions[bob].data))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"       age            job  marital  education  default  balance  housing  loan\n0       58     management  married        3.0        0     2143        1     0\n1       43     technician   single        2.0        0      593        1     0\n2       33     technician   single        2.0        0       56        0     0\n3       42     technician  married        2.0        0     8036        0     0\n4       38         admin.  married        1.0        0     1487        0     0\n...    ...            ...      ...        ...      ...      ...      ...   ...\n36618   46     technician  married        2.0        0      399        1     0\n36619   36  self-employed   single        3.0        0     4844        0     0\n36620   49     technician  married        2.0        0      378        0     0\n36621   49      housemaid  married        1.0        0     3376        0     0\n36622   40    blue-collar  married        1.0        0       48        0     0\n\n[36623 rows x 8 columns]\n       contact  day  month  duration  campaign  pdays  previous poutcome  y\n0      unknown    5      5  0.204988         1     -1         0  unknown  0\n1      unknown    5      5 -5.700589         1     -1         0  unknown  0\n2      unknown    7      5 -0.212423         2     -1         0  unknown  0\n3      unknown    9      6  2.276706         5     -1         0  unknown  0\n4      unknown    9      6  0.220221         2     -1         0  unknown  0\n...        ...  ...    ...       ...       ...    ...       ...      ... ..\n36618  unknown    9      6  1.729960         2     -1         0  unknown  0\n36619  unknown    9      6  2.276706         3     -1         0  unknown  1\n36620  unknown    9      6 -0.444719         2     -1         0  unknown  0\n36621  unknown    9      6 -1.564663         3     -1         0  unknown  0\n36622  unknown    9      6 -1.564663         5     -1         0  unknown  0\n\n[36623 rows x 9 columns]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id13}
+
+#### 安全性讨论
+
+woe分桶需要利用alice和bob两边的数据，因此相关的计算需要使用<strong>SPU device</strong>确保原始数据不被泄露。
+
+:target{#One-Hot编码}
+
+### One Hot编码
+
+one-hot编码适用于将类型编码转化为数值编码。 对于job、marital等特征我们需要one-hot编码。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
+    ```python
+    from secretflow.preprocessing.encoder import OneHotEncoder
+
+    encoder = OneHotEncoder()
+    # for vif and correlation only
+    vdf_hat = vdf.drop(columns=["job", "marital", "contact", "month", "day", "poutcome"])
+
+    tranformed_df = encoder.fit_transform(vdf['job'])
+    vdf[tranformed_df.dtypes.index] = tranformed_df
+
+    tranformed_df = encoder.fit_transform(vdf['marital'])
+    vdf[tranformed_df.dtypes.index] = tranformed_df
+
+    tranformed_df = encoder.fit_transform(vdf['contact'])
+    vdf[tranformed_df.dtypes.index] = tranformed_df
+
+    tranformed_df = encoder.fit_transform(vdf['month'])
+    vdf[tranformed_df.dtypes.index] = tranformed_df
+
+    tranformed_df = encoder.fit_transform(vdf['day'])
+    vdf[tranformed_df.dtypes.index] = tranformed_df
+
+    tranformed_df = encoder.fit_transform(vdf['poutcome'])
+    vdf[tranformed_df.dtypes.index] = tranformed_df
+
+    vdf = vdf.drop(columns=["job", "marital", "contact", "month", "day", "poutcome"])
+
+    print(sf.reveal(vdf.partitions[alice].data))
+    print(sf.reveal(vdf.partitions[bob].data))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"       age  education  default  balance  housing  loan  job_admin.  \\\n0       58        3.0        0     2143        1     0         0.0\n1       43        2.0        0      593        1     0         0.0\n2       33        2.0        0       56        0     0         0.0\n3       42        2.0        0     8036        0     0         0.0\n4       38        1.0        0     1487        0     0         1.0\n...    ...        ...      ...      ...      ...   ...         ...\n36618   46        2.0        0      399        1     0         0.0\n36619   36        3.0        0     4844        0     0         0.0\n36620   49        2.0        0      378        0     0         0.0\n36621   49        1.0        0     3376        0     0         0.0\n36622   40        1.0        0       48        0     0         0.0\n\n       job_blue-collar  job_entrepreneur  job_housemaid  ...  job_retired  \\\n0                  0.0               0.0            0.0  ...          0.0\n1                  0.0               0.0            0.0  ...          0.0\n2                  0.0               0.0            0.0  ...          0.0\n3                  0.0               0.0            0.0  ...          0.0\n4                  0.0               0.0            0.0  ...          0.0\n...                ...               ...            ...  ...          ...\n36618              0.0               0.0            0.0  ...          0.0\n36619              0.0               0.0            0.0  ...          0.0\n36620              0.0               0.0            0.0  ...          0.0\n36621              0.0               0.0            1.0  ...          0.0\n36622              1.0               0.0            0.0  ...          0.0\n\n       job_self-employed  job_services  job_student  job_technician  \\\n0                    0.0           0.0          0.0             0.0\n1                    0.0           0.0          0.0             1.0\n2                    0.0           0.0          0.0             1.0\n3                    0.0           0.0          0.0             1.0\n4                    0.0           0.0          0.0             0.0\n...                  ...           ...          ...             ...\n36618                0.0           0.0          0.0             1.0\n36619                1.0           0.0          0.0             0.0\n36620                0.0           0.0          0.0             1.0\n36621                0.0           0.0          0.0             0.0\n36622                0.0           0.0          0.0             0.0\n\n       job_unemployed  job_unknown  marital_divorced  marital_married  \\\n0                 0.0          0.0               0.0              1.0\n1                 0.0          0.0               0.0              0.0\n2                 0.0          0.0               0.0              0.0\n3                 0.0          0.0               0.0              1.0\n4                 0.0          0.0               0.0              1.0\n...               ...          ...               ...              ...\n36618             0.0          0.0               0.0              1.0\n36619             0.0          0.0               0.0              0.0\n36620             0.0          0.0               0.0              1.0\n36621             0.0          0.0               0.0              1.0\n36622             0.0          0.0               0.0              1.0\n\n       marital_single\n0                 0.0\n1                 1.0\n2                 1.0\n3                 0.0\n4                 0.0\n...               ...\n36618             0.0\n36619             1.0\n36620             0.0\n36621             0.0\n36622             0.0\n\n[36623 rows x 21 columns]\n       duration  campaign  pdays  previous  y  contact_cellular  \\\n0      0.204988         1     -1         0  0               0.0\n1     -5.700589         1     -1         0  0               0.0\n2     -0.212423         2     -1         0  0               0.0\n3      2.276706         5     -1         0  0               0.0\n4      0.220221         2     -1         0  0               0.0\n...         ...       ...    ...       ... ..               ...\n36618  1.729960         2     -1         0  0               0.0\n36619  2.276706         3     -1         0  1               0.0\n36620 -0.444719         2     -1         0  0               0.0\n36621 -1.564663         3     -1         0  0               0.0\n36622 -1.564663         5     -1         0  0               0.0\n\n       contact_telephone  contact_unknown  month_1.0  month_2.0  ...  \\\n0                    0.0              1.0        0.0        0.0  ...\n1                    0.0              1.0        0.0        0.0  ...\n2                    0.0              1.0        0.0        0.0  ...\n3                    0.0              1.0        0.0        0.0  ...\n4                    0.0              1.0        0.0        0.0  ...\n...                  ...              ...        ...        ...  ...\n36618                0.0              1.0        0.0        0.0  ...\n36619                0.0              1.0        0.0        0.0  ...\n36620                0.0              1.0        0.0        0.0  ...\n36621                0.0              1.0        0.0        0.0  ...\n36622                0.0              1.0        0.0        0.0  ...\n\n       day_26.0  day_27.0  day_28.0  day_29.0  day_30.0  day_31.0  \\\n0           0.0       0.0       0.0       0.0       0.0       0.0\n1           0.0       0.0       0.0       0.0       0.0       0.0\n2           0.0       0.0       0.0       0.0       0.0       0.0\n3           0.0       0.0       0.0       0.0       0.0       0.0\n4           0.0       0.0       0.0       0.0       0.0       0.0\n...         ...       ...       ...       ...       ...       ...\n36618       0.0       0.0       0.0       0.0       0.0       0.0\n36619       0.0       0.0       0.0       0.0       0.0       0.0\n36620       0.0       0.0       0.0       0.0       0.0       0.0\n36621       0.0       0.0       0.0       0.0       0.0       0.0\n36622       0.0       0.0       0.0       0.0       0.0       0.0\n\n       poutcome_failure  poutcome_other  poutcome_success  poutcome_unknown\n0                   0.0             0.0               0.0               1.0\n1                   0.0             0.0               0.0               1.0\n2                   0.0             0.0               0.0               1.0\n3                   0.0             0.0               0.0               1.0\n4                   0.0             0.0               0.0               1.0\n...                 ...             ...               ...               ...\n36618               0.0             0.0               0.0               1.0\n36619               0.0             0.0               0.0               1.0\n36620               0.0             0.0               0.0               1.0\n36621               0.0             0.0               0.0               1.0\n36622               0.0             0.0               0.0               1.0\n\n[36623 rows x 55 columns]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id14}
+
+#### 安全性讨论
+
+one-hot编码操作由数据所有者的PYU Device执行，不会泄露数据。
+
+:target{#标准化}
+
+### 标准化
+
+特征之间数值差距太大会使得模型收敛困难，我们一般先对数值进行标准化。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
+    ```python
+    from secretflow.preprocessing import StandardScaler
+
+    X = vdf.drop(columns=['y'])
+    y = vdf['y']
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)
+    vdf[X.columns] = X
+    print(sf.reveal(vdf.partitions[alice].data))
+    print(sf.reveal(vdf.partitions[bob].data))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"            age  education   default   balance   housing      loan  \\\n0      1.600132   1.317305 -0.135366  0.254167  0.896115 -0.438311\n1      0.190420  -0.216431 -0.135366 -0.251669  0.896115 -0.438311\n2     -0.749388  -0.216431 -0.135366 -0.426916 -1.115928 -0.438311\n3      0.096439  -0.216431 -0.135366  2.177321 -1.115928 -0.438311\n4     -0.279484  -1.750166 -0.135366  0.040084 -1.115928 -0.438311\n...         ...        ...       ...       ...       ...       ...\n36618  0.472362  -0.216431 -0.135366 -0.314980  0.896115 -0.438311\n36619 -0.467446   1.317305 -0.135366  1.135626 -1.115928 -0.438311\n36620  0.754305  -0.216431 -0.135366 -0.321833 -1.115928 -0.438311\n36621  0.754305  -1.750166 -0.135366  0.656551 -1.115928 -0.438311\n36622 -0.091522  -1.750166 -0.135366 -0.429527 -1.115928 -0.438311\n\n       job_admin.  job_blue-collar  job_entrepreneur  job_housemaid  ...  \\\n0       -0.359042         -0.52347         -0.184134      -0.167632  ...\n1       -0.359042         -0.52347         -0.184134      -0.167632  ...\n2       -0.359042         -0.52347         -0.184134      -0.167632  ...\n3       -0.359042         -0.52347         -0.184134      -0.167632  ...\n4        2.785192         -0.52347         -0.184134      -0.167632  ...\n...           ...              ...               ...            ...  ...\n36618   -0.359042         -0.52347         -0.184134      -0.167632  ...\n36619   -0.359042         -0.52347         -0.184134      -0.167632  ...\n36620   -0.359042         -0.52347         -0.184134      -0.167632  ...\n36621   -0.359042         -0.52347         -0.184134       5.965435  ...\n36622   -0.359042          1.91033         -0.184134      -0.167632  ...\n\n       job_retired  job_self-employed  job_services  job_student  \\\n0        -0.230656          -0.191305     -0.316887       -0.148\n1        -0.230656          -0.191305     -0.316887       -0.148\n2        -0.230656          -0.191305     -0.316887       -0.148\n3        -0.230656          -0.191305     -0.316887       -0.148\n4        -0.230656          -0.191305     -0.316887       -0.148\n...            ...                ...           ...          ...\n36618    -0.230656          -0.191305     -0.316887       -0.148\n36619    -0.230656           5.227241     -0.316887       -0.148\n36620    -0.230656          -0.191305     -0.316887       -0.148\n36621    -0.230656          -0.191305     -0.316887       -0.148\n36622    -0.230656          -0.191305     -0.316887       -0.148\n\n       job_technician  job_unemployed  job_unknown  marital_divorced  \\\n0           -0.450251       -0.171298    -0.081048         -0.359187\n1            2.220984       -0.171298    -0.081048         -0.359187\n2            2.220984       -0.171298    -0.081048         -0.359187\n3            2.220984       -0.171298    -0.081048         -0.359187\n4           -0.450251       -0.171298    -0.081048         -0.359187\n...               ...             ...          ...               ...\n36618        2.220984       -0.171298    -0.081048         -0.359187\n36619       -0.450251       -0.171298    -0.081048         -0.359187\n36620        2.220984       -0.171298    -0.081048         -0.359187\n36621       -0.450251       -0.171298    -0.081048         -0.359187\n36622       -0.450251       -0.171298    -0.081048         -0.359187\n\n       marital_married  marital_single\n0             0.811943       -0.628323\n1            -1.231613        1.591538\n2            -1.231613        1.591538\n3             0.811943       -0.628323\n4             0.811943       -0.628323\n...                ...             ...\n36618         0.811943       -0.628323\n36619        -1.231613        1.591538\n36620         0.811943       -0.628323\n36621         0.811943       -0.628323\n36622         0.811943       -0.628323\n\n[36623 rows x 21 columns]\n       duration  campaign     pdays  previous  y  contact_cellular  \\\n0      0.572287 -0.570990 -0.413789 -0.244781  0           -1.3578\n1     -2.892304 -0.570990 -0.413789 -0.244781  0           -1.3578\n2      0.327407 -0.243733 -0.413789 -0.244781  0           -1.3578\n3      1.787691  0.738036 -0.413789 -0.244781  0           -1.3578\n4      0.581224 -0.243733 -0.413789 -0.244781  0           -1.3578\n...         ...       ...       ...       ... ..               ...\n36618  1.466934 -0.243733 -0.413789 -0.244781  0           -1.3578\n36619  1.787691  0.083523 -0.413789 -0.244781  1           -1.3578\n36620  0.191127 -0.243733 -0.413789 -0.244781  0           -1.3578\n36621 -0.465904  0.083523 -0.413789 -0.244781  0           -1.3578\n36622 -0.465904  0.738036 -0.413789 -0.244781  0           -1.3578\n\n       contact_telephone  contact_unknown  month_1.0  month_2.0  ...  \\\n0              -0.262983         1.576257  -0.180053   -0.25201  ...\n1              -0.262983         1.576257  -0.180053   -0.25201  ...\n2              -0.262983         1.576257  -0.180053   -0.25201  ...\n3              -0.262983         1.576257  -0.180053   -0.25201  ...\n4              -0.262983         1.576257  -0.180053   -0.25201  ...\n...                  ...              ...        ...        ...  ...\n36618          -0.262983         1.576257  -0.180053   -0.25201  ...\n36619          -0.262983         1.576257  -0.180053   -0.25201  ...\n36620          -0.262983         1.576257  -0.180053   -0.25201  ...\n36621          -0.262983         1.576257  -0.180053   -0.25201  ...\n36622          -0.262983         1.576257  -0.180053   -0.25201  ...\n\n       day_26.0  day_27.0  day_28.0  day_29.0  day_30.0  day_31.0  \\\n0     -0.152467 -0.158816 -0.207087 -0.199218 -0.190383 -0.119779\n1     -0.152467 -0.158816 -0.207087 -0.199218 -0.190383 -0.119779\n2     -0.152467 -0.158816 -0.207087 -0.199218 -0.190383 -0.119779\n3     -0.152467 -0.158816 -0.207087 -0.199218 -0.190383 -0.119779\n4     -0.152467 -0.158816 -0.207087 -0.199218 -0.190383 -0.119779\n...         ...       ...       ...       ...       ...       ...\n36618 -0.152467 -0.158816 -0.207087 -0.199218 -0.190383 -0.119779\n36619 -0.152467 -0.158816 -0.207087 -0.199218 -0.190383 -0.119779\n36620 -0.152467 -0.158816 -0.207087 -0.199218 -0.190383 -0.119779\n36621 -0.152467 -0.158816 -0.207087 -0.199218 -0.190383 -0.119779\n36622 -0.152467 -0.158816 -0.207087 -0.199218 -0.190383 -0.119779\n\n       poutcome_failure  poutcome_other  poutcome_success  poutcome_unknown\n0             -0.349768       -0.207302          -0.18775          0.475263\n1             -0.349768       -0.207302          -0.18775          0.475263\n2             -0.349768       -0.207302          -0.18775          0.475263\n3             -0.349768       -0.207302          -0.18775          0.475263\n4             -0.349768       -0.207302          -0.18775          0.475263\n...                 ...             ...               ...               ...\n36618         -0.349768       -0.207302          -0.18775          0.475263\n36619         -0.349768       -0.207302          -0.18775          0.475263\n36620         -0.349768       -0.207302          -0.18775          0.475263\n36621         -0.349768       -0.207302          -0.18775          0.475263\n36622         -0.349768       -0.207302          -0.18775          0.475263\n\n[36623 rows x 55 columns]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id16}
+
+#### 安全性讨论
+
+标准化操作由数据所有者的PYU Device执行，不会泄露数据。
+
+:target{#id17}
+
+### 更多
+
+隐语还支持其他更多的特征预处理能力，请参考这篇[文档](data_preprocessing_with_data_frame.mdx).
+
+至此，我们已经完成了所有特征预处理工作。
+
+> 本文主要目的是为了展示隐语的预处理能力，本文对于数据预处理方法的使用可能是有争议的，敬请谅解。
+
+:target{#数据分析}
+
+## 数据分析
+
+在建模之前，我们有必要分析一下我们所使用的数据，以便确认是否需要重复特征预处理的过程。
+
+下面我们将会展示隐语以下数据分析能力:
+
+- 全表统计
+- 相关系数矩阵
+- VIF指标计算
+
+:target{#全表统计}
+
+### 全表统计
+
+我们提供了类似于 <strong>pd.DataFrame.describe</strong> 来展示所有特征的基本统计信息。
+
+> 在特征预处理的过程中，你可以不断调用全表统计来关注预处理效果。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats.table_statistics import table_statistics
+
+    pd.set_option('display.max_rows', None)
+    data_stats = table_statistics(vdf)
+    data_stats
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[15]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"datatype"}</th><th>{"total_count"}</th><th>{"count(non-NA count)"}</th><th>{"count_na(NA count)"}</th><th>{"na_ratio"}</th><th>{"min"}</th><th>{"max"}</th><th>{"mean"}</th><th>{"var(variance)"}</th><th>{"std(standard deviation)"}</th><th>{"..."}</th><th>{"moment_2"}</th><th>{"moment_3"}</th><th>{"moment_4"}</th><th>{"central_moment_2"}</th><th>{"central_moment_3"}</th><th>{"central_moment_4"}</th><th>{"sum"}</th><th>{"sum_2"}</th><th>{"sum_3"}</th><th>{"sum_4"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"age"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-2.159100"}</td><td>{"5.077423"}</td><td>{"1.490039e-16"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"0.683627"}</td><td>{"3.332610"}</td><td>{"1.000000"}</td><td>{"0.683627"}</td><td>{"3.332610"}</td><td>{"5.456968e-12"}</td><td>{"36623.0"}</td><td>{"2.503646e+04"}</td><td>{"1.220502e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"education"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-1.750166"}</td><td>{"1.317305"}</td><td>{"-2.235058e-16"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"-0.150311"}</td><td>{"2.309413"}</td><td>{"1.000000"}</td><td>{"-0.150311"}</td><td>{"2.309413"}</td><td>{"-8.185452e-12"}</td><td>{"36623.0"}</td><td>{"-5.504831e+03"}</td><td>{"8.457763e+04"}</td>
+          </tr>
+
+          <tr>
+            <th>{"default"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.135366"}</td><td>{"7.387394"}</td><td>{"-2.483398e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"7.252029"}</td><td>{"53.591920"}</td><td>{"1.000000"}</td><td>{"7.252029"}</td><td>{"53.591920"}</td><td>{"-9.094947e-13"}</td><td>{"36623.0"}</td><td>{"2.655910e+05"}</td><td>{"1.962697e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"balance"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-3.062156"}</td><td>{"32.883499"}</td><td>{"3.880309e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"8.470364"}</td><td>{"147.645486"}</td><td>{"1.000000"}</td><td>{"8.470364"}</td><td>{"147.645486"}</td><td>{"1.421085e-12"}</td><td>{"36623.0"}</td><td>{"3.102101e+05"}</td><td>{"5.407221e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"housing"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-1.115928"}</td><td>{"0.896115"}</td><td>{"2.110888e-16"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"-0.219812"}</td><td>{"1.048317"}</td><td>{"1.000000"}</td><td>{"-0.219812"}</td><td>{"1.048317"}</td><td>{"7.730705e-12"}</td><td>{"36623.0"}</td><td>{"-8.050184e+03"}</td><td>{"3.839253e+04"}</td>
+          </tr>
+
+          <tr>
+            <th>{"loan"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.438311"}</td><td>{"2.281487"}</td><td>{"7.062162e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"1.843177"}</td><td>{"4.397301"}</td><td>{"1.000000"}</td><td>{"1.843177"}</td><td>{"4.397301"}</td><td>{"2.586376e-12"}</td><td>{"36623.0"}</td><td>{"6.750267e+04"}</td><td>{"1.610423e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job_admin."}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.359042"}</td><td>{"2.785192"}</td><td>{"-2.561004e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"2.426150"}</td><td>{"6.886204"}</td><td>{"1.000000"}</td><td>{"2.426150"}</td><td>{"6.886204"}</td><td>{"-9.379164e-13"}</td><td>{"36623.0"}</td><td>{"8.885289e+04"}</td><td>{"2.521935e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job_blue-collar"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.523470"}</td><td>{"1.910330"}</td><td>{"-4.035521e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"1.386860"}</td><td>{"2.923380"}</td><td>{"1.000000"}</td><td>{"1.386860"}</td><td>{"2.923380"}</td><td>{"-1.477929e-12"}</td><td>{"36623.0"}</td><td>{"5.079096e+04"}</td><td>{"1.070629e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job_entrepreneur"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.184134"}</td><td>{"5.430815"}</td><td>{"1.940154e-18"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.246681"}</td><td>{"28.527661"}</td><td>{"1.000000"}</td><td>{"5.246681"}</td><td>{"28.527661"}</td><td>{"7.105427e-14"}</td><td>{"36623.0"}</td><td>{"1.921492e+05"}</td><td>{"1.044769e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job_housemaid"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.167632"}</td><td>{"5.965435"}</td><td>{"-5.432432e-18"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.797803"}</td><td>{"34.614514"}</td><td>{"1.000000"}</td><td>{"5.797803"}</td><td>{"34.614514"}</td><td>{"-1.989520e-13"}</td><td>{"36623.0"}</td><td>{"2.123329e+05"}</td><td>{"1.267687e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job_management"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.513253"}</td><td>{"1.948358"}</td><td>{"-1.179614e-16"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"1.435105"}</td><td>{"3.059526"}</td><td>{"1.000000"}</td><td>{"1.435105"}</td><td>{"3.059526"}</td><td>{"-4.320100e-12"}</td><td>{"36623.0"}</td><td>{"5.255784e+04"}</td><td>{"1.120490e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job_retired"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.230656"}</td><td>{"4.335460"}</td><td>{"-2.172973e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.104804"}</td><td>{"17.849418"}</td><td>{"1.000000"}</td><td>{"4.104804"}</td><td>{"17.849418"}</td><td>{"-7.958079e-13"}</td><td>{"36623.0"}</td><td>{"1.503302e+05"}</td><td>{"6.536993e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job_self-employed"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.191305"}</td><td>{"5.227241"}</td><td>{"-5.820463e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.035936"}</td><td>{"26.360650"}</td><td>{"1.000000"}</td><td>{"5.035936"}</td><td>{"26.360650"}</td><td>{"-2.131628e-12"}</td><td>{"36623.0"}</td><td>{"1.844311e+05"}</td><td>{"9.654061e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job_services"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.316887"}</td><td>{"3.155695"}</td><td>{"2.483398e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"2.838807"}</td><td>{"9.058826"}</td><td>{"1.000000"}</td><td>{"2.838807"}</td><td>{"9.058826"}</td><td>{"9.094947e-13"}</td><td>{"36623.0"}</td><td>{"1.039656e+05"}</td><td>{"3.317614e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job_student"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.148000"}</td><td>{"6.756738"}</td><td>{"-1.241699e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"6.608737"}</td><td>{"44.675407"}</td><td>{"1.000000"}</td><td>{"6.608737"}</td><td>{"44.675407"}</td><td>{"-4.547474e-13"}</td><td>{"36623.0"}</td><td>{"2.420318e+05"}</td><td>{"1.636147e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job_technician"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.450251"}</td><td>{"2.220984"}</td><td>{"4.074324e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"1.770734"}</td><td>{"4.135498"}</td><td>{"1.000000"}</td><td>{"1.770734"}</td><td>{"4.135498"}</td><td>{"1.492140e-12"}</td><td>{"36623.0"}</td><td>{"6.484958e+04"}</td><td>{"1.514543e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job_unemployed"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.171298"}</td><td>{"5.837765"}</td><td>{"-1.668533e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.666467"}</td><td>{"33.108845"}</td><td>{"1.000000"}</td><td>{"5.666467"}</td><td>{"33.108845"}</td><td>{"-6.110668e-13"}</td><td>{"36623.0"}</td><td>{"2.075230e+05"}</td><td>{"1.212545e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"job_unknown"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.081048"}</td><td>{"12.338327"}</td><td>{"-6.984556e-18"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"12.257279"}</td><td>{"151.240878"}</td><td>{"1.000000"}</td><td>{"12.257279"}</td><td>{"151.240878"}</td><td>{"-2.557954e-13"}</td><td>{"36623.0"}</td><td>{"4.488983e+05"}</td><td>{"5.538895e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"marital_divorced"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.359187"}</td><td>{"2.784065"}</td><td>{"1.319305e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"2.424877"}</td><td>{"6.880031"}</td><td>{"1.000000"}</td><td>{"2.424877"}</td><td>{"6.880031"}</td><td>{"4.831691e-13"}</td><td>{"36623.0"}</td><td>{"8.880629e+04"}</td><td>{"2.519674e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"marital_married"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-1.231613"}</td><td>{"0.811943"}</td><td>{"-2.696815e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"-0.419670"}</td><td>{"1.176123"}</td><td>{"1.000000"}</td><td>{"-0.419670"}</td><td>{"1.176123"}</td><td>{"-9.876544e-13"}</td><td>{"36623.0"}</td><td>{"-1.536959e+04"}</td><td>{"4.307316e+04"}</td>
+          </tr>
+
+          <tr>
+            <th>{"marital_single"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.628323"}</td><td>{"1.591538"}</td><td>{"1.416313e-16"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"0.963215"}</td><td>{"1.927782"}</td><td>{"1.000000"}</td><td>{"0.963215"}</td><td>{"1.927782"}</td><td>{"5.186962e-12"}</td><td>{"36623.0"}</td><td>{"3.527581e+04"}</td><td>{"7.060118e+04"}</td>
+          </tr>
+
+          <tr>
+            <th>{"duration"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-2.892304"}</td><td>{"1.941783"}</td><td>{"4.908591e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"-0.800767"}</td><td>{"3.760395"}</td><td>{"1.000000"}</td><td>{"-0.800767"}</td><td>{"3.760395"}</td><td>{"1.797673e-12"}</td><td>{"36623.0"}</td><td>{"-2.932649e+04"}</td><td>{"1.377170e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"campaign"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.570990"}</td><td>{"19.718918"}</td><td>{"6.208494e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.928998"}</td><td>{"43.121657"}</td><td>{"1.000000"}</td><td>{"4.928998"}</td><td>{"43.121657"}</td><td>{"2.273737e-12"}</td><td>{"36623.0"}</td><td>{"1.805147e+05"}</td><td>{"1.579244e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"pdays"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.413789"}</td><td>{"8.280388"}</td><td>{"2.483398e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"2.604408"}</td><td>{"9.919031"}</td><td>{"1.000000"}</td><td>{"2.604408"}</td><td>{"9.919031"}</td><td>{"9.094947e-13"}</td><td>{"36623.0"}</td><td>{"9.538123e+04"}</td><td>{"3.632647e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"previous"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.244781"}</td><td>{"113.983016"}</td><td>{"1.862548e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"44.589497"}</td><td>{"4659.092137"}</td><td>{"1.000000"}</td><td>{"44.589497"}</td><td>{"4659.092137"}</td><td>{"6.821210e-13"}</td><td>{"36623.0"}</td><td>{"1.633001e+06"}</td><td>{"1.706299e+08"}</td>
+          </tr>
+
+          <tr>
+            <th>{"y"}</th><td>{"int64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"0.000000"}</td><td>{"1.000000"}</td><td>{"1.165388e-01"}</td><td>{"0.102960"}</td><td>{"0.320874"}</td><td>{"..."}</td><td>{"0.116539"}</td><td>{"0.116539"}</td><td>{"0.116539"}</td><td>{"0.102957"}</td><td>{"0.078960"}</td><td>{"0.071157"}</td><td>{"4.268000e+03"}</td><td>{"4268.0"}</td><td>{"4.268000e+03"}</td><td>{"4.268000e+03"}</td>
+          </tr>
+
+          <tr>
+            <th>{"contact_cellular"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-1.357800"}</td><td>{"0.736485"}</td><td>{"7.450193e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"-0.621315"}</td><td>{"1.386032"}</td><td>{"1.000000"}</td><td>{"-0.621315"}</td><td>{"1.386032"}</td><td>{"2.728484e-12"}</td><td>{"36623.0"}</td><td>{"-2.275441e+04"}</td><td>{"5.076065e+04"}</td>
+          </tr>
+
+          <tr>
+            <th>{"contact_telephone"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.262983"}</td><td>{"3.802534"}</td><td>{"2.483398e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"3.539552"}</td><td>{"13.528425"}</td><td>{"1.000000"}</td><td>{"3.539552"}</td><td>{"13.528425"}</td><td>{"9.094947e-13"}</td><td>{"36623.0"}</td><td>{"1.296290e+05"}</td><td>{"4.954515e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"contact_unknown"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.634414"}</td><td>{"1.576257"}</td><td>{"-1.241699e-16"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"0.941843"}</td><td>{"1.887068"}</td><td>{"1.000000"}</td><td>{"0.941843"}</td><td>{"1.887068"}</td><td>{"-4.547474e-12"}</td><td>{"36623.0"}</td><td>{"3.449310e+04"}</td><td>{"6.911008e+04"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month_1.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.180053"}</td><td>{"5.553925"}</td><td>{"6.208494e-18"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.373873"}</td><td>{"29.878506"}</td><td>{"1.000000"}</td><td>{"5.373873"}</td><td>{"29.878506"}</td><td>{"2.273737e-13"}</td><td>{"36623.0"}</td><td>{"1.968073e+05"}</td><td>{"1.094241e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month_2.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.252010"}</td><td>{"3.968094"}</td><td>{"3.104247e-18"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"3.716084"}</td><td>{"14.809280"}</td><td>{"1.000000"}</td><td>{"3.716084"}</td><td>{"14.809280"}</td><td>{"1.136868e-13"}</td><td>{"36623.0"}</td><td>{"1.360941e+05"}</td><td>{"5.423602e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month_3.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.102803"}</td><td>{"9.727354"}</td><td>{"-2.483398e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"9.624551"}</td><td>{"93.631978"}</td><td>{"1.000000"}</td><td>{"9.624551"}</td><td>{"93.631978"}</td><td>{"-9.094947e-13"}</td><td>{"36623.0"}</td><td>{"3.524799e+05"}</td><td>{"3.429084e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month_4.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.262091"}</td><td>{"3.815465"}</td><td>{"-2.793822e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"3.553374"}</td><td>{"13.626466"}</td><td>{"1.000000"}</td><td>{"3.553374"}</td><td>{"13.626466"}</td><td>{"-1.023182e-12"}</td><td>{"36623.0"}</td><td>{"1.301352e+05"}</td><td>{"4.990421e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month_5.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.659087"}</td><td>{"1.517250"}</td><td>{"1.614208e-16"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"0.858162"}</td><td>{"1.736443"}</td><td>{"1.000000"}</td><td>{"0.858162"}</td><td>{"1.736443"}</td><td>{"5.911716e-12"}</td><td>{"36623.0"}</td><td>{"3.142848e+04"}</td><td>{"6.359374e+04"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month_6.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.364928"}</td><td>{"2.740267"}</td><td>{"1.986718e-16"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"2.375339"}</td><td>{"6.642234"}</td><td>{"1.000000"}</td><td>{"2.375339"}</td><td>{"6.642234"}</td><td>{"7.275958e-12"}</td><td>{"36623.0"}</td><td>{"8.699203e+04"}</td><td>{"2.432585e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month_7.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.424911"}</td><td>{"2.353434"}</td><td>{"0.000000e+00"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"1.928524"}</td><td>{"4.719203"}</td><td>{"1.000000"}</td><td>{"1.928524"}</td><td>{"4.719203"}</td><td>{"0.000000e+00"}</td><td>{"36623.0"}</td><td>{"7.062832e+04"}</td><td>{"1.728314e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month_8.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.400668"}</td><td>{"2.495832"}</td><td>{"2.980077e-16"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"2.095163"}</td><td>{"5.389710"}</td><td>{"1.000000"}</td><td>{"2.095163"}</td><td>{"5.389710"}</td><td>{"1.091394e-11"}</td><td>{"36623.0"}</td><td>{"7.673117e+04"}</td><td>{"1.973873e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month_9.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.114876"}</td><td>{"8.705043"}</td><td>{"4.190733e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"8.590167"}</td><td>{"74.790974"}</td><td>{"1.000000"}</td><td>{"8.590167"}</td><td>{"74.790974"}</td><td>{"1.534772e-12"}</td><td>{"36623.0"}</td><td>{"3.145977e+05"}</td><td>{"2.739070e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month_10.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.129930"}</td><td>{"7.696441"}</td><td>{"4.345946e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"7.566510"}</td><td>{"58.252079"}</td><td>{"1.000000"}</td><td>{"7.566510"}</td><td>{"58.252079"}</td><td>{"1.591616e-12"}</td><td>{"36623.0"}</td><td>{"2.771083e+05"}</td><td>{"2.133366e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month_11.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.310534"}</td><td>{"3.220260"}</td><td>{"-4.966795e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"2.909726"}</td><td>{"9.466503"}</td><td>{"1.000000"}</td><td>{"2.909726"}</td><td>{"9.466503"}</td><td>{"-1.818989e-12"}</td><td>{"36623.0"}</td><td>{"1.065629e+05"}</td><td>{"3.466917e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"month_12.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.070476"}</td><td>{"14.189328"}</td><td>{"9.312741e-18"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"14.118852"}</td><td>{"200.341983"}</td><td>{"1.000000"}</td><td>{"14.118852"}</td><td>{"200.341983"}</td><td>{"3.410605e-13"}</td><td>{"36623.0"}</td><td>{"5.170747e+05"}</td><td>{"7.337124e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_1.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.085536"}</td><td>{"11.691041"}</td><td>{"-2.172973e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"11.605506"}</td><td>{"135.687767"}</td><td>{"1.000000"}</td><td>{"11.605506"}</td><td>{"135.687767"}</td><td>{"-7.958079e-13"}</td><td>{"36623.0"}</td><td>{"4.250284e+05"}</td><td>{"4.969293e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_2.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.171552"}</td><td>{"5.829150"}</td><td>{"-7.450193e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.657598"}</td><td>{"33.008418"}</td><td>{"1.000000"}</td><td>{"5.657598"}</td><td>{"33.008418"}</td><td>{"-2.728484e-12"}</td><td>{"36623.0"}</td><td>{"2.071982e+05"}</td><td>{"1.208867e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_3.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.156817"}</td><td>{"6.376864"}</td><td>{"-4.966795e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"6.220047"}</td><td>{"39.688983"}</td><td>{"1.000000"}</td><td>{"6.220047"}</td><td>{"39.688983"}</td><td>{"-1.818989e-12"}</td><td>{"36623.0"}</td><td>{"2.277968e+05"}</td><td>{"1.453530e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_4.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.181101"}</td><td>{"5.521785"}</td><td>{"-3.414672e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.340684"}</td><td>{"29.522909"}</td><td>{"1.000000"}</td><td>{"5.340684"}</td><td>{"29.522909"}</td><td>{"-1.250555e-12"}</td><td>{"36623.0"}</td><td>{"1.955919e+05"}</td><td>{"1.081218e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_5.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.211141"}</td><td>{"4.736161"}</td><td>{"9.312741e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.525020"}</td><td>{"21.475803"}</td><td>{"1.000000"}</td><td>{"4.525020"}</td><td>{"21.475803"}</td><td>{"3.410605e-12"}</td><td>{"36623.0"}</td><td>{"1.657198e+05"}</td><td>{"7.865083e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_6.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.211212"}</td><td>{"4.734579"}</td><td>{"-6.829343e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.523367"}</td><td>{"21.460851"}</td><td>{"1.000000"}</td><td>{"4.523367"}</td><td>{"21.460851"}</td><td>{"-2.501110e-12"}</td><td>{"36623.0"}</td><td>{"1.656593e+05"}</td><td>{"7.859607e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_7.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.206154"}</td><td>{"4.850753"}</td><td>{"2.793822e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.644600"}</td><td>{"22.572305"}</td><td>{"1.000000"}</td><td>{"4.644600"}</td><td>{"22.572305"}</td><td>{"1.023182e-12"}</td><td>{"36623.0"}</td><td>{"1.700992e+05"}</td><td>{"8.266655e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_8.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.204710"}</td><td>{"4.884963"}</td><td>{"5.587645e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.680253"}</td><td>{"22.904771"}</td><td>{"1.000000"}</td><td>{"4.680253"}</td><td>{"22.904771"}</td><td>{"2.046363e-12"}</td><td>{"36623.0"}</td><td>{"1.714049e+05"}</td><td>{"8.388414e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_9.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.187516"}</td><td>{"5.332890"}</td><td>{"6.829343e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.145374"}</td><td>{"27.474873"}</td><td>{"1.000000"}</td><td>{"5.145374"}</td><td>{"27.474873"}</td><td>{"2.501110e-12"}</td><td>{"36623.0"}</td><td>{"1.884390e+05"}</td><td>{"1.006212e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_10.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.108613"}</td><td>{"9.206962"}</td><td>{"7.760617e-18"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"9.098349"}</td><td>{"83.779947"}</td><td>{"1.000000"}</td><td>{"9.098349"}</td><td>{"83.779947"}</td><td>{"2.842171e-13"}</td><td>{"36623.0"}</td><td>{"3.332088e+05"}</td><td>{"3.068273e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_11.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.185556"}</td><td>{"5.389200"}</td><td>{"-1.241699e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.203644"}</td><td>{"28.077909"}</td><td>{"1.000000"}</td><td>{"5.203644"}</td><td>{"28.077909"}</td><td>{"-4.547474e-13"}</td><td>{"36623.0"}</td><td>{"1.905730e+05"}</td><td>{"1.028297e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_12.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.190229"}</td><td>{"5.256814"}</td><td>{"-1.862548e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.066584"}</td><td>{"26.670276"}</td><td>{"1.000000"}</td><td>{"5.066584"}</td><td>{"26.670276"}</td><td>{"-6.821210e-13"}</td><td>{"36623.0"}</td><td>{"1.855535e+05"}</td><td>{"9.767455e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_13.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.189766"}</td><td>{"5.269635"}</td><td>{"-6.518919e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.079868"}</td><td>{"26.805061"}</td><td>{"1.000000"}</td><td>{"5.079868"}</td><td>{"26.805061"}</td><td>{"-2.387424e-12"}</td><td>{"36623.0"}</td><td>{"1.860400e+05"}</td><td>{"9.816817e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_14.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.206872"}</td><td>{"4.833901"}</td><td>{"-2.172973e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.627029"}</td><td>{"22.409396"}</td><td>{"1.000000"}</td><td>{"4.627029"}</td><td>{"22.409396"}</td><td>{"-7.958079e-13"}</td><td>{"36623.0"}</td><td>{"1.694557e+05"}</td><td>{"8.206993e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_15.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.197060"}</td><td>{"5.074608"}</td><td>{"1.862548e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.877548"}</td><td>{"24.790476"}</td><td>{"1.000000"}</td><td>{"4.877548"}</td><td>{"24.790476"}</td><td>{"6.821210e-13"}</td><td>{"36623.0"}</td><td>{"1.786304e+05"}</td><td>{"9.079016e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_16.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.180053"}</td><td>{"5.553925"}</td><td>{"2.793822e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.373873"}</td><td>{"29.878506"}</td><td>{"1.000000"}</td><td>{"5.373873"}</td><td>{"29.878506"}</td><td>{"1.023182e-12"}</td><td>{"36623.0"}</td><td>{"1.968073e+05"}</td><td>{"1.094241e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_17.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.212268"}</td><td>{"4.711029"}</td><td>{"4.345946e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.498761"}</td><td>{"21.238851"}</td><td>{"1.000000"}</td><td>{"4.498761"}</td><td>{"21.238851"}</td><td>{"1.591616e-12"}</td><td>{"36623.0"}</td><td>{"1.647581e+05"}</td><td>{"7.778304e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_18.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.230787"}</td><td>{"4.332994"}</td><td>{"4.035521e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.102207"}</td><td>{"17.828101"}</td><td>{"1.000000"}</td><td>{"4.102207"}</td><td>{"17.828101"}</td><td>{"1.477929e-12"}</td><td>{"36623.0"}</td><td>{"1.502351e+05"}</td><td>{"6.529185e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_19.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.200768"}</td><td>{"4.980865"}</td><td>{"5.587645e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.780097"}</td><td>{"23.849328"}</td><td>{"1.000000"}</td><td>{"4.780097"}</td><td>{"23.849328"}</td><td>{"2.046363e-12"}</td><td>{"36623.0"}</td><td>{"1.750615e+05"}</td><td>{"8.734340e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_20.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.256151"}</td><td>{"3.903946"}</td><td>{"1.303784e-16"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"3.647795"}</td><td>{"14.306412"}</td><td>{"1.000000"}</td><td>{"3.647795"}</td><td>{"14.306412"}</td><td>{"4.774847e-12"}</td><td>{"36623.0"}</td><td>{"1.335932e+05"}</td><td>{"5.239437e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_21.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.218308"}</td><td>{"4.580676"}</td><td>{"2.172973e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.362368"}</td><td>{"20.030252"}</td><td>{"1.000000"}</td><td>{"4.362368"}</td><td>{"20.030252"}</td><td>{"7.958079e-13"}</td><td>{"36623.0"}</td><td>{"1.597630e+05"}</td><td>{"7.335679e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_22.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.142911"}</td><td>{"6.997368"}</td><td>{"-6.208494e-18"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"6.854458"}</td><td>{"47.983589"}</td><td>{"1.000000"}</td><td>{"6.854458"}</td><td>{"47.983589"}</td><td>{"-2.273737e-13"}</td><td>{"36623.0"}</td><td>{"2.510308e+05"}</td><td>{"1.757303e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_23.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.146062"}</td><td>{"6.846401"}</td><td>{"-5.587645e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"6.700339"}</td><td>{"45.894537"}</td><td>{"1.000000"}</td><td>{"6.700339"}</td><td>{"45.894537"}</td><td>{"-2.046363e-12"}</td><td>{"36623.0"}</td><td>{"2.453865e+05"}</td><td>{"1.680796e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_24.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.098230"}</td><td>{"10.180233"}</td><td>{"-2.172973e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"10.082003"}</td><td>{"102.646792"}</td><td>{"1.000000"}</td><td>{"10.082003"}</td><td>{"102.646792"}</td><td>{"-7.958079e-13"}</td><td>{"36623.0"}</td><td>{"3.692332e+05"}</td><td>{"3.759233e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_25.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.135052"}</td><td>{"7.404576"}</td><td>{"0.000000e+00"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"7.269524"}</td><td>{"53.845983"}</td><td>{"1.000000"}</td><td>{"7.269524"}</td><td>{"53.845983"}</td><td>{"0.000000e+00"}</td><td>{"36623.0"}</td><td>{"2.662318e+05"}</td><td>{"1.972001e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_26.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.152467"}</td><td>{"6.558813"}</td><td>{"-2.483398e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"6.406346"}</td><td>{"42.041275"}</td><td>{"1.000000"}</td><td>{"6.406346"}</td><td>{"42.041275"}</td><td>{"-9.094947e-13"}</td><td>{"36623.0"}</td><td>{"2.346196e+05"}</td><td>{"1.539678e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_27.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.158816"}</td><td>{"6.296591"}</td><td>{"-2.483398e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"6.137775"}</td><td>{"38.672281"}</td><td>{"1.000000"}</td><td>{"6.137775"}</td><td>{"38.672281"}</td><td>{"-9.094947e-13"}</td><td>{"36623.0"}</td><td>{"2.247837e+05"}</td><td>{"1.416295e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_28.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.207087"}</td><td>{"4.828878"}</td><td>{"-7.450193e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.621790"}</td><td>{"22.360946"}</td><td>{"1.000000"}</td><td>{"4.621790"}</td><td>{"22.360946"}</td><td>{"-2.728484e-12"}</td><td>{"36623.0"}</td><td>{"1.692638e+05"}</td><td>{"8.189249e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_29.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.199218"}</td><td>{"5.019632"}</td><td>{"-7.450193e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.820415"}</td><td>{"24.236397"}</td><td>{"1.000000"}</td><td>{"4.820415"}</td><td>{"24.236397"}</td><td>{"-2.728484e-12"}</td><td>{"36623.0"}</td><td>{"1.765380e+05"}</td><td>{"8.876096e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_30.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.190383"}</td><td>{"5.252560"}</td><td>{"0.000000e+00"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.062176"}</td><td>{"26.625629"}</td><td>{"1.000000"}</td><td>{"5.062176"}</td><td>{"26.625629"}</td><td>{"0.000000e+00"}</td><td>{"36623.0"}</td><td>{"1.853921e+05"}</td><td>{"9.751104e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"day_31.0"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.119779"}</td><td>{"8.348699"}</td><td>{"-3.104247e-18"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"8.228920"}</td><td>{"68.715119"}</td><td>{"1.000000"}</td><td>{"8.228920"}</td><td>{"68.715119"}</td><td>{"-1.136868e-13"}</td><td>{"36623.0"}</td><td>{"3.013677e+05"}</td><td>{"2.516554e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"poutcome_failure"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.349768"}</td><td>{"2.859038"}</td><td>{"3.104247e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"2.509270"}</td><td>{"7.296436"}</td><td>{"1.000000"}</td><td>{"2.509270"}</td><td>{"7.296436"}</td><td>{"1.136868e-12"}</td><td>{"36623.0"}</td><td>{"9.189699e+04"}</td><td>{"2.672174e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"poutcome_other"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.207302"}</td><td>{"4.823869"}</td><td>{"6.208494e-18"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"4.616567"}</td><td>{"22.312689"}</td><td>{"1.000000"}</td><td>{"4.616567"}</td><td>{"22.312689"}</td><td>{"2.273737e-13"}</td><td>{"36623.0"}</td><td>{"1.690725e+05"}</td><td>{"8.171576e+05"}</td>
+          </tr>
+
+          <tr>
+            <th>{"poutcome_success"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-0.187750"}</td><td>{"5.326245"}</td><td>{"-1.862548e-17"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"5.138495"}</td><td>{"27.404135"}</td><td>{"1.000000"}</td><td>{"5.138495"}</td><td>{"27.404135"}</td><td>{"-6.821210e-13"}</td><td>{"36623.0"}</td><td>{"1.881871e+05"}</td><td>{"1.003622e+06"}</td>
+          </tr>
+
+          <tr>
+            <th>{"poutcome_unknown"}</th><td>{"float64"}</td><td>{"36623"}</td><td>{"36623"}</td><td>{"0"}</td><td>{"0.0"}</td><td>{"-2.104100"}</td><td>{"0.475263"}</td><td>{"1.490039e-16"}</td><td>{"1.000027"}</td><td>{"1.000014"}</td><td>{"..."}</td><td>{"1.000000"}</td><td>{"-1.628838"}</td><td>{"3.653112"}</td><td>{"1.000000"}</td><td>{"-1.628838"}</td><td>{"3.653112"}</td><td>{"5.456968e-12"}</td><td>{"36623.0"}</td><td>{"-5.965292e+04"}</td><td>{"1.337879e+05"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"76 rows × 26 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[16]:" stderr={false} type="input">
+    ```python
+    pd.reset_option('display.max_rows')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id20}
+
+#### 安全性讨论
+
+请注意，全表统计会暴露数据整体统计结果，其背后实际上蕴含了<strong>sf.reveal</strong>,请谨慎使用。
+
+:target{#相关系数矩阵}
+
+### 相关系数矩阵
+
+我们接下来计算特征和特征之间，特征和标签之间的相关系数矩阵。
+
+> 计算相关系数矩阵时，one-hot编码各列无需参与计算。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[17]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats.ss_pearsonr_v import PearsonR
+
+    pearson_r_calculator = PearsonR(spu)
+    corr_matrix = pearson_r_calculator.pearsonr(vdf_hat)
+
+    import numpy as np
+
+    np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
+    corr_matrix
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_run pid=4620)"}</span>{" [2023-06-19 19:59:23.463] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(_run pid=4610)"}</span>{" [2023-06-19 19:59:23.478] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[17]:" stderr={false} type="output">
+    <pre>
+      {"array([[1.000, -0.162, -0.018, 0.096, -0.186, -0.017, -0.011, 0.006,\n        -0.027, -0.000, 0.028],\n       [-0.162, 1.000, -0.013, 0.068, -0.075, -0.022, -0.004, 0.003,\n        0.012, 0.030, 0.066],\n       [-0.018, -0.013, 1.000, -0.066, -0.006, 0.078, -0.007, 0.012,\n        -0.028, -0.017, -0.020],\n       [0.096, 0.068, -0.066, 1.000, -0.068, -0.084, 0.015, -0.012,\n        0.004, 0.016, 0.050],\n       [-0.186, -0.075, -0.006, -0.068, 1.000, 0.040, 0.002, -0.028,\n        0.123, 0.034, -0.137],\n       [-0.017, -0.022, 0.078, -0.084, 0.040, 1.000, -0.012, 0.013,\n        -0.023, -0.009, -0.068],\n       [-0.011, -0.004, -0.007, 0.015, 0.002, -0.012, 1.000, -0.173,\n        0.016, 0.011, 0.325],\n       [0.006, 0.003, 0.012, -0.012, -0.028, 0.013, -0.173, 1.000,\n        -0.089, -0.032, -0.072],\n       [-0.027, 0.012, -0.028, 0.004, 0.123, -0.023, 0.016, -0.089,\n        1.000, 0.439, 0.106],\n       [-0.000, 0.030, -0.017, 0.016, 0.034, -0.009, 0.011, -0.032,\n        0.439, 1.000, 0.092],\n       [0.028, 0.066, -0.020, 0.050, -0.137, -0.068, 0.325, -0.072,\n        0.106, 0.092, 1.000]], dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id22}
+
+#### 安全性讨论
+
+相关系数矩阵的计算需要利用alice和bob两边的数据，因此相关的计算需要使用<strong>SPU device</strong>确保原始数据不被泄露。
+
+:target{#VIF指标计算}
+
+### VIF指标计算
+
+隐语还支持VIF的计算来进行多重共线性检验。
+
+> 计算VIF指标时，one-hot编码各列无需参与计算。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats.ss_vif_v import VIF
+
+    vif_calculator = VIF(spu)
+    vif_results = vif_calculator.vif(vdf_hat)
+    print(vdf_hat.columns)
+    print(vif_results)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Index(['age', 'education', 'default', 'balance', 'housing', 'loan', 'duration',\n       'campaign', 'pdays', 'previous', 'y'],\n      dtype='object')\n[1.081 1.051 1.011 1.030 1.091 1.018 1.151 1.040 1.276 1.243 1.173]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id23}
+
+#### 安全性讨论
+
+VIF指标的计算需要利用alice和bob两边的数据，因此相关的计算需要使用<strong>SPU device</strong>确保原始数据不被泄露。
+
+:target{#模型训练}
+
+## 模型训练
+
+接下来，我们将会分别训练一个逻辑回归模型和一个XGB模型。
+
+:target{#随机分割}
+
+### 随机分割
+
+在训练之前，我们需要将数据分割为训练集和验证集。
+
+其中train\_x和train\_y为训练集的特征和标签。test\_x和test\_y为训练集的特征和标签。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[19]:" stderr={false} type="input">
+    ```python
+    from secretflow.data.split import train_test_split
+
+    random_state = 1234
+
+    train_vdf, test_vdf = train_test_split(vdf, train_size=0.8, random_state=random_state)
+
+    train_x = train_vdf.drop(columns=['y'])
+    train_y = train_vdf['y']
+
+    test_x = test_vdf.drop(columns=['y'])
+    test_y = test_vdf['y']
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id26}
+
+#### 安全性讨论
+
+随机分割时，每一方会共享随机数种子，并由每一方数据的owner分别执行各自的数据分割并且确保最终分割结果仍然是对齐的。
+
+:target{#PSI（人群稳定性分析）}
+
+### PSI（人群稳定性分析）
+
+样本稳定指数是衡量样本变化所产生的偏移量的一种重要指标，通常用来衡量样本的稳定程度，比如样本在两个月份之间的变化是否稳定。通常变量的PSI值在0.1以下表示变化不太显著，在0.1到0.25之间表示有比较显著的变化，大于0.25表示变量变化比较剧烈，需要特殊关注。
+
+接下来以<code>balance</code>为例子，确认两次抽样的样本分布是否接近。
+
+> 根据业务需求，PSI分析也可以在数据分析或者特征预处理的时候进行。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[20]:" stderr={false} type="input">
+    ```python
+    stats_df = table_statistics(train_x['balance'])
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[21]:" stderr={false} type="input">
+    ```python
+    min_val, max_val = stats_df['min'], stats_df['max']
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[22]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats import psi_eval
+    from secretflow.stats.core.utils import equal_range
+    import jax.numpy as jnp
+
+    split_points = equal_range(jnp.array([min_val, max_val]), 3)
+    balance_psi_score = psi_eval(train_x['balance'], test_x['balance'], split_points)
+
+    sf.reveal(balance_psi_score)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[22]:" stderr={false} type="output">
+    <pre>
+      {"Array(0.000, dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id27}
+
+#### 安全性讨论
+
+PSI分析是一个单方运算，由数据owner的PYU Device执行计算。
+
+:target{#逻辑回归模型}
+
+### 逻辑回归模型
+
+使用 <strong>ml.linear.ss\_sgd.SSRegression</strong> 可以进行密态逻辑回归模型的训练。
+
+请参考相关的API文档。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[23]:" stderr={false} type="input">
+    ```python
+    from secretflow.ml.linear.ss_sgd import SSRegression
+
+    lr_model = SSRegression(spu)
+    lr_model.fit(
+        x=train_x,
+        y=train_y,
+        epochs=3,
+        learning_rate=0.1,
+        batch_size=1024,
+        sig_type='t1',
+        reg_type='logistic',
+        penalty='l2',
+        l2_norm=0.5,
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_run pid=4609)"}</span>{" [2023-06-19 19:59:26.102] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+你可能会对为何上面的语句很快就执行完毕感到困惑，原因是在隐语中，语句都是lazy evaluation的，在上面的例子中，直到lr\_model被真正被使用的时候，<strong>lr\_model.fit</strong>才会被执行。
+
+:target{#id29}
+
+#### 安全性讨论
+
+SSRegression的训练基于SPU Device，双方的原始数据将会被保护。
+
+:target{#XGBoost模型}
+
+### XGBoost模型
+
+使用 <strong>ml.boost.ss\_xgb\_v.Xgb</strong> 可以进行密态XGBoost模型的训练。
+
+请参考相关的API文档。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[24]:" stderr={false} type="input">
+    ```python
+    from secretflow.ml.boost.ss_xgb_v import Xgb
+
+    xgb = Xgb(spu)
+    params = {
+        'num_boost_round': 3,
+        'max_depth': 5,
+        'sketch_eps': 0.25,
+        'objective': 'logistic',
+        'reg_lambda': 0.2,
+        'subsample': 1,
+        'colsample_by_tree': 1,
+        'base_score': 0.5,
+    }
+    xgb_model = xgb.train(params=params, dtrain=train_x, label=train_y)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(XgbTreeWorker pid=28283)"}</span>{" [2023-06-19 20:00:03.794] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(XgbTreeWorker pid=28284)"}</span>{" [2023-06-19 20:00:03.816] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Xgb.train将会直接执行，请耐心等待。
+
+:target{#id30}
+
+#### 安全性讨论
+
+Xgb的训练基于SPU Device，双方的原始数据将会被保护。
+
+:target{#模型预测}
+
+## 模型预测
+
+接下来，我们将会分别利用刚刚训练好的模型来预测测试集。
+
+:target{#id32}
+
+### 逻辑回归模型
+
+由于在我们的场景下，数据集标签的持有者是bob，因此我们在这里将预测结果<strong>reveal</strong>给bob.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[25]:" stderr={false} type="input">
+    ```python
+    lr_y_hat = lr_model.predict(x=test_x, batch_size=1024, to_pyu=bob)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id33}
+
+#### 安全性讨论
+
+逻辑回归的预测基于SPU Device，双方的原始数据将会被保护。
+
+当设置<strong>to\_pyu</strong>，预测结果将会被reveal给该方，否则将仍然保持秘密分享的状态。
+
+:target{#id34}
+
+### XGBoost模型
+
+由于在我们的场景下，数据集标签的持有者是bob，因此我们在这里将预测结果<strong>reveal</strong>给bob.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[26]:" stderr={false} type="input">
+    ```python
+    xgb_y_hat = xgb_model.predict(dtrain=test_x, to_pyu=bob)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(XgbTreeWorker pid=51207)"}</span>{" [2023-06-19 20:01:09.580] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(XgbTreeWorker pid=51208)"}</span>{" [2023-06-19 20:01:09.595] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id35}
+
+#### 安全性讨论
+
+XGBoost模型的预测基于SPU Device，双方的原始数据将会被保护。
+
+当设置<strong>to\_pyu</strong>，预测结果将会被reveal给该方，否则将仍然保持秘密分享的状态。
+
+:target{#模型评估}
+
+## 模型评估
+
+接下来，我们将利用测试数据集对模型效果进行评估，包括：
+
+- 二分类评估
+- PVA
+- P-Value
+- 评分卡转换
+
+:target{#二分类评估}
+
+### 二分类评估
+
+隐语中对二分类的评估有集成的支持。
+
+<code>BiClassificationEval</code> 将计算 <code>AUC</code>, <code>KS</code>, <code>F1 Score</code>, <code>Lift</code>, <code>K-S</code>, <code>Gain</code>, <code>Precision</code>, <code>Recall</code> 等统计数值， 并提供（基于prediction score的）等频和等距分箱的统计报告和总报告。
+
+不同分桶中评估模型的预测的<code>threshold</code>不同。总报告中依赖<code>threshold</code>的统计取的是各个分桶的最佳值。
+
+详情可以参考API文档。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[27]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats.biclassification_eval import BiClassificationEval
+
+    biclassification_evaluator = BiClassificationEval(
+        y_true=test_y, y_score=lr_y_hat, bucket_size=20
+    )
+    lr_report = sf.reveal(biclassification_evaluator.get_all_reports())
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[28]:" stderr={false} type="input">
+    ```python
+    print(f'positive_samples: {lr_report.summary_report.positive_samples}')
+    print(f'negative_samples: {lr_report.summary_report.negative_samples}')
+    print(f'total_samples: {lr_report.summary_report.total_samples}')
+    print(f'auc: {lr_report.summary_report.auc}')
+    print(f'ks: {lr_report.summary_report.ks}')
+    print(f'f1_score: {lr_report.summary_report.f1_score}')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"positive_samples: 884.0\nnegative_samples: 6441.0\ntotal_samples: 7325.0\nauc: 0.8973933458328247\nks: 0.6497097015380859\nf1_score: 0.5536627173423767\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[29]:" stderr={false} type="input">
+    ```python
+    biclassification_evaluator = BiClassificationEval(
+        y_true=test_y, y_score=xgb_y_hat, bucket_size=20
+    )
+    xgb_report = sf.reveal(biclassification_evaluator.get_all_reports())
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[30]:" stderr={false} type="input">
+    ```python
+    print(f'positive_samples: {xgb_report.summary_report.positive_samples}')
+    print(f'negative_samples: {xgb_report.summary_report.negative_samples}')
+    print(f'total_samples: {xgb_report.summary_report.total_samples}')
+    print(f'auc: {xgb_report.summary_report.auc}')
+    print(f'ks: {xgb_report.summary_report.ks}')
+    print(f'f1_score: {xgb_report.summary_report.f1_score}')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"positive_samples: 884.0\nnegative_samples: 6441.0\ntotal_samples: 7325.0\nauc: 0.8754899501800537\nks: 0.5985674858093262\nf1_score: 0.5030487775802612\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#预测偏差}
+
+### 预测偏差
+
+结果由<code>abs(mean(Acutal) - mean(Prediction))</code>计算获得, 值越小越好。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[31]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats import prediction_bias_eval
+
+    prediction_bias = prediction_bias_eval(test_y, lr_y_hat, bucket_num=4, absolute=True, bucket_method='equal_width')
+
+    sf.reveal(prediction_bias)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[31]:" stderr={false} type="output">
+    <pre>
+      {"PredictionBiasReport(buckets=[BucketPredictionBiasReport(left_endpoint=0.0, left_closed=True, right_endpoint=0.25, right_closed=False, isna=False, avg_prediction=0.0, avg_label=0.13951896131038666, bias=0.13951896131038666, absolute=True), BucketPredictionBiasReport(left_endpoint=0.25, left_closed=True, right_endpoint=0.5, right_closed=False, isna=True, avg_prediction=0, avg_label=0, bias=0, absolute=True), BucketPredictionBiasReport(left_endpoint=0.5, left_closed=True, right_endpoint=0.75, right_closed=False, isna=True, avg_prediction=0, avg_label=0, bias=0, absolute=True), BucketPredictionBiasReport(left_endpoint=0.75, left_closed=True, right_endpoint=1.0, right_closed=True, isna=False, avg_prediction=1.0, avg_label=0.36417245864868164, bias=0.6358275413513184, absolute=True)])\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[32]:" stderr={false} type="input">
+    ```python
+    xgb_pva_score = prediction_bias_eval(test_y, xgb_y_hat, bucket_num=4, absolute=True, bucket_method='equal_width')
+
+    sf.reveal(xgb_pva_score)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[32]:" stderr={false} type="output">
+    <pre>
+      {"PredictionBiasReport(buckets=[BucketPredictionBiasReport(left_endpoint=0.0, left_closed=True, right_endpoint=0.25, right_closed=False, isna=False, avg_prediction=0.0, avg_label=0.1599043607711792, bias=0.1599043607711792, absolute=True), BucketPredictionBiasReport(left_endpoint=0.25, left_closed=True, right_endpoint=0.5, right_closed=False, isna=True, avg_prediction=0, avg_label=0, bias=0, absolute=True), BucketPredictionBiasReport(left_endpoint=0.5, left_closed=True, right_endpoint=0.75, right_closed=False, isna=True, avg_prediction=0, avg_label=0, bias=0, absolute=True), BucketPredictionBiasReport(left_endpoint=0.75, left_closed=True, right_endpoint=1.0, right_closed=True, isna=False, avg_prediction=1.0, avg_label=0.370947003364563, bias=0.629052996635437, absolute=True)])\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#P-Value}
+
+### P-Value
+
+双方可通过p-value的值来判断参数是否显著，即该自变量是否可以有效预测因变量的变异, 从而判定对应的解释变量是否应包括在模型中。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[33]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats import SSPValue
+
+    model = lr_model.save_model()
+    sspv = SSPValue(spu)
+    pvalues = sspv.pvalues(test_x, test_y, model)
+
+    pvalues
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[33]:" stderr={false} type="output">
+    <pre>
+      {"array([0.729, 0.477, 0.890, 0.463, 0.022, 0.144, 0.997, 0.991, 0.987,\n       0.984, 0.999, 0.959, 0.988, 0.992, 0.939, 0.995, 0.982, 0.993,\n       0.996, 0.990, 0.990, 0.000, 0.686, 0.796, 0.779, 0.981, 0.990,\n       0.976, 0.955, 0.992, 0.790, 0.969, 0.978, 0.974, 0.976, 0.976,\n       0.836, 0.820, 0.985, 0.830, 0.972, 0.984, 0.995, 0.990, 0.996,\n       0.984, 0.973, 0.994, 0.996, 0.953, 0.985, 0.977, 0.964, 0.994,\n       0.984, 0.984, 0.964, 0.999, 0.966, 0.978, 0.992, 0.982, 0.976,\n       0.994, 0.976, 0.993, 0.969, 0.995, 0.983, 0.963, 0.987, 0.976,\n       0.992, 0.824, 0.979, 0.000])\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#评分卡转换}
+
+### 评分卡转换
+
+> 严格来说，评分卡转化是对预测结果的后续处理，并不属于模型评估。
+
+我们将 <code>y = 1</code> 的概率设为<code>p</code>， <code>odds = p / (1 - p)</code>, 评分卡设定的分值刻度可以通过将分值表示为比率对数的线性表达式来定义，即可表示为下式：
+
+<code>Score = A - B log(odds)</code>， A 和 B 是可以设定的常数。隐语中提供了评分卡转换功能，详情可以参考API文档。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[34]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats import BiClassificationEval, ScoreCard
+
+    sc = ScoreCard(20, 600, 20)
+    score = sc.transform(xgb_y_hat)
+
+    sf.reveal(score.partitions[bob])
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[34]:" stderr={false} type="output">
+    <pre>
+      {"array([[456.557],\n       [453.931],\n       [487.774],\n       ...,\n       [456.557],\n       [487.774],\n       [453.931]])\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id40}
+
+### 安全性讨论
+
+以上所有模型评估的方法均为单方运算，由label拥有者的PYU Device进行运算。
+
+:target{#实验结束}
+
+## 实验结束
+
+最后，我们需要清理临时文件，并关闭隐语cluster。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[35]:" stderr={false} type="input">
+    ```python
+    import os
+
+    try:
+        os.remove(alice_path)
+        os.remove(alice_psi_path)
+        os.remove(bob_path)
+        os.remove(bob_psi_path)
+    except OSError:
+        pass
+
+    sf.shutdown()
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+恭喜！你已经完成了隐语金融风控全链路的全部实验内容。
+
+如果你对本实验有任何建议和问题，请在[Github Issues](https://github.com/secretflow/secretflow/issues)上联系我们。

@@ -1,0 +1,270 @@
+:target{#installation}
+
+# 安装
+
+最简单的尝试SecretFlow的方式是使用带有SecretFlow的 <strong>官方 docker image</strong> 。
+
+或者你也可以 <strong>通过Python Package Index安装SecretFlow</strong> 。
+
+对于高级用户，你可以 <strong>从源码安装SecretFlow</strong> 。
+
+对于Windows用户，你可以 <strong>通过WSL2安装SecretFlow</strong> 。
+
+安装之后，请不要忘记 <strong>快速尝试SecretFlow</strong> 确保安装成功。
+
+> 额外说明：对于有可用GPU设备的用户，可以 <strong>尝试使用GPU支持</strong>
+
+:target{#environment}
+
+## 环境
+
+Python：3.8
+
+pip: >= 19.3
+
+OS: CentOS 7, Ubuntu 18.04
+
+CPU/Memory: 推荐最低配置是 8C16G.
+
+:target{#option-1-from-pypi}
+
+## 方式 1: 从pypi
+
+请安装 [当前release](https://pypi.org/project/secretflow/) 。
+
+请注意python版本需要是3.8，你可以用conda构建一个虚拟环境。
+
+```default
+conda create -n sf python=3.8
+conda activate sf
+```
+
+之后，请使用pip安装SecretFlow。
+
+```bash
+pip install -U secretflow
+```
+
+:target{#option-2-from-docker}
+
+## 方式2: 通过docker
+
+你也可以通过SecretFlow的docker image来尝试SecretFlow。
+
+最新的版本请查看 [secretflow tags](https://hub.docker.com/r/secretflow/secretflow-anolis8/tags) 。
+
+```default
+export version={SecretFlow version}
+```
+
+示例
+
+```bash
+export version=0.6.13b1
+```
+
+然后运行image
+
+```bash
+docker run -it secretflow/secretflow-anolis8:${version}
+```
+
+:target{#option-3-from-source}
+
+## 方式3: 通过源码
+
+1. 下载源码并建立Python虚拟环境
+
+```sh
+git clone https://github.com/secretflow/secretflow.git
+cd secretflow
+
+conda create -n secretflow python=3.8
+conda activate secretflow
+```
+
+2. 安装SecretFlow
+
+```sh
+python setup.py bdist_wheel
+
+pip install dist/*.whl
+```
+
+:target{#option-4-from-wsl}
+
+## 方式4: 通过WSL
+
+隐语不直接支持Windows, 请使用WSL(Windows Subsystem for Linux)
+
+1. 在Windows上安装WSL2
+
+- 请遵循  [中文指南](https://learn.microsoft.com/zh-cn/windows/wsl/install) 或 [英文指南](https://learn.microsoft.com/en-us/windows/wsl/install) 安装WSL。请确保WSL版本为2。
+- GNU/Linux推荐使用Ubuntu。
+
+2. 在WSL中安装Anaconda
+
+请在WSL的GNU/Linux中安装anaconda。
+
+3. 安装SecretFlow
+
+- 创建conda环境
+
+```shell
+conda create -n sf python=3.8
+```
+
+- 激活conda环境
+
+```shell
+conda activate sf
+```
+
+- 之后，请使用pip安装SecretFlow。
+
+```default
+pip install -U secretflow
+```
+
+4. 使用WSL开发您的应用
+
+在WSL上建立SecretFlow的开发环境以后，您可以使用[基于WSL配置Pycharm Professional的解释器](https://www.jetbrains.com/help/pycharm/using-wsl-as-a-remote-interpreter.html) 或者也可以使用 [基于WSL的Visual Studio Code](https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-vscode)在 Windows 操作系统上使用SecretFlow。
+
+:target{#a-quick-try}
+
+## 快速尝试
+
+你的第一个SecretFlow程序。
+
+导入secretflow包。
+
+```python
+>>> import secretflow as sf
+```
+
+创建一个包含Alice、Bob和Carol的本地集群。
+
+```python
+>>> sf.init(parties=['alice', 'bob', 'carol'], address='local')
+```
+
+创建Alice的PYU设备，可以处理她的数据。
+
+```python
+>>> alice_device = sf.PYU('alice')
+```
+
+让Alice说“Hello World”。
+
+```python
+>>> message_from_alice = alice_device(lambda x:x)("Hello World!")
+```
+
+打印消息。
+
+```python
+>>> message_from_alice
+<secretflow.device.device.pyu.PYUObject object at 0x7fdec24a15b0>
+```
+
+我们看到Alice设备上的消息是一个PYU对象，在控制程序中。
+
+通过揭示消息，在控制程序中打印文本。
+
+```python
+>>> print(sf.reveal(message_from_alice))
+Hello World!
+```
+
+:target{#gpu-support}
+
+## GPU支持
+
+:target{#before-you-read}
+
+### 在您阅读之前
+
+如果您不需要GPU支持，请忽略此部分并跳到 <strong>快速尝试</strong>。
+
+:target{#introduction}
+
+### 简介
+
+NVIDIA的CUDA和cuDNN通常用于加速机器学习模型的训练和推理。Tensorflow和PyTorch是两种广泛使用的机器学习框架，它们都支持GPU。在SecretFlow中，PyTorch和Tensorflow作为联邦学习的后端，其性能可以通过使用GPU来提升。
+
+如果您想在SecretFlow中使用GPU加速，需要先完成 <strong>前置工作</strong> 进行环境配置。
+
+接下来，有两种方式可以运行GPU版本的SecretFlow：
+
+1. 使用 <strong>官方的GPU Docker镜像</strong>
+2. 自行 <strong>构建 GPU Docker 镜像</strong>
+
+镜像准备好后，您可以 <strong>运行容器并尝试使用GPU</strong>。
+
+:target{#preparations}
+
+### 前置工作
+
+1. 确保您的 NVIDIA 驱动程序可用并满足版本要求。
+
+对于 CUDA 12，驱动程序的版本必须 >= 525.60.13，对于 Linux 上的 CUDA 11，驱动程序的版本必须 >= 450.80.02。
+
+运行 NVIDIA 系统管理界面 (nvidia-smi) 以确保您的 NVIDIA 驱动程序可用并满足版本要求。
+
+```bash
+nvidia-smi
+```
+
+> 注意：我们目前仅提供基于CUDA11的GPU Docker镜像。当基于CUDA12的PyTorch和TensorFlow的GPU安装包发布时，我们将提供基于CUDA12的GPU Docker 镜像
+
+2. 遵循 [NVIDIA 官方指南](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker) 在您的发行版上来设置NVIDIA Container Toolkit。
+
+环境设置完成后，您可以构建/运行镜像。
+
+:target{#option-1-get-the-gpu-docker-image-from-the-secretflow-repository}
+
+### 方式1：从SecretFlow仓库中获取GPU镜像
+
+SecretFlow 的 GPU Docker 镜像已经在 SecretFlow 的Dockerhub 上发布您可以运行下列命令去获取最新的 GPU docker 镜像
+
+```bash
+docker pull secretflow/secretflow-gpu
+```
+
+对于更多的信息，请访问 [GPU 镜像](https://hub.docker.com/r/secretflow/secretflow-gpu)
+
+:target{#option-2-build-the-gpu-docker-image-by-yourself}
+
+### 方式2：自行构建 GPU Docker 镜像
+
+您也可以自行构建 Docker 镜像
+
+1. 下载代码
+
+```bash
+git clone https://github.com/secretflow/secretflow.git
+cd secretflow/docker
+```
+
+2. 使用Dockerfile文件构建一个镜像
+
+```bash
+docker build -f  secretflow-gpu.Dockerfile -t secretflow-gpu .
+```
+
+:target{#run-a-container-and-check-gpu}
+
+### 运行容器并检查GPU是否可用
+
+1. 运行容器
+
+```bash
+docker container run --runtime=nvidia  -it --gpus all secretflow-gpu bash
+```
+
+> 说明：以下两个参数是必需的：
+>
+> - <code>--runtime=nvidia</code>
+> - <code>--gpus all</code>
+
+2. 容器运行后，您可以使用 jupyter 笔记本 [GPU Check](../tutorial/GPU_check.mdx) 检查容器内 Tensorflow 和 PyTorch 对于 NVIDIA GPU 的可调用性。

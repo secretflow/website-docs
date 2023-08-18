@@ -1,0 +1,321 @@
+:target{#垂直联邦XGB-(SecureBoost)}
+
+# 垂直联邦XGB (SecureBoost)
+
+> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+欢迎来到SecureBoost教程！
+
+In this tutorial, we will explore how to use SecretFlow’s tree modeling capabilities to perform vertical federated learning using the SecureBoost algorithm. SecureBoost is a classical algorithm that prioritizes the protection of label information on vertically partitioned datasets. It accomplishes this using Homomorphic Encryption technology, which allows for the encryption of labels and the execution of key tree boosting steps in ciphertext. The outcome is a distributed boosted-trees model
+comprised of PYUObjects, with each party having knowledge only of their own split points. This implementation utilizes both HEU and PYU devices to achieve high performance with ease.
+
+Let’s dive into the details and learn how to use SecureBoost with SecretFlow!
+
+:target{#设备设置}
+
+## 设备设置
+
+与其他算法类似，设置安全集群和指定设备对于SecureBoost的实现是必要的。
+
+特别是，必须指定一个HEU设备以确保SecureBoost中标签的加密和敏感信息的保护。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    import spu
+    from sklearn.metrics import roc_auc_score
+
+    import secretflow as sf
+    from secretflow.data import FedNdarray, PartitionWay
+    from secretflow.device.driver import reveal, wait
+    from secretflow.ml.boost.sgb_v import Sgb, get_classic_XGB_params, get_classic_lightGBM_params
+    from secretflow.ml.boost.sgb_v.model import load_model
+    import pprint
+    pp = pprint.PrettyPrinter(depth=4)
+
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"The version of SecretFlow: 1.0.0a0\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    alice_ip = '127.0.0.1'
+    bob_ip = '127.0.0.1'
+    ip_party_map = {bob_ip: 'bob', alice_ip: 'alice'}
+
+    _system_config = {'lineage_pinning_enabled': False}
+    sf.shutdown()
+    # init cluster
+    sf.init(
+        ['alice', 'bob'],
+        address='local',
+        _system_config=_system_config,
+        object_store_memory=5 * 1024 * 1024 * 1024,
+    )
+
+    # SPU settings
+    cluster_def = {
+        'nodes': [
+            {'party': 'alice', 'id': 'local:0', 'address': alice_ip + ':12945'},
+            {'party': 'bob', 'id': 'local:1', 'address': bob_ip + ':12946'},
+            # {'party': 'carol', 'id': 'local:2', 'address': '127.0.0.1:12347'},
+        ],
+        'runtime_config': {
+            # SEMI2K support 2/3 PC, ABY3 only support 3PC, CHEETAH only support 2PC.
+            # pls pay attention to size of nodes above. nodes size need match to PC setting.
+            'protocol': spu.spu_pb2.SEMI2K,
+            'field': spu.spu_pb2.FM128,
+        },
+    }
+
+    # HEU settings
+    heu_config = {
+        'sk_keeper': {'party': 'alice'},
+        'evaluators': [{'party': 'bob'}],
+        'mode': 'PHEU',
+        'he_parameters': {
+            # ou is a fast encryption schema that is as secure as paillier.
+            'schema': 'ou',
+            'key_pair': {
+                'generate': {
+                    # bit size should be 2048 to provide sufficient security.
+                    'bit_size': 2048,
+                },
+            },
+        },
+        'encoding': {
+            'cleartext_type': 'DT_I32',
+            'encoder': "IntegerEncoder",
+            'encoder_args': {"scale": 1},
+        },
+    }
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    alice = sf.PYU('alice')
+    bob = sf.PYU('bob')
+    heu = sf.HEU(heu_config, cluster_def['runtime_config']['field'])
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#数据准备}
+
+## 数据准备
+
+我们将准备一个垂直数据集。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    from sklearn.datasets import load_breast_cancer
+
+    ds = load_breast_cancer()
+    x, y = ds['data'], ds['target']
+
+    v_data = FedNdarray(
+        {
+            alice: (alice(lambda: x[:, :15])()),
+            bob: (bob(lambda: x[:, 15:])()),
+        },
+        partition_way=PartitionWay.VERTICAL,
+    )
+    label_data = FedNdarray(
+        {alice: (alice(lambda: y)())},
+        partition_way=PartitionWay.VERTICAL,
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#参数准备}
+
+## 参数准备
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    params = get_classic_XGB_params()
+    params['num_boost_round'] = 3
+    params['max_depth'] = 3
+    pp.pprint(params)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"{'audit_paths': {},\n 'base_score': 0.0,\n 'batch_encoding_enabled': True,\n 'bottom_rate': 0.5,\n 'colsample_by_tree': 1.0,\n 'early_stop_criterion_g_abs_sum': 0.0,\n 'early_stop_criterion_g_abs_sum_change_ratio': 0.0,\n 'enable_goss': False,\n 'enable_quantization': False,\n 'first_tree_with_label_holder_feature': True,\n 'fixed_point_parameter': 20,\n 'gamma': 0.0,\n 'learning_rate': 0.3,\n 'max_depth': 3,\n 'max_leaf': 15,\n 'num_boost_round': 3,\n 'objective': 'logistic',\n 'quantization_scale': 10000.0,\n 'reg_lambda': 0.1,\n 'rowsample_by_tree': 1.0,\n 'seed': 1212,\n 'sketch_eps': 0.1,\n 'top_rate': 0.3,\n 'tree_growing_method': 'level'}\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#运行-Sgb}
+
+## 运行 Sgb
+
+我们使用 heu 设备创建一个 Sgb 对象，并拟合数据。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    sgb = Sgb(heu)
+    model = sgb.train(params, v_data, label_data)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_run pid=2676568)"}</span>{" [2023-07-11 13:39:22.365] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(_run pid=2676575)"}</span>{" [2023-07-11 13:39:22.370] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(HEUSkKeeper(heu_id=139936685360992, party=alice) pid=2682338)"}</span>{" [2023-07-11 13:39:22.730] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(HEUEvaluator(heu_id=139936685360992, party=bob) pid=2683835)"}</span>{" [2023-07-11 13:39:22.755] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_run pid=2676570)"}</span>{" [2023-07-11 13:39:27.977] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#模型评估}
+
+## 模型评估
+
+现在我们可以将模型输出与真实标签进行比较。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    yhat = model.predict(v_data)
+    yhat = reveal(yhat)
+    print(f"auc: {roc_auc_score(y, yhat)}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"auc: 0.9970072934834311\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#模型保存和加载}
+
+## 模型保存和加载
+
+现在我们可以保存模型, 并在以后使用它。请注意，模型是分布式的，我们将保存到多个参与方，并从多个参与方中加载。
+
+Let’s first define the paths.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    # each participant party needs a location to store
+    saving_path_dict = {
+        # in production we may use remote oss, for example.
+        device: "./" + device.party
+        for device in v_data.partitions.keys()
+    }
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Then let’s save the model.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    r = model.save_model(saving_path_dict)
+    wait(r)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+现在您可以在之前指定的位置检查文件。
+
+Finally, let’s load the model and do a sanity check.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    # alice is our label holder
+    model_loaded = load_model(saving_path_dict, alice)
+    fed_yhat_loaded = model_loaded.predict(v_data, alice)
+    yhat_loaded = reveal(fed_yhat_loaded.partitions[alice])
+
+    assert (
+        yhat == yhat_loaded
+    ).all(), "loaded model predictions should match original, yhat {} vs yhat_loaded {}".format(
+        yhat, yhat_loaded
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#更多训练设置}
+
+### 更多训练设置
+
+如果我们想用lightGBM的方式训练树模型怎么办？我们可以设置按叶节点训练并开启GOSS功能。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    params = get_classic_lightGBM_params()
+    params['num_boost_round'] = 3
+    params['max_leaf'] = 2**3
+    pp.pprint(params)
+    model = sgb.train(params, v_data, label_data)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"{'audit_paths': {},\n 'base_score': 0.0,\n 'batch_encoding_enabled': True,\n 'bottom_rate': 0.5,\n 'colsample_by_tree': 1.0,\n 'early_stop_criterion_g_abs_sum': 0.0,\n 'early_stop_criterion_g_abs_sum_change_ratio': 0.0,\n 'enable_goss': True,\n 'enable_quantization': False,\n 'first_tree_with_label_holder_feature': True,\n 'fixed_point_parameter': 20,\n 'gamma': 0.0,\n 'learning_rate': 0.3,\n 'max_depth': 5,\n 'max_leaf': 8,\n 'num_boost_round': 3,\n 'objective': 'logistic',\n 'quantization_scale': 10000.0,\n 'reg_lambda': 0.1,\n 'rowsample_by_tree': 1.0,\n 'seed': 1212,\n 'sketch_eps': 0.1,\n 'top_rate': 0.3,\n 'tree_growing_method': 'leaf'}\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
+    ```python
+    yhat = model.predict(v_data)
+    yhat = reveal(yhat)
+    print(f"auc: {roc_auc_score(y, yhat)}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"auc: 0.9966901855081655\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#结论}
+
+### 结论
+
+恭喜您完成了本教程！
+
+在本教程中，我们学习了如何在隐语中使用树模型进行训练，并探索了 SecureBoost，这是一种专门为垂直分区数据集设计的高性能提升算法。SecureBoost 类似于 XGBoost，但重点关注在垂直学习场景中保护敏感标签。通过利用同态加密和 PYUObjects，SecureBoost 允许我们训练强大的分布式森林模型，同时保护数据的隐私和安全。
+
+感谢您参与本教程，希望您觉得它充满启发和帮助！

@@ -1,0 +1,134 @@
+:target{#differential-privacy-global-dp-in-federated-learning}
+
+# Differential Privacy: Global DP in Federated Learning
+
+In federated learning, a trusted curator aggregates parameters optimized
+in decentralized fashion by multiple clients. The resulting model is
+then distributed back to all clients, ultimately converging to a joint
+representative model. This protocol is vulnerable to differential
+attacks, which could originate from any party during federated
+optimization. The protocol is vulnerable to differential attacks, which
+can come from either party during joint optimization. Analyzing the
+distributed model can reveal the customer’s contribution during training
+and information about their dataset. Global Differential Privacy is a
+algorithm for client sided differential privacy preserving federated
+optimization. The aim is to hide clients’ contributions during training,
+balancing the trade-off between privacy loss and model performance.
+
+:target{#preliminaries}
+
+## Preliminaries
+
+We use the same definition for dp in randomized mechanisms as \[1]: A
+randomized mechanism <InlineMath>$M: D \rightarrow R$</InlineMath> , with domain <InlineMath>$D$</InlineMath>
+and range <InlineMath>$R$</InlineMath> satisfies <InlineMath>$(\epsilon, \delta)$</InlineMath>-differential
+privacy, if for any two adjacent inputs <InlineMath>$d, d^{\prime} \in D$</InlineMath>
+and for any subset of outputs <InlineMath>$S \subseteq R$</InlineMath> it holds that
+<InlineMath>$P[M(d) \in S] \leq e^{\epsilon} \operatorname{Pr}\left[M\left(d^{\prime}\right) \in S\right]+\delta$</InlineMath>
+. In this definition, <InlineMath>$\delta$</InlineMath> accounts for the
+probability that plain <InlineMath>$\epsilon$</InlineMath> -differential privacy is broken.
+
+The Gaussian mechanism (GM) approximates a real valued
+function <InlineMath>$f$</InlineMath> : <InlineMath>$D \rightarrow R$</InlineMath> with a differentially
+private mechanism. Specifically, a GM adds Gaussian noise calibrated to
+the functions data set sensitivity <InlineMath>$S_{f}$</InlineMath> . This sensitivity is
+defined as the maximum of the absolute distance
+<InlineMath>$\left\|f(d)-f\left(d^{\prime}\right)\right\|_{2}$</InlineMath> , where
+<InlineMath>$d^{\prime}$</InlineMath> and <InlineMath>$d$</InlineMath> are two adjacent inputs. A GM is then defined
+as <InlineMath>$M(d)=f(d)+\mathcal{N}\left(0, \sigma^{2} S_{f}^{2}\right)$</InlineMath> where <InlineMath>$\sigma$</InlineMath> is noise multiplier.
+
+It is well known that <InlineMath>$\sigma$</InlineMath> or <InlineMath>$\epsilon$</InlineMath> can be fixed and evaluate an inquiry to the GM about a single approximation of
+<InlineMath>$f(d)$</InlineMath>. For example, we assume that <InlineMath>$\epsilon$</InlineMath> is fixed. Then, we can then bound the probability that <InlineMath>$\epsilon$</InlineMath> -dp is
+broken according to: <InlineMath>$\delta \leq \frac{4}{5} \exp \left(-(\sigma \epsilon)^{2} / 2 \right)$</InlineMath>
+(Theorem 3.22 in \[2]). It should be noted that <InlineMath>$\delta$</InlineMath> is
+accumulative and grows if the consecutive inquiries to the GM.
+Therefore, to protect privacy, an accountant keeps track of
+<InlineMath>$\delta$</InlineMath> . Once a certain threshold for <InlineMath>$\delta$</InlineMath> is reached,
+the GM shall not answer any new inquires.
+
+Recently, \[1] proposed a differentially private stochastic gradient
+descent algorithm (dp-SGD). dpSGD works similar to mini-batch gradient
+descent but the gradient averaging step is approximated by a GM. In
+addition, the mini-batches are allocated through random sampling of the
+data. For <InlineMath>$\epsilon$</InlineMath> being fixed, a privacy accountant keeps track
+of <InlineMath>$\delta$</InlineMath> and stops training once a threshold is reached.
+Intuitively, this means training is stopped once the probability that
+the learned model reveals whether a certain data point is part of the
+training set exceeds a certain threshold.
+
+:target{#method}
+
+## Method
+
+Global DP in Federated Learning incorporate a randomized mechanism into
+federated learning \[4]. However, opposed to \[1] we do not aim at
+protecting a single data point’s contribution in learning a model.
+Instead, we aim at protecting a whole client’s data set. That is, we
+want to ensure that a learned model does not reveal whether a client
+participated during decentralized training while maintaining high model
+performance.
+
+In the framework of federated optimization \[5], the central curator
+averages client models (i.e. weight matrices) after each communication
+round. Global DP will alter and approximate this averaging with a randomized mechanism. This is done to hide a single
+client’s contribution within the aggregation and thus within the entire
+decentralized learning procedure. The randomized mechanism we use to
+approximate the average consists of two steps:
+
+1. Random sub-sampling: Let <InlineMath>$K$</InlineMath> be the total number of clients. In each
+   communication round a random subset <InlineMath>$Z_{t}$</InlineMath> of size
+   <InlineMath>$m_{t} \leq K$</InlineMath> is sampled. The curator then distributes the
+   central model <InlineMath>$w_{t}$</InlineMath> to only these clients. The central model
+   is optimized by the clients’ on their data. The clients in <InlineMath>$Z_{t}$</InlineMath>
+   now hold distinct local models <InlineMath>$\left\{w^{k}\right\}_{k=0}^{m_{t}}$</InlineMath> . The
+   difference between the optimized local model and the central model
+   will be referred to as client <InlineMath>$k$</InlineMath> ’s update
+   <InlineMath>$\Delta w^{k}=w^{k}-w_{t}$</InlineMath> . The updates are sent back to the
+   central curator at the end of each communication round.
+2. Distorting: A Gaussian mechanism is used to distort the sum of all
+   updates. This requires knowledge about the set’s sensitivity with
+   respect to the summing operation. We can enforce a certain
+   sensitivity by using scaled versions instead of the true updates:
+   <InlineMath>$\triangle \bar{w}^{k}= \triangle w^{k} / \max \left(1, \frac{\left\|\Delta w^{k}\right\|_{2}}{S}\right)$</InlineMath>
+   . Scaling ensures that the second norm is limited
+   <InlineMath>$\forall k,\left\|\triangle \bar{w}^{k}\right\|_{2}<S$</InlineMath> . The
+   sensitivity of the scaled updates with respect to the summing
+   operation is thus upper bounded by <InlineMath>$S$</InlineMath> . The GM now adds noise
+   (scaled to sensitivity <InlineMath>$S$</InlineMath> ) to the sum of all scaled updates.
+   Dividing the GM’s output by <InlineMath>$m_{t}$</InlineMath> yields an approximation to
+   the true average of all client’s updates, while preventing leakage of
+   crucial information about an individual. A new central model
+   <InlineMath>$w_{t+1}$</InlineMath> is allocated by adding this approximation to the
+   current central model <InlineMath>$w_{t}$</InlineMath>, and
+   <InlineMath>$w_{t+1}=w_{t}+\frac{1}{m_{t}}(\overbrace{\sum_{k=0}^{m_{t}} \triangle w^{k} / \max \left(1, \frac{\left\|\triangle w^{k}\right\|_{2}}{S}\right)}^{\text {Sum of updates clipped at } S}+\overbrace{\mathcal{N}\left(0, \sigma^{2} S^{2}\right)}^{\text {Noise scaled to } S})$</InlineMath>.
+
+In order to keep track of this privacy loss, we make use of the moments
+accountant as proposed by Abadi et al. \[3]. This accounting method
+provides much tighter bounds on the incurred privacy loss than the
+standard composition theorem (3.14 in \[2]). Each time the curator
+allocates a new model, the accountant evaluates <InlineMath>$\sigma$</InlineMath> given
+<InlineMath>$\epsilon$</InlineMath>, <InlineMath>$\delta$</InlineMath> and <InlineMath>$m$</InlineMath> . Training shall be
+stopped once <InlineMath>$\epsilon$</InlineMath> reaches a certain threshold. The
+choice of a threshold for <InlineMath>$\delta$</InlineMath> depends on the total amount of
+clients <InlineMath>$K$</InlineMath> . To ascertain that privacy for many is not preserved
+at the expense of revealing total information about a few, we have to
+ensure that <InlineMath>$\delta \ll \frac{1}{K}$</InlineMath> , refer to \[2] chapter 2.3
+for more details.
+
+:target{#ref}
+
+## Ref
+
+\[1] M. Abadi, A. Chu, I. Goodfellow, H. Brendan McMahan, I. Mironov, K.
+Talwar, and L. Zhang. Deep Learning with Differential Privacy. ArXiv
+e-prints, 2016.
+
+\[2] C. Dwork and A. Roth. The algorithmic foundations of differential
+privacy. Found. Trends Theor. Comput. Sci., 9(3–4):211–407, Aug. 2014.
+
+\[3] Mironov I. Rényi differential privacy\[C]//2017 IEEE 30th computer
+security foundations symposium (CSF). IEEE, 2017: 263-275.
+
+\[4] Geyer R C, Klein T, Nabi M. Differentially private federated
+learning: A client level perspective\[J]. arXiv preprint
+arXiv:1712.07557, 2017.

@@ -1,0 +1,227 @@
+:target{#design-of-component-specification}
+
+# 组件规范的设计
+
+组件规范可以分为两部分：核心协议包括数据协议、组件协议和节点评估协议，附属协议包括SecretFlow集群配置和SecretFlow数据。核心协议适用于集成到SecretFlow生态系统的所有应用程序，而附属协议仅适用于SecretFlow。
+
+组件规范从我们的角度做出了一些假设。请在查看 [组件规范](comp_spec.mdx) 之前阅读本文档。
+
+<Container type="note">
+  目前，我们还没有针对管道和调度的官方协议。
+</Container>
+
+:target{#data}
+
+## Data
+
+定义在data.proto中。
+
+:target{#systeminfo}
+
+### SystemInfo
+
+对于输入数据，<strong>SystemInfo</strong> 描述了可能使用数据的应用程序和环境。对于输出数据，它包含了这些信息。
+
+:target{#dataref}
+
+### DataRef
+
+<strong>DataRef</strong> 是指向属于一个参与方的单个文件的指针。<strong>uri</strong> 是其所有者存储根的相对路径。<strong>DataRef</strong> 是公开的，并对所有参与方开放。不要试图使用uris存储任何机密信息。而是需要保护由uris指向的文件。
+
+:target{#distdata}
+
+### DistData
+
+我们称组件消费和生成的所有数据为DistData，即分布式数据，这意味着它由不同参与方拥有的多个部分组成。
+
+不要将此概念与数据库系统中的数据分区混淆。在这样的系统中，将大型数据集分成放置在不同计算机上的几个小分区是非常常见的。但是，对于分区没有所有者的限制，这意味着选择哪个计算机来放置分区是随机的。
+
+在隐私保护系统中，有些模型和表被分裂，分区由不同的参与方拥有。<strong>DistData</strong> 的一个分区称为 <strong>DataRef</strong> 。
+
+为了简化，即使只有一个分区（甚至没有），我们也将所有数据都视为 DistDatas。
+
+除了 DataRef之外，DistData 还包含 meta，用于存储不同类型DistData的任何额外公共信息。我们还提出了一些常见的 DistData 类型，包括垂直表和个体表。
+
+<strong>DistData</strong> 是公开的，对所有参与方开放，同样不要将任何机密信息存储到 <strong>DistData</strong> 中。
+
+:target{#component}
+
+## Component
+
+定义在comp.proto中。
+
+:target{#attributedef}
+
+### AttributeDef
+
+我们将组件的所有属性组织为属性树。树的叶子被称为 Atomic Attributes，它们代表用户填写的实体字段，例如桶大小或学习率。树的非叶节点称为 Attribute Group。有两种属性组：
+
+- Struct Group：该组的所有子项需要一起填写。
+- Union Group：从组中选择一个子项填写。
+
+Attribute Group的子项可以是另一个Attribute Group。
+
+<strong>AttributeDef</strong> 表示组件属性树的节点。
+
+<Container type="note">
+  <strong>Attribute Groups</strong> 是组件属性声明中的高级用法。只有少部分受众可能会在某一天利用此功能。只有您需要组织属性组时，才需要了解 <strong>Attribute Groups</strong>。
+</Container>
+
+对于 <strong>Atomic Attributes</strong> ，您应该查看 <strong>AtomicAttrDesc</strong> 来指定属性类型、默认值、允许的值范围等。
+
+对于 Union Group，应使用 UnionAttrGroupDesc 来指定子项的默认选择。
+
+如果要构建属性树，您可以使用 <strong>prefixes</strong> 来指示属性树节点的父级。
+
+:target{#iodef}
+
+### IoDef
+
+IoDef 用于指定组件的输入或输出要求。您应该使用 types 来声明所接受的 <strong>DistData</strong> 的类型。
+
+对于表格 <strong>DistDatas</strong> ，我们发现许多 SecretFlow 应用程序需要用户选择列并为每个所选列填写额外的属性，这可以通过 <strong>TableAttrDef</strong> 满足
+
+<Container type="note">
+  同样，您可以在此时忽略 <strong>TableAttrDef</strong>，因为它不常用。
+</Container>
+
+:target{#componentdef}
+
+### ComponentDef
+
+您可以使用 ComponentDef 定义组件：
+
+- domain：组件的命名空间。
+- name：应在命名空间内唯一。
+- version：组件版本与组件列表版本不同。
+- attrs，inputs 和 outputs。
+
+只有domain、name和version的元组才能定位组件。
+
+:target{#complistdef}
+
+### CompListDef
+
+一组组件可以由 <strong>CompListDef</strong> 组织。SecretFlow 组件列表是 <strong>CompListDef</strong> 的一个实例。
+
+:target{#secretflow-cluster}
+
+## SecretFlow 集群
+
+定义在 cluster.proto 中。
+
+<Container type="note">
+  SecretFlow 集群协议不适用于其他隐私保护应用程序。
+</Container>
+
+:target{#sfclusterdesc}
+
+### SFClusterDesc
+
+SFClusterDesc 存储 SecretFlow 集群的固有属性，包括：
+
+- SecretFlow 版本
+- Python 版本
+- 参与计算的参与方
+- 用于保护设备安全的安全配置，如 SPU 设备的协议。
+
+我们之所以将 SFClusterDesc 视为固有属性，是因为 SFClusterDesc 对于数据安全和完整性非常重要。例如，只有当两个集群的 SFClusterDesc 兼容时，一个集群生成的 DistData 才能被另一个集群使用。
+
+SFClusterDesc 是 <strong>SystemInfo</strong> 的一部分。
+
+:target{#storageconfig}
+
+### StorageConfig
+
+<strong>StorageConfig</strong> 指定参与方的存储根目录。它可以是本地文件路径、数据库表或 OSS 存储桶。
+
+:target{#sfclusterconfig}
+
+### SFClusterConfig
+
+<strong>SFClusterConfig</strong> 包含所有设置 SecretFlow 集群所需的信息，除了 <strong>SFClusterDesc</strong> ，它包含公共配置和私有配置。
+
+<strong>PublicConfig</strong> 应该向所有参与方公开，包括：
+
+- RayFed 的地址。参与方需要此信息以相互通信。
+- SPU 设备的地址。所有参与方的 SPU 运行时都需要此信息以连接设备。
+
+<strong>PrivateConfig</strong> 对于每个参与方都是唯一的，包括：
+
+- self\_party：我是谁？
+- ray\_head\_addr：Ray 集群的地址。
+- storage\_config：参与方的存储根目录。
+
+<Container type="note">
+  您可能对 storage\_config 是私有的感到惊讶，因为它似乎可以公开。嗯，SFClusterConfig 是启动 SecretFlow 集群所需的最小配置集，因此我们只需将 storage\_config 设为私有，因为没有必要广播每个人的存储根目录。
+</Container>
+
+:target{#secretflow-data-types}
+
+## SecretFlow Data Types
+
+基于 <strong>DistData</strong>，我们还为 SecretFlow 应用程序提出了一些常见类型。
+
+<strong>IndividualTable</strong>、<strong>VerticalTable</strong> 和 <strong>DeviceObjectCollection</strong> 定义在 data.proto 中。<strong>Report</strong> 定义在 report.proto 中。
+
+:target{#individualtable}
+
+### IndividualTable
+
+IndividualTable 是一个由一个参与方拥有的表，这意味着 DistData 的 data\_refs 字段中只有一个条目。IndividualTable 应该打包到 DistData 的 meta 字段中，其中包括 schema 和 num\_lines。
+
+:target{#verticaltable}
+
+### VerticalTable
+
+<strong>VerticalTable</strong> 是由多个参与方拥有的垂直分割表。<strong>VerticalTable</strong> 包含多个 schema。相应地，DistData 中应该有多个 data\_refs。
+
+:target{#deviceobjectcollection}
+
+### DeviceObjectCollection
+
+我们使用 <strong>DeviceObjectCollection</strong> 来处理 MPC 模型。稍后我们将为这部分提供更多细节。
+
+:target{#report}
+
+### Report
+
+<strong>Report</strong> 是一个完全公开的特殊 <strong>DistData</strong> ，不拥有任何 data\_ref。我们在大多数情况下使用 Report 来显示统计输出。
+
+Report 相关的protos包括：
+
+- Descriptions：显示多个只读字段分组。
+- Table：显示行数据。
+- Div: A division or a section of a page, consists of Descriptions, Tables or Divs.
+- Div：页面的一个部分或一个章节，由 Descriptions、Tables 或 Divs 组成。
+- Report：报告的顶层，由标签页组成。
+
+:target{#node-evalution}
+
+## 节点执行
+
+组件的运行时实例称为节点。我们使用 <strong>NodeEvalParam</strong> 来填写所有必需的属性和输入，并从节点中获取 <strong>NodeEvalResult</strong> 输出。
+
+:target{#nodeevalparam}
+
+### NodeEvalParam
+
+它包含：
+
+- domain、name、version：用于定位组件。
+- attr\_paths、attrs：组件的属性。
+- inputs：组件的输入，应该是 DistDatas。
+- output\_uris：每个输出的输出 URI。
+
+<Container type="note">
+  <strong>为什么每个输出只有一个 URI？</strong> 对于每个输出，只提供一个 URI。它将被所有参与方用于生成此输出 DistData 的所有 data\_ref。这看起来很奇怪，因为我们也可以会给每个参与方一个不同的 URI。然而，这不是一个好主意：
+
+  - 当我们有多个参与方时，输出 URI 列表会变得非常长。
+  - 每个参与方都完全控制存储根目录，他们可以在之后移动文件。我们希望保持我们的系统简单，并不投入任何精力进行文件系统管理。
+</Container>
+
+:target{#nodeevalresult}
+
+### NodeEvalResult
+
+它包含输出 DistDatas。

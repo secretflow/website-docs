@@ -1,0 +1,372 @@
+:target{#SPU隐私求交}
+
+# SPU隐私求交
+
+> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+隐私求交（[Private Set Intersection](https://en.wikipedia.org/wiki/Private_set_intersection)）是一种使用密码学方法，获取两份数据内容的交集的算法。PSI过程中不泄露任务交集以外的信息。
+
+在隐语中，SPU设备支持三种隐私求交算法：
+
+- [ECDH](https://ieeexplore.ieee.org/document/6234849/)：半诚实模型, 基于公钥密码学，适用于小数据集。
+- [KKRT](https://eprint.iacr.org/2016/799.pdf)：半诚实模型, 基于布谷鸟哈希（Cuckoo Hashing）以及高效不经意传输扩展（OT Extension），适用于大数据集。
+- [BC22PCG](https://eprint.iacr.org/2022/334)：半诚实模型, 基于随机相关函数生成器。
+
+在开始之前，我们需要初始化环境。以下三个节点 <code>alice</code>， <code>bob</code> 和 <code>carol</code> 是在一台机器上创建的，以模拟多个参与者。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+
+    sf.init(['alice', 'bob', 'carol'], address='local')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#准备数据集}
+
+## 准备数据集
+
+首先，我们需要一个数据集来构建垂直分区的场景。为了简单起见，我们在这里使用 [iris](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) 数据集。我们在其中添加两列，用于后续的单键和多键求交演示。
+
+- uid：唯一ID。
+- month：模拟每月生成样本的场景，前50%的样本在1月份生成，后50%的样本在2月份生成。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import numpy as np
+    from sklearn.datasets import load_iris
+
+    data, target = load_iris(return_X_y=True, as_frame=True)
+    data['uid'] = np.arange(len(data)).astype('str')
+    data['month'] = ['Jan'] * 75 + ['Feb'] * 75
+
+    data
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[2]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"sepal length (cm)"}</th><th>{"sepal width (cm)"}</th><th>{"petal length (cm)"}</th><th>{"petal width (cm)"}</th><th>{"uid"}</th><th>{"month"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"0"}</th><td>{"5.1"}</td><td>{"3.5"}</td><td>{"1.4"}</td><td>{"0.2"}</td><td>{"0"}</td><td>{"Jan"}</td>
+          </tr>
+
+          <tr>
+            <th>{"1"}</th><td>{"4.9"}</td><td>{"3.0"}</td><td>{"1.4"}</td><td>{"0.2"}</td><td>{"1"}</td><td>{"Jan"}</td>
+          </tr>
+
+          <tr>
+            <th>{"2"}</th><td>{"4.7"}</td><td>{"3.2"}</td><td>{"1.3"}</td><td>{"0.2"}</td><td>{"2"}</td><td>{"Jan"}</td>
+          </tr>
+
+          <tr>
+            <th>{"3"}</th><td>{"4.6"}</td><td>{"3.1"}</td><td>{"1.5"}</td><td>{"0.2"}</td><td>{"3"}</td><td>{"Jan"}</td>
+          </tr>
+
+          <tr>
+            <th>{"4"}</th><td>{"5.0"}</td><td>{"3.6"}</td><td>{"1.4"}</td><td>{"0.2"}</td><td>{"4"}</td><td>{"Jan"}</td>
+          </tr>
+
+          <tr>
+            <th>{"..."}</th><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td>
+          </tr>
+
+          <tr>
+            <th>{"145"}</th><td>{"6.7"}</td><td>{"3.0"}</td><td>{"5.2"}</td><td>{"2.3"}</td><td>{"145"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"146"}</th><td>{"6.3"}</td><td>{"2.5"}</td><td>{"5.0"}</td><td>{"1.9"}</td><td>{"146"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"147"}</th><td>{"6.5"}</td><td>{"3.0"}</td><td>{"5.2"}</td><td>{"2.0"}</td><td>{"147"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"148"}</th><td>{"6.2"}</td><td>{"3.4"}</td><td>{"5.4"}</td><td>{"2.3"}</td><td>{"148"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"149"}</th><td>{"5.9"}</td><td>{"3.0"}</td><td>{"5.1"}</td><td>{"1.8"}</td><td>{"149"}</td><td>{"Feb"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"150 rows × 6 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+在实际场景中，示例数据由每个参与者提供，求交的字段需提前约定：
+
+- 交集字段可以为单个字段，也可以为多个字段，需存在于对应方数据集中。
+- 交集字段必须是唯一的。如果存在重复数据，需要在求交前进行去重处理。
+
+For example, The following is the data provided by alice for PSI intersection, the intersection field is <code>uid</code> and <code>month</code>，we can see that \[1, ‘Jan’] is duplicated.
+
+```none
+alice.csv
+---------
+uid   month   c0
+1     Jan     5.8
+2     Jan     5.4
+1     Jan     5.8
+1     Feb     7.4
+```
+
+去重后的数据集如下
+
+```none
+alice.csv
+---------
+uid   month   c0
+1     Jan     5.8
+2     Jan     5.4
+1     Feb     7.4
+```
+
+我们对 iris 数据进行了 3 次随机采样，以模拟 <code>alice</code>、<code>bob</code> 和 <code>carol</code> 提供的数据，三个数据处于未对齐状态。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    import os
+
+    os.makedirs('.data', exist_ok=True)
+    da, db, dc = data.sample(frac=0.9), data.sample(frac=0.8), data.sample(frac=0.7)
+
+    da.to_csv('.data/alice.csv', index=False)
+    db.to_csv('.data/bob.csv', index=False)
+    dc.to_csv('.data/carol.csv', index=False)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#两方隐私求交}
+
+## 两方隐私求交
+
+我们在物理设备上虚拟化三个逻辑设备：
+
+- alice, bob: PYU设备，负责参与者的本地明文计算。
+- spu：SPU设备，由alice和bob组成，负责双方的密文计算。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    alice, bob = sf.PYU('alice'), sf.PYU('bob')
+    spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#单键隐私求交}
+
+### 单键隐私求交
+
+接下来，我们使用 <code>uid</code> 作为求交列来处理这两个数据，SPU提供 <code>psi\_csv</code> 函数， <code>psi\_csv</code> 将csv文件作为输入，并在求交后生成csv文件。默认协议为KKRT。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    input_path = {alice: '.data/alice.csv', bob: '.data/bob.csv'}
+    output_path = {alice: '.data/alice_psi.csv', bob: '.data/bob_psi.csv'}
+    spu.psi_csv('uid', input_path, output_path, 'alice')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+为了校验结果的正确性，我们使用 [pandas.DataFrame.join](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.join.html) 对da和db进行内部求交。可以看到，这两个数据已经根据\`\`uid\`\`对齐，并根据它们的字典顺序排序。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    import pandas as pd
+
+    df = da.join(db.set_index('uid'), on='uid', how='inner', rsuffix='_bob', sort=True)
+    expected = df[da.columns].astype({'uid': 'int64'}).reset_index(drop=True)
+
+    da_psi = pd.read_csv('.data/alice_psi.csv')
+    db_psi = pd.read_csv('.data/bob_psi.csv')
+
+    pd.testing.assert_frame_equal(da_psi, expected)
+    pd.testing.assert_frame_equal(db_psi, expected)
+
+    da_psi
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[6]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"sepal length (cm)"}</th><th>{"sepal width (cm)"}</th><th>{"petal length (cm)"}</th><th>{"petal width (cm)"}</th><th>{"uid"}</th><th>{"month"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"0"}</th><td>{"6.3"}</td><td>{"3.3"}</td><td>{"6.0"}</td><td>{"2.5"}</td><td>{"100"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"1"}</th><td>{"5.8"}</td><td>{"2.7"}</td><td>{"5.1"}</td><td>{"1.9"}</td><td>{"101"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"2"}</th><td>{"7.1"}</td><td>{"3.0"}</td><td>{"5.9"}</td><td>{"2.1"}</td><td>{"102"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"3"}</th><td>{"6.3"}</td><td>{"2.9"}</td><td>{"5.6"}</td><td>{"1.8"}</td><td>{"103"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"4"}</th><td>{"6.5"}</td><td>{"3.0"}</td><td>{"5.8"}</td><td>{"2.2"}</td><td>{"104"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"..."}</th><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td>
+          </tr>
+
+          <tr>
+            <th>{"101"}</th><td>{"5.6"}</td><td>{"2.7"}</td><td>{"4.2"}</td><td>{"1.3"}</td><td>{"94"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"102"}</th><td>{"5.7"}</td><td>{"2.9"}</td><td>{"4.2"}</td><td>{"1.3"}</td><td>{"96"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"103"}</th><td>{"6.2"}</td><td>{"2.9"}</td><td>{"4.3"}</td><td>{"1.3"}</td><td>{"97"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"104"}</th><td>{"5.1"}</td><td>{"2.5"}</td><td>{"3.0"}</td><td>{"1.1"}</td><td>{"98"}</td><td>{"Feb"}</td>
+          </tr>
+
+          <tr>
+            <th>{"105"}</th><td>{"5.7"}</td><td>{"2.8"}</td><td>{"4.1"}</td><td>{"1.3"}</td><td>{"99"}</td><td>{"Feb"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"106 rows × 6 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+:target{#多键隐私求交}
+
+### 多键隐私求交
+
+我们还可以使用多个字段来求交，下面演示了如何使用 <code>uid</code> 和 <code>month</code> 来求交两个数据。在实现方面，多个字段被连接成一个字符串，因此请确保没有重复的多列复合键。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    spu.psi_csv(['uid', 'month'], input_path, output_path, 'alice')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+类似地，我们使用 <code>panda.dataframe.join</code> 来验证结果的正确性，可以看到这两个数据已经根据 <code>uid</code> 和 <code>month</code> 对齐，并根据它们的字典序排序。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    df = da.join(db.set_index(['uid', 'month']), on=['uid', 'month'], how='inner', rsuffix='_bob', sort=True)
+    expected = df[da.columns].astype({'uid': 'int64'}).reset_index(drop=True)
+
+    da_psi = pd.read_csv('.data/alice_psi.csv')
+    db_psi = pd.read_csv('.data/bob_psi.csv')
+
+    pd.testing.assert_frame_equal(da_psi, expected)
+    pd.testing.assert_frame_equal(db_psi, expected)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#三方隐私求交}
+
+## 三方隐私求交
+
+接下来，我们添加第三方 <code>carol</code> ，并为其创建一个PYU设备，以及一个由三方构建的SPU设备。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    carol = sf.PYU('carol')
+    spu_3pc = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob', 'carol']))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+然后使用 <code>uid</code> 和 <code>month</code> 作为求交键来执行三方求交。目前三方隐私求交暂时只支持ECDH协议。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    input_path = {alice: '.data/alice.csv', bob: '.data/bob.csv', carol: '.data/carol.csv'}
+    output_path = {alice: '.data/alice_psi.csv', bob: '.data/bob_psi.csv', carol: '.data/carol_psi.csv'}
+    spu_3pc.psi_csv(['uid', 'month'], input_path, output_path, 'alice', protocol='ECDH_PSI_3PC')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+最后我们同样使用 <code>panda.dataframe.join</code> 来验证结果的正确性。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    keys = ['uid', 'month']
+    df = da.join(db.set_index(keys), on=keys, how='inner', rsuffix='_bob', sort=True).join(
+        dc.set_index(keys), on=keys, how='inner', rsuffix='_carol', sort=True)
+    expected = df[da.columns].astype({'uid': 'int64'}).reset_index(drop=True)
+
+    da_psi = pd.read_csv('.data/alice_psi.csv')
+    db_psi = pd.read_csv('.data/bob_psi.csv')
+    dc_psi = pd.read_csv('.data/carol_psi.csv')
+
+    pd.testing.assert_frame_equal(da_psi, expected)
+    pd.testing.assert_frame_equal(db_psi, expected)
+    pd.testing.assert_frame_equal(dc_psi, expected)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="What's-Next"}
+
+## What’s Next
+
+通过本教程，我们了解了如何通过SPU进行两方和三方数据求交。在得到数据交集后，我们可以对对齐的数据集进行机器学习建模。
+
+- [逻辑回归](lr_with_spu.mdx)：使用JAX在SPU上进行逻辑回归训练。
+- [神经网络](nn_with_spu.mdx)：用JAX在SPU上进行神经网络训练。
+- [拆分学习](split_learning_gnn.mdx)：使用TensorFlow进行神经网络拆分学习。

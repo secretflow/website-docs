@@ -1,0 +1,389 @@
+:target{#特征工程}
+
+# 特征工程
+
+> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+推荐使用 [jupyter](https://jupyter.org/) 运行本教程。
+
+Secretflow 提供了多种工具来分析数据集，以提高机器学习结果的质量。
+
+:target{#初始化}
+
+## 初始化
+
+初始化Secretflow，并创建alice/bob两个计算参与方兼数据提供方。
+
+> 💡 Before using preprocessing, you may need to get to know secretflow’s [DataFrame](../preprocessing/DataFrame.mdx).
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+
+    sf.init(['alice', 'bob'], address='local')
+    alice = sf.PYU('alice')
+    bob = sf.PYU('bob')
+
+    spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#准备Demo数据}
+
+## 准备Demo数据
+
+使用一组线性拟合数据作为示例。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
+    ```python
+    from secretflow.utils.simulation.datasets import load_linear
+
+    vdf = load_linear(parts={alice: (1, 4), bob: (18, 22)})
+
+    label_data = vdf["y"]
+    vdf = vdf.drop(columns="y")
+
+    print(f"orig ds in alice:\n {sf.reveal(vdf.partitions[alice].data)}")
+    print(f"orig ds in bob:\n {sf.reveal(vdf.partitions[bob].data)}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"orig ds in alice:\n             x1        x2        x3\n0    -0.514226  0.730010 -0.730391\n1    -0.725537  0.482244 -0.823223\n2     0.608353 -0.071102 -0.775098\n3    -0.686642  0.160470  0.914477\n4    -0.198111  0.212909  0.950474\n...        ...       ...       ...\n9995 -0.367246 -0.296454  0.558596\n9996  0.010913  0.629268 -0.384093\n9997 -0.238097  0.904069 -0.344859\n9998  0.453686 -0.375173  0.899238\n9999 -0.776015 -0.772112  0.012110\n\n[10000 rows x 3 columns]\norig ds in bob:\n            x18       x19       x20\n0     0.810261  0.048303  0.937679\n1     0.312728  0.526637  0.589773\n2     0.039087 -0.753417  0.516735\n3    -0.855979  0.250944  0.979465\n4    -0.238805  0.243109 -0.121446\n...        ...       ...       ...\n9995 -0.847253  0.069960  0.786748\n9996 -0.502486 -0.076290 -0.604832\n9997 -0.424209  0.434947  0.998955\n9998  0.914291 -0.473056  0.616257\n9999 -0.602927 -0.021368  0.885519\n\n[10000 rows x 3 columns]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#皮尔逊积矩相关系数}
+
+## 皮尔逊积矩相关系数
+
+皮尔逊积矩相关系数可以用来探查两个变量X/Y之间的线性相关性的强度。
+
+两个变量之间的皮尔逊积矩相关系数定义为两个变量的协方差除以其标准差的乘积：
+
+<Math>
+  $$
+  \rho_{X,Y}=\frac{cov(X, Y)}{\sigma_X \sigma_Y}=\frac{(X-\mu_X)(Y-\mu_Y)}{\sigma_X \sigma_Y}
+
+
+  $$
+</Math>
+
+<Math>
+  $$
+  \mu_X= \mathbb{E}(X), \sigma_X^2=\mathbb{E}[(X-\mathbb{E}(X))^2]=\mathbb{E}(X^2)-\mathbb{E}^2(X)
+
+
+  $$
+</Math>
+
+数据集中样本（特征）的皮尔逊积矩相关系数，通常用小写字母 r 表示：
+
+<Math>
+  $$
+  r=\frac{\sum^n_{i=1}(X_i-\bar{X})(Y_i-\bar{Y})}{\sqrt{\sum^n_{i=1}(X_i-\bar{X})^2} \sqrt{\sum^n_{i=1}(Y_i-\bar{Y})^2}}
+
+
+  $$
+</Math>
+
+其值介于-1与1之间。 <InlineMath>$r>0$</InlineMath> 对应两者正相关，反之为负相关； <InlineMath>$|r|$</InlineMath> 越大，相关程度越大。
+
+:target{#SSVertPearsonR}
+
+### SSVertPearsonR
+
+SecretFlow 的 <code>SSVertPearsonR</code> 模块可以用于探查垂直划分数据集的皮尔逊积矩相关系数，计算过程使用秘密分享协议保护。
+
+SSVertPearsonR will standardize input dataset first. After standardized, all features’ variance is 1 and the mean is 0, the calculation is simplified to:
+
+<Math>
+  $$
+  r=\frac{1}{n-1}X^TX
+
+
+  $$
+</Math>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats import SSVertPearsonR
+
+    v_pearsonr = SSVertPearsonR(spu)
+    corr = v_pearsonr.pearsonr(vdf)
+    print(f"corr: \n {corr}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"corr:\n [[ 1.0001000e+00  2.4262429e-03 -5.3907027e-03 -7.7360502e-04\n  -7.4419454e-03 -1.0678579e-02]\n [ 2.4262429e-03  1.0001000e+00 -5.4155029e-03 -2.0672032e-03\n   4.3277428e-03  3.7399144e-03]\n [-5.3907027e-03 -5.4155029e-03  1.0001000e+00  6.2504560e-03\n  -3.7937090e-03  7.3285382e-03]\n [-7.7360502e-04 -2.0672032e-03  6.2504560e-03  1.0001000e+00\n  -1.0416691e-02  1.0044558e-02]\n [-7.4419454e-03  4.3277428e-03 -3.7937090e-03 -1.0416691e-02\n   1.0001000e+00 -1.3045982e-02]\n [-1.0678579e-02  3.7399144e-03  7.3285382e-03  1.0044558e-02\n  -1.3045982e-02  1.0001000e+00]]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#方差扩大因子}
+
+## 方差扩大因子
+
+方差扩大因子 (VIF) 用于探查变量之间的多重共线性。在一个线性统计模型中，一个系数的方差扩大因子等于多元模型中该系数方差与一元模型中该系数方差的商，简单来说，就是解释变量（特征）之间存在多重共线性时的方差与不存在多重共线性时的方差之比。
+
+:target{#SSVertVIF}
+
+### SSVertVIF
+
+SecretFlow 的 <code>SSVertVIF</code> 模块可以用于探查垂直划分数据集的方差扩大因子，计算过程使用秘密分享协议保护。
+
+第j个特征的vif值为：
+
+<Math>
+  $$
+  VIF_j = (X^TX)^{-1}_{jj}(n-1)var(X_j)
+
+
+  $$
+</Math>
+
+注意：
+
+在秘密分享协议下计算矩阵逆开销非常大，所以这里使用牛顿迭代进行近似。
+
+当输入数据集中存在完全线性相关时， <InlineMath>$X^TX$</InlineMath> 矩阵不满秩， <InlineMath>$X^TX$</InlineMath> 矩阵逆的解析解不存在。
+
+statsmodels在完全线性相关列上计算的VIF为INF，意为无限大的相关性。而我们提供的模块会输出一个很大的值(>>1000)，也能正确的表示这些列之间存在很强的相关性。
+
+对于常量列，statsmodels的结果是NAN，我们的模块依然是很大的值(>>1000)，表明这个列在建模前需要被剔除。
+
+所以本模块的结果虽然无法和statemodels这类明文计算的结果完全一致，但依然能正确的反映出特征间的相关性。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[16]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats import SSVertVIF
+
+    v_vif = SSVertVIF(spu)
+    vif = v_vif.vif(vdf)
+    print(f"vif: \n{vif}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"vif:\n[0.9999169 0.9997679 0.9999169 0.9999169 1.0000659 1.0002149]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#线性模型/广义线性模型系数显著检验}
+
+## 线性模型/广义线性模型系数显著检验
+
+线性/逻辑回归变量显著性检验用于判断特征（解释变量）是否显著，即自变量是否能有效预测因变量的变化，从而判断对应的解释变量是否应被包含在模型中。
+
+:target{#线性回归系数显著检验}
+
+### 线性回归系数显著检验
+
+对线性回归 <InlineMath>$y=Xω$</InlineMath> （X包含常数项），使用t检验来对回归项系数检验其值是否为零。
+
+其中：
+
+<Math>
+  $$
+  \hat{ω}=(X^T X)^{-1} X^T y=ω+(X^T X)^{-1} X^T ε
+
+
+  $$
+</Math>
+
+<Math>
+  $$
+  E(\hat{ω})=ω
+
+
+  $$
+</Math>
+
+<Math>
+  $$
+  Var(\hat{ω} )=σ^2 (X^T X)^{-1}
+
+
+  $$
+</Math>
+
+在最小二乘法5条假设都成立的情况下，统计量：
+
+<Math>
+  $$
+  t_j=\frac{\hat{ω}_j- ω_j}{s.e.(ω_j )}=\frac{\hat{ω}_j - ω_j}{\sqrt{\hat{σ}^2 (X^T X)_{jj}^{-1}}}  \sim t_{n-k}
+
+
+  $$
+</Math>
+
+其中，n为样本量，k为特征数
+
+检验的原假设和备择假设为：
+
+<Math>
+  $$
+   \begin{aligned}
+  & H_0:ω_j=0 (j=1,2,⋯,k) \\ & H_1:ω_j≠0
+  \end{aligned}
+  $$
+</Math>
+
+将检验的原假设带入 <InlineMath>$t_j$</InlineMath> ：
+
+<Math>
+  $$
+  t_j=\frac{\hat{ω}_j}{s.e.(ω_j )}=\frac{\hat{ω}_j}{\sqrt{\hat{σ}^2 (X^T X)_{jj}^{-1}}}  \sim t_{n-k}
+
+
+  $$
+</Math>
+
+:target{#逻辑回归系数显著检验}
+
+### 逻辑回归系数显著检验
+
+对于逻辑回归
+
+<Math>
+  $$
+   P(y=1|x)=π(x)=1/(1+e^{-ωx} ) \\
+  P(y=0|x)=1-π(x)=1/(1+e^{ωx} )
+  $$
+</Math>
+
+检验的原假设和备择假设为：
+
+<Math>
+  $$
+   \begin{aligned}
+  & H_0:ω_j=0 (j=1,2,⋯,k) \\
+  & H_1:ω_j≠0
+  \end{aligned}
+  $$
+</Math>
+
+Wald test <InlineMath>$Wald=(\hat{ω}_k/SE(\hat{ω}_k ) )^2$</InlineMath> 符合自由度为1的卡方分布。
+
+其中 <InlineMath>$SE(\hat{ω}_k )$</InlineMath> 是 <InlineMath>$ω_k$</InlineMath> 的标准误差, 为方差协方差矩阵的对角元素的平方根：
+
+<Math>
+  $$
+  SE(\hat{ω}_k )={Cov(\hat{ω}_{kk})}^{1/2}
+
+
+  $$
+</Math>
+
+模型参数的方差和协方差矩阵，为对数似然函数的Hessian矩阵的逆在 <InlineMath>$\hat{ω}$</InlineMath> 处的值：
+
+<Math>
+  $$
+  Cov(\hat{ω}) =H^{-1}=\frac{∂^2 l(ω)}{∂ω^2}|_{\hat{ω}}
+
+
+  $$
+</Math>
+
+其中：
+
+<Math>
+  $$
+  H_{kr}=\frac{∂^2l(ω)}{∂ω_k ∂ω_r}=∑_{i=1}^mx_{ik}π(x_i)[π(x_i )-1]x_{ir}
+
+
+  $$
+</Math>
+
+Hessian矩阵表示为 <InlineMath>$H=X^T A X$</InlineMath>， A矩阵为：
+
+<Math>
+  $$
+   \begin{aligned}
+  & A_{ii} = π(x_{i})[π(x_{i}) - 1] \\
+  & A_{ij} = 0 , i≠j
+  \end{aligned}
+  $$
+</Math>
+
+可得：
+
+<Math>
+  $$
+   \begin{aligned}
+  Wald & = (\hat{ω}_k/SE(\hat{ω}_k ) )^2 \\
+  & = \hat{ω}_k^2 /Cov(\hat{ω}_{kk}) \\
+  & = \hat{ω}_k^2 / H^{-1}_{kk} \\
+  & = \hat{ω}_k^2 / (X^T \Lambda X )^{-1}_{kk}
+  \end{aligned}
+  $$
+</Math>
+
+:target{#SSPValue}
+
+### SSPValue
+
+SecretFlow 的 <code>SSPValue</code> 模块可以用于探查模型的P-Value，计算过程使用秘密分享协议保护。
+
+线性回归模型：
+
+- 计算预测残差 <InlineMath>$\hat{ε}=Xω - y$</InlineMath>
+- 计算 <InlineMath>$\hat{σ}^2=\hat{ε}^T\hat{ε} /(n-k)$</InlineMath>
+- 通过牛顿迭代计算 <InlineMath>$(X^T X)^{-1}$</InlineMath>
+- <InlineMath>$t^2= ω^2 / \hat{σ}^2(X^T X)_{jj}^{-1}$</InlineMath>
+- <InlineMath>$p =2 * (1 - t_{n-k}.cdf(|t|))$</InlineMath>
+
+逻辑回归模型：
+
+- 计算 <InlineMath>$H=X^TAX$</InlineMath>
+- 通过牛顿迭代计算 <InlineMath>$H^{-1}$</InlineMath>
+- 计算 <InlineMath>$z^2=ω^2/H^{-1}_{kk}$</InlineMath>
+- <InlineMath>$p = 2 * (1 - norm.cdf(|z|))$</InlineMath>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[19]:" stderr={false} type="input">
+    ```python
+    from secretflow.stats import SSPValue
+    from secretflow.ml.linear.ss_sgd import SSRegression
+
+    # first, get a LR model
+    model = SSRegression(spu)
+    model.fit(
+        vdf,
+        label_data,
+        3,      # epochs
+        0.3,    # Learning rate
+        64,     # batch_size
+        't1',   # sig_type
+        'logistic',  # reg_type
+        'l2',   # penalty
+        0.5,    # l2_norm
+    )
+    spu_model = model.save_model()
+
+    sspv = SSPValue(spu)
+    pvalues = sspv.pvalues(vdf, label_data, spu_model)
+    print(f"logistic pvalue: \n{pvalues}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"logistic pvalue:\n[9.46532264e-08 0.00000000e+00 0.00000000e+00 0.00000000e+00\n 8.21281902e-07 0.00000000e+00 0.00000000e+00]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>

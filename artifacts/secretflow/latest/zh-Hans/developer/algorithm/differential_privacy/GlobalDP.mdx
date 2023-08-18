@@ -1,0 +1,48 @@
+:target{#differential-privacy-global-dp-in-federated-learning}
+
+# 差分隐私：联邦学习中的Global DP
+
+在联邦学习中，一个受信任的管理者以非中心方式聚合客户端的参数。最终收敛的模型将分发给所有客户端，在整个训练过程中各参与方数据无需共享。然而，这种方案容易受到差分攻击，并且可以从参与联邦优化的任意一方中进行。这种攻击可以揭露单个客户端在训练过程中的贡献甚至泄露其数据的相关信息。Global DP 是一个在联邦优化中对客户端进行差分隐私保护的算法。目的是隐藏单个客户端在训练过程中的贡献，并在隐私损失和模型精度中做平衡。
+
+:target{#preliminaries}
+
+## 预备知识
+
+我们对差分隐私随机化机制的定义与文献\[1]相同: 一个随机机制 <InlineMath>$M: D \rightarrow R$</InlineMath> , 它的可行域是 <InlineMath>$D$</InlineMath>，输出范围为 <InlineMath>$R$</InlineMath>。如果输入任意两个相邻数据集 <InlineMath>$d, d^{\prime} \in D$</InlineMath>，其任意的输出子集 <InlineMath>$S \subseteq R$</InlineMath> 满足 <InlineMath>$P[M(d) \in S] \leq e^{\epsilon}$</InlineMath>，则称该随机机制满足 <InlineMath>$(\epsilon, \delta)$</InlineMath>-differential在该定义中， <InlineMath>$\delta$</InlineMath> 为不满足 <InlineMath>$\epsilon$</InlineMath> 差分隐私的概率。
+
+高斯机制（GM）对一个具有差分隐私机制的实值函数进行扰动 <InlineMath>$f$</InlineMath> : <InlineMath>$D \rightarrow R$</InlineMath>。高斯机制添加校准的高斯噪声到函数数据集的敏感度 <InlineMath>$S_{f}$</InlineMath> 中。该敏感度被定义为两个相邻数据集 <InlineMath>$d^{\prime}$</InlineMath> 和 <InlineMath>$d$</InlineMath> 的绝对距离 <InlineMath>$\left\|f(d)-f\left(d^{\prime}\right)\right\|_{2}$</InlineMath>。高斯机制被定义为 <InlineMath>$M(d)=f(d)+\mathcal{N}\left(0, \sigma^{2} S_{f}^{2}\right)$</InlineMath>, 其中 <InlineMath>$\sigma$</InlineMath> 为噪声乘子。
+
+我们知道 <InlineMath>$\epsilon$</InlineMath> 或者 <InlineMath>$\sigma$</InlineMath> 可以被固定，并且使用一个查询操作来对高斯机制关于 <InlineMath>$f(d)$</InlineMath> 的一个单一的近似进行评估。我们假设 <InlineMath>$\epsilon$</InlineMath> 被固定。然后，我们可以根据 <InlineMath>$\delta \leq \frac{4}{5} \exp \left(-(\sigma \epsilon)^{2} /2 \right)$</InlineMath> 给出 <InlineMath>$\epsilon$</InlineMath> -DP被攻击的概率上界(文献\[2]中的定理3.22)。应该注意到 <InlineMath>$\delta$</InlineMath> 随着对高斯机制的连续查询次数的增多而增长。因此，为了保护隐私，需要持续对 <InlineMath>$\delta$</InlineMath> 保持追踪。一旦达到关于 <InlineMath>$\delta$</InlineMath> 的一个确定的阈值，高斯机制将不能再回答任何新的查询。
+
+最近，文献\[1]提出了一种差分隐私随机梯度下降算法（dp-SGD）, dp-SGD与最小批次梯度下降算法类似，但是梯度平均步长通过高斯机制来扰动。此外，批量是通过数据的随机抽样分配的。因为如果 <InlineMath>$\epsilon$</InlineMath> 被固定，隐私记录可以对 <InlineMath>$\delta$</InlineMath> 进行持续追踪，一旦达到某个阈值时停止训练。换言之，一旦学习模型泄露某个数据是否属于训练集的概率超过了某一阈值，训练将会被停止。
+
+:target{#method}
+
+## 方法
+
+联邦学习中的Global DP将随机化机制加入其中\[4]。然而，与文献\[1]不同，Global DP的目的不是在模型学习时保护单一数据的贡献。它的目的是保护客户端的整个数据集。即，确保在非中心化训练中，学习模型将不会泄露一个客户端是否参与了训练，同时保持模型较优的精度表现。
+
+在联邦优化\[5]框架中，在每一轮通信后，中心管理者对客户端模型进行了平均（例如对权重矩阵进行平均）。Global DP将使用一个随机化机制改变和扰动该平均。这样做的目的是在聚合中隐藏单个客户端的贡献，从而在整个非中心化的学习过程中隐藏。用于扰动平均的随机化机制由两个步骤组成：
+
+1. 随机子采样(Random sub-sampling)：设 <InlineMath>$K$</InlineMath> 是客户端总数。在每一轮通信中，随机采样 <InlineMath>$m_{t} \leq K$</InlineMath> 个客户端组成随机子集 <InlineMath>$Z_{t}$</InlineMath>。然后，管理者将中心模型 <InlineMath>$w_{t}$</InlineMath> 同步给 <InlineMath>$Z_{t}$</InlineMath> 中的客户端。各个客户端基于它们自身的数据对中心模型进行优化，则 <InlineMath>$Z_{t}$</InlineMath> 中的客户端拥有了互不相同的本地模型 <InlineMath>$\left\{w^{k}\right\}_{k=0}^{m_{t}}$</InlineMath>。优化后的本地模型和中心模型之间的差异被称为客户端 <InlineMath>$k$</InlineMath> 的更新 <InlineMath>$\Delta w^{k}=w^{k}-w_{t}$</InlineMath>。然后，该更新值被发送给中心管理者。
+2. 扰动(Distorting)：在这里我们使用高斯机制来扰动有更新的和。这需要我们了解集合相对于求和运算的敏感度。我们通过使用真实更新值的缩放来计算敏感度：<InlineMath>$\triangle \bar{w}^{k}= \triangle w^{k} / \max \left(1, \frac{\left\|\Delta w^{k}\right\|_{2}}{S}\right)$</InlineMath>。因此，缩放后梯度相对于求和操作的灵敏度上限为 <InlineMath>$S$</InlineMath> 。高斯机制将噪声添加到所有缩放后的更新值之和中。将高斯机制的输出除以 <InlineMath>$m_{t}$</InlineMath> 可以得到所有客户端更新的真实平均值的扰动值。将此扰动后的更新值添加到当前中心模型可以避免关于单个客户端的重要信息的泄露。 <InlineMath>$w_{t}$</InlineMath> 中，可以得到新的中心模型 <InlineMath>$w_{t+1}=w_{t}+\frac{1}{m_{t}}(\overbrace{\sum_{k=0}^{m_{t}} \triangle w^{k} / \max \left(1, \frac{\left\|\triangle w^{k}\right\|_{2}}{S}\right)}^{\text {Sum of updates clipped at } S}+\overbrace{\mathcal{N}\left(0, \sigma^{2} S^{2}\right)}^{\text {Noise scaled to } S})$</InlineMath>。
+
+为了追踪隐私损失，我们使用了由Abadi等人\[3]提出的方法。这种计算方法提供了关于已有隐私损失更紧的界，相比于标准的组合定理（文献\[2]中的3.14）。管理者每次同步新模型时，将会基于给定的 <InlineMath>$\sigma$</InlineMath> 去评估 <InlineMath>$\epsilon$</InlineMath>。一旦 <InlineMath>$\epsilon$</InlineMath> 达到某个确定的阈值，训练将停止。为了确保许多人的隐私保护不是以泄露有关少数几个信息为代价的，我们必须确保 <InlineMath>$\delta \ll \frac{1}{K}$</InlineMath> ，更多细节见文献\[2]的2.3节。
+
+:target{#ref}
+
+## Ref
+
+\[1] M. Abadi, A. Chu, I. Goodfellow, H. Brendan McMahan, I. Mironov, K.
+Talwar, and L. Zhang. Deep Learning with Differential Privacy. ArXiv
+e-prints, 2016.
+
+\[2] C. Dwork and A. Roth. The algorithmic foundations of differential
+privacy. Found. Trends Theor. Comput. Sci., 9(3–4):211–407, Aug. 2014.
+
+\[3] Mironov I. Rényi differential privacy\[C]//2017 IEEE 30th computer
+security foundations symposium (CSF). IEEE, 2017: 263-275.
+
+\[4] Geyer R C, Klein T, Nabi M. Differentially private federated
+learning: A client level perspective\[J]. arXiv preprint
+arXiv:1712.07557, 2017.

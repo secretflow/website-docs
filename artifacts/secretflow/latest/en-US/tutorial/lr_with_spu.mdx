@@ -1,0 +1,317 @@
+:target{#Logistic-Regression-with-SPU}
+
+# Logistic Regression with SPU
+
+> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+[SPU](https://www.secretflow.org.cn/docs/spu/en/) is a domain specific compiler and runtime suite, which provides provable secure computation service. SPU compiler uses [XLA](https://www.tensorflow.org/xla) as its front-end IR, which supports diverse AI framework (like Tensorflow, JAX and PyTorch). SPU compiler translates XLA to an IR which could be interpreted by the SPU runtime. Currently SPU team highly recommends using [JAX](https://github.com/google/jax) as the frontend.
+
+:target{#Learning-Objectives:}
+
+## Learning Objectives:
+
+After doing this lab, you’ll know how to:
+
+- How to write a Logistic Regression trainning program with JAX.
+- How to convert a JAX program to an SPU(MPC) program painlessly.
+
+In this lab, we select [Breast Cancer](https://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+\(diagnostic\)) as the dataset. We need to decide whether cancer is malignant or benign with 30 features. In the MPC program, two parties will train the model jointly and each party would provide half of features(15).
+
+While, first, let’s just forget MPC settings and just write a Logistic Regression training program with JAX directly.
+
+:target{#Train-a-model-with-JAX}
+
+## Train a model with JAX
+
+:target{#Load-the-Dataset}
+
+### Load the Dataset
+
+We are going to split the whole dataset into train and test subsets after normalization with <code>breast\_cancer</code>. \* if <code>train</code> is <code>True</code>, returns train subsets. In order to simulate training with vertical dataset splitting, the <code>party\_id</code> is provided. \* else, returns test subsets.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    import numpy as np
+    from sklearn.datasets import load_breast_cancer
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import Normalizer
+
+
+    def breast_cancer(party_id=None, train: bool = True) -> (np.ndarray, np.ndarray):
+        x, y = load_breast_cancer(return_X_y=True)
+        x = (x - np.min(x)) / (np.max(x) - np.min(x))
+        x_train, x_test, y_train, y_test = train_test_split(
+            x, y, test_size=0.2, random_state=42
+        )
+
+        if train:
+            if party_id:
+                if party_id == 1:
+                    return x_train[:, :15], _
+                else:
+                    return x_train[:, 15:], y_train
+            else:
+                return x_train, y_train
+        else:
+            return x_test, y_test
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Define-the-Model}
+
+### Define the Model
+
+First, let’s define the loss function, which is a negative log-likelihood in our case.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import jax.numpy as jnp
+
+
+    def sigmoid(x):
+        return 1 / (1 + jnp.exp(-x))
+
+
+    # Outputs probability of a label being true.
+    def predict(W, b, inputs):
+        return sigmoid(jnp.dot(inputs, W) + b)
+
+
+    # Training loss is the negative log-likelihood of the training examples.
+    def loss(W, b, inputs, targets):
+        preds = predict(W, b, inputs)
+        label_probs = preds * targets + (1 - preds) * (1 - targets)
+        return -jnp.mean(jnp.log(label_probs))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Second, let’s define a single train step with SGD optimizer. Just to remind you, x1 represents 15 features from one party while x2 represents the other 15 features from the other party.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    from jax import grad
+
+
+    def train_step(W, b, x1, x2, y, learning_rate):
+        x = jnp.concatenate([x1, x2], axis=1)
+        Wb_grad = grad(loss, (0, 1))(W, b, x, y)
+        W -= learning_rate * Wb_grad[0]
+        b -= learning_rate * Wb_grad[1]
+        return W, b
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Last, let’s build everything together as a <code>fit</code> method which returns the model and losses of each epoch.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    def fit(W, b, x1, x2, y, epochs=1, learning_rate=1e-2):
+        for _ in range(epochs):
+            W, b = train_step(W, b, x1, x2, y, learning_rate=learning_rate)
+        return W, b
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Validate-the-Model}
+
+### Validate the Model
+
+We could use the AUC to validate a binary classification model.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    from sklearn.metrics import roc_auc_score
+
+
+    def validate_model(W, b, X_test, y_test):
+        y_pred = predict(W, b, X_test)
+        return roc_auc_score(y_test, y_pred)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Have-a-try!}
+
+### Have a try!
+
+Let’s put everything we have together and train a LR model!
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    %matplotlib inline
+
+    # Load the data
+    x1, _ = breast_cancer(party_id=1,train=True)
+    x2, y = breast_cancer(party_id=2,train=True)
+
+    # Hyperparameter
+    W = jnp.zeros((30,))
+    b = 0.0
+    epochs = 10
+    learning_rate = 1e-2
+
+    # Train the model
+    W, b = fit(W, b, x1, x2, y, epochs=10, learning_rate=1e-2)
+
+    # Validate the model
+    X_test, y_test = breast_cancer(train=False)
+    auc=validate_model(W,b, X_test, y_test)
+    print(f'auc={auc}')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"auc=0.9878807730101539\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Just remember the AUC here since we would like to do the similar thing with SPU!
+
+:target{#Train-a-Model-with-SPU}
+
+## Train a Model with SPU
+
+At this part, we are going to show you how to do the similar training with MPC securely!
+
+:target{#Init-the-Environment}
+
+### Init the Environment
+
+We are going to init three virtual devices on our physical environment. - alice, bob：Two PYU devices for local plaintext computation. - spu：SPU device consists with alice and bob for MPC secure computation.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+
+    sf.init(['alice', 'bob'], address='local')
+
+    alice, bob = sf.PYU('alice'), sf.PYU('bob')
+    spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#id1}
+
+### Load the Dataset
+
+we instruct alice and bob to load the train subset respectively.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    x1, _ = alice(breast_cancer)(party_id=1)
+    x2, y = bob(breast_cancer)(party_id=2)
+
+    x1, x2, y
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="output">
+    <pre>
+      {"(<secretflow.device.device.pyu.PYUObject at 0x7f74b6586a30>,\n <secretflow.device.device.pyu.PYUObject at 0x7f74b58fd6d0>,\n <secretflow.device.device.pyu.PYUObject at 0x7f74b58fd8e0>)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Before training, we need to pass hyperparamters and all data to SPU device. SecretFlow provides two methods: - secretflow\.to: transfer a PythonObject or DeviceObject to a specific device. - DeviceObject.to: transfer the DeviceObject to a specific device.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    device = spu
+
+    W = jnp.zeros((30,))
+    b = 0.0
+
+    W_, b_, x1_, x2_, y_ = (
+        sf.to(alice, W).to(device),
+        sf.to(alice, b).to(device),
+        x1.to(device),
+        x2.to(device),
+        y.to(device),
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Train-the-model}
+
+### Train the model
+
+Now we are ready to train a LR model with SPU. After training, losses and model are SPUObjects which are still secret.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    W_, b_ = device(
+        fit,
+        static_argnames=['epochs'],
+        num_returns_policy=sf.device.SPUCompilerNumReturnsPolicy.FROM_USER,
+        user_specified_num_returns=2,
+    )(W_, b_, x1_, x2_, y_, epochs=10, learning_rate=1e-2)
+
+    W_, b_
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="output">
+    <pre>
+      {"(<secretflow.device.device.spu.SPUObject at 0x7f7608ad88e0>,\n <secretflow.device.device.spu.SPUObject at 0x7f7608ad83a0>)\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime pid=1525949)"}</span>{" 2023-03-14 12:59:46.548 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 127\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=1525959)"}</span>{" 2023-03-14 12:59:46.548 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 127\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Reveal-the-result}
+
+### Reveal the result
+
+In order to check the trained model, we need to convert SPUObject(secret) to Python object(plaintext). SecretFlow provide <code>sf.reveal</code> to convert any DeviceObject to Python object.
+
+> Be care with <code>sf.reveal</code>，since it may result in secret leak。
+
+Finally, let’s validate the model with AUC.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    auc = validate_model(sf.reveal(W_), sf.reveal(b_), X_test, y_test)
+    print(f'auc={auc}')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"auc=0.987880773010154\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+You may find the model from SPU training program achieve the same AUC as JAX program.
+
+This is the end of lab.

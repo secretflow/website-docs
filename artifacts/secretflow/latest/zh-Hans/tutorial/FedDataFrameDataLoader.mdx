@@ -1,0 +1,340 @@
+:target{#在SecretFlow中加载csv数据}
+
+# 在SecretFlow中加载csv数据
+
+The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+这篇教程会通过几个示例来展示，如何在SecretFlow中加载CSV数据，进而可以利用SecretFlow进行数据处理，建模。
+
+:target{#设置}
+
+## 设置
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    %load_ext autoreload
+    %autoreload 2
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+    sf.init(['alice', 'bob', 'charlie'], address="local", log_to_driver=True)
+    alice, bob ,charlie = sf.PYU('alice'), sf.PYU('bob') , sf.PYU('charlie')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#接口介绍}
+
+## 接口介绍
+
+我们在SecretFlow中提供了类似于<code>pandas.read\_csv</code>的接口来将各方数据的CSV读取成为一个联邦概念的统一的数据。
+
+- 对于水平场景有 <code>secretflow\.horizontal.read\_csv</code> [API](https://www.secretflow.org.cn/docs/secretflow/en/source/secretflow.data.horizontal.html#secretflow.data.horizontal.read_csv) 。
+- 对于垂直场景有 <code>secretflow\.vertical.read\_csv</code> [API](https://www.secretflow.org.cn/docs/secretflow/en/source/secretflow.data.horizontal.html#secretflow.data.vertical.read_csv) 。
+
+通过read\_csv可以读取多方的csv文件，构成一个FedDataFrame。
+
+<LineBlock>
+  <strong>构建联邦表</strong>
+
+  联邦表是一个跨多方的虚拟概念。
+</LineBlock>
+
+1. 联邦表中各方的数据存储在本地，不允许出域。
+2. 除了拥有数据的一方之外，没有人可以访问数据存储。
+3. 联邦表的任何操作都会由Driver调度给每个Worker，执行指令会逐层传递，直到特定拥有数据的Worker的Python Runtime。 框架确保只有 Worker.device 和 Object.device相同的时候才能够操作数据。
+4. 联合表旨在从中心角度管理和操作多方数据
+5. 接口方面和 <code>pandas.DataFrame</code> 对齐，以降低多方数据操作的成本。
+
+![vdataframe.png](../_assets/vdataframe.png)
+
+:target{#数据下载，分割}
+
+## 数据下载，分割
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    %%capture
+    %%!
+    wget https://secretflow-data.oss-accelerate.aliyuncs.com/datasets/iris/iris.csv
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    import pandas as pd
+    alldata_df = pd.read_csv("./iris.csv")
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    len(alldata_df)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="output">
+    <pre>
+      {"150\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    h_alice_df = alldata_df.loc[:70]
+    h_bob_df = alldata_df.loc[70:]
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+将水平拆分后的dataframe分别保存成csv。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    # save the data to local file system
+    import tempfile
+
+    _, h_alice_path = tempfile.mkstemp()
+    _, h_bob_path = tempfile.mkstemp()
+    h_alice_df.to_csv(h_alice_path, index=False)
+    h_bob_df.to_csv(h_bob_path, index=False)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    v_alice_df = alldata_df.loc[:,['sepal_length','sepal_width']]
+    v_bob_df = alldata_df.loc[:,['petal_length','petal_width','class']]
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+将垂直拆分后的dataframe分别保存成csv。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    # save the data to local file system
+    _, v_alice_path = tempfile.mkstemp()
+    _, v_bob_path = tempfile.mkstemp()
+    v_alice_df.to_csv(v_alice_path, index=True, index_label="id")
+    v_bob_df.to_csv(v_bob_path, index=True, index_label="id")
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#接下来我们以水平为例介绍如何加载csv数据}
+
+## 接下来我们以水平为例介绍如何加载csv数据
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    from secretflow.data.horizontal import read_csv
+    from secretflow.security.aggregation.plain_aggregator import PlainAggregator
+    from secretflow.security.compare.plain_comparator import PlainComparator
+    from secretflow.data.split import train_test_split
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+首先准备好两方的数据csv文件,水平场景要求两方的schema是一致的。
+
+- Alice: datapath (the local path accessible on Alice’s machine)
+- Bob: datapath (the local path accessible on Bob’s machine)
+
+因为水平场景相同schema的数据分布在多方，所以在进行一些dataframe操作的时候需要跨域计算。read\_csv接口需要传入<code>aggregator</code>和<code>comparator</code>,我们可以在计算的时候指定<code>安全聚合器</code>和<code>安全比较器</code>来对数据隐私进行保护。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    path_dict = {
+        alice: h_alice_path,
+        bob: h_bob_path
+    }
+
+    aggregator = PlainAggregator(charlie)
+    comparator = PlainComparator(charlie)
+
+    hdf = read_csv(filepath=path_dict, aggregator = aggregator, comparator = comparator)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
+    ```python
+    hdf.columns
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="output">
+    <pre>
+      {"Index(['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'class'], dtype='object')\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+参考文档[使用FedDataFrame进行数据预处理](https://www.secretflow.org.cn/docs/secretflow/en/tutorial/data_preprocessing_with_data_frame.html)：
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
+    ```python
+    label = hdf["class"]
+    data = hdf.drop(columns="class")
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+得到的<code>data</code>和<code>label</code>即可以作为输入传入FLModel或者SLModel进行建模。
+
+隐语提供了train\_test\_split可以对数据进行拆分。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
+    ```python
+    train_data,test_data = train_test_split(data,train_size=0.8,shuffle=True,random_state=1234)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
+    ```python
+    print(train_data.partition_shape(),test_data.partition_shape())
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"{alice: (56, 4), bob: (64, 4)} {alice: (15, 4), bob: (16, 4)}\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#接下来我们以垂直为例介绍如何加载csv数据}
+
+## 接下来我们以垂直为例介绍如何加载csv数据
+
+首先准备好两方的数据csv文件,垂直场景两方数据并不强制要求对齐，我们在<code>read\_csv</code>接口中提供了PSI的能力。
+
+- Alice: datapath (The local path accessible on Alice’s machine)
+- Bob: datapath (The local path accessible on Bob’s machine)
+
+垂直场景是各方的schema不同，但是每一方都拥有每一个column的全部数据。不再需要比较器和聚合器。但是各方数据不一定是对齐的，我们需要在读取时候通过<code>PSI</code>来进行数据对齐。
+
+- path\_dict：数据路径
+- spu: 用于求交使用的spu设备
+- keys: 用于求交的keys（支持多列求交）
+- drop\_keys: 求交后需要删去的ID列名
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[16]:" stderr={false} type="input">
+    ```python
+    spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[17]:" stderr={false} type="input">
+    ```python
+    spu
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[17]:" stderr={false} type="output">
+    <pre>
+      {"<secretflow.device.device.spu.SPU at 0x7f3b808347f0>\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
+    ```python
+    from secretflow.data.vertical import read_csv
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[19]:" stderr={false} type="input">
+    ```python
+    path_dict = {
+        alice: v_alice_path,# The path that alice can access
+        bob: v_bob_path # The path that bob can access
+    }
+
+    # Prepare the SPU device
+    spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
+
+    vdf = read_csv(path_dict,spu=spu,keys='id',drop_keys="id")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime pid=23157)"}</span>{" 2023-04-13 13:45:34.913 [error] [context.cc:operator():132] connect to rank=1 failed with error [external/yacl/yacl/link/transport/channel_brpc.cc:368] send, rpc failed=112, message=[E111]Fail to connect Socket{id=0 addr=127.0.0.1:44893} (0x0x55850693c900): Connection refused [R1][E112]Not connected to 127.0.0.1:44893 yet, server_id=0 [R2][E112]Not connected to 127.0.0.1:44893 yet, server_id=0 [R3][E112]Not connected to 127.0.0.1:44893 yet, server_id=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23518)"}</span>{" 2023-04-13 13:45:36.308 [error] [context.cc:operator():132] connect to rank=0 failed with error [external/yacl/yacl/link/transport/channel_brpc.cc:368] send, rpc failed=112, message=[E111]Fail to connect Socket{id=0 addr=127.0.0.1:24875} (0x0x562301a903c0): Connection refused [R1][E112]Not connected to 127.0.0.1:24875 yet, server_id=0 [R2][E112]Not connected to 127.0.0.1:24875 yet, server_id=0 [R3][E112]Not connected to 127.0.0.1:24875 yet, server_id=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23518)"}</span>{" 2023-04-13 13:45:37.312 [info] [bucket_psi.cc:Init:228] bucket size set to 1048576\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23518)"}</span>{" 2023-04-13 13:45:37.312 [info] [bucket_psi.cc:Run:97] Begin sanity check for input file: /tmp/tmp0y82frfo, precheck_switch:true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23518)"}</span>{" 2023-04-13 13:45:37.313 [info] [csv_checker.cc:CsvChecker:121] Executing duplicated scripts: LC_ALL=C sort --buffer-size=1G --temporary-directory=/tmp --stable selected-keys.1681364737312870835 | LC_ALL=C uniq -d > duplicate-keys.1681364737312870835\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23518)"}</span>{" 2023-04-13 13:45:37.316 [info] [bucket_psi.cc:Run:115] End sanity check for input file: /tmp/tmp0y82frfo, size=150\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23518)"}</span>{" 2023-04-13 13:45:37.316 [info] [bucket_psi.cc:Run:133] Skip doing psi, because dataset has been aligned!\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23518)"}</span>{" 2023-04-13 13:45:37.316 [info] [bucket_psi.cc:Run:178] Begin post filtering, indices.size=150, should_sort=true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23518)"}</span>{" 2023-04-13 13:45:37.317 [info] [utils.cc:MultiKeySort:88] Executing sort scripts: tail -n +2 /tmp/tmp-sort-in-1681364737316884224 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>/tmp/tmp-sort-out-1681364737316884224\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23518)"}</span>{" 2023-04-13 13:45:37.320 [info] [utils.cc:MultiKeySort:90] Finished sort scripts: tail -n +2 /tmp/tmp-sort-in-1681364737316884224 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>/tmp/tmp-sort-out-1681364737316884224, ret=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23518)"}</span>{" 2023-04-13 13:45:37.320 [info] [bucket_psi.cc:Run:216] End post filtering, in=/tmp/tmp0y82frfo, out=/tmp/tmp0y82frfo.psi_output_94874\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23517)"}</span>{" 2023-04-13 13:45:37.312 [info] [bucket_psi.cc:Init:228] bucket size set to 1048576\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23517)"}</span>{" 2023-04-13 13:45:37.312 [info] [bucket_psi.cc:Run:97] Begin sanity check for input file: /tmp/tmp5xjv6qs8, precheck_switch:true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23517)"}</span>{" 2023-04-13 13:45:37.313 [info] [csv_checker.cc:CsvChecker:121] Executing duplicated scripts: LC_ALL=C sort --buffer-size=1G --temporary-directory=/tmp --stable selected-keys.1681364737313158626 | LC_ALL=C uniq -d > duplicate-keys.1681364737313158626\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23517)"}</span>{" 2023-04-13 13:45:37.316 [info] [bucket_psi.cc:Run:115] End sanity check for input file: /tmp/tmp5xjv6qs8, size=150\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23517)"}</span>{" 2023-04-13 13:45:37.316 [info] [bucket_psi.cc:Run:133] Skip doing psi, because dataset has been aligned!\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23517)"}</span>{" 2023-04-13 13:45:37.316 [info] [bucket_psi.cc:Run:178] Begin post filtering, indices.size=150, should_sort=true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23517)"}</span>{" 2023-04-13 13:45:37.316 [info] [utils.cc:MultiKeySort:88] Executing sort scripts: tail -n +2 /tmp/tmp-sort-in-1681364737316796390 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>/tmp/tmp-sort-out-1681364737316796390\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23517)"}</span>{" 2023-04-13 13:45:37.319 [info] [utils.cc:MultiKeySort:90] Finished sort scripts: tail -n +2 /tmp/tmp-sort-in-1681364737316796390 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>/tmp/tmp-sort-out-1681364737316796390, ret=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=23517)"}</span>{" 2023-04-13 13:45:37.319 [info] [bucket_psi.cc:Run:216] End post filtering, in=/tmp/tmp5xjv6qs8, out=/tmp/tmp5xjv6qs8.psi_output_94874\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[20]:" stderr={false} type="input">
+    ```python
+    vdf.columns
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[20]:" stderr={false} type="output">
+    <pre>
+      {"Index(['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'class'], dtype='object')\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[21]:" stderr={false} type="input">
+    ```python
+    label = vdf["class"]
+    data =  vdf.drop(columns="class")
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+同样这里也可以通过train\_test\_split来进行切分。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[22]:" stderr={false} type="input">
+    ```python
+    train_data,test_data = train_test_split(data,train_size=0.8,shuffle=True,random_state=1234)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#接下来，可以用自己的csv数据尝试一下}
+
+## 接下来，可以用自己的csv数据尝试一下

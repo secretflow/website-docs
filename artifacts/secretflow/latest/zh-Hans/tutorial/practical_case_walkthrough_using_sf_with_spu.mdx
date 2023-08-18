@@ -1,0 +1,1341 @@
+:target{#隐语SecretFlow实际场景MPC算法开发实践}
+
+# 隐语SecretFlow实际场景MPC算法开发实践
+
+> This tutorial is only available in Chinese.
+
+推荐使用<code>conda</code>创建一个新环境 > conda create -n sf python=3.8
+
+直接使用<code>pip</code>安装secretflow > pip install -U secretflow
+
+基于secretflow：<strong>0.8.2b2</strong>版本
+
+此代码示例主要是展示了如何基于secretflow以及SPU隐私计算设备完成一个实际的应用的开发，推荐先看前一个教程[spu\_basics](spu_basics.mdx)熟悉基本的SPU概念。
+
+:target{#任务介绍}
+
+## 任务介绍
+
+Vehicle Insurance Claim Fraud Detection
+
+该数据集来源于[kaggle](https://www.kaggle.com/datasets/shivamb/vehicle-claim-fraud-detection)，包含 - 车辆数据集-属性、模型、事故详细信息等 - 保单详细信息-保单类型、有效期等
+
+目标是检测索赔申请是否欺诈： 字段<code>FraudFound\_P</code> (0 or 1) 即为预测的target值，是一个典型的<strong>二分类场景</strong>。
+
+:target{#实验目标}
+
+## 实验目标
+
+在本次实验中，我们将会利用一个开源数据集在隐语上完成隐私保护的逻辑回归、神经网络模型和XGB模型。主要涉及到如下的几个流程： 1. 数据加载 2. 数据洞察 3. 数据预处理 4. 模型构建 5. 模型的训练与预测
+
+:target{#前置工作}
+
+## 前置工作
+
+:target{#Ray集群启动（多机部署）}
+
+### Ray集群启动（多机部署）
+
+考虑多机部署的情况，在启动secretflow之前需要先将ray集群启动。在header节点和worker节点上各自执行下述的指令。 > P.S. 启动集群之后，可以执行<code>ray status</code>看一下集群是否正确启动完成
+
+<strong>Header节点</strong>
+
+```bash
+RAY_DISABLE_REMOTE_CODE=true \
+ray start --head --node-ip-address="head_ip" --port="head_port" --resources='{"alice": 20}' --include-dashboard=False
+```
+
+<strong>Worker节点</strong>
+
+```bash
+RAY_DISABLE_REMOTE_CODE=true \
+ray start --address="head_ip:head_port" --resources='{"bob": 20}'
+```
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    # 如下是多机版初始化secretflow的代码，需要给出header节点的IP和PORT
+    # head_ip = "xxx"
+    # head_port = "xxx"
+    # sf.init(address=f'{head_ip}:{head_port}')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#单机部署}
+
+### 单机部署
+
+我们在此使用单机部署的方式做一个样例展示。 通过调用<code>sf.init()</code>我们实例化了一个ray集群，有5个节点，也就对应了5个物理设备。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+
+    sf.shutdown()
+    # Standalone Mode
+    sf.init(
+        ['alice', 'bob', 'carol', 'davy', 'eric'],
+        address='local'
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#定义明文计算设备PYU}
+
+### 定义明文计算设备PYU
+
+我们在启动了上述5个节点之后，明确隐语中的逻辑设备。这里我们将alice、bob、carol三方作为数据的提供方，可以本地执行明文计算，也就是 <strong>PYU (PYthon runtime Unit)</strong> 设备。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    alice = sf.PYU('alice')
+    bob = sf.PYU('bob')
+    carol = sf.PYU('carol')
+
+    print(alice)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"alice\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#定义密文计算设备SPU-(3PC)}
+
+### 定义密文计算设备SPU (3PC)
+
+进一步，我们以<strong>SPU (Secure Processing Unit)</strong> 为例，选择3个物理节点组成基于MPC（下例为三方的ABY3协议）的隐私计算设备。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    import spu
+    from secretflow.utils.testing import unused_tcp_port
+
+    aby3_cluster_def = {
+        'nodes': [
+            {
+                'party': 'alice',
+                'address': f'127.0.0.1:{unused_tcp_port()}',
+            },
+            {'party': 'bob', 'id': 'local:1', 'address': f'127.0.0.1:{unused_tcp_port()}'},
+            {
+                'party': 'carol',
+                'address': f'127.0.0.1:{unused_tcp_port()}',
+            },
+        ],
+        'runtime_config': {
+            'protocol': spu.spu_pb2.ABY3,
+            'field': spu.spu_pb2.FM64,
+        },
+    }
+
+    my_spu = sf.SPU(aby3_cluster_def)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#数据加载}
+
+## 数据加载
+
+:target{#Load-Data-(Mock)}
+
+### Load Data (Mock)
+
+在定义好隐语中的逻辑设备概念之后，我们演示一下如何进行数据的读入。这里使用一个mock的data load方法<code>get\_data\_mock()</code>做一个演示。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    def get_data_mock():
+        return 2
+
+    x_plaintext = get_data_mock()
+    print(f"x_plaintext: {x_plaintext}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"x_plaintext: 2\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+指定PYU设备读取数据
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    x_alice_pyu = alice(get_data_mock)()
+
+    print(f"Plaintext Python Object: {x_plaintext}, PYU object: {x_alice_pyu}")
+    print(f"Reveal PYU object: {sf.reveal(x_alice_pyu)}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Plaintext Python Object: 2, PYU object: <secretflow.device.device.pyu.PYUObject object at 0x7fcfba18db20>\nReveal PYU object: 2\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+PYU->SPU 数据转换
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    x_alice_spu = x_alice_pyu.to(my_spu)
+    print(f"SPU object: {x_alice_spu}")
+
+    print(f"Reveal SPU object: {sf.reveal(x_alice_spu)}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"SPU object: <secretflow.device.device.spu.SPUObject object at 0x7fd000234ca0>\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Reveal SPU object: 2\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Load-Data-(Distributed)}
+
+### Load Data (Distributed)
+
+我们下面考虑对一个实际应用场景的数据进行读取，也就是全集数据垂直分布在不同的参与方中。 > 出于演示的目的，我们这里将中心化的明文数据进行垂直分割的拆分，首先观察下此数据集的特征。
+
+:target{#读入明文全集数据}
+
+#### 读入明文全集数据
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    import os
+
+    """
+    Create dir to save dataset files
+    This will create a directory `data` to store the dataset file
+    """
+    if not os.path.exists('data'):
+        os.mkdir('data')
+
+    """
+    The original data is from Kaggle: https://www.kaggle.com/datasets/shivamb/vehicle-claim-fraud-detection.
+    We promise we only use the data for demo only.
+    """
+    path = "https://secretflow-data.oss-accelerate.aliyuncs.com/datasets/vehicle_nsurance_claim/fraud_oracle.csv"
+    if not os.path.exists('data/fraud_oracle.csv'):
+        res = os.system('cd data && wget {}'.format(path))
+        if res != 0:
+            raise Exception('File: {} download fails!'.format(path))
+    else:
+        print(f'File already downloaded.')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"File already downloaded.\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    from sklearn.model_selection import train_test_split
+    import pandas as pd
+
+    """
+    This should point to the data downloaded from Kaggle.
+    By default, the .csv file shall be in the data directory
+    """
+    full_data_path = 'data/fraud_oracle.csv'
+    df = pd.read_csv(full_data_path)
+    df.head()
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[9]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"Month"}</th><th>{"WeekOfMonth"}</th><th>{"DayOfWeek"}</th><th>{"Make"}</th><th>{"AccidentArea"}</th><th>{"DayOfWeekClaimed"}</th><th>{"MonthClaimed"}</th><th>{"WeekOfMonthClaimed"}</th><th>{"Sex"}</th><th>{"MaritalStatus"}</th><th>{"..."}</th><th>{"AgeOfVehicle"}</th><th>{"AgeOfPolicyHolder"}</th><th>{"PoliceReportFiled"}</th><th>{"WitnessPresent"}</th><th>{"AgentType"}</th><th>{"NumberOfSuppliments"}</th><th>{"AddressChange_Claim"}</th><th>{"NumberOfCars"}</th><th>{"Year"}</th><th>{"BasePolicy"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"0"}</th><td>{"Dec"}</td><td>{"5"}</td><td>{"Wednesday"}</td><td>{"Honda"}</td><td>{"Urban"}</td><td>{"Tuesday"}</td><td>{"Jan"}</td><td>{"1"}</td><td>{"Female"}</td><td>{"Single"}</td><td>{"..."}</td><td>{"3 years"}</td><td>{"26 to 30"}</td><td>{"No"}</td><td>{"No"}</td><td>{"External"}</td><td>{"none"}</td><td>{"1 year"}</td><td>{"3 to 4"}</td><td>{"1994"}</td><td>{"Liability"}</td>
+          </tr>
+
+          <tr>
+            <th>{"1"}</th><td>{"Jan"}</td><td>{"3"}</td><td>{"Wednesday"}</td><td>{"Honda"}</td><td>{"Urban"}</td><td>{"Monday"}</td><td>{"Jan"}</td><td>{"4"}</td><td>{"Male"}</td><td>{"Single"}</td><td>{"..."}</td><td>{"6 years"}</td><td>{"31 to 35"}</td><td>{"Yes"}</td><td>{"No"}</td><td>{"External"}</td><td>{"none"}</td><td>{"no change"}</td><td>{"1 vehicle"}</td><td>{"1994"}</td><td>{"Collision"}</td>
+          </tr>
+
+          <tr>
+            <th>{"2"}</th><td>{"Oct"}</td><td>{"5"}</td><td>{"Friday"}</td><td>{"Honda"}</td><td>{"Urban"}</td><td>{"Thursday"}</td><td>{"Nov"}</td><td>{"2"}</td><td>{"Male"}</td><td>{"Married"}</td><td>{"..."}</td><td>{"7 years"}</td><td>{"41 to 50"}</td><td>{"No"}</td><td>{"No"}</td><td>{"External"}</td><td>{"none"}</td><td>{"no change"}</td><td>{"1 vehicle"}</td><td>{"1994"}</td><td>{"Collision"}</td>
+          </tr>
+
+          <tr>
+            <th>{"3"}</th><td>{"Jun"}</td><td>{"2"}</td><td>{"Saturday"}</td><td>{"Toyota"}</td><td>{"Rural"}</td><td>{"Friday"}</td><td>{"Jul"}</td><td>{"1"}</td><td>{"Male"}</td><td>{"Married"}</td><td>{"..."}</td><td>{"more than 7"}</td><td>{"51 to 65"}</td><td>{"Yes"}</td><td>{"No"}</td><td>{"External"}</td><td>{"more than 5"}</td><td>{"no change"}</td><td>{"1 vehicle"}</td><td>{"1994"}</td><td>{"Liability"}</td>
+          </tr>
+
+          <tr>
+            <th>{"4"}</th><td>{"Jan"}</td><td>{"5"}</td><td>{"Monday"}</td><td>{"Honda"}</td><td>{"Urban"}</td><td>{"Tuesday"}</td><td>{"Feb"}</td><td>{"2"}</td><td>{"Female"}</td><td>{"Single"}</td><td>{"..."}</td><td>{"5 years"}</td><td>{"31 to 35"}</td><td>{"No"}</td><td>{"No"}</td><td>{"External"}</td><td>{"none"}</td><td>{"no change"}</td><td>{"1 vehicle"}</td><td>{"1994"}</td><td>{"Collision"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"5 rows × 33 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+:target{#数据三方垂直拆分}
+
+#### 数据三方垂直拆分
+
+我们首先对这个数据进行一个拆分的处理，来模拟一个数据垂直分割的三方场景：
+
+- alice持有前10个属性
+- bob持有中间的10个属性
+- carol持有剩下的所有属性以及标签值
+
+同时为了方便各方之间的样本做对齐，我们加了一个新的特征<code>UID</code>来标识数据样本。
+
+我们预先基于sklearn将全集数据拆分成训练集和测试集，方便后续进行模型训练效果的验证。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    train_alice_path = "data/alice_train.csv"
+    train_bob_path = "data/bob_train.csv"
+    train_carol_path = "data/carol_train.csv"
+
+    test_alice_path = "data/alice_test.csv"
+    test_bob_path = "data/bob_test.csv"
+    test_carol_path = "data/carol_test.csv"
+
+    def load_dataset_full(data_path):
+        df = pd.read_csv(data_path)
+        df = df.drop([0])
+        df = df.loc[df['DayOfWeekClaimed']!='0']
+        y = df['FraudFound_P']
+        X = df.drop(columns='FraudFound_P')
+        return X, y
+
+    def split_data():
+        x, y = load_dataset_full(full_data_path)
+        x_train, x_test, y_train, y_test = train_test_split(
+            x, y, test_size=0.3, random_state=10
+        )
+
+        print(x_train.shape)
+        train_alice_csv = x_train.iloc[:, :10]
+        train_bob_csv = x_train.iloc[:, 10:20]
+        train_carol_csv = pd.concat([x_train.iloc[:, 20:], y_train], axis=1)
+
+        train_alice_csv.to_csv(train_alice_path, index_label='UID')
+        train_bob_csv.to_csv(train_bob_path, index_label='UID')
+        train_carol_csv.to_csv(train_carol_path, index_label='UID')
+
+        print(x_test.shape)
+        test_alice_csv = x_test.iloc[:, :10]
+        test_bob_csv = x_test.iloc[:, 10:20]
+        test_carol_csv = pd.concat([x_test.iloc[:, 20:], y_test], axis=1)
+
+        test_alice_csv.to_csv(test_alice_path, index_label='UID')
+        test_bob_csv.to_csv(test_bob_path, index_label='UID')
+        test_carol_csv.to_csv(test_carol_path, index_label='UID')
+
+    split_data()
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"(10792, 32)\n(4626, 32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    alice_train_df = pd.read_csv(train_alice_path)
+    alice_train_df.head()
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[11]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"UID"}</th><th>{"Month"}</th><th>{"WeekOfMonth"}</th><th>{"DayOfWeek"}</th><th>{"Make"}</th><th>{"AccidentArea"}</th><th>{"DayOfWeekClaimed"}</th><th>{"MonthClaimed"}</th><th>{"WeekOfMonthClaimed"}</th><th>{"Sex"}</th><th>{"MaritalStatus"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"0"}</th><td>{"2853"}</td><td>{"Mar"}</td><td>{"4"}</td><td>{"Sunday"}</td><td>{"Toyota"}</td><td>{"Urban"}</td><td>{"Friday"}</td><td>{"Apr"}</td><td>{"1"}</td><td>{"Male"}</td><td>{"Married"}</td>
+          </tr>
+
+          <tr>
+            <th>{"1"}</th><td>{"7261"}</td><td>{"Apr"}</td><td>{"4"}</td><td>{"Saturday"}</td><td>{"Honda"}</td><td>{"Urban"}</td><td>{"Monday"}</td><td>{"Apr"}</td><td>{"4"}</td><td>{"Male"}</td><td>{"Married"}</td>
+          </tr>
+
+          <tr>
+            <th>{"2"}</th><td>{"9862"}</td><td>{"Jun"}</td><td>{"4"}</td><td>{"Sunday"}</td><td>{"Toyota"}</td><td>{"Rural"}</td><td>{"Monday"}</td><td>{"Jun"}</td><td>{"4"}</td><td>{"Female"}</td><td>{"Single"}</td>
+          </tr>
+
+          <tr>
+            <th>{"3"}</th><td>{"14037"}</td><td>{"Mar"}</td><td>{"2"}</td><td>{"Monday"}</td><td>{"Mazda"}</td><td>{"Urban"}</td><td>{"Monday"}</td><td>{"Mar"}</td><td>{"2"}</td><td>{"Male"}</td><td>{"Single"}</td>
+          </tr>
+
+          <tr>
+            <th>{"4"}</th><td>{"10199"}</td><td>{"Jun"}</td><td>{"3"}</td><td>{"Friday"}</td><td>{"Mazda"}</td><td>{"Urban"}</td><td>{"Tuesday"}</td><td>{"Jun"}</td><td>{"4"}</td><td>{"Female"}</td><td>{"Single"}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
+    ```python
+    bob_train_df = pd.read_csv(train_bob_path)
+    bob_train_df.head()
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[12]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"UID"}</th><th>{"Age"}</th><th>{"Fault"}</th><th>{"PolicyType"}</th><th>{"VehicleCategory"}</th><th>{"VehiclePrice"}</th><th>{"PolicyNumber"}</th><th>{"RepNumber"}</th><th>{"Deductible"}</th><th>{"DriverRating"}</th><th>{"Days_Policy_Accident"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"0"}</th><td>{"2853"}</td><td>{"39"}</td><td>{"Policy Holder"}</td><td>{"Sedan - All Perils"}</td><td>{"Sedan"}</td><td>{"20000 to 29000"}</td><td>{"2854"}</td><td>{"8"}</td><td>{"400"}</td><td>{"2"}</td><td>{"more than 30"}</td>
+          </tr>
+
+          <tr>
+            <th>{"1"}</th><td>{"7261"}</td><td>{"58"}</td><td>{"Policy Holder"}</td><td>{"Sedan - Liability"}</td><td>{"Sport"}</td><td>{"20000 to 29000"}</td><td>{"7262"}</td><td>{"4"}</td><td>{"400"}</td><td>{"4"}</td><td>{"more than 30"}</td>
+          </tr>
+
+          <tr>
+            <th>{"2"}</th><td>{"9862"}</td><td>{"28"}</td><td>{"Policy Holder"}</td><td>{"Sedan - All Perils"}</td><td>{"Sedan"}</td><td>{"less than 20000"}</td><td>{"9863"}</td><td>{"5"}</td><td>{"400"}</td><td>{"4"}</td><td>{"more than 30"}</td>
+          </tr>
+
+          <tr>
+            <th>{"3"}</th><td>{"14037"}</td><td>{"28"}</td><td>{"Policy Holder"}</td><td>{"Sedan - Collision"}</td><td>{"Sedan"}</td><td>{"20000 to 29000"}</td><td>{"14038"}</td><td>{"11"}</td><td>{"400"}</td><td>{"4"}</td><td>{"more than 30"}</td>
+          </tr>
+
+          <tr>
+            <th>{"4"}</th><td>{"10199"}</td><td>{"35"}</td><td>{"Policy Holder"}</td><td>{"Sedan - Collision"}</td><td>{"Sedan"}</td><td>{"20000 to 29000"}</td><td>{"10200"}</td><td>{"12"}</td><td>{"400"}</td><td>{"4"}</td><td>{"more than 30"}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
+    ```python
+    carol_train_df = pd.read_csv(train_carol_path)
+    carol_train_df.head()
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[13]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"UID"}</th><th>{"Days_Policy_Claim"}</th><th>{"PastNumberOfClaims"}</th><th>{"AgeOfVehicle"}</th><th>{"AgeOfPolicyHolder"}</th><th>{"PoliceReportFiled"}</th><th>{"WitnessPresent"}</th><th>{"AgentType"}</th><th>{"NumberOfSuppliments"}</th><th>{"AddressChange_Claim"}</th><th>{"NumberOfCars"}</th><th>{"Year"}</th><th>{"BasePolicy"}</th><th>{"FraudFound_P"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"0"}</th><td>{"2853"}</td><td>{"more than 30"}</td><td>{"1"}</td><td>{"7 years"}</td><td>{"36 to 40"}</td><td>{"No"}</td><td>{"No"}</td><td>{"External"}</td><td>{"more than 5"}</td><td>{"no change"}</td><td>{"1 vehicle"}</td><td>{"1994"}</td><td>{"All Perils"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"1"}</th><td>{"7261"}</td><td>{"more than 30"}</td><td>{"none"}</td><td>{"more than 7"}</td><td>{"51 to 65"}</td><td>{"No"}</td><td>{"No"}</td><td>{"External"}</td><td>{"1 to 2"}</td><td>{"no change"}</td><td>{"1 vehicle"}</td><td>{"1995"}</td><td>{"Liability"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"2"}</th><td>{"9862"}</td><td>{"more than 30"}</td><td>{"none"}</td><td>{"7 years"}</td><td>{"31 to 35"}</td><td>{"No"}</td><td>{"No"}</td><td>{"External"}</td><td>{"none"}</td><td>{"no change"}</td><td>{"1 vehicle"}</td><td>{"1995"}</td><td>{"All Perils"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"3"}</th><td>{"14037"}</td><td>{"more than 30"}</td><td>{"1"}</td><td>{"6 years"}</td><td>{"31 to 35"}</td><td>{"No"}</td><td>{"No"}</td><td>{"External"}</td><td>{"none"}</td><td>{"no change"}</td><td>{"1 vehicle"}</td><td>{"1996"}</td><td>{"Collision"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"4"}</th><td>{"10199"}</td><td>{"more than 30"}</td><td>{"none"}</td><td>{"5 years"}</td><td>{"31 to 35"}</td><td>{"No"}</td><td>{"No"}</td><td>{"Internal"}</td><td>{"none"}</td><td>{"no change"}</td><td>{"1 vehicle"}</td><td>{"1995"}</td><td>{"Collision"}</td><td>{"0"}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+:target{#三方数据加载}
+
+#### 三方数据加载
+
+注意：这里的接口里面需要显示地指明用于多方之间样本对齐的key，以及明确使用何种设备来执行PSI。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
+    ```python
+    from secretflow.data.vertical import read_csv as v_read_csv
+
+    train_ds = v_read_csv({alice: train_alice_path, bob: train_bob_path, carol: train_carol_path}, keys='UID', drop_keys='UID', spu=my_spu)
+    test_ds = v_read_csv({alice: test_alice_path, bob: test_bob_path, carol: test_carol_path}, keys='UID', drop_keys='UID', spu=my_spu)
+    print(train_ds)
+    print(train_ds.columns)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:50.244 [info] [bucket_psi.cc:Init:228] bucket size set to 1048576\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:50.269 [info] [bucket_psi.cc:Run:97] Begin sanity check for input file: data/carol_train.csv, precheck_switch:true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:50.290 [info] [csv_checker.cc:CsvChecker:121] Executing duplicated scripts: LC_ALL=C sort --buffer-size=1G --temporary-directory=data --stable selected-keys.1684911350271260403 | LC_ALL=C uniq -d > duplicate-keys.1684911350271260403\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:50.320 [info] [bucket_psi.cc:Run:115] End sanity check for input file: data/carol_train.csv, size=10792\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:50.321 [info] [bucket_psi.cc:Run:133] Skip doing psi, because dataset has been aligned!\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:50.321 [info] [bucket_psi.cc:Run:178] Begin post filtering, indices.size=10792, should_sort=true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:50.329 [info] [utils.cc:MultiKeySort:88] Executing sort scripts: tail -n +2 data/tmp-sort-in-1684911350322047349 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>data/tmp-sort-out-1684911350322047349\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:50.243 [info] [bucket_psi.cc:Init:228] bucket size set to 1048576\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:50.269 [info] [bucket_psi.cc:Run:97] Begin sanity check for input file: data/bob_train.csv, precheck_switch:true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:50.281 [info] [csv_checker.cc:CsvChecker:121] Executing duplicated scripts: LC_ALL=C sort --buffer-size=1G --temporary-directory=data --stable selected-keys.1684911350269771195 | LC_ALL=C uniq -d > duplicate-keys.1684911350269771195\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:50.321 [info] [bucket_psi.cc:Run:115] End sanity check for input file: data/bob_train.csv, size=10792\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:50.321 [info] [bucket_psi.cc:Run:133] Skip doing psi, because dataset has been aligned!\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:50.321 [info] [bucket_psi.cc:Run:178] Begin post filtering, indices.size=10792, should_sort=true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:50.326 [info] [utils.cc:MultiKeySort:88] Executing sort scripts: tail -n +2 data/tmp-sort-in-1684911350321798883 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>data/tmp-sort-out-1684911350321798883\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:50.243 [info] [bucket_psi.cc:Init:228] bucket size set to 1048576\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:50.269 [info] [bucket_psi.cc:Run:97] Begin sanity check for input file: data/alice_train.csv, precheck_switch:true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:50.288 [info] [csv_checker.cc:CsvChecker:121] Executing duplicated scripts: LC_ALL=C sort --buffer-size=1G --temporary-directory=data --stable selected-keys.1684911350269789933 | LC_ALL=C uniq -d > duplicate-keys.1684911350269789933\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:50.320 [info] [bucket_psi.cc:Run:115] End sanity check for input file: data/alice_train.csv, size=10792\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:50.321 [info] [bucket_psi.cc:Run:133] Skip doing psi, because dataset has been aligned!\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:50.321 [info] [bucket_psi.cc:Run:178] Begin post filtering, indices.size=10792, should_sort=true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:50.328 [info] [utils.cc:MultiKeySort:88] Executing sort scripts: tail -n +2 data/tmp-sort-in-1684911350321981931 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>data/tmp-sort-out-1684911350321981931\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:50.363 [info] [utils.cc:MultiKeySort:90] Finished sort scripts: tail -n +2 data/tmp-sort-in-1684911350322047349 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>data/tmp-sort-out-1684911350322047349, ret=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:50.363 [info] [bucket_psi.cc:Run:216] End post filtering, in=data/carol_train.csv, out=data/carol_train.csv.psi_output_85486\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:50.357 [info] [utils.cc:MultiKeySort:90] Finished sort scripts: tail -n +2 data/tmp-sort-in-1684911350321798883 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>data/tmp-sort-out-1684911350321798883, ret=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:50.357 [info] [bucket_psi.cc:Run:216] End post filtering, in=data/bob_train.csv, out=data/bob_train.csv.psi_output_85486\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:50.361 [info] [utils.cc:MultiKeySort:90] Finished sort scripts: tail -n +2 data/tmp-sort-in-1684911350321981931 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>data/tmp-sort-out-1684911350321981931, ret=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:50.362 [info] [bucket_psi.cc:Run:216] End post filtering, in=data/alice_train.csv, out=data/alice_train.csv.psi_output_85486\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:51.918 [info] [bucket_psi.cc:Init:228] bucket size set to 1048576\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:51.918 [info] [bucket_psi.cc:Run:97] Begin sanity check for input file: data/carol_test.csv, precheck_switch:true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:51.925 [info] [csv_checker.cc:CsvChecker:121] Executing duplicated scripts: LC_ALL=C sort --buffer-size=1G --temporary-directory=data --stable selected-keys.1684911351918502537 | LC_ALL=C uniq -d > duplicate-keys.1684911351918502537\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:51.917 [info] [bucket_psi.cc:Init:228] bucket size set to 1048576\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:51.917 [info] [bucket_psi.cc:Run:97] Begin sanity check for input file: data/bob_test.csv, precheck_switch:true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:51.923 [info] [csv_checker.cc:CsvChecker:121] Executing duplicated scripts: LC_ALL=C sort --buffer-size=1G --temporary-directory=data --stable selected-keys.1684911351917485080 | LC_ALL=C uniq -d > duplicate-keys.1684911351917485080\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:51.917 [info] [bucket_psi.cc:Init:228] bucket size set to 1048576\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:51.917 [info] [bucket_psi.cc:Run:97] Begin sanity check for input file: data/alice_test.csv, precheck_switch:true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:51.923 [info] [csv_checker.cc:CsvChecker:121] Executing duplicated scripts: LC_ALL=C sort --buffer-size=1G --temporary-directory=data --stable selected-keys.1684911351917758713 | LC_ALL=C uniq -d > duplicate-keys.1684911351917758713\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:51.955 [info] [bucket_psi.cc:Run:115] End sanity check for input file: data/carol_test.csv, size=4626\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:51.956 [info] [bucket_psi.cc:Run:133] Skip doing psi, because dataset has been aligned!\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:51.956 [info] [bucket_psi.cc:Run:178] Begin post filtering, indices.size=4626, should_sort=true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:51.959 [info] [utils.cc:MultiKeySort:88] Executing sort scripts: tail -n +2 data/tmp-sort-in-1684911351956618837 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>data/tmp-sort-out-1684911351956618837\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:51.986 [info] [utils.cc:MultiKeySort:90] Finished sort scripts: tail -n +2 data/tmp-sort-in-1684911351956618837 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>data/tmp-sort-out-1684911351956618837, ret=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:55:51.986 [info] [bucket_psi.cc:Run:216] End post filtering, in=data/carol_test.csv, out=data/carol_test.csv.psi_output_37067\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:51.955 [info] [bucket_psi.cc:Run:115] End sanity check for input file: data/bob_test.csv, size=4626\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:51.956 [info] [bucket_psi.cc:Run:133] Skip doing psi, because dataset has been aligned!\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:51.956 [info] [bucket_psi.cc:Run:178] Begin post filtering, indices.size=4626, should_sort=true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:51.957 [info] [utils.cc:MultiKeySort:88] Executing sort scripts: tail -n +2 data/tmp-sort-in-1684911351956284333 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>data/tmp-sort-out-1684911351956284333\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:51.983 [info] [utils.cc:MultiKeySort:90] Finished sort scripts: tail -n +2 data/tmp-sort-in-1684911351956284333 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>data/tmp-sort-out-1684911351956284333, ret=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:55:51.983 [info] [bucket_psi.cc:Run:216] End post filtering, in=data/bob_test.csv, out=data/bob_test.csv.psi_output_37067\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:51.955 [info] [bucket_psi.cc:Run:115] End sanity check for input file: data/alice_test.csv, size=4626\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:51.956 [info] [bucket_psi.cc:Run:133] Skip doing psi, because dataset has been aligned!\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:51.956 [info] [bucket_psi.cc:Run:178] Begin post filtering, indices.size=4626, should_sort=true\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:51.958 [info] [utils.cc:MultiKeySort:88] Executing sort scripts: tail -n +2 data/tmp-sort-in-1684911351956327849 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>data/tmp-sort-out-1684911351956327849\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:51.983 [info] [utils.cc:MultiKeySort:90] Finished sort scripts: tail -n +2 data/tmp-sort-in-1684911351956327849 | LC_ALL=C sort --buffer-size=3G --parallel=8 --temporary-directory=./ --stable --field-separator=, --key=1,1 >>data/tmp-sort-out-1684911351956327849, ret=0\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:55:51.983 [info] [bucket_psi.cc:Run:216] End post filtering, in=data/alice_test.csv, out=data/alice_test.csv.psi_output_37067\nVDataFrame(partitions={alice: Partition(data=<secretflow.device.device.pyu.PYUObject object at 0x7fd000234460>), bob: Partition(data=<secretflow.device.device.pyu.PYUObject object at 0x7fcfb9f9e310>), carol: Partition(data=<secretflow.device.device.pyu.PYUObject object at 0x7fcfb9f9ebb0>)}, aligned=True)\nIndex(['Month', 'WeekOfMonth', 'DayOfWeek', 'Make', 'AccidentArea',\n       'DayOfWeekClaimed', 'MonthClaimed', 'WeekOfMonthClaimed', 'Sex',\n       'MaritalStatus', 'Age', 'Fault', 'PolicyType', 'VehicleCategory',\n       'VehiclePrice', 'PolicyNumber', 'RepNumber', 'Deductible',\n       'DriverRating', 'Days_Policy_Accident', 'Days_Policy_Claim',\n       'PastNumberOfClaims', 'AgeOfVehicle', 'AgeOfPolicyHolder',\n       'PoliceReportFiled', 'WitnessPresent', 'AgentType',\n       'NumberOfSuppliments', 'AddressChange_Claim', 'NumberOfCars', 'Year',\n       'BasePolicy', 'FraudFound_P'],\n      dtype='object')\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#数据洞察}
+
+## 数据洞察
+
+基于上层封装的VDataFrame抽象，隐语提供了多种数据分析的API，例如统计信息、查改某些列的信息等。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
+    ```python
+    print(train_ds['WeekOfMonth'].count())
+
+    print(train_ds['WeekOfMonth'].max())
+    print(train_ds['WeekOfMonth'].min())
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"WeekOfMonth    10792\ndtype: int64\nWeekOfMonth    5\ndtype: int64\nWeekOfMonth    1\ndtype: int64\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#数据预处理}
+
+## 数据预处理
+
+在读取完数据之后，下面我们演示如何在隐语上对一个实际多方持有的数据进行数据预处理。
+
+:target{#Label-Encoder}
+
+### Label Encoder
+
+对无序且二值的值，我们可以使用label encoding，转化为0/1表示
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[16]:" stderr={false} type="input">
+    ```python
+    from secretflow.preprocessing import LabelEncoder
+
+    cols = ['AccidentArea', 'Sex', 'Fault', 'PoliceReportFiled', 'WitnessPresent', 'AgentType']
+    for col in cols:
+        print(f"Col name {col}: {df[col].unique()}")
+
+    train_ds_v1 = train_ds.copy()
+    test_ds_v1 = test_ds.copy()
+
+    label_encoder = LabelEncoder()
+    for col in cols:
+        label_encoder.fit(train_ds_v1[col])
+        train_ds_v1[col] = label_encoder.transform(train_ds_v1[col])
+        test_ds_v1[col] = label_encoder.transform(test_ds_v1[col])
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Col name AccidentArea: ['Urban' 'Rural']\nCol name Sex: ['Female' 'Male']\nCol name Fault: ['Policy Holder' 'Third Party']\nCol name PoliceReportFiled: ['No' 'Yes']\nCol name WitnessPresent: ['No' 'Yes']\nCol name AgentType: ['External' 'Internal']\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#(Ordinal)-Categorical-Features}
+
+### (Ordinal) Categorical Features
+
+对于有序的类别数据，我们构建映射，将类别数据转化为0\~n-1的整数
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[17]:" stderr={false} type="input">
+    ```python
+    cols1 = [
+        "Days_Policy_Accident",
+        "Days_Policy_Claim",
+        "AgeOfPolicyHolder",
+        "AddressChange_Claim",
+        "NumberOfCars",
+    ]
+    col_disc = [
+        {
+            "Days_Policy_Accident": {
+                "more than 30": 31,
+                "15 to 30": 22.5,
+                "none": 0,
+                "1 to 7": 4,
+                "8 to 15": 11.5,
+            }
+        },
+        {
+            "Days_Policy_Claim": {
+                "more than 30": 31,
+                "15 to 30": 22.5,
+                "8 to 15": 11.5,
+                "none": 0,
+            }
+        },
+        {
+            "AgeOfPolicyHolder": {
+                "26 to 30": 28,
+                "31 to 35": 33,
+                "41 to 50": 45.5,
+                "51 to 65": 58,
+                "21 to 25": 23,
+                "36 to 40": 38,
+                "16 to 17": 16.5,
+                "over 65": 66,
+                "18 to 20": 19,
+            }
+        },
+        {
+            "AddressChange_Claim": {
+                "1 year": 1,
+                "no change": 0,
+                "4 to 8 years": 6,
+                "2 to 3 years": 2.5,
+                "under 6 months": 0.5,
+            }
+        },
+        {
+            "NumberOfCars": {
+                "3 to 4": 3.5,
+                "1 vehicle": 1,
+                "2 vehicles": 2,
+                "5 to 8": 6.5,
+                "more than 8": 9,
+            }
+        },
+    ]
+
+    cols2 = [
+        "Month",
+        "DayOfWeek",
+        "DayOfWeekClaimed",
+        "MonthClaimed",
+        "PastNumberOfClaims",
+        "NumberOfSuppliments",
+        "VehiclePrice",
+        "AgeOfVehicle",
+    ]
+    col_ordering = [
+        {
+            "Month": {
+                "Jan": 1,
+                "Feb": 2,
+                "Mar": 3,
+                "Apr": 4,
+                "May": 5,
+                "Jun": 6,
+                "Jul": 7,
+                "Aug": 8,
+                "Sep": 9,
+                "Oct": 10,
+                "Nov": 11,
+                "Dec": 12,
+            }
+        },
+        {
+            "DayOfWeek": {
+                "Monday": 1,
+                "Tuesday": 2,
+                "Wednesday": 3,
+                "Thursday": 4,
+                "Friday": 5,
+                "Saturday": 6,
+                "Sunday": 7,
+            }
+        },
+        {
+            "DayOfWeekClaimed": {
+                "Monday": 1,
+                "Tuesday": 2,
+                "Wednesday": 3,
+                "Thursday": 4,
+                "Friday": 5,
+                "Saturday": 6,
+                "Sunday": 7,
+            }
+        },
+        {
+            "MonthClaimed": {
+                "Jan": 1,
+                "Feb": 2,
+                "Mar": 3,
+                "Apr": 4,
+                "May": 5,
+                "Jun": 6,
+                "Jul": 7,
+                "Aug": 8,
+                "Sep": 9,
+                "Oct": 10,
+                "Nov": 11,
+                "Dec": 12,
+            }
+        },
+        {"PastNumberOfClaims": {"none": 0, "1": 1, "2 to 4": 2, "more than 4": 5}},
+        {"NumberOfSuppliments": {"none": 0, "1 to 2": 1, "3 to 5": 3, "more than 5": 6}},
+        {
+            "VehiclePrice": {
+                "more than 69000": 69001,
+                "20000 to 29000": 24500,
+                "30000 to 39000": 34500,
+                "less than 20000": 19999,
+                "40000 to 59000": 49500,
+                "60000 to 69000": 64500,
+            }
+        },
+        {
+            "AgeOfVehicle": {
+                "3 years": 3,
+                "6 years": 6,
+                "7 years": 7,
+                "more than 7": 8,
+                "5 years": 5,
+                "new": 0,
+                "4 years": 4,
+                "2 years": 2,
+            }
+        },
+    ]
+
+    from secretflow.data.vertical import VDataFrame
+
+    def replace(df, col_maps):
+        df = df.copy()
+
+        def func_(df, col_map):
+            col_name = list(col_map.keys())[0]
+            col_dict = list(col_map.values())[0]
+            if col_name not in df.columns:
+                return
+            new_list = []
+            for i in df[col_name]:
+                new_list.append(col_dict[i])
+            df[col_name] = new_list
+
+        for col_map in col_maps:
+            func_(df, col_map)
+        return df
+
+    col_maps = col_disc + col_ordering
+
+    train_ds_v2 = train_ds_v1.copy()
+    test_ds_v2 = test_ds_v1.copy()
+
+    # NOTE: Reveal is only used for demo only!!
+    print(f"orig ds in alice:\n {sf.reveal(train_ds_v2.partitions[alice].data)}")
+    train_ds_v2.partitions[alice].data = alice(replace)(
+        train_ds_v2.partitions[alice].data, col_maps
+    )
+    train_ds_v2.partitions[bob].data = bob(replace)(
+        train_ds_v2.partitions[bob].data, col_maps
+    )
+    train_ds_v2.partitions[carol].data = carol(replace)(
+        train_ds_v2.partitions[carol].data, col_maps
+    )
+
+    print(f"orig ds in alice:\n {sf.reveal(train_ds_v2.partitions[alice].data)}")
+
+    test_ds_v2.partitions[alice].data = alice(replace)(
+        test_ds_v2.partitions[alice].data, col_maps
+    )
+    test_ds_v2.partitions[bob].data = bob(replace)(
+        test_ds_v2.partitions[bob].data, col_maps
+    )
+    test_ds_v2.partitions[carol].data = carol(replace)(
+        test_ds_v2.partitions[carol].data, col_maps
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"orig ds in alice:\n       Month  WeekOfMonth DayOfWeek       Make  AccidentArea DayOfWeekClaimed  \\\n0       Jan            1    Friday     Toyota             1        Wednesday\n1       Jan            1    Monday    Pontiac             1           Monday\n2       Dec            1    Friday     Toyota             1        Wednesday\n3       Oct            2    Monday  Chevrolet             1           Monday\n4       Sep            4   Tuesday    Pontiac             1          Tuesday\n...     ...          ...       ...        ...           ...              ...\n10787   Dec            3   Tuesday      Mazda             1        Wednesday\n10788   Sep            3   Tuesday       Ford             1        Wednesday\n10789   Aug            5  Thursday       Ford             1           Friday\n10790   Feb            2  Thursday    Pontiac             1          Tuesday\n10791   May            5    Monday  Chevrolet             1          Tuesday\n\n      MonthClaimed  WeekOfMonthClaimed  Sex MaritalStatus\n0              Jan                   4    1       Married\n1              Jan                   3    1       Married\n2              Dec                   2    1       Married\n3              Oct                   2    1       Married\n4              Sep                   4    0        Single\n...            ...                 ...  ...           ...\n10787          Dec                   3    1       Married\n10788          Oct                   1    1       Married\n10789          Sep                   5    1       Married\n10790          Feb                   3    1        Single\n10791          May                   5    1       Married\n\n[10792 rows x 10 columns]\norig ds in alice:\n        Month  WeekOfMonth  DayOfWeek       Make  AccidentArea  \\\n0          1            1          5     Toyota             1\n1          1            1          1    Pontiac             1\n2         12            1          5     Toyota             1\n3         10            2          1  Chevrolet             1\n4          9            4          2    Pontiac             1\n...      ...          ...        ...        ...           ...\n10787     12            3          2      Mazda             1\n10788      9            3          2       Ford             1\n10789      8            5          4       Ford             1\n10790      2            2          4    Pontiac             1\n10791      5            5          1  Chevrolet             1\n\n       DayOfWeekClaimed  MonthClaimed  WeekOfMonthClaimed  Sex MaritalStatus\n0                     3             1                   4    1       Married\n1                     1             1                   3    1       Married\n2                     3            12                   2    1       Married\n3                     1            10                   2    1       Married\n4                     2             9                   4    0        Single\n...                 ...           ...                 ...  ...           ...\n10787                 3            12                   3    1       Married\n10788                 3            10                   1    1       Married\n10789                 5             9                   5    1       Married\n10790                 2             2                   3    1        Single\n10791                 2             5                   5    1       Married\n\n[10792 rows x 10 columns]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#(Nominal)-Categorical-Features}
+
+### (Nominal) Categorical Features
+
+无序的类别数据，我们直接采用onehot encoder进行01编码
+
+:target{#Onehot-Encoder}
+
+#### Onehot Encoder
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
+    ```python
+    from secretflow.preprocessing import OneHotEncoder
+    onehot_cols = ['Make','MaritalStatus','PolicyType','VehicleCategory','BasePolicy']
+
+    onehot_encoder = OneHotEncoder()
+    onehot_encoder.fit(train_ds_v2[onehot_cols])
+
+    enc_feats = onehot_encoder.transform(train_ds_v2[onehot_cols])
+    feature_names = enc_feats.columns
+    train_ds_v3 = train_ds_v2.drop(columns=onehot_cols)
+    train_ds_v3[feature_names] = enc_feats
+
+
+    enc_feats = onehot_encoder.transform(test_ds_v2[onehot_cols])
+    test_ds_v3 = test_ds_v2.drop(columns=onehot_cols)
+    test_ds_v3[feature_names] = enc_feats
+
+    print(f"orig ds in alice:\n {sf.reveal(train_ds_v3.partitions[alice].data)}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"orig ds in alice:\n        Month  WeekOfMonth  DayOfWeek  AccidentArea  DayOfWeekClaimed  \\\n0          1            1          5             1                 3\n1          1            1          1             1                 1\n2         12            1          5             1                 3\n3         10            2          1             1                 1\n4          9            4          2             1                 2\n...      ...          ...        ...           ...               ...\n10787     12            3          2             1                 3\n10788      9            3          2             1                 3\n10789      8            5          4             1                 5\n10790      2            2          4             1                 2\n10791      5            5          1             1                 2\n\n       MonthClaimed  WeekOfMonthClaimed  Sex  Make_Accura  Make_BMW  ...  \\\n0                 1                   4    1          0.0       0.0  ...\n1                 1                   3    1          0.0       0.0  ...\n2                12                   2    1          0.0       0.0  ...\n3                10                   2    1          0.0       0.0  ...\n4                 9                   4    0          0.0       0.0  ...\n...             ...                 ...  ...          ...       ...  ...\n10787            12                   3    1          0.0       0.0  ...\n10788            10                   1    1          0.0       0.0  ...\n10789             9                   5    1          0.0       0.0  ...\n10790             2                   3    1          0.0       0.0  ...\n10791             5                   5    1          0.0       0.0  ...\n\n       Make_Pontiac  Make_Porche  Make_Saab  Make_Saturn  Make_Toyota  \\\n0               0.0          0.0        0.0          0.0          1.0\n1               1.0          0.0        0.0          0.0          0.0\n2               0.0          0.0        0.0          0.0          1.0\n3               0.0          0.0        0.0          0.0          0.0\n4               1.0          0.0        0.0          0.0          0.0\n...             ...          ...        ...          ...          ...\n10787           0.0          0.0        0.0          0.0          0.0\n10788           0.0          0.0        0.0          0.0          0.0\n10789           0.0          0.0        0.0          0.0          0.0\n10790           1.0          0.0        0.0          0.0          0.0\n10791           0.0          0.0        0.0          0.0          0.0\n\n       Make_VW  MaritalStatus_Divorced  MaritalStatus_Married  \\\n0          0.0                     0.0                    1.0\n1          0.0                     0.0                    1.0\n2          0.0                     0.0                    1.0\n3          0.0                     0.0                    1.0\n4          0.0                     0.0                    0.0\n...        ...                     ...                    ...\n10787      0.0                     0.0                    1.0\n10788      0.0                     0.0                    1.0\n10789      0.0                     0.0                    1.0\n10790      0.0                     0.0                    0.0\n10791      0.0                     0.0                    1.0\n\n       MaritalStatus_Single  MaritalStatus_Widow\n0                       0.0                  0.0\n1                       0.0                  0.0\n2                       0.0                  0.0\n3                       0.0                  0.0\n4                       1.0                  0.0\n...                     ...                  ...\n10787                   0.0                  0.0\n10788                   0.0                  0.0\n10789                   0.0                  0.0\n10790                   1.0                  0.0\n10791                   0.0                  0.0\n\n[10792 rows x 31 columns]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[19]:" stderr={false} type="input">
+    ```python
+    train_ds_final = train_ds_v3.copy()
+    test_ds_final = test_ds_v3.copy()
+
+    X_train = train_ds_v3.drop(columns=['FraudFound_P'])
+    y_train = train_ds_final['FraudFound_P']
+    X_test = test_ds_final.drop(columns='FraudFound_P')
+    y_test = test_ds_final['FraudFound_P']
+
+    print("data load done")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"data load done\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#数据对象转换}
+
+### 数据对象转换
+
+此处我们将PYUObject 转化为 SPUObject，方便输入到SPU device执行基于MPC协议的隐私计算
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[20]:" stderr={false} type="input">
+    ```python
+    import jax
+    import jax.numpy as jnp
+
+    """
+    Convert the VDataFrame object to SPUObject
+    """
+    def vdataframe_to_spu(vdf: VDataFrame):
+        spu_partitions = []
+        for device in [alice, bob, carol]:
+            spu_partitions.append(vdf.partitions[device].data.to(my_spu))
+        base_partition = spu_partitions[0]
+        for i in range(1, len(spu_partitions)):
+            base_partition = my_spu(lambda x, y: jnp.concatenate([x, y], axis=1))(
+                base_partition, spu_partitions[i]
+            )
+        return base_partition
+
+
+    X_train_spu = vdataframe_to_spu(X_train)
+    y_train_spu = y_train.partitions[carol].data.to(my_spu)
+    X_test_spu = vdataframe_to_spu(X_test)
+    y_test_spu = y_test.partitions[carol].data.to(my_spu)
+    print(f"X_train type: {X_train}\n\nX_train_spu type: {X_train_spu}")
+
+    """
+    NOTE: This is only for demo only!! This shall not be used in production.
+    """
+    X_train_plaintext = sf.reveal(X_train_spu)
+    y_train_plaintext = sf.reveal(y_train_spu)
+    X_test_plaintext = sf.reveal(X_test_spu)
+    y_test_plaintext = sf.reveal(y_test_spu)
+
+    print(f'X_train_plaintext: \n{X_train_plaintext}')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_run pid=2294419)"}</span>{" [2023-05-24 14:55:57.641] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(_run pid=2294389)"}</span>{" [2023-05-24 14:55:57.703] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(_run pid=2294392)"}</span>{" [2023-05-24 14:55:57.670] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_run pid=2294562)"}</span>{" [2023-05-24 14:55:57.944] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\nX_train type: VDataFrame(partitions={alice: Partition(data=<secretflow.device.device.pyu.PYUObject object at 0x7fcfb9f7b0a0>), bob: Partition(data=<secretflow.device.device.pyu.PYUObject object at 0x7fcfb9f7b070>), carol: Partition(data=<secretflow.device.device.pyu.PYUObject object at 0x7fcfb9f61910>)}, aligned=True)\n\nX_train_spu type: <secretflow.device.device.spu.SPUObject object at 0x7fcfb9f07610>\n[2023-05-24 14:55:58.124] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\nX_train_plaintext:\n[[ 1.  1.  5. ...  1.  0.  0.]\n [ 1.  1.  1. ...  0.  0.  1.]\n [12.  1.  5. ...  0.  1.  0.]\n ...\n [ 8.  5.  4. ...  1.  0.  0.]\n [ 2.  2.  4. ...  0.  1.  0.]\n [ 5.  5.  1. ...  0.  1.  0.]]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#模型构建}
+
+## 模型构建
+
+在完成数据的读入之后，下面我们进行模型的构建。在本demo中，主要提供了三种模型的构建： - LR: 逻辑回归 - NN：神经网络模型 - XGB: XGBoost 树模型
+
+> 注意，本示例主要是演示在隐语上进行算法开发的流程，并没有针对模型 (LR, NN) 进行调参。我们分别提供了明文和密文的计算结果，实验结果显示两者的输出是基本一致的，表明隐语的密态计算能够和明文计算保持精度一致。
+
+:target{#LR-(-jax-)-using-SPU}
+
+### LR ( jax ) using SPU
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[21]:" stderr={false} type="input">
+    ```python
+    from jax.example_libraries import optimizers, stax
+    from jax.example_libraries.stax import (
+        Conv,
+        MaxPool,
+        AvgPool,
+        Flatten,
+        Dense,
+        Relu,
+        Sigmoid,
+        LogSoftmax,
+        Softmax,
+        BatchNorm,
+    )
+
+
+    def sigmoid(x):
+        x = (x - jnp.min(x)) / (jnp.max(x) - jnp.min(x))
+        return 1 / (1 + jnp.exp(-x))
+
+    # Outputs probability of a label being true.
+    def predict_lr(W, b, inputs):
+        return sigmoid(jnp.dot(inputs, W) + b)
+
+    # Training loss is the negative log-likelihood of the training examples.
+    def loss_lr(W, b, inputs, targets):
+        preds = predict_lr(W, b, inputs)
+        label_probs = preds * targets + (1 - preds) * (1 - targets)
+        return -jnp.mean(jnp.log(label_probs))
+
+    def train_step(W, b, X, y, learning_rate):
+        loss_value, Wb_grad = jax.value_and_grad(loss_lr, (0, 1))(W, b, X, y)
+        W -= learning_rate * Wb_grad[0]
+        b -= learning_rate * Wb_grad[1]
+        return loss_value, W, b
+
+    def fit(W, b, X, y, epochs=1, learning_rate=1e-2, batch_size=128):
+        losses = jnp.array([])
+
+        xs = jnp.array_split(X, len(X) / batch_size, axis=0)
+        ys = jnp.array_split(y, len(y) / batch_size, axis=0)
+
+        for _ in range(epochs):
+            for (batch_x, batch_y) in zip(xs, ys):
+                l, W, b = train_step(
+                    W, b, batch_x, batch_y, learning_rate=learning_rate
+                )
+                losses = jnp.append(losses, l)
+        return losses, W, b
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[22]:" stderr={false} type="input">
+    ```python
+    from jax import random
+    import sys
+    import time
+    import logging
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+    logging.getLogger().setLevel(logging.INFO)
+
+    from sklearn.metrics import roc_auc_score
+
+
+    # Hyperparameter
+    key = random.PRNGKey(42)
+    W = jax.random.normal(key, shape=(64,))
+    b = 0.0
+    epochs = 1
+    learning_rate = 1e-2
+    batch_size = 128
+
+    """
+    CPU-version plaintext computation
+    """
+    losses_cpu, W_cpu, b_cpu = fit(
+        W,
+        b,
+        X_train_plaintext,
+        y_train_plaintext,
+        epochs=epochs,
+        learning_rate=learning_rate,
+        batch_size=batch_size,
+    )
+    y_pred_cpu = predict_lr(W_cpu, b_cpu, X_test_plaintext)
+    print(f"\033[31m(Jax LR CPU) auc: {roc_auc_score(y_test_plaintext, y_pred_cpu)}\033[0m")
+
+    """
+    SPU-version secure computation
+    """
+    W_, b_ = (
+        sf.to(alice, W).to(my_spu),
+        sf.to(alice, b).to(my_spu),
+    )
+    losses_spu, W_spu, b_spu = my_spu(
+        fit,
+        static_argnames=["epochs", "learning_rate", "batch_size"],
+        num_returns_policy=sf.device.SPUCompilerNumReturnsPolicy.FROM_USER,
+        user_specified_num_returns=3,
+    )(
+        W_,
+        b_,
+        X_train_spu,
+        y_train_spu,
+        epochs=epochs,
+        learning_rate=learning_rate,
+        batch_size=batch_size,
+    )
+
+    y_pred_spu = my_spu(predict_lr)(W_spu, b_spu, X_test_spu)
+    y_pred = sf.reveal(y_pred_spu)
+    print(f"\033[31m(Jax LR SPU) auc: {roc_auc_score(y_test_plaintext, y_pred)}\033[0m")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-red-fg">{"(Jax LR CPU) auc: 0.524559290927313"}</span><span className="ansi-red-fg">{"(Jax LR SPU) auc: 0.48416274742946"}</span>
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#NN-(-jax-+-flax-)-using-SPU}
+
+### NN ( jax + flax ) using SPU
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[23]:" stderr={false} type="input">
+    ```python
+    import sys
+    !{sys.executable} -m pip install flax==0.6.0 -q
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-yellow-fg">{"WARNING: There was an error checking the latest version of pip."}</span>
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[24]:" stderr={false} type="input">
+    ```python
+    from typing import Sequence
+    import flax.linen as nn
+
+
+    class MLP(nn.Module):
+        features: Sequence[int]
+
+        @nn.compact
+        def __call__(self, x):
+            for feat in self.features[:-1]:
+                x = nn.relu(nn.Dense(feat)(x))
+            x = nn.Dense(self.features[-1])(x)
+            return x
+
+    FEATURES = [1]
+    flax_nn = MLP(FEATURES)
+
+    def predict(params, x):
+        from typing import Sequence
+        import flax.linen as nn
+        class MLP(nn.Module):
+            features: Sequence[int]
+
+            @nn.compact
+            def __call__(self, x):
+                for feat in self.features[:-1]:
+                    x = nn.relu(nn.Dense(feat)(x))
+                x = nn.Dense(self.features[-1])(x)
+                return x
+        FEATURES = [1]
+        flax_nn = MLP(FEATURES)
+        return flax_nn.apply(params, x)
+
+
+    def loss_func(params, x, y):
+        preds = predict(params, x)
+        label_probs = preds * y + (1 - preds) * (1 - y)
+        return -jnp.mean(jnp.log(label_probs))
+
+
+    def train_auto_grad(X, y, params, batch_size=10, epochs=10, learning_rate=0.01):
+        xs = jnp.array_split(X, len(X) / batch_size, axis=0)
+        ys = jnp.array_split(y, len(y) / batch_size, axis=0)
+
+        for _ in range(epochs):
+            for (batch_x, batch_y) in zip(xs, ys):
+                _, grads = jax.value_and_grad(loss_func)(params, batch_x, batch_y)
+                params = jax.tree_util.tree_map(
+                    lambda p, g: p - learning_rate * g, params, grads
+                )
+        return params
+
+    epochs = 1
+    learning_rate = 1e-2
+    batch_size = 128
+
+    feature_dim = 64  # from the dataset
+    init_params = flax_nn.init(jax.random.PRNGKey(1), jnp.ones((batch_size, feature_dim)))
+
+    """
+    CPU-version plaintext computation
+    """
+    params = train_auto_grad(
+        X_train_plaintext, y_train_plaintext, init_params, batch_size, epochs, learning_rate
+    )
+    y_pred = predict(params, X_test_plaintext)
+    print(f"\033[31m(Flax NN CPU) auc: {roc_auc_score(y_test_plaintext, y_pred)}\033[0m")
+
+    """
+    SPU-version secure computation
+    """
+    params_spu = sf.to(alice, init_params).to(my_spu)
+    params_spu = my_spu(train_auto_grad, static_argnames=['batch_size', 'epochs', 'learning_rate'])(
+        X_train_spu, y_train_spu, params_spu, batch_size=batch_size, epochs=epochs, learning_rate=learning_rate
+    )
+    y_pred_spu = my_spu(predict)(params_spu, X_test_spu)
+    y_pred_ = sf.reveal(y_pred_spu)
+    print(f"\033[31m(Flax NN SPU) auc: {roc_auc_score(y_test_plaintext, y_pred_)}\033[0m")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-red-fg">{"(Flax NN CPU) auc: 0.5022025986877813"}</span><span className="ansi-red-fg">{"(Flax NN SPU) auc: 0.5022034401772514"}</span>
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#XGB-(-jax-)-using-SPU}
+
+### XGB ( jax ) using SPU
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[25]:" stderr={false} type="input">
+    ```python
+    from secretflow.ml.boost.ss_xgb_v import Xgb
+    import time
+    from sklearn.metrics import roc_auc_score
+
+    """
+    SPU-version Secure computation
+    """
+    xgb = Xgb(my_spu)
+    params = {
+        # <<< !!! >>> change args to your test settings.
+        # for more detail, see Xgb.train.__doc__
+        'num_boost_round': 10,
+        'max_depth': 4,
+        'learning_rate': 0.05,
+        'sketch_eps': 0.05,
+        'objective': 'logistic',
+        'reg_lambda': 1,
+        'subsample': 0.75,
+        'colsample_by_tree': 1,
+        'base_score': 0.5,
+    }
+
+    start = time.time()
+    model = xgb.train(params, X_train, y_train)
+    print(f"train time: {time.time() - start}")
+
+    start =time.time()
+    spu_yhat = model.predict(X_test)
+    print(f"predict time: {time.time() - start}")
+
+    yhat = sf.reveal(spu_yhat)
+    print(f"\033[31m(SS-XGB) auc: {roc_auc_score(y_test_plaintext, yhat)}\033[0m")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_spu_compile pid=2294562)"}</span>{" /* error: missing value */\n"}<span className="ansi-cyan-fg">{"(_spu_compile pid=2294562)"}</span>{" {}:task_name:_spu_compile\n"}<span className="ansi-cyan-fg">{"(_spu_compile pid=2294562)"}</span>{" /* error: missing value */\n"}<span className="ansi-cyan-fg">{"(_spu_compile pid=2294562)"}</span>{" {}:task_name:_spu_compile\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime pid=2300421)"}</span>{" 2023-05-24 14:57:37.774 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300420)"}</span>{" 2023-05-24 14:57:37.772 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=2300419)"}</span>{" 2023-05-24 14:57:37.777 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 63\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(XgbTreeWorker pid=2312009)"}</span>{" [2023-05-24 14:57:41.177] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(XgbTreeWorker pid=2312010)"}</span>{" [2023-05-24 14:57:41.195] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(XgbTreeWorker pid=2312013)"}</span>{" [2023-05-24 14:57:41.212] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_spu_compile pid=2294389)"}</span>{" /* error: missing value */\n"}<span className="ansi-cyan-fg">{"(_spu_compile pid=2294389)"}</span>{" {}:task_name:_spu_compile\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_spu_compile pid=2294392)"}</span>{" /* error: missing value */\n"}<span className="ansi-cyan-fg">{"(_spu_compile pid=2294392)"}</span>{" {}:task_name:_spu_compile\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_spu_compile pid=2294419)"}</span>{" /* error: missing value */\n"}<span className="ansi-cyan-fg">{"(_spu_compile pid=2294419)"}</span>{" {}:task_name:_spu_compile\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"train time: 37.70984649658203\n"}<span className="ansi-cyan-fg">{"(XgbTreeWorker pid=2316828)"}</span>{" [2023-05-24 14:58:14.123] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(XgbTreeWorker pid=2316834)"}</span>{" [2023-05-24 14:58:14.274] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(XgbTreeWorker pid=2316829)"}</span>{" [2023-05-24 14:58:14.254] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\npredict time: 3.1688623428344727\n"}<span className="ansi-red-fg">{"(SS-XGB) auc: 0.8239633480846438"}</span>
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[26]:" stderr={false} type="input">
+    ```python
+    """
+    Plaintext baseline
+    """
+    import xgboost as SKxgb
+
+    params = {
+        # <<< !!! >>> change args to your test settings.
+        # for more detail, see Xgb.train.__doc__
+        "n_estimators": 10,
+        "max_depth": 4,
+        'eval_metric': 'auc',
+        "learning_rate": 0.05,
+        "sketch_eps": 0.05,
+        "objective": "binary:logistic",
+        "reg_lambda": 1,
+        "subsample": 0.75,
+        "colsample_by_tree": 1,
+        "base_score": 0.5,
+    }
+    dtrain = SKxgb.DMatrix(X_train_plaintext, label=y_train_plaintext)
+    bst = SKxgb.train(params, dtrain, params["n_estimators"])
+    dtest = SKxgb.DMatrix(X_test_plaintext)
+    y_pred = bst.predict(dtest)
+    print(f"\033[31m(Sklearn-XGB) auc: {roc_auc_score(y_test_plaintext, y_pred)}\033[0m")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[14:58:15] WARNING: ../src/learner.cc:767:\nParameters: { \"n_estimators\", \"sketch_eps\" } are not used.\n\n"}<span className="ansi-red-fg">{"(Sklearn-XGB) auc: 0.8231883362827539"}</span>
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#The-End}
+
+## The End
+
+显示地调用<code>sf.shutdown()</code>关闭实例化的集群。 > 注意：如果是在.py文件中运行代码，不需要显示地执行shutdown，在程序进程运行结束后会隐式地执行<code>shutdown</code>函数。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[27]:" stderr={false} type="input">
+    ```python
+    sf.shutdown()
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#小结一下}
+
+## 小结一下
+
+- 介绍了如何针对一个实际场景的应用，在隐语上进行开发，提供隐私保护的能力
+- 隐语上的数据加载、预处理、建模、训练流程
+- 下一步，自己实现任意的计算（jax实现的计算），对于TF，pytorch的支持WIP

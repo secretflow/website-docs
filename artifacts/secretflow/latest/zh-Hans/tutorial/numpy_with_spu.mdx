@@ -1,0 +1,485 @@
+:target{#在SPU中使用NumPy实现隐私保护的科学计算}
+
+# 在SPU中使用NumPy实现隐私保护的科学计算
+
+NumPy is one of the most popular tool for scientific computing. It is so common that we could find lots of equivalents of NumPy in other languages like [xtensor](https://xtensor.readthedocs.io/en/latest/) and [Gonum](https://www.gonum.org/). So we can’t help thinking whether we could express computation with NumPy-like APIs in privacy-preserving settings since everyone loves NumPy.
+
+幸运的是，借助 [JAX](https://jax.readthedocs.io/en/latest/) NumPy软件包的强大功能，我们可以轻松实现这个目标。在本教程中，我们将介绍以下内容：1. JAX和SPU之间的关系2. 编写可编译的JAX程序3. 在SPU上执行JAX程序
+
+:target{#JAX和SPU之间的关系}
+
+## JAX和SPU之间的关系
+
+:target{#TL;DR}
+
+### TL;DR
+
+SPU实际上由两个组件组成 - 编译器和运行时。SPU运行时只能执行 [PPHlo](https://www.secretflow.org.cn/docs/spu/en/reference/pphlo_doc.html) 。一个PPHlo内核的例子是 [\*\*pphlo.add\*\*](https://www.secretflow.org.cn/docs/spu/en/reference/pphlo_doc.html#pphlo-add-mlir-pphlo-addop) 。实际上，当逻辑非常简单和清晰时，我们只需将PPHlo程序直接输入SPU运行时以执行MPC程序，用于一些内部应用。
+
+SPU compiler could translate [XLA](https://www.tensorflow.org/xla) programs to [PPHlo](https://www.secretflow.org.cn/docs/spu/en/reference/pphlo_doc.html). You could check “Supported” XLA ops in [this documentation](https://www.secretflow.org.cn/docs/spu/en/reference/xla_status.html). You may find XLA ops are very similar to PPHlo ops in most cases. It seems we still couldn’t write XLA programs by hand. You are absolutely correct. If you happen to check
+[here](https://www.tensorflow.org/xla#xla_frontends), you should find actually there are lot’s of AI frameworks which could emit XLA programs without your effort, including:
+
+- TensorFLow
+- Pytorch
+- JAX
+
+Let’s go through each step to have a look at different programs!
+
+:target{#JAX-程序}
+
+#### JAX 程序
+
+下面是一个JAX程序，用于将一个数组和一个标量相加。如果您熟悉NumPy，这应该很容易理解。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    import jax
+    import numpy as np
+
+
+    def simple_add(x, y):
+        return jax.numpy.add(x, y)
+
+
+    simple_add(np.array([[1, 2], [3, 4]]), 4)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="output">
+    <pre>
+      {"Array([[5, 6],\n       [7, 8]], dtype=int32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#XLA-程序}
+
+#### XLA 程序
+
+Let’s check what the XLA program for this JAX program looks like. JAX provides [xla\_computation](https://jax.readthedocs.io/en/latest/_autosummary/jax.xla_computation.html) to convert JAX programs to XLA programs.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    c = jax.xla_computation(simple_add)(np.array([[1, 2], [3, 4]]), 4)
+
+    c.as_hlo_text()
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="output">
+    <pre>
+      {"'HloModule xla_computation_simple_add, entry_computation_layout={(s32[2,2]{1,0}, s32[])->(s32[2,2]{1,0})}\\n\\nENTRY main.6 {\\n  Arg_0.1 = s32[2,2]{1,0} parameter(0)\\n  Arg_1.2 = s32[] parameter(1)\\n  broadcast.3 = s32[2,2]{1,0} broadcast(Arg_1.2), dimensions={}\\n  add.4 = s32[2,2]{1,0} add(Arg_0.1, broadcast.3)\\n  ROOT tuple.5 = (s32[2,2]{1,0}) tuple(add.4)\\n}\\n\\n'\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+您应该知道以下事实：
+
+- 在XLA程序中，每个参数的形状和数据类型都是固定的，如 <strong>s32\[2,2]\{1,0}</strong>
+- 在 <strong>add</strong> 操作之前会插入一个隐式的 <strong>broadcast</strong> 操作。
+
+:target{#PPHlo-程序}
+
+#### PPHlo 程序
+
+Lastly, let’s check the PPHlo program for this XLA program. <strong>spu.compile</strong> could convert XLA programs to PPHlo programs.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    import spu
+    import spu.spu_pb2 as spu_pb2
+
+    source = spu_pb2.CompilationSource()
+    source.ir_txt = c.as_serialized_hlo_module_proto()
+    source.input_visibility.extend([spu.Visibility.VIS_SECRET, spu.Visibility.VIS_SECRET])
+    source.ir_type = spu_pb2.SourceIRType.XLA
+
+    pphlo = spu.compile(source, spu_pb2.CompilerOptions())
+
+    pphlo
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="output">
+    <pre>
+      {"b'module @xla_computation_simple_add attributes {mhlo.cross_program_prefetches = [], mhlo.dynamic_parameter_bindings = [], mhlo.is_dynamic = false, mhlo.use_auto_spmd_partitioning = false} {\\n  func.func @main(%arg0: tensor<2x2x!pphlo.sec<i32>>, %arg1: tensor<!pphlo.sec<i32>>) -> tensor<2x2x!pphlo.sec<i32>> {\\n    %0 = \"pphlo.broadcast\"(%arg1) {broadcast_dimensions = dense<> : tensor<0xi64>} : (tensor<!pphlo.sec<i32>>) -> tensor<2x2x!pphlo.sec<i32>>\\n    %1 = \"pphlo.add\"(%arg0, %0) : (tensor<2x2x!pphlo.sec<i32>>, tensor<2x2x!pphlo.sec<i32>>) -> tensor<2x2x!pphlo.sec<i32>>\\n    return %1 : tensor<2x2x!pphlo.sec<i32>>\\n  }\\n}\\n'\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+您可能会发现，PPHlo程序与XLA程序几乎完全相同。区别是：
+
+- You have to provide the input visibility to SPU compiler, i.e. <strong>\[spu.Visibility.VIS\_SECRET, spu.Visibility.VIS\_SECRET]</strong> in our case.
+- 与XLA程序相比，Visibility是PPHlo程序中所有变量的额外属性。例如， <strong>tensor\<2x2x!pphlo.sec></strong> 表示这是一个密态的2x2 i32张量。
+
+SPU compiler would deduce visibility in each step, let’s modify input visibility and check what would happen.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    source = spu_pb2.CompilationSource()
+    source.ir_txt = c.as_serialized_hlo_module_proto()
+    source.input_visibility.extend([spu.Visibility.VIS_SECRET, spu.Visibility.VIS_PUBLIC])
+    source.ir_type = spu_pb2.SourceIRType.XLA
+
+    pphlo = spu.compile(source, spu_pb2.CompilerOptions())
+
+    pphlo
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="output">
+    <pre>
+      {"b'module @xla_computation_simple_add attributes {mhlo.cross_program_prefetches = [], mhlo.dynamic_parameter_bindings = [], mhlo.is_dynamic = false, mhlo.use_auto_spmd_partitioning = false} {\\n  func.func @main(%arg0: tensor<2x2x!pphlo.sec<i32>>, %arg1: tensor<!pphlo.pub<i32>>) -> tensor<2x2x!pphlo.sec<i32>> {\\n    %0 = \"pphlo.broadcast\"(%arg1) {broadcast_dimensions = dense<> : tensor<0xi64>} : (tensor<!pphlo.pub<i32>>) -> tensor<2x2x!pphlo.pub<i32>>\\n    %1 = \"pphlo.add\"(%arg0, %0) : (tensor<2x2x!pphlo.sec<i32>>, tensor<2x2x!pphlo.pub<i32>>) -> tensor<2x2x!pphlo.sec<i32>>\\n    return %1 : tensor<2x2x!pphlo.sec<i32>>\\n  }\\n}\\n'\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#从JAX到SPU}
+
+### 从JAX到SPU
+
+So this is the whole story. 1. You write a JAX program in Python. 2. Then you could turn JAX program to XLA program with the first-party API from JAX, i.e. jax.xla\_computation. 3. Afterwards, SPU compiler could transfer XLA program to PPHlo program - the only language could be understood by SPU Runtime. 4. In the end, the PPHlo program is sent to SPU Runtimes and executed.
+
+在SecretFlow中，我们已经实现了一些辅助方法，这样您就可以一开始就编写JAX程序，我们会为您处理其余的步骤。
+
+:target{#写一个可即时编译（Jittable）的JAX程序}
+
+## 写一个可即时编译（Jittable）的JAX程序
+
+可即时编译（Jittable）指的是JAX程序可以即时编译（JIT）为XLA程序。因此，只有当一个JAX程序是可即时编译的，它才可能被SPU执行。
+
+Since SPU doesn’t support all XLA operators, even a JAX program is jittable, SPU runtime still could refuse to execute.
+
+:target{#JAX-NumPy库}
+
+### JAX NumPy库
+
+我们可以使用 JAX 中的这些 类似于 NumPy 的 API。[JAX NumPy](https://jax.readthedocs.io/en/latest/jax.numpy.html) 的 API 和原始的 NumPy API 非常相似，但是有以下几点不同：- JAX NumPy 数组是不可变的，因此您必须使用 <strong>ndarray.at</strong> 来进行非就地数组更新。- 您必须提供一些额外的参数使方法调用可即时编译（稍后我们会讨论这个）。
+
+And actually SPU doesn’t support all JAX NumPy operators, please also check [this documentation](http://www.secretflow.org.cn/docs/spu/en/reference/np_op_status.html). We are updating this document promptly and we have listed the current status of each operators.
+
+接下来，我们将编写一些 JAX NumPy 程序。
+
+:target{#欧几里得距离}
+
+### 欧几里得距离
+
+只需一行代码，我们就可以计算两个点的欧几里得距离。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    def euclidean_distance(p1, p2):
+        return jax.numpy.linalg.norm(p1 - p2)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Let’s check whether it is jittable by <strong>jax.jit</strong>. You could also use <strong>jax.xla\_computation</strong> for testing as well.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    euclidean_distance_jit = jax.jit(euclidean_distance)
+
+    print(euclidean_distance_jit(np.array([0, 0]), np.array([3, 4])))
+
+
+    # or
+    print(
+        (
+            jax.xla_computation(euclidean_distance)(np.array([0, 0]), np.array([3, 4]))
+        ).as_hlo_text()
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"5.0\nHloModule xla_computation_euclidean_distance, entry_computation_layout={(s32[2]{0},s32[2]{0})->(f32[])}\n\nregion_0.4 {\n  Arg_0.5 = f32[] parameter(0)\n  Arg_1.6 = f32[] parameter(1)\n  ROOT add.7 = f32[] add(Arg_0.5, Arg_1.6)\n}\n\nnorm.8 {\n  Arg_0.9 = s32[2]{0} parameter(0)\n  convert.11 = f32[2]{0} convert(Arg_0.9)\n  multiply.12 = f32[2]{0} multiply(convert.11, convert.11)\n  constant.10 = f32[] constant(0)\n  reduce.13 = f32[] reduce(multiply.12, constant.10), dimensions={0}, to_apply=region_0.4\n  ROOT sqrt.14 = f32[] sqrt(reduce.13)\n}\n\nENTRY main.17 {\n  Arg_0.1 = s32[2]{0} parameter(0)\n  Arg_1.2 = s32[2]{0} parameter(1)\n  subtract.3 = s32[2]{0} subtract(Arg_0.1, Arg_1.2)\n  call.15 = f32[] call(subtract.3), to_apply=norm.8\n  ROOT tuple.16 = (f32[]) tuple(call.15)\n}\n\n\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#简单多边形面积}
+
+### 简单多边形面积
+
+给定一个简单多边形顶点的笛卡尔坐标列表，我们可以通过 [Shoelace formula](https://en.wikipedia.org/wiki/Shoelace_formula)  计算面积
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    import jax.numpy as jnp
+
+
+    def area_of_simple_polygon(vertices):
+        area = 0
+        for i in range(0, vertices.shape[0]):
+            a = jnp.expand_dims(vertices[i, :], axis=0)
+            b = jnp.expand_dims(vertices[(i + 1) % vertices.shape[0], :], axis=0)
+            x = jax.numpy.concatenate((a, b))
+            x_t = jax.numpy.transpose(x)
+            area += 0.5 * jax.numpy.linalg.det(x_t)
+        return area
+
+
+    vertices = np.array([[1, 6], [3, 1], [7, 2], [4, 4], [8, 5]])
+
+    area_of_simple_polygon(vertices)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="output">
+    <pre>
+      {"Array(16.5, dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Let’s check whether <strong>area\_of\_simple\_polygon</strong> is jittable.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    print(jax.xla_computation(area_of_simple_polygon)(vertices).as_hlo_text())
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"HloModule xla_computation_area_of_simple_polygon, entry_computation_layout={(s32[5,2]{1,0})->(f32[])}\n\ndet.7 {\n  Arg_0.8 = s32[2,2]{1,0} parameter(0)\n  convert.9 = f32[2,2]{1,0} convert(Arg_0.8)\n  slice.10 = f32[1,1]{1,0} slice(convert.9), slice={[0:1], [0:1]}\n  reshape.11 = f32[] reshape(slice.10)\n  slice.12 = f32[1,1]{1,0} slice(convert.9), slice={[1:2], [1:2]}\n  reshape.13 = f32[] reshape(slice.12)\n  multiply.14 = f32[] multiply(reshape.11, reshape.13)\n  slice.15 = f32[1,1]{1,0} slice(convert.9), slice={[0:1], [1:2]}\n  reshape.16 = f32[] reshape(slice.15)\n  slice.17 = f32[1,1]{1,0} slice(convert.9), slice={[1:2], [0:1]}\n  reshape.18 = f32[] reshape(slice.17)\n  multiply.19 = f32[] multiply(reshape.16, reshape.18)\n  ROOT subtract.20 = f32[] subtract(multiply.14, multiply.19)\n}\n\ndet_0.27 {\n  Arg_0.28 = s32[2,2]{1,0} parameter(0)\n  convert.29 = f32[2,2]{1,0} convert(Arg_0.28)\n  slice.30 = f32[1,1]{1,0} slice(convert.29), slice={[0:1], [0:1]}\n  reshape.31 = f32[] reshape(slice.30)\n  slice.32 = f32[1,1]{1,0} slice(convert.29), slice={[1:2], [1:2]}\n  reshape.33 = f32[] reshape(slice.32)\n  multiply.34 = f32[] multiply(reshape.31, reshape.33)\n  slice.35 = f32[1,1]{1,0} slice(convert.29), slice={[0:1], [1:2]}\n  reshape.36 = f32[] reshape(slice.35)\n  slice.37 = f32[1,1]{1,0} slice(convert.29), slice={[1:2], [0:1]}\n  reshape.38 = f32[] reshape(slice.37)\n  multiply.39 = f32[] multiply(reshape.36, reshape.38)\n  ROOT subtract.40 = f32[] subtract(multiply.34, multiply.39)\n}\n\ndet_1.48 {\n  Arg_0.49 = s32[2,2]{1,0} parameter(0)\n  convert.50 = f32[2,2]{1,0} convert(Arg_0.49)\n  slice.51 = f32[1,1]{1,0} slice(convert.50), slice={[0:1], [0:1]}\n  reshape.52 = f32[] reshape(slice.51)\n  slice.53 = f32[1,1]{1,0} slice(convert.50), slice={[1:2], [1:2]}\n  reshape.54 = f32[] reshape(slice.53)\n  multiply.55 = f32[] multiply(reshape.52, reshape.54)\n  slice.56 = f32[1,1]{1,0} slice(convert.50), slice={[0:1], [1:2]}\n  reshape.57 = f32[] reshape(slice.56)\n  slice.58 = f32[1,1]{1,0} slice(convert.50), slice={[1:2], [0:1]}\n  reshape.59 = f32[] reshape(slice.58)\n  multiply.60 = f32[] multiply(reshape.57, reshape.59)\n  ROOT subtract.61 = f32[] subtract(multiply.55, multiply.60)\n}\n\ndet_2.69 {\n  Arg_0.70 = s32[2,2]{1,0} parameter(0)\n  convert.71 = f32[2,2]{1,0} convert(Arg_0.70)\n  slice.72 = f32[1,1]{1,0} slice(convert.71), slice={[0:1], [0:1]}\n  reshape.73 = f32[] reshape(slice.72)\n  slice.74 = f32[1,1]{1,0} slice(convert.71), slice={[1:2], [1:2]}\n  reshape.75 = f32[] reshape(slice.74)\n  multiply.76 = f32[] multiply(reshape.73, reshape.75)\n  slice.77 = f32[1,1]{1,0} slice(convert.71), slice={[0:1], [1:2]}\n  reshape.78 = f32[] reshape(slice.77)\n  slice.79 = f32[1,1]{1,0} slice(convert.71), slice={[1:2], [0:1]}\n  reshape.80 = f32[] reshape(slice.79)\n  multiply.81 = f32[] multiply(reshape.78, reshape.80)\n  ROOT subtract.82 = f32[] subtract(multiply.76, multiply.81)\n}\n\ndet_3.90 {\n  Arg_0.91 = s32[2,2]{1,0} parameter(0)\n  convert.92 = f32[2,2]{1,0} convert(Arg_0.91)\n  slice.93 = f32[1,1]{1,0} slice(convert.92), slice={[0:1], [0:1]}\n  reshape.94 = f32[] reshape(slice.93)\n  slice.95 = f32[1,1]{1,0} slice(convert.92), slice={[1:2], [1:2]}\n  reshape.96 = f32[] reshape(slice.95)\n  multiply.97 = f32[] multiply(reshape.94, reshape.96)\n  slice.98 = f32[1,1]{1,0} slice(convert.92), slice={[0:1], [1:2]}\n  reshape.99 = f32[] reshape(slice.98)\n  slice.100 = f32[1,1]{1,0} slice(convert.92), slice={[1:2], [0:1]}\n  reshape.101 = f32[] reshape(slice.100)\n  multiply.102 = f32[] multiply(reshape.99, reshape.101)\n  ROOT subtract.103 = f32[] subtract(multiply.97, multiply.102)\n}\n\nENTRY main.108 {\n  Arg_0.1 = s32[5,2]{1,0} parameter(0)\n  slice.3 = s32[1,2]{1,0} slice(Arg_0.1), slice={[0:1], [0:2]}\n  slice.4 = s32[1,2]{1,0} slice(Arg_0.1), slice={[1:2], [0:2]}\n  concatenate.5 = s32[2,2]{1,0} concatenate(slice.3, slice.4), dimensions={0}\n  transpose.6 = s32[2,2]{0,1} transpose(concatenate.5), dimensions={1,0}\n  call.21 = f32[] call(transpose.6), to_apply=det.7\n  constant.2 = f32[] constant(0.5)\n  multiply.22 = f32[] multiply(call.21, constant.2)\n  slice.23 = s32[1,2]{1,0} slice(Arg_0.1), slice={[1:2], [0:2]}\n  slice.24 = s32[1,2]{1,0} slice(Arg_0.1), slice={[2:3], [0:2]}\n  concatenate.25 = s32[2,2]{1,0} concatenate(slice.23, slice.24), dimensions={0}\n  transpose.26 = s32[2,2]{0,1} transpose(concatenate.25), dimensions={1,0}\n  call.41 = f32[] call(transpose.26), to_apply=det_0.27\n  multiply.42 = f32[] multiply(call.41, constant.2)\n  add.43 = f32[] add(multiply.22, multiply.42)\n  slice.44 = s32[1,2]{1,0} slice(Arg_0.1), slice={[2:3], [0:2]}\n  slice.45 = s32[1,2]{1,0} slice(Arg_0.1), slice={[3:4], [0:2]}\n  concatenate.46 = s32[2,2]{1,0} concatenate(slice.44, slice.45), dimensions={0}\n  transpose.47 = s32[2,2]{0,1} transpose(concatenate.46), dimensions={1,0}\n  call.62 = f32[] call(transpose.47), to_apply=det_1.48\n  multiply.63 = f32[] multiply(call.62, constant.2)\n  add.64 = f32[] add(add.43, multiply.63)\n  slice.65 = s32[1,2]{1,0} slice(Arg_0.1), slice={[3:4], [0:2]}\n  slice.66 = s32[1,2]{1,0} slice(Arg_0.1), slice={[4:5], [0:2]}\n  concatenate.67 = s32[2,2]{1,0} concatenate(slice.65, slice.66), dimensions={0}\n  transpose.68 = s32[2,2]{0,1} transpose(concatenate.67), dimensions={1,0}\n  call.83 = f32[] call(transpose.68), to_apply=det_2.69\n  multiply.84 = f32[] multiply(call.83, constant.2)\n  add.85 = f32[] add(add.64, multiply.84)\n  slice.86 = s32[1,2]{1,0} slice(Arg_0.1), slice={[4:5], [0:2]}\n  slice.87 = s32[1,2]{1,0} slice(Arg_0.1), slice={[0:1], [0:2]}\n  concatenate.88 = s32[2,2]{1,0} concatenate(slice.86, slice.87), dimensions={0}\n  transpose.89 = s32[2,2]{0,1} transpose(concatenate.88), dimensions={1,0}\n  call.104 = f32[] call(transpose.89), to_apply=det_3.90\n  multiply.105 = f32[] multiply(call.104, constant.2)\n  add.106 = f32[] add(add.85, multiply.105)\n  ROOT tuple.107 = (f32[]) tuple(add.106)\n}\n\n\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#我们是否可以-Jit-所有程序}
+
+### 我们是否可以 <strong>Jit</strong> 所有程序
+
+绝对不是，请查看来自 JAX 的 [此文档](https://jax.readthedocs.io/en/latest/jax-101/02-jitting.html#why-can-t-we-just-jit-everything) ！
+
+导致程序无法运行的最常见原因是您的控制流依赖于 <strong>input</strong> 的值。例如，
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    # Cited from JAX documentation.
+    # While loop conditioned on x and n.
+
+    def g(x, n):
+      i = 0
+      while i < n:
+        i += 1
+      return x + i
+
+    g_jit = jax.jit(g)
+
+    import traceback
+    try:
+      g_jit(10, 20)  # Should raise an error.
+    except Exception:
+        traceback.print_exc()
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+有两种可能的解决方案。1. 您可以用低级的 [\*\*jax.lax\*\* API](https://jax.readthedocs.io/en/latest/jax.lax.html#control-flow-operators) 替换控制流。您需要花一些时间弄清楚如何使用这些 API。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    def g_with_lax_control_flow(x, n):
+      def body_fun(i):
+        i += 1
+        return i
+      return x + jax.lax.while_loop(lambda i: i < n, body_fun, 0)
+
+
+    g_with_lax_control_flow_jit = jax.jit(g_with_lax_control_flow)
+    g_with_lax_control_flow_jit(10, 20)  # good to go!
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="output">
+    <pre>
+      {"Array(30, dtype=int32, weak_type=True)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+2. 另一种可能的解决方案是使用 <strong>static\_argnames</strong>。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    g_with_static_argnames_jit = jax.jit(g, static_argnames=['n'])
+    g_with_static_argnames_jit(10, 20)  # good to go!
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="output">
+    <pre>
+      {"Array(30, dtype=int32, weak_type=True)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+so which method we should choose when the program is unjittable?
+
+那么当程序 <strong>unjittable</strong> 时，我们应该选择哪种方法呢？
+
+- 首先使用 <strong>jax.lax</strong> API 重写控制流。虽然这里存在一些学习成本，但这是值得的。
+- 如果受影响的输入值的可见性是 <strong>VIS\_PUBLIC</strong>，如上例中的 <strong>n</strong>，您可以将其标记为 <strong>static\_argnames</strong>，这些受影响的输入值将被编译到 XLA 程序中。
+
+:target{#更多例子}
+
+### 更多例子
+
+如果您想查看更多示例，请查看 SPU 存储库中的 [Python 示例](https://github.com/secretflow/spu/tree/main/examples/python) 。在大多数示例中，MPC 部分都是使用 <strong>jax.numpy</strong> 包编写的。您会发现我们正在大量使用 <strong>jax.lax</strong> API 和 <strong>static\_argnames</strong> 来使 JAX 程序变得 jittable！
+
+:target{#使用-SPU-执行-JAX-程序}
+
+## 使用 SPU 执行 JAX 程序
+
+一旦您准备好 jittable 的 JAX 程序，我们就可以使用 SPU 执行它们！
+
+:target{#（可选）SPU-模拟}
+
+### （可选）SPU 模拟
+
+If you hope to get a quick try, I would like to introduce <strong>spu.sim\_jax</strong> to you. Let’s show how does it work!
+
+> <strong>spu.sim\_jax</strong> 仅在 <strong>spu v0.3.1b8</strong> 之后提供。
+
+在这里，我们使用以下设置创建一个 SPU 模拟器：- 三方- 使用 ABY3 协议。在 [此处](http://www.secretflow.org.cn/docs/spu/en/reference/mpc_status.html#supported-mpc-protocol) 检查所有支持的协议。- 64位字段，SPU中的值在2^64环上表示。
+
+但是，如果您只是想确认 JAX 程序是否可以被 SPU 执行，那么任何设置都应该没问题。不同的设置只会影响经过的时间和计算的精度。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
+    ```python
+    from spu.utils.simulation import Simulator, sim_jax
+
+    sim = Simulator.simple(3, spu.ProtocolKind.ABY3, spu.FieldType.FM64)
+
+    spu_euclidean_distance_fn = sim_jax(sim, euclidean_distance)
+
+    spu_euclidean_distance_fn(np.array([0, 0]), np.array([3, 4]))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="output">
+    <pre>
+      {"array(4.999962, dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+如果您重复执行上面的代码，您可能会发现两次运行的结果略有不同，这是由于 MPC 计算中的随机性所致。
+
+在使用 <strong>euclidean\_distance</strong> 进行测试后，我们尝试使用 <strong>area\_of\_simple\_polygon</strong>。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
+    ```python
+    spu_area_of_simple_polygon_fn=sim_jax(sim, area_of_simple_polygon)
+
+    spu_area_of_simple_polygon_fn(vertices)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="output">
+    <pre>
+      {"array(16.5, dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#使用-SPU-设备运行}
+
+### 使用 SPU 设备运行
+
+最后，我们将使用 SecretFlow 运行 JAX 程序。
+
+如果您查看了其他教程，我想您应该熟悉以下步骤。
+
+在这里，我们创建了一个包含三个设备的本地独立 SecretFlow 集群：
+
+- 两个PYU设备 - <strong>alice</strong> 和 <strong>bob</strong>
+- 一个SPU设备
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+
+    sf.init(parties=['alice', 'bob'], address='local')
+
+    alice, bob = sf.PYU('alice'), sf.PYU('bob')
+    spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+我们先用 spu 设备尝试 <strong>euclidean\_distance</strong>。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
+    ```python
+    p1 = sf.to(alice,np.array([0, 0]))
+    p2 = sf.to(bob,np.array([3, 4]))
+
+    distance = spu(euclidean_distance)(p1, p2)
+
+    sf.reveal(distance)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[15]:" stderr={false} type="output">
+    <pre>
+      {"array(5., dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+然后我们尝试\*\*area\_of\_simple\_polygon\*\*。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[16]:" stderr={false} type="input">
+    ```python
+    v = sf.to(alice, vertices)
+    area = spu(area_of_simple_polygon)(v)
+
+    sf.reveal(area)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[16]:" stderr={false} type="output">
+    <pre>
+      {"array(16.5, dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#总结}
+
+## 总结
+
+This is the end of the tutorial. Let’s summarize the steps to do privacy-preserving scientific computation with JAX NumPy APIS:
+
+1. 编写一个 jittable JAX NumPy 程序。您应该使用 <strong>jax.jit</strong> 或 <strong>jax.xla\_computation</strong> 对其进行测试。
+2. 可选）尝试使用 <strong>SPU 模拟</strong> 执行 JAX 程序。
+3. Run this JAX NumPy with SPU device in SecretFlow.
+
+如果您发现您的 JAX 程序是 jittable 但在 SPU 编译器或运行时失败。请查看 [JAX NumPy Operators Status](http://www.secretflow.org.cn/docs/spu/en/reference/np_op_status.html) 和 [XLA Implementation Status](http://www.secretflow.org.cn/docs/spu/zh/reference/xla_status.html) 。或者您可以通过 [GitHub Issues](https://github.com/secretflow/spu/issues) 直接联系我们。

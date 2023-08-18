@@ -1,0 +1,442 @@
+:target{#Data-Preprocessing-with-DataFrame}
+
+# Data Preprocessing with DataFrame
+
+> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+
+It is recommended to use [jupyter](https://jupyter.org/) to run this tutorial.
+
+Secretflow provides a variety of preprocessing tools to process data.
+
+:target{#Preparation}
+
+## Preparation
+
+Initialize secretflow and create two parties alice and bob.
+
+> 💡 Before using preprocessing, you may need to get to know secretflow’s [DataFrame](../user_guide/preprocessing/DataFrame.mdx).
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    import secretflow as sf
+
+    # Check the version of your SecretFlow
+    print('The version of SecretFlow: {}'.format(sf.__version__))
+
+    # In case you have a running secretflow runtime already.
+    sf.shutdown()
+
+    sf.init(['alice', 'bob'], address='local')
+    alice = sf.PYU('alice')
+    bob = sf.PYU('bob')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Data-Preparation}
+
+## Data Preparation
+
+Here we use [iris](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) as example data.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    import pandas as pd
+    from sklearn.datasets import load_iris
+
+    iris = load_iris(as_frame=True)
+    data = pd.concat([iris.data, iris.target], axis=1)
+
+    # In order to facilitate the subsequent display,
+    # here we first set some data to None.
+    data.iloc[1, 1] = None
+    data.iloc[100, 1] = None
+
+    # Restore target to its original name.
+    data['target'] = data['target'].map({0: 'setosa', 1: 'versicolor', 2: 'virginica' })
+    data
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[2]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"sepal length (cm)"}</th><th>{"sepal width (cm)"}</th><th>{"petal length (cm)"}</th><th>{"petal width (cm)"}</th><th>{"target"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"0"}</th><td>{"5.1"}</td><td>{"3.5"}</td><td>{"1.4"}</td><td>{"0.2"}</td><td>{"setosa"}</td>
+          </tr>
+
+          <tr>
+            <th>{"1"}</th><td>{"4.9"}</td><td>{"NaN"}</td><td>{"1.4"}</td><td>{"0.2"}</td><td>{"setosa"}</td>
+          </tr>
+
+          <tr>
+            <th>{"2"}</th><td>{"4.7"}</td><td>{"3.2"}</td><td>{"1.3"}</td><td>{"0.2"}</td><td>{"setosa"}</td>
+          </tr>
+
+          <tr>
+            <th>{"3"}</th><td>{"4.6"}</td><td>{"3.1"}</td><td>{"1.5"}</td><td>{"0.2"}</td><td>{"setosa"}</td>
+          </tr>
+
+          <tr>
+            <th>{"4"}</th><td>{"5.0"}</td><td>{"3.6"}</td><td>{"1.4"}</td><td>{"0.2"}</td><td>{"setosa"}</td>
+          </tr>
+
+          <tr>
+            <th>{"..."}</th><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td>
+          </tr>
+
+          <tr>
+            <th>{"145"}</th><td>{"6.7"}</td><td>{"3.0"}</td><td>{"5.2"}</td><td>{"2.3"}</td><td>{"virginica"}</td>
+          </tr>
+
+          <tr>
+            <th>{"146"}</th><td>{"6.3"}</td><td>{"2.5"}</td><td>{"5.0"}</td><td>{"1.9"}</td><td>{"virginica"}</td>
+          </tr>
+
+          <tr>
+            <th>{"147"}</th><td>{"6.5"}</td><td>{"3.0"}</td><td>{"5.2"}</td><td>{"2.0"}</td><td>{"virginica"}</td>
+          </tr>
+
+          <tr>
+            <th>{"148"}</th><td>{"6.2"}</td><td>{"3.4"}</td><td>{"5.4"}</td><td>{"2.3"}</td><td>{"virginica"}</td>
+          </tr>
+
+          <tr>
+            <th>{"149"}</th><td>{"5.9"}</td><td>{"3.0"}</td><td>{"5.1"}</td><td>{"1.8"}</td><td>{"virginica"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"150 rows × 5 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+Create a vertical partitioned DataFrame.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    import tempfile
+    from secretflow.data.vertical import read_csv as v_read_csv
+
+    # Vertical partitioning.
+    v_alice, v_bob = data.iloc[:, :2], data.iloc[:, 2:]
+
+    # Save to temprary files.
+    _, alice_path = tempfile.mkstemp()
+    _, bob_path = tempfile.mkstemp()
+    v_alice.to_csv(alice_path, index=False)
+    v_bob.to_csv(bob_path, index=False)
+
+
+    df = v_read_csv({alice: alice_path, bob: bob_path})
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+You can also create a horizontal partitioned DataFrame, which works the same with vertical partitioning for subsequent steps.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    # from secretflow.data.horizontal import read_csv as h_read_csv
+    # from secretflow.security.aggregation import PlainAggregator
+    # from secretflow.security.compare import PlainComparator
+
+    # # Horizontal partitioning.
+    # h_alice, h_bob = data.iloc[:70, :], data.iloc[70:, :]
+
+    # # Save to temorary files.
+    # _, h_alice_path = tempfile.mkstemp()
+    # _, h_bob_path = tempfile.mkstemp()
+    # h_alice.to_csv(h_alice_path, index=False)
+    # h_bob.to_csv(h_bob_path, index=False)
+
+    # df = h_read_csv(
+    #     {alice: h_alice_path, bob: h_bob_path},
+    #     aggregator=PlainAggregator(alice),
+    #     comparator=PlainComparator(alice),
+    # )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Preprocessing}
+
+## Preprocessing
+
+Secretflow provides missing value filling, standardization, categorical features encoding, discretization .etc, which are similar to sklearn’s preprocessing.
+
+:target{#Missing-value-filling}
+
+### Missing value filling
+
+DataFrame provides the fillna method, which can fill in missing values in the same way as pandas.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    # Before filling, the sepal width (cm) is missing in two positions.
+    df.count()['sepal width (cm)']
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="output">
+    <pre>
+      {"148\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    # Fill sepal width (cm) with 10.
+    df.fillna(value={'sepal width (cm)': 10}).count()['sepal width (cm)']
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="output">
+    <pre>
+      {"150\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Standardization}
+
+### Standardization
+
+:target{#Scaling-features-to-a-range}
+
+#### Scaling features to a range
+
+Secretflow provides <code>MinMaxScaler</code> for scaling features to lie between a given minimum and maximum value. The input and output of MinMaxScaler are both <code>DataFrame</code>.
+
+Here is an exmaple to scale <code>sepal length (cm)</code> to the \[0, 1] range.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    from secretflow.preprocessing import MinMaxScaler
+
+    scaler = MinMaxScaler()
+
+    scaled_sepal_len = scaler.fit_transform(df['sepal length (cm)'])
+
+    print('Min: ', scaled_sepal_len.min())
+    print('Max: ', scaled_sepal_len.max())
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Min:  sepal length (cm)    0.0\ndtype: float64\nMax:  sepal length (cm)    1.0\ndtype: float64\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Variance-scaling}
+
+#### Variance scaling
+
+Secretflow provides <code>StandardScaler</code> for variance scaling. The input and output of StandardScaler are both DataFrames.
+
+Here is an exmaple to scale <code>sepal length (cm)</code> to unit variance.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    from secretflow.preprocessing import StandardScaler
+
+    scaler = StandardScaler()
+
+    scaled_sepal_len = scaler.fit_transform(df['sepal length (cm)'])
+
+    print('Min: ', scaled_sepal_len.min())
+    print('Max: ', scaled_sepal_len.max())
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Min:  sepal length (cm)   -1.870024\ndtype: float64\nMax:  sepal length (cm)    2.492019\ndtype: float64\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Encoding-categorical-features}
+
+### Encoding categorical features
+
+:target{#OneHot-encoding}
+
+#### OneHot encoding
+
+Secretflow provides <code>OneHotEncoder</code> for OneHot encoding. The input and output of OneHotEncoder are <code>DataFrame</code>.
+
+Here is an example to encode target with onehot.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    from secretflow.preprocessing import OneHotEncoder
+
+    onehot_encoder = OneHotEncoder()
+    onehot_target = onehot_encoder.fit_transform(df['target'])
+
+    print('Columns: ', onehot_target.columns)
+    print('Min: \n', onehot_target.min())
+    print('Max: \n', onehot_target.max())
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Columns:  Index(['target_setosa', 'target_versicolor', 'target_virginica'], dtype='object')\nMin:\n target_setosa        0.0\ntarget_versicolor    0.0\ntarget_virginica     0.0\ndtype: float64\nMax:\n target_setosa        1.0\ntarget_versicolor    1.0\ntarget_virginica     1.0\ndtype: float64\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Label-encoding}
+
+#### Label encoding
+
+secretflow provides <code>LabelEncoder</code> for encoding target labels with value between 0 and n\_classes-1. The input and output of LabelEncoder are <code>DataFrame</code>.
+
+Here is an example to encode target to \[0, n\_classes-1].
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    from secretflow.preprocessing import LabelEncoder
+
+    label_encoder = LabelEncoder()
+    encoded_label = label_encoder.fit_transform(df['target'])
+
+    print('Columns: ', encoded_label.columns)
+    print('Min: \n', encoded_label.min())
+    print('Max: \n', encoded_label.max())
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Columns:  Index(['target'], dtype='object')\nMin:\n target    0\ndtype: int64\nMax:\n target    2\ndtype: int64\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Discretization}
+
+### Discretization
+
+SecretFlow provides <code>KBinsDiscretizer</code> for partitioning continuous features into discrete values. The input and output of KBinsDiscretizer are both <code>DataFrame</code>.
+
+Here is an example to partition <code>petal length (cm)</code> to 5 bins.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    from secretflow.preprocessing import KBinsDiscretizer
+
+    estimator = KBinsDiscretizer(n_bins=5)
+    binned_petal_len = estimator.fit_transform(df['petal length (cm)'])
+
+    print('Min: \n', binned_petal_len.min())
+    print('Max: \n', binned_petal_len.max())
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Min:\n petal length (cm)    0.0\ndtype: float64\nMax:\n petal length (cm)    4.0\ndtype: float64\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#WOE-encoding}
+
+#### WOE encoding
+
+secretflow provides <code>VertWoeBinning</code> to bin the features into buckets by quantile or chimerge method, and calculate the woe value and iv value in each bucket. And <code>VertWOESubstitution</code> can substitute the features with the woe value.
+
+Here is an example to encode features to woe.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
+    ```python
+    # woe binning use SPU or HEU device to protect label
+    spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
+
+    # Only support binary classification label dataset for now.
+    # use linear dataset as example
+    from secretflow.utils.simulation.datasets import load_linear
+    vdf = load_linear(parts={alice: (1, 4), bob: (18, 22)})
+    print(f"orig ds in alice:\n {sf.reveal(vdf.partitions[alice].data)}")
+    print(f"orig ds in bob:\n {sf.reveal(vdf.partitions[bob].data)}")
+
+    from secretflow.preprocessing.binning.vert_woe_binning import VertWoeBinning
+
+    binning = VertWoeBinning(spu)
+    woe_rules = binning.binning(
+        vdf,
+        binning_method="quantile",
+        bin_num=5,
+        bin_names={alice: ["x1", "x2", "x3"], bob: ["x18", "x19", "x20"]},
+        label_name="y",
+    )
+
+    print(f"woe_rules for alice:\n {sf.reveal(woe_rules[alice])}")
+    print(f"woe_rules for bob:\n {sf.reveal(woe_rules[bob])}")
+
+    from secretflow.preprocessing.binning.vert_woe_substitution import VertWOESubstitution
+
+    woe_sub = VertWOESubstitution()
+    sub_data = woe_sub.substitution(vdf, woe_rules)
+
+    print(f"substituted ds in alice:\n {sf.reveal(sub_data.partitions[alice].data)}")
+    print(f"substituted ds in bob:\n {sf.reveal(sub_data.partitions[bob].data)}")
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"orig ds in alice:\n             x1        x2        x3\n0    -0.514226  0.730010 -0.730391\n1    -0.725537  0.482244 -0.823223\n2     0.608353 -0.071102 -0.775098\n3    -0.686642  0.160470  0.914477\n4    -0.198111  0.212909  0.950474\n...        ...       ...       ...\n9995 -0.367246 -0.296454  0.558596\n9996  0.010913  0.629268 -0.384093\n9997 -0.238097  0.904069 -0.344859\n9998  0.453686 -0.375173  0.899238\n9999 -0.776015 -0.772112  0.012110\n\n[10000 rows x 3 columns]\norig ds in bob:\n            x18       x19       x20  y\n0     0.810261  0.048303  0.937679  1\n1     0.312728  0.526637  0.589773  1\n2     0.039087 -0.753417  0.516735  0\n3    -0.855979  0.250944  0.979465  1\n4    -0.238805  0.243109 -0.121446  1\n...        ...       ...       ... ..\n9995 -0.847253  0.069960  0.786748  1\n9996 -0.502486 -0.076290 -0.604832  1\n9997 -0.424209  0.434947  0.998955  1\n9998  0.914291 -0.473056  0.616257  1\n9999 -0.602927 -0.021368  0.885519  0\n\n[10000 rows x 4 columns]\nwoe_rules for alice:\n {'variables': [{'name': 'x1', 'type': 'numeric', 'split_points': [-0.6048731088638305, -0.2093792676925656, 0.1864844083786014, 0.59245548248291], 'woes': [0.13818949789069251, 0.1043626580338657, 0.012473718947119546, -0.08312553911263658, -0.16055365315128886], 'ivs': [0.003719895277030594, 0.0021358508878795324, 3.104792224414912e-05, 0.001402356358949689, 0.005298781871642081], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_woe': -0.7620562438001163, 'else_iv': 6.385923806287768e-05, 'else_counts': 0}, {'name': 'x2', 'type': 'numeric', 'split_points': [-0.6180597543716427, -0.21352910995483343, 0.18739376068115243, 0.5941788196563724], 'woes': [-0.5795513521445242, -0.17800092651085536, 0.02175062133493428, 0.32061945260518093, 0.5508555713857505], 'ivs': [0.07282166470764677, 0.006530977061248972, 9.424153452104671e-05, 0.019271267842100412, 0.05393057944296773], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_woe': -0.7620562438001163, 'else_iv': 6.385923806287768e-05, 'else_counts': 0}, {'name': 'x3', 'type': 'numeric', 'split_points': [-0.5902724504470824, -0.19980529546737677, 0.2072824716567998, 0.6102998018264773], 'woes': [-0.5371125119817587, -0.25762552591997334, -0.022037294110497735, 0.3445721198562295, 0.6304998785437507], 'ivs': [0.062290057806557865, 0.013846189451494859, 9.751520288052276e-05, 0.022140413942886045, 0.06928418076454097], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_woe': -0.7620562438001163, 'else_iv': 6.385923806287768e-05, 'else_counts': 0}]}\nwoe_rules for bob:\n {'variables': [{'name': 'x18', 'type': 'numeric', 'split_points': [-0.595701837539673, -0.18646149635314926, 0.20281808376312258, 0.5969645977020259], 'woes': [0.7644870924575128, 0.3796894156855692, 0.09717493242210018, -0.3856750302449858, -0.6258460389655672], 'ivs': [0.0984553650514661, 0.026672043182215357, 0.0018543743703697353, 0.031572379289703925, 0.08527363286990977], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_woe': -0.7620562438001163, 'else_iv': 6.385923806287768e-05, 'else_counts': 0}, {'name': 'x19', 'type': 'numeric', 'split_points': [-0.5988080263137814, -0.2046342611312865, 0.1958462238311768, 0.6044608354568479], 'woes': [-0.24268812281101115, -0.18886157950622262, 0.061543825157264156, 0.15773711862524092, 0.24528753075504478], 'ivs': [0.012260322787780317, 0.0073647296376464335, 0.0007489127774465146, 0.0048277504221347, 0.011464529974064627], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_woe': -0.7620562438001163, 'else_iv': 6.385923806287768e-05, 'else_counts': 0}, {'name': 'x20', 'type': 'numeric', 'split_points': [-0.6013513207435608, -0.2053116083145139, 0.19144065380096467, 0.5987063169479374], 'woes': [1.1083043875152403, 0.5598579367731444, 0.15773711862524092, -0.4618210945247346, -0.9083164208649596], 'ivs': [0.1887116758575296, 0.055586120695474514, 0.0048277504221347, 0.04568212645465593, 0.18279475271010598], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_woe': -0.7620562438001163, 'else_iv': 6.385923806287768e-05, 'else_counts': 0}]}\nsubstituted ds in alice:\n             x1        x2        x3\n0     0.104363  0.550856 -0.537113\n1     0.138189  0.320619 -0.537113\n2    -0.160554  0.021751 -0.537113\n3     0.138189  0.021751  0.630500\n4     0.012474  0.320619  0.630500\n...        ...       ...       ...\n9995  0.104363 -0.178001  0.344572\n9996  0.012474  0.550856 -0.257626\n9997  0.104363  0.550856 -0.257626\n9998 -0.083126 -0.178001  0.630500\n9999  0.138189 -0.579551 -0.022037\n\n[10000 rows x 3 columns]\nsubstituted ds in bob:\n            x18       x19       x20  y\n0    -0.625846  0.061544 -0.908316  1\n1    -0.385675  0.157737 -0.461821  1\n2     0.097175 -0.242688 -0.461821  0\n3     0.764487  0.157737 -0.908316  1\n4     0.379689  0.157737  0.157737  1\n...        ...       ...       ... ..\n9995  0.764487  0.061544 -0.908316  1\n9996  0.379689  0.061544  1.108304  1\n9997  0.379689  0.157737 -0.908316  1\n9998 -0.625846 -0.188862 -0.908316  1\n9999  0.764487  0.061544 -0.908316  0\n\n[10000 rows x 4 columns]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Ending}
+
+## Ending
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
+    ```python
+    # Clean up temporary files
+
+    import os
+
+    try:
+        os.remove(alice_path)
+        os.remove(bob_path)
+    except OSError:
+        pass
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
