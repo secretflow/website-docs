@@ -77,7 +77,7 @@ jobs:
           delete-branch: true
           title: 'chore(${{ matrix.project }}): Update docs'
           body: |
-            This PR updates the documentation for ${{ matrix.project }}.
+            This PR builds documentation for ${{ matrix.project }}.
 
             Generated from [`${{ steps.get-project-sha.outputs.sha }}`][commit]
 
