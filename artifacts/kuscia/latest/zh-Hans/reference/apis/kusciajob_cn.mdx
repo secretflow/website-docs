@@ -1,0 +1,2162 @@
+:target{#kusciajob}
+
+# KusciaJob
+
+在 Kuscia 中，你可以使用 KusciaJob 来表示一个任务流程。请参考 [KusciaJob](../concepts/kusciajob_cn.mdx) 。
+你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/job.proto) 找到 Domain 对应的 protobuf 文件。
+
+:target{#id1}
+
+## 接口总览
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        方法名
+      </td>
+
+      <td>
+        请求类型
+      </td>
+
+      <td>
+        响应类型
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        [<span>CreateJob</span>](#create-job)
+      </td>
+
+      <td>
+        CreateJobRequest
+      </td>
+
+      <td>
+        CreateJobResponse
+      </td>
+
+      <td>
+        创建Job
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>QueryJob</span>](#query-job)
+      </td>
+
+      <td>
+        QueryJobRequest
+      </td>
+
+      <td>
+        QueryJobResponse
+      </td>
+
+      <td>
+        查询Job
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>BatchQueryJobStatus</span>](#batch-query-job-status)
+      </td>
+
+      <td>
+        BatchQueryJobStatusRequest
+      </td>
+
+      <td>
+        BatchQueryJobStatusResponse
+      </td>
+
+      <td>
+        批量查询Job状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>DeleteJob</span>](#delete-job)
+      </td>
+
+      <td>
+        DeleteJobRequest
+      </td>
+
+      <td>
+        DeleteJobResponse
+      </td>
+
+      <td>
+        删除Job
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>StopJob</span>](#stop-job)
+      </td>
+
+      <td>
+        StopJobRequest
+      </td>
+
+      <td>
+        StopJobResponse
+      </td>
+
+      <td>
+        停止Job
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>WatchJob</span>](#watch-job)
+      </td>
+
+      <td>
+        WatchJobRequest
+      </td>
+
+      <td>
+        WatchJobEventResponse stream
+      </td>
+
+      <td>
+        监控Job
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id2}
+
+## 接口详情
+
+:target{#create-job}
+
+### 创建Job
+
+:target{#http}
+
+#### HTTP路径
+
+/api/v1/job/create
+
+:target{#createjobrequest}
+
+#### 请求（CreateJobRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        initiator
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        发起方节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        max\_parallelism
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        并发度，参考 [<span>KusciaJob概念</span>](../concepts/kusciajob_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tasks
+      </td>
+
+      <td>
+        [<span>Task</span>](#task)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务参数
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#createjobresponse}
+
+#### 响应（CreateJobResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        CreateJobResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#query-job}
+
+### 查询Job
+
+:target{#id3}
+
+#### HTTP路径
+
+/api/v1/job/query
+
+:target{#queryjobrequest}
+
+#### 请求（QueryJobRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#queryjobresponse}
+
+#### 响应（QueryJobResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        QueryJobResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.initiator
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        发起方
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.max\_parallelism
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        并发度
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.tasks
+      </td>
+
+      <td>
+        [<span>TaskConfig</span>](#task-config)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务列表
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.status
+      </td>
+
+      <td>
+        [<span>JobStatusDetail</span>](#job-status-detail)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Job状态
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#batch-query-job-status}
+
+### 批量查询Job状态
+
+:target{#id4}
+
+#### HTTP路径
+
+/api/v1/job/status/batchQuery
+
+:target{#batchqueryjobstatusrequest}
+
+#### 请求（BatchQueryJobStatusRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        job\_ids
+      </td>
+
+      <td>
+        string\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#batchqueryjobstatusresponse}
+
+#### 响应（BatchQueryJobStatusResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        BatchQueryJobStatusResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.jobs
+      </td>
+
+      <td>
+        [<span>JobStatus</span>](#job-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Job状态列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#delete-job}
+
+### 删除Job
+
+:target{#id5}
+
+#### HTTP路径
+
+/api/v1/job/delete
+
+:target{#deletejobrequest}
+
+#### 请求（DeleteJobRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#deletejobresponse}
+
+#### 响应（DeleteJobResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        DeleteJobResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#stop-job}
+
+### 停止Job
+
+:target{#id6}
+
+#### HTTP路径
+
+/api/v1/job/stop
+
+:target{#stopjobrequest}
+
+#### 请求（StopJobRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#stopjobresponse}
+
+#### 响应（StopJobResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        StopJobResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#watch-job}
+
+### 监控Job
+
+:target{#id7}
+
+#### HTTP路径
+
+暂不支持 HTTP 接口。
+
+:target{#watchjobrequest}
+
+#### 请求（WatchJobRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        timeout\_seconds
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        超时时间
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#watchjobeventresponse}
+
+#### 响应（WatchJobEventResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        类型
+      </td>
+
+      <td>
+        [<span>EventType</span>](#event-type)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        事件类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        object
+      </td>
+
+      <td>
+        [<span>JobStatus</span>](#job-status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Job状态
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id8}
+
+## 公共
+
+:target{#job-status}
+
+### JobStatus
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>JobStatusDetail</span>](#job-status-detail)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Job状态详情
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#job-status-detail}
+
+### JobStatusDetail
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        state
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        总体状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        err\_msg
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        错误信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        create\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        创建时间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        start\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        启动时间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        end\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        结束时间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tasks
+      </td>
+
+      <td>
+        [<span>TaskStatus</span>](#task-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#party}
+
+### Party
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        DomainID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        role
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        角色
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#party-status}
+
+### PartyStatus
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        state
+      </td>
+
+      <td>
+        [<span>TaskState</span>](#task-state)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        总体状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        err\_msg
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        错误信息
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#task}
+
+### Task
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        app\_image
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务镜像
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parties
+      </td>
+
+      <td>
+        [<span>Party</span>](#party)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        参与方节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        alias
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务别名
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        task\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务ID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        dependencies
+      </td>
+
+      <td>
+        string\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        依赖任务
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        task\_input\_config
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务配置
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        priority
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        优先级，值越大优先级越高
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#task-config}
+
+### TaskConfig
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        app\_image
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务镜像
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parties
+      </td>
+
+      <td>
+        [<span>Party</span>](#party)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        参与方
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        alias
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务别名
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        task\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        dependencies
+      </td>
+
+      <td>
+        string\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        依赖任务
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        task\_input\_config
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务配置
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        priority
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        优先级，值越大优先级越高
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#task-status}
+
+### TaskStatus
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        task\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        任务ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        state
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务状态，参考 [<span>TaskState</span>](#task-state)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        err\_msg
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        错误信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        create\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        创建事件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        start\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        开始事件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        end\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        结束事件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parties
+      </td>
+
+      <td>
+        [<span>PartyStatus</span>](#party-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        参与方
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#event-type}
+
+### EventType
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        ADDED
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        增加事件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        MODIFIED
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        修改事件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DELETED
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        删除事件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ERROR
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        错误事件
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#task-state}
+
+### TaskState
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        Pending
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        未开始运行
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Running
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        运行中
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Succeeded
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        成功
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Failed
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        失败
+      </td>
+    </tr>
+  </tbody>
+</table>
