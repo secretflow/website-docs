@@ -1,0 +1,1257 @@
+:target{#scql-operators-specification}
+
+# SCQL 算子规范
+
+这是 SCQL 算子的规范 (不是内核库),包括算子签名和语义
+
+:target{#op-list}
+
+## 算子列表
+
+:target{#add}
+
+### <code>Add</code>
+
+Out = Left <code>Add</code> Right
+
+输入：
+
+1. <del id="id2">\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#broadcastto}
+
+### <code>BroadcastTo</code>
+
+将输入的 tensor <cite>In</cite> 广播转变为与 ShapeRefTensor 相同的 shape。例：
+
+```Python
+In = [1]
+ShapeRefTensor = [a, b, c]
+# ShapeRefTensor's shape is (3, 1), broadcast In to shape (3, 1)
+Out = BroadcastTo(In, ShapeRefTensor) = [1, 1, 1]
+```
+
+输入：
+
+1. <del>\`</del>In\`(可变参数, T)：输入 tensor
+2. <del>\`</del>ShapeRefTensor\`(single, T1)：Shape reference tensor
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T2)： tensor 结果
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#concat}
+
+### <code>Concat</code>
+
+定义：给定一组 tensor (可变参数)，其中 tensor 的 shape 必须相同，(除了轴之外)，将它们沿着指定的轴拼接起来。例如：
+
+```python
+In = { {1, 2}, {2, 3, 4}, {3, 4, 5, 6} }
+Out = {1, 2, 2, 3, 4, 3, 4, 5, 6}
+```
+
+输入：
+
+1. <del>\`</del>In\`(可变参数, T)：要连接的 tensor 。
+
+输出：
+
+1. <del>\`</del>Out\`(single, T)：整合 tensor 。
+
+<strong>属性：</strong>
+
+1. <cite>axis</cite>: Int64. 要连接的维度。
+
+<strong>默认属性值:</strong>
+
+1. <code>axis</code>: 0
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#constant}
+
+### <code>Constant</code>
+
+定义：根据 Attributes 生成常量。例如：
+
+```python
+scalar = [{"a", "b", "c"}]
+to_status = 0
+Out = [{"a", "b", "c"}]
+```
+
+输入：
+
+无输入参数。
+
+输出：
+
+1. <del>\`</del>Out\`(single, T)：从常量输出 tensor 。
+
+<strong>属性：</strong>
+
+1. <cite>scalar</cite>：标量属性。
+2. <cite>to\_status</cite>：int64. to status, 0：to private, 1：to public.
+
+<strong>默认属性值:</strong>
+
+1. <code>to\_status</code>: 0
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>：公共，私有。
+
+:target{#copy}
+
+### <code>Copy</code>
+
+定义：将源 tensor 复制到新的目前 tensor 中。
+
+输入：
+
+1. <del>\`</del>In\`(single, T1)：源 tensor 。
+
+输出：
+
+1. <del>\`</del>Out\`(single, T1)：目标 tensor 。
+
+<strong>属性：</strong>
+
+1. <cite>input\_party\_codes</cite>：输入 tensor In 所属方。
+2. <cite>output\_party\_codes</cite>：输出 tensor Out 所属方。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T1</cite>: 私有
+
+:target{#div}
+
+### <code>Div</code>
+
+Out = Left <code>Div</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#dumpfile}
+
+### <code>DumpFile</code>
+
+定义：将输入的 tensor 存储到文件中。注意：此操作将更改会话中受影响的行。
+
+输入：
+
+1. <del>\`</del>In\`(可变参数, T)：要存储的 tensor。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T)： 已被转储的 tensor。
+
+<strong>属性：</strong>
+
+1. <cite>file\_path</cite>：字符串。用于转储 tensor 的绝对文件路径。
+2. deliminator：字符串。列分隔符，例如逗号。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#equal}
+
+### <code>Equal</code>
+
+Out = Left <code>Equal</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#filter}
+
+### <code>Filter</code>
+
+给定一个boolean tensorsFilter (其 shape 为\[M])，以及一些 tensor In (可变参数，每个 tensor 的shape必须为\[M])。对于i在\[0, M-1]的范围内，仅当Filter\[i]为真时，保留In tensor 的元素，并输出过滤结果 tensor Out (可变参数)。例:
+
+```python
+Filter = {True, False, False, True, False}
+In = {a, b, c, d, e}
+Out = {a, d}
+```
+
+输入：
+
+1. <del>\`</del>Filter\`(single, T1)：Filter tensor 。
+2. <del>\`</del>In\`(可变参数, T)：待过滤的 tensor 。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T)：输出 tensor 。
+
+TensorStatus(ShareType) Constraints：
+
+1. <del>\`</del>T\`私有，密态
+2. <cite>T1</cite>: 公开，私有
+
+:target{#filterbyindex}
+
+### <code>FilterByIndex</code>
+
+定义：按行索引筛选。例：
+
+```python
+RowsIndexFilter = {3,1,0}
+Data = [{"a", "b", "c", "d"}, {0, 1, 2, 3}]
+Out = [{"d", "b", "a"}, {3, 1, 0}]
+```
+
+输入：
+
+1. RowsIndexFilter (single, T)：行索引筛选器向量(shape \[K]\[1])
+2. <del>\`</del>Data\`(可变参数, T)：输入数据 tensor (shape \[M]\[N])。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T)：输出数据 tensor (shape \[X]\[N])。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#greater}
+
+### <code>Greater</code>
+
+Out = Left <code>Greater</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#greaterequal}
+
+### <code>GreaterEqual</code>
+
+Out = Left <code>GreaterEqual</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#group}
+
+### <code>Group</code>
+
+定义:为每个输入元素分配一个组id(从0开始)。定义：
+
+```python
+Key = [{"a", "c", "a", "d"}, {0, 2, 0, 3}]
+GroupId = {0, 1, 0, 2}
+GroupNum = {3}
+```
+
+输入：
+
+1. <del>\`</del>Key\`(可变参数, T): input key tensors。
+
+输出：
+
+1. <del>\`</del>GroupId\`(single, T): group id vector。
+2. <del>\`</del>GroupNum\`(single, T): number of groups vector
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#groupavg}
+
+### <code>GroupAvg</code>
+
+定义：为每个组聚合 <cite>Data</cite>。例子:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{1, 2, 4}, {8, 7, 5}]
+```
+
+输入：
+
+1. <del>\`</del>GroupId\`(single, T): 输入组向量的id。
+2. <del>\`</del>GroupNum\`(single, T): 输入组向量的个数。
+3. <del>\`</del>In\`(可变参数, T): 输入数据 tensor
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T):输出数据 tensors (shape \[K]\[1], K 等于组的个数), Out\[i] 是第 i 组聚合的结果。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#groupcount}
+
+### <code>GroupCount</code>
+
+定义：为每个组聚合 <cite>Data</cite>。例子:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{2, 2, 1}, {2, 2, 1}]
+```
+
+输入：
+
+1. <del>\`</del>GroupId\`(single, T): 输入组向量的id。
+2. <del>\`</del>GroupNum\`(single, T): 输入组向量的个数。
+3. <del>\`</del>In\`(可变参数, T): 输入数据 tensor
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T):输出数据 tensors (shape \[K]\[1], K 等于组的个数), Out\[i] 是第 i 组聚合的结果。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#groupcountdistinct}
+
+### <code>GroupCountDistinct</code>
+
+定义：为每个组聚合 <cite>Data</cite>。例子:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{2, 2, 1}, {2, 2, 1}]
+```
+
+输入：
+
+1. <del>\`</del>GroupId\`(single, T): 输入组向量的id。
+2. <del>\`</del>GroupNum\`(single, T): 输入组向量的个数。
+3. <del>\`</del>In\`(可变参数, T): 输入数据 tensor
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T):输出数据 tensors (shape \[K]\[1], K 等于组的个数), Out\[i] 是第 i 组聚合的结果。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#groupfirstof}
+
+### <code>GroupFirstOf</code>
+
+定义：为每个组聚合 <cite>Data</cite>。例子:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{0, 1, 4}, {9, 8, 5}]
+```
+
+输入：
+
+1. <del>\`</del>GroupId\`(single, T): 输入组向量的id。
+2. <del>\`</del>GroupNum\`(single, T): 输入组向量的个数。
+3. <del>\`</del>In\`(可变参数, T): 输入数据 tensor
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T):输出数据 tensors (shape \[K]\[1], K 等于组的个数), Out\[i] 是第 i 组聚合的结果。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#groupmax}
+
+### <code>GroupMax</code>
+
+定义：为每个组聚合 <cite>Data</cite>。例子:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{2, 3, 4}, {9, 8, 5}]
+```
+
+输入：
+
+1. <del>\`</del>GroupId\`(single, T): 输入组向量的id。
+2. <del>\`</del>GroupNum\`(single, T): 输入组向量的个数。
+3. <del>\`</del>In\`(可变参数, T): 输入数据 tensor
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T):输出数据 tensors (shape \[K]\[1], K 等于组的个数), Out\[i] 是第 i 组聚合的结果。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#groupmin}
+
+### <code>GroupMin</code>
+
+定义：为每个组聚合 <cite>Data</cite>。例子:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{0, 1, 4}, {7, 6, 5}]
+```
+
+输入：
+
+1. <del>\`</del>GroupId\`(single, T): 输入组向量的id。
+2. <del>\`</del>GroupNum\`(single, T): 输入组向量的个数。
+3. <del>\`</del>In\`(可变参数, T): 输入数据 tensor
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T):输出数据 tensors (shape \[K]\[1], K 等于组的个数), Out\[i] 是第 i 组聚合的结果。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#groupsum}
+
+### <code>GroupSum</code>
+
+定义：为每个组聚合 <cite>Data</cite>。例子:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{2, 4, 4}, {16, 14, 5}]
+```
+
+输入：
+
+1. <del>\`</del>GroupId\`(single, T): 输入组向量的id。
+2. <del>\`</del>GroupNum\`(single, T): 输入组向量的个数。
+3. <del>\`</del>In\`(可变参数, T): 输入数据 tensor
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T):输出数据 tensors (shape \[K]\[1], K 等于组的个数), Out\[i] 是第 i 组聚合的结果。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#in}
+
+### <code>In</code>
+
+定义：给定一个名为 Left 的输入 tensor (其 shape 为 \[M]) 和另一个名为 Right 的 Tensor (其 shape 为 \[N])，检查 Left 的元素是否存在于右的元素中，并输出一名为 Out 的布尔类型的 tensor (其 shape 为 \[M])。左和右必须是相同的类型。例：
+
+```python
+Left = {a, b, c, d}
+Right = {b, d, e, f, g, h}
+Out = {False, True, False, True}
+```
+
+输入：
+
+1. <del>\`</del>Left\`(single, T): 第一个操作数。
+2. <del>\`</del>Right\`(single, T1): 第二个操作数。
+
+输出：
+
+1. <del>\`</del>Out\`(single, T): 输出 tensor 。
+
+<strong>属性：</strong>
+
+1. <cite>algorithm</cite>：Int64类型， 用于 IN 操作的算法，1表示使用PSI算法。
+2. <cite>input\_party\_codes</cite>：参与In操作的输入，其所属的参与方的列表。如果采用 PSI 算法，则需要此属性。
+3. <cite>reveal\_to</cite>：可以看到结果的参与方。如果采用 PSI 算法，则需要此属性。
+
+<strong>默认属性值:</strong>
+
+1. <code>algorithm</code>: 0
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+2. <cite>T1</cite>: 私有
+
+:target{#intdiv}
+
+### <code>IntDiv</code>
+
+Out = Left <code>IntDiv</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#join}
+
+### <code>Join</code>
+
+定义：基于 EQ-Join 创建连接索引，返回原始输入中结果对应的行索引。例：
+
+```python
+// inner join example
+Left = {4,4,3,2,1} // shape:[M=5]
+Right = {1,3,4,5} // shape: [N=4]
+LeftJoinIndex = {4,2,0,1}  // shape:[K=4], rows after applied filter eq-join-list={1,3,4,4}
+RightJoinIndex = {0,1,2,2} // shape:[K=4], rows after applied filter eq-join-list={1,3,4,4}
+```
+
+输入：
+
+1. <del>\`</del>Left\`(single, T1): Left vector
+2. <del>\`</del>Right\`(single, T1): Right vector
+
+输出：
+
+1. <del>\`</del>LeftJoinIndex\`(single, T2)：参与join操作的左侧向量的行索引。
+2. <del>\`</del>RightJoinIndex\`(single, T2)：参与join操作的右向量的行索引。
+
+<strong>属性：</strong>
+
+1. <cite>input\_party\_codes</cite>：输入所属的各方列表（\[PartyCodeLeft, PartyCodeRight]）。
+2. <code>join\_type</code>: Int64. 0: inner join;
+
+<strong>默认属性值:</strong>
+
+1. <code>join\_type</code>: 0
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T1</cite>: 私有
+2. <code>T2</code>: private
+
+:target{#less}
+
+### <code>Less</code>
+
+Out = Left <code>Less</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#lessequal}
+
+### <code>LessEqual</code>
+
+Out = Left <code>LessEqual</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#logicaland}
+
+### <code>LogicalAnd</code>
+
+Out = Left <code>LogicalAnd</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#logicalor}
+
+### <code>LogicalOr</code>
+
+Out = Left <code>LogicalOr</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#makeprivate}
+
+### <code>MakePrivate</code>
+
+将 tensor 从共享或私有状态转换为公开状态。
+
+输入：
+
+1. <del>\`</del>In\`(可变参数, T1)：输入 tensor 。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T2)：输出 tensor 。
+
+<strong>属性：</strong>
+
+1. <cite>reveal\_to</cite>：一个包含可查看私有数据的方的列表。如果只向一方透露，那么另一方也需要运行该操作，但不会有结果。只有被指定为 reveal\_to 的一方才能获取结果。
+
+TensorStatus(ShareType) Constraints：
+
+1. <code>T1</code>: secret,public
+2. <code>T2</code>: private
+
+:target{#makepublic}
+
+### <code>MakePublic</code>
+
+将 tensor 从私有状态转变为共享状态。
+
+输入：
+
+1. <del>\`</del>In\`(可变参数, T1)：输入 tensor 。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T2)：输出 tensor 。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T1</cite>: 私有,密态
+2. <cite>T2</cite>: 公开
+
+:target{#makeshare}
+
+### <code>MakeShare</code>
+
+将 tensor 从私有状态转变为共享状态。
+
+输入：
+
+1. <del>\`</del>In\`(可变参数, T1)：输入 tensor 。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T2)：输出 tensor 。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T1</cite>: 私有
+2. <cite>T2</cite>: 密态
+
+:target{#minus}
+
+### <code>Minus</code>
+
+Out = Left <code>Minus</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#mod}
+
+### <code>Mod</code>
+
+Out = Left <code>Mod</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#mul}
+
+### <code>Mul</code>
+
+Out = Left <code>Mul</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#not}
+
+### <code>Not</code>
+
+Out = Not In
+
+输入：
+
+1. <code>In</code>(single, T): Input tensor.
+
+输出：
+
+1. <code>Out</code>(single, T): Output tensor.
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+
+:target{#notequal}
+
+### <code>NotEqual</code>
+
+Out = Left <code>NotEqual</code> Right
+
+输入：
+
+1. <del>\`</del>Left\`(可变参数, T): 第一个操作数.
+2. <del>\`</del>Right\`(可变参数, T1): 第二个操作数。
+
+输出：
+
+1. Out\`(可变参数, T2): 输出：
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 公开，私有，密态
+3. <cite>T2</cite>: 公开，私有
+
+:target{#obliviousgroupavg}
+
+### <code>ObliviousGroupAvg</code>
+
+定义: 根据 group mask 来对输入进行分组求和。
+
+```python
+Group = {1, 0, 0, 1, 1}
+In = [{1, 3, 2, 4, 0}, {9, 8, 7, 6, 5}]
+Out = [{1, 3, 2.5, 3, 0}, {9, 8, 7.5, 7, 5}]
+```
+
+输入：
+
+1. <del>\`</del>Group\`(single, T): 生成的 groupMark (shape \[M]\[1])，其中1表示是该分组中的最后一元素，0则表示不是最后一个元素。
+2. <del>\`</del>In\`(可变参数, T): 需要聚合的值。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T): 部分聚合的值。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#obliviousgroupcount}
+
+### <code>ObliviousGroupCount</code>
+
+定义: 根据 group mask 来对输入进行分组求和。
+
+```python
+Group = {1, 0, 0, 1, 1}
+In = [{1, 3, 2, 4, 0}, {9, 8, 7, 6, 5}]
+Out = [{1, 1, 2, 3, 1}, {1, 1, 2, 3, 1}]
+```
+
+输入：
+
+1. <del>\`</del>Group\`(single, T): 生成的 groupMark (shape \[M]\[1])，其中1表示是该分组中的最后一元素，0则表示不是最后一个元素。
+2. <del>\`</del>In\`(可变参数, T): 需要聚合的值。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T): 部分聚合的值。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#obliviousgroupmark}
+
+### <code>ObliviousGroupMark</code>
+
+定义：根据输入的 key 生成一个 group ，group 的计算规则为 Group\[i] = not\_eq(Key\[i+1], Key\[i])。例：
+
+```python
+Key = [{0, 0, 0, 1}, {0, 1, 1, 1}]
+Group = {1, 0, 1, 1}
+
+Key = [{0, 0, 1, 2, 2}]
+Group = {0, 1, 1, 0, 1}
+```
+
+输入：
+
+1. <del>\`</del>Key\`(可变参数, T): 排序过的 group key。
+
+输出：
+
+1. <del>\`</del>Group\`(single, T): 生成的 groupMark (shape \[M]\[1])，其中1表示是该分组中的最后一元素，0则表示不是最后一个元素。
+
+TensorStatus(ShareType) Constraints：
+
+1. <del>\`</del>T\`私有，密态
+
+:target{#obliviousgroupmax}
+
+### <code>ObliviousGroupMax</code>
+
+定义: 根据 group mask 来对输入进行分组求和。
+
+```python
+Group = {1, 0, 0, 1, 1}
+In = [{1, 3, 2, 4, 0}, {9, 8, 7, 6, 5}]
+Out = [{1, 3, 3, 4, 0}, {9, 8, 8, 8, 5}]
+```
+
+输入：
+
+1. <del>\`</del>Group\`(single, T): 生成的 groupMark (shape \[M]\[1])，其中1表示是该分组中的最后一元素，0则表示不是最后一个元素。
+2. <del>\`</del>In\`(可变参数, T): 需要聚合的值。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T): 部分聚合的值。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#obliviousgroupmin}
+
+### <code>ObliviousGroupMin</code>
+
+定义: 根据 group mask 来对输入进行分组求和。
+
+```python
+Group = {1, 0, 0, 1, 1}
+In = [{1, 3, 2, 4, 0}, {9, 8, 7, 6, 5}]
+Out = [{1, 3, 2, 2, 0}, {9, 8, 7, 6, 5}]
+```
+
+输入：
+
+1. <del>\`</del>Group\`(single, T): 生成的 groupMark (shape \[M]\[1])，其中1表示是该分组中的最后一元素，0则表示不是最后一个元素。
+2. <del>\`</del>In\`(可变参数, T): 需要聚合的值。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T): 部分聚合的值。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#obliviousgroupsum}
+
+### <code>ObliviousGroupSum</code>
+
+定义: 根据 group mask 来对输入进行分组求和。
+
+```python
+Group = {1, 0, 0, 1, 1}
+In = [{1, 3, 2, 4, 0}, {9, 8, 7, 6, 5}]
+Out = [{1, 3, 5, 9, 0}, {9, 8, 15, 21, 5}]
+```
+
+输入：
+
+1. <del>\`</del>Group\`(single, T): 生成的 groupMark (shape \[M]\[1])，其中1表示是该分组中的最后一元素，0则表示不是最后一个元素。
+2. <del>\`</del>In\`(可变参数, T): 需要聚合的值。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T): 部分聚合的值。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#publish}
+
+### <code>Publish</code>
+
+该算子披露 DAG 结果。
+
+输入：
+
+1. <del>\`</del>In\`(可变参数, T1)：要披露的 Tensors。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T2)：披露 publish op tensors 结果 。Tensors 位于 TensorOption VALUE 中。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#reduceavg}
+
+### <code>ReduceAvg</code>
+
+定义：给定一个输入 tensor ，返回输入 tensor 元素的平均值。例：
+
+```python
+In = {1, 2, 3, 4, 5}
+Out = {3}
+
+In = {1, 2, 3, 4}
+Out = {2.5}
+```
+
+输入：
+
+1. <del>\`</del>In\`(single, T)：需要求平均的 tensor。
+
+输出：
+
+1. <del>\`</del>Out\`(single, T)：平均值 tensor 。
+
+TensorStatus(ShareType) Constraints：
+
+1. <del>\`</del>T\`私有，密态
+
+:target{#reducemax}
+
+### <code>ReduceMax</code>
+
+定义：给定一个输入 tensor ，返回输入 tensor 元素的最大值。例：
+
+```python
+In = {1, 2, 3, 4, 5, 6}
+Out = {6}
+```
+
+输入：
+
+1. <del>\`</del>In\`(single, T): 需要计算最大值的 tensor。
+
+输出：
+
+1. <del>\`</del>Out\`(single, T)：最大值的 tensor。
+
+TensorStatus(ShareType) Constraints：
+
+1. <del>\`</del>T\`私有，密态
+
+:target{#reducemin}
+
+### <code>ReduceMin</code>
+
+定义：给定一个输入 tensor ，返回输入 tensor 元素的最小值。例：
+
+```python
+In = {1, 2, 3, 4, 5, 6}
+Out = {1}
+```
+
+输入：
+
+1. <del>\`</del>In\`(single, T)：需要计算最小值的 tensor。
+
+输出：
+
+1. <del>\`</del>Out\`(single, T)：最小值的tensor。
+
+TensorStatus(ShareType) Constraints：
+
+1. <del>\`</del>T\`私有，密态
+
+:target{#reducesum}
+
+### <code>ReduceSum</code>
+
+定义：给定一个输入 tensor ，返回输入 tensor 元素的总和。例：
+
+```python
+In = {1, 2, 3, 4, 5, 6}
+Out = {21}
+```
+
+输入：
+
+1. <del>\`</del>In\`(single, T)：要求和的 tensor 。
+
+输出：
+
+1. <del>\`</del>Out\`(single, T)： tensor 的和。
+
+TensorStatus(ShareType) Constraints：
+
+1. <del>\`</del>T\`私有，密态
+
+:target{#runsql}
+
+### <code>RunSQL</code>
+
+运行 SQL 语句并返回私有状态下的 tensors 列表
+
+输入：
+
+无输入参数。
+
+输出：
+
+1. Out\`(可变参数, T): SQL 语句的结果 tensors。
+
+<strong>属性：</strong>
+
+1. <cite>sql</cite>：SQL 语句
+2. <cite>table\_refs</cite>：query中引用的表
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#shape}
+
+### <code>Shape</code>
+
+定义：给定 tensor ，返回每个 tensor 的 shapes，Axis从 0 开始。如果设置了 Axis，则返回每个 shapes 的维度。如果未设置 Axis (默认为 -1)，则返回 shapes 。例
+
+```python
+In = { {1, 2}, {2, 3}, {4, 3, 3} } # {1, 2} here is a column vector
+Out = { {2, 1}, {2, 1}, {3, 1} }
+```
+
+输入：
+
+1. <del>\`</del>In\`(可变参数, T1)：要披露的 Tensors。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T1): 输出 Shape
+
+<strong>属性：</strong>
+
+1. <cite>axis</cite>: Int64. shape 的特定维度。
+
+<strong>默认属性值:</strong>
+
+1. <code>axis</code>: -1
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 公开，私有，密态
+2. <cite>T1</cite>: 私有
+
+:target{#shuffle}
+
+### <code>Shuffle</code>
+
+定义：Shuffle <cite>In</cite>。例：
+
+```python
+In = [{1, 2, 3, 4}, {9, 8, 7, 6}]
+Out = [{4, 3, 2, 1}, {6, 7, 8, 9}]
+```
+
+输入：
+
+1. <del>\`</del>In\`(可变参数, T)：输入值。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T)：输出值。
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有
+
+:target{#sort}
+
+### <code>Sort</code>
+
+定义: 使用 <cite>Key</cite> 对输入内容进行排序。例：
+
+```python
+Key = {3, 1, 2, 4}
+In = [{3, 1, 2, 4}, {1, 2, 3, 4}, {9, 8, 7, 6}]
+Out = [{1, 2, 3, 4}, {2, 3, 1, 4}, {8, 7, 9, 6}]
+```
+
+输入：
+
+1. <del>\`</del>Key\`(可变参数, T): 排序键
+2. <del>\`</del>In\`(可变参数, T): 所需排序的值。
+
+输出：
+
+1. <del>\`</del>Out\`(可变参数, T):排序后的结果。
+
+<strong>属性：</strong>
+
+1. <cite>reverse</cite>: Bool, 如果为 True, 则 tensor 按照从大到小的顺序排列。
+
+<strong>默认属性值:</strong>
+
+1. <code>reverse</code>: false
+
+TensorStatus(ShareType) Constraints：
+
+1. <del>\`</del>T\`私有，密态
+
+:target{#unique}
+
+### <code>Unique</code>
+
+定义：Key tensor 的唯一性。例：
+
+```python
+Key = {"a", "b", "a", "d"}
+UniqueKey = {"a", "b", "d"}
+```
+
+输入：
+
+1. <del>\`</del>Key\`(single, T): 输入 Key tensor(shape \[M]\[1])
+
+输出：
+
+1. <del>\`</del>UniqueKey\`(single, T): 输出唯一 key tensor(shape \[K]\[1])
+
+TensorStatus(ShareType) Constraints：
+
+1. <cite>T</cite>: 私有

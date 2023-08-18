@@ -1,0 +1,1278 @@
+:target{#add}
+
+# <code>Add</code>
+
+Out = Left <code>Add</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#broadcastto}
+
+# <code>BroadcastTo</code>
+
+Definition: Broadcast Input tensor <code>In</code> to the same shape as <code>ShapeRefTensor</code>.
+Example:
+
+```Python
+In = [1]
+ShapeRefTensor = [a, b, c]
+# ShapeRefTensor's shape is (3, 1), broadcast In to shape (3, 1)
+Out = BroadcastTo(In, ShapeRefTensor) = [1, 1, 1]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(variadic, T): Input tensor
+2. <code>ShapeRefTensor</code>(single, T1): Shape reference tensor
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Result tensor
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: public,private
+
+:target{#concat}
+
+# <code>Concat</code>
+
+Definition: Given a number of tensors In (variadic, each tensor’s shape must be the same except for the axis), concat the In tensors along the axis.
+Example:
+
+```python
+In = { {1, 2}, {2, 3, 4}, {3, 4, 5, 6} }
+Out = {1, 2, 2, 3, 4, 3, 4, 5, 6}
+```
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(variadic, T): Tensors to be concat.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(single, T): Concated Tensor.
+
+<strong>Attributes:</strong>
+
+1. <code>axis</code>: Int64. Dimension along which to concatenate.
+
+<strong>Default Attribute Values:</strong>
+
+1. <code>axis</code>: 0
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: secret
+
+:target{#constant}
+
+# <code>Constant</code>
+
+Definition: Make constant from attribute.
+Example:
+
+```python
+scalar = [{"a", "b", "c"}]
+to_status = 0
+Out = [{"a", "b", "c"}]
+```
+
+<strong>Inputs:</strong>
+
+No input parameter.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(single, T): output tensor(shape \[M]) from constant.
+
+<strong>Attributes:</strong>
+
+1. <code>scalar</code>: scalar attribute(with shape \[M])
+2. <code>to\_status</code>: int64. to status, 0: to private, 1: to public.
+
+<strong>Default Attribute Values:</strong>
+
+1. <code>to\_status</code>: 0
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private
+
+:target{#copy}
+
+# <code>Copy</code>
+
+Definition: Copy source tensor “In” to new tensor “Out” on target party
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(single, T1): source tensor
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(single, T1): target tensor
+
+<strong>Attributes:</strong>
+
+1. <code>input\_party\_codes</code>: Input tensor <code>In</code> belongs to
+2. <code>output\_party\_codes</code>: Output tensor <code>Out</code> belongs to
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T1</code>: private
+
+:target{#div}
+
+# <code>Div</code>
+
+Out = Left <code>Div</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#dumpfile}
+
+# <code>DumpFile</code>
+
+Definition: Dump the input tensor. Note: This op will change the affected rows in the session
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(variadic, T): Tensors to be dumped.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Tensors have been dumped.
+
+<strong>Attributes:</strong>
+
+1. <code>file\_path</code>: String. Absolute file path to dump the tensors.
+2. <code>deliminator</code>: String. Column deliminator, e.g. comma <code>,</code>
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+
+:target{#equal}
+
+# <code>Equal</code>
+
+Out = Left <code>Equal</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#filter}
+
+# <code>Filter</code>
+
+Given a boolean tensor Filter (its shape is \[M]), and a number of tensors In
+(variadic, each tensor’s shape must be \[M]), for i in \[0, M-1], keep the In tensors’ element if and only if Filter\[i]
+is True, output the filter result tensors Out (variadic). Example:
+
+```python
+Filter = {True, False, False, True, False}
+In = {a, b, c, d, e}
+Out = {a, d}
+```
+
+<strong>Inputs:</strong>
+
+1. <code>Filter</code>(single, T1): Filter tensor.
+2. <code>In</code>(variadic, T): Tensors to be filtered.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Output tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private,secret
+2. <code>T1</code>: public,private
+
+:target{#filterbyindex}
+
+# <code>FilterByIndex</code>
+
+Definition: Filter by rows index.
+Example:
+
+```python
+RowsIndexFilter = {3,1,0}
+Data = [{"a", "b", "c", "d"}, {0, 1, 2, 3}]
+Out = [{"d", "b", "a"}, {3, 1, 0}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>RowsIndexFilter</code>(single, T): Rows index filter vector(shape \[K]\[1]).
+2. <code>Data</code>(variadic, T): Input data tensor(shape \[M]\[N]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Output data tensor(shape \[X]\[N]).
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+
+:target{#greater}
+
+# <code>Greater</code>
+
+Out = Left <code>Greater</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#greaterequal}
+
+# <code>GreaterEqual</code>
+
+Out = Left <code>GreaterEqual</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#group}
+
+# <code>Group</code>
+
+Definition: Assign a group id(start from 0) for each input element.
+Example:
+
+```python
+Key = [{"a", "c", "a", "d"}, {0, 2, 0, 3}]
+GroupId = {0, 1, 0, 2}
+GroupNum = {3}
+```
+
+<strong>Inputs:</strong>
+
+1. <code>Key</code>(variadic, T): input key tensors(shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>GroupId</code>(single, T): group id vector(shape \[M]\[1]).
+2. <code>GroupNum</code>(single, T): number of groups vector(shape \[1]\[1])
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+
+:target{#groupavg}
+
+# <code>GroupAvg</code>
+
+Definition: Aggregate <code>Data</code> for each group.
+Example:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{1, 2, 4}, {8, 7, 5}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>GroupId</code>(single, T): Input group id vector(shape \[M]\[1]).
+2. <code>GroupNum</code>(single, T): Input number of groups vector(shape \[1]\[1]).
+3. <code>In</code>(variadic, T): Input data tensor(shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Output data tensors(shape \[K]\[1], K equals to number of groups), Out\[i] is the agg result for i-th group.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+
+:target{#groupcount}
+
+# <code>GroupCount</code>
+
+Definition: Aggregate <code>Data</code> for each group.
+Example:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{2, 2, 1}, {2, 2, 1}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>GroupId</code>(single, T): Input group id vector(shape \[M]\[1]).
+2. <code>GroupNum</code>(single, T): Input number of groups vector(shape \[1]\[1]).
+3. <code>In</code>(variadic, T): Input data tensor(shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Output data tensors(shape \[K]\[1], K equals to number of groups), Out\[i] is the agg result for i-th group.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+
+:target{#groupcountdistinct}
+
+# <code>GroupCountDistinct</code>
+
+Definition: Aggregate <code>Data</code> for each group.
+Example:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{2, 2, 1}, {2, 2, 1}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>GroupId</code>(single, T): Input group id vector(shape \[M]\[1]).
+2. <code>GroupNum</code>(single, T): Input number of groups vector(shape \[1]\[1]).
+3. <code>In</code>(variadic, T): Input data tensor(shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Output data tensors(shape \[K]\[1], K equals to number of groups), Out\[i] is the agg result for i-th group.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+
+:target{#groupfirstof}
+
+# <code>GroupFirstOf</code>
+
+Definition: Aggregate <code>Data</code> for each group.
+Example:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{0, 1, 4}, {9, 8, 5}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>GroupId</code>(single, T): Input group id vector(shape \[M]\[1]).
+2. <code>GroupNum</code>(single, T): Input number of groups vector(shape \[1]\[1]).
+3. <code>In</code>(variadic, T): Input data tensor(shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Output data tensors(shape \[K]\[1], K equals to number of groups), Out\[i] is the agg result for i-th group.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+
+:target{#groupmax}
+
+# <code>GroupMax</code>
+
+Definition: Aggregate <code>Data</code> for each group.
+Example:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{2, 3, 4}, {9, 8, 5}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>GroupId</code>(single, T): Input group id vector(shape \[M]\[1]).
+2. <code>GroupNum</code>(single, T): Input number of groups vector(shape \[1]\[1]).
+3. <code>In</code>(variadic, T): Input data tensor(shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Output data tensors(shape \[K]\[1], K equals to number of groups), Out\[i] is the agg result for i-th group.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+
+:target{#groupmin}
+
+# <code>GroupMin</code>
+
+Definition: Aggregate <code>Data</code> for each group.
+Example:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{0, 1, 4}, {7, 6, 5}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>GroupId</code>(single, T): Input group id vector(shape \[M]\[1]).
+2. <code>GroupNum</code>(single, T): Input number of groups vector(shape \[1]\[1]).
+3. <code>In</code>(variadic, T): Input data tensor(shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Output data tensors(shape \[K]\[1], K equals to number of groups), Out\[i] is the agg result for i-th group.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+
+:target{#groupsum}
+
+# <code>GroupSum</code>
+
+Definition: Aggregate <code>Data</code> for each group.
+Example:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = [{0, 1, 2, 3, 4}, {9, 8, 7, 6, 5}]
+Out = [{2, 4, 4}, {16, 14, 5}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>GroupId</code>(single, T): Input group id vector(shape \[M]\[1]).
+2. <code>GroupNum</code>(single, T): Input number of groups vector(shape \[1]\[1]).
+3. <code>In</code>(variadic, T): Input data tensor(shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Output data tensors(shape \[K]\[1], K equals to number of groups), Out\[i] is the agg result for i-th group.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+
+:target{#in}
+
+# <code>In</code>
+
+Definition: Given an input tensor Left (its shape is \[M]), and another input tensor Right (its shape is \[N]),
+check whether Left’s element exists in Right’s elements and output a boolean tensor Out (its shape is \[M]). Left and Right must be the same type.
+Example:
+
+```python
+Left = {a, b, c, d}
+Right = {b, d, e, f, g, h}
+Out = {False, True, False, True}
+```
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(single, T): First operand.
+2. <code>Right</code>(single, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(single, T): Output Tensor.
+
+<strong>Attributes:</strong>
+
+1. <code>algorithm</code>: Int64. Algorithm to use for the op. 1: PSI
+2. <code>input\_party\_codes</code>: List of parties the inputs belong to. This attribute is required if algorithm = PSI.
+3. <code>reveal\_to</code>: A party can see the result. This attribute is required if algorithm = PSI.
+
+<strong>Default Attribute Values:</strong>
+
+1. <code>algorithm</code>: 0
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+2. <code>T1</code>: private
+
+:target{#intdiv}
+
+# <code>IntDiv</code>
+
+Out = Left <code>IntDiv</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#join}
+
+# <code>Join</code>
+
+Definition: Create Join Index based on EQ-Join, return result’s corresponding rows index in the original input.
+Example:
+
+```python
+// inner join example
+Left = {4,4,3,2,1} // shape:[M=5]
+Right = {1,3,4,5} // shape: [N=4]
+LeftJoinIndex = {4,2,0,1}  // shape:[K=4], rows after applied filter eq-join-list={1,3,4,4}
+RightJoinIndex = {0,1,2,2} // shape:[K=4], rows after applied filter eq-join-list={1,3,4,4}
+```
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(single, T1): Left vector(shape \[M]\[1])
+2. <code>Right</code>(single, T1): Right vector(shape \[N]\[1])
+
+<strong>Outputs:</strong>
+
+1. <code>LeftJoinIndex</code>(single, T2): Joined rows index for left vector(shape \[K]\[1])
+2. <code>RightJoinIndex</code>(single, T2): Joined rows index for right vector(shape \[K]\[1])
+
+<strong>Attributes:</strong>
+
+1. <code>input\_party\_codes</code>: List of parties the inputs belong to(\[PartyCodeLeft, PartyCodeRight]).
+2. <code>join\_type</code>: Int64. 0: inner join;
+
+<strong>Default Attribute Values:</strong>
+
+1. <code>join\_type</code>: 0
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T1</code>: private
+2. <code>T2</code>: private
+
+:target{#less}
+
+# <code>Less</code>
+
+Out = Left <code>Less</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#lessequal}
+
+# <code>LessEqual</code>
+
+Out = Left <code>LessEqual</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#logicaland}
+
+# <code>LogicalAnd</code>
+
+Out = Left <code>LogicalAnd</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#logicalor}
+
+# <code>LogicalOr</code>
+
+Out = Left <code>LogicalOr</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#makeprivate}
+
+# <code>MakePrivate</code>
+
+Convert In tensor from share status to private status.
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(variadic, T1): Input tensors.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output tensors.
+
+<strong>Attributes:</strong>
+
+1. <code>reveal\_to</code>: List of parties to see the private data. If it is revealed to one party only, the other party also needs to run the op, but does not have an output. Only the reveal\_to party gets the output.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T1</code>: secret,public
+2. <code>T2</code>: private
+
+:target{#makepublic}
+
+# <code>MakePublic</code>
+
+Convert In tensor from share/private status to public status.
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(variadic, T1): Input tensors.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output tensors.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T1</code>: private,secret
+2. <code>T2</code>: public
+
+:target{#makeshare}
+
+# <code>MakeShare</code>
+
+Convert In tensor from private status to share status.
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(variadic, T1): Input tensors.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output tensors.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T1</code>: private
+2. <code>T2</code>: secret
+
+:target{#minus}
+
+# <code>Minus</code>
+
+Out = Left <code>Minus</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#mod}
+
+# <code>Mod</code>
+
+Out = Left <code>Mod</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#mul}
+
+# <code>Mul</code>
+
+Out = Left <code>Mul</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#not}
+
+# <code>Not</code>
+
+Out = Not In
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(single, T): Input tensor.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(single, T): Output tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+
+:target{#notequal}
+
+# <code>NotEqual</code>
+
+Out = Left <code>NotEqual</code> Right
+
+<strong>Inputs:</strong>
+
+1. <code>Left</code>(variadic, T): First operand.
+2. <code>Right</code>(variadic, T1): Second operand.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T2): Output Tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: public,private,secret
+3. <code>T2</code>: private,secret
+
+:target{#obliviousgroupavg}
+
+# <code>ObliviousGroupAvg</code>
+
+Definition: partially aggregate <code>In</code> according to end of group indicator.
+Example:
+
+```python
+Group = {1, 0, 0, 1, 1}
+In = [{1, 3, 2, 4, 0}, {9, 8, 7, 6, 5}]
+Out = [{1, 3, 2.5, 3, 0}, {9, 8, 7.5, 7, 5}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>Group</code>(single, T): End of group indicator(shape \[M]\[1]). Element 1 means the row is the last element of the group, 0 is not.
+2. <code>In</code>(variadic, T): Values to be aggregated (shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Partially aggregated values (shape \[M]\[1]).
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: secret
+
+:target{#obliviousgroupcount}
+
+# <code>ObliviousGroupCount</code>
+
+Definition: partially aggregate <code>In</code> according to end of group indicator.
+Example:
+
+```python
+Group = {1, 0, 0, 1, 1}
+In = [{1, 3, 2, 4, 0}, {9, 8, 7, 6, 5}]
+Out = [{1, 1, 2, 3, 1}, {1, 1, 2, 3, 1}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>Group</code>(single, T): End of group indicator(shape \[M]\[1]). Element 1 means the row is the last element of the group, 0 is not.
+2. <code>In</code>(variadic, T): Values to be aggregated (shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Partially aggregated values (shape \[M]\[1]).
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: secret
+
+:target{#obliviousgroupmark}
+
+# <code>ObliviousGroupMark</code>
+
+Definition: generate end of group indicator <code>Group</code> based on <code>Key</code>. The operator calculates Group\[i] = not\_eq(Key\[i+1], Key\[i]).
+Example:
+
+```python
+Key = [{0, 0, 0, 1}, {0, 1, 1, 1}]
+Group = {1, 0, 1, 1}
+
+Key = [{0, 0, 1, 2, 2}]
+Group = {0, 1, 1, 0, 1}
+```
+
+<strong>Inputs:</strong>
+
+1. <code>Key</code>(variadic, T): Pre-sorted group keys (shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Group</code>(single, T): End of group indicator(shape \[M]\[1]). Element 1 means the row is the last element of the group, 0 is not.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private,secret
+
+:target{#obliviousgroupmax}
+
+# <code>ObliviousGroupMax</code>
+
+Definition: partially aggregate <code>In</code> according to end of group indicator.
+Example:
+
+```python
+Group = {1, 0, 0, 1, 1}
+In = [{1, 3, 2, 4, 0}, {9, 8, 7, 6, 5}]
+Out = [{1, 3, 3, 4, 0}, {9, 8, 8, 8, 5}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>Group</code>(single, T): End of group indicator(shape \[M]\[1]). Element 1 means the row is the last element of the group, 0 is not.
+2. <code>In</code>(variadic, T): Values to be aggregated (shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Partially aggregated values (shape \[M]\[1]).
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: secret
+
+:target{#obliviousgroupmin}
+
+# <code>ObliviousGroupMin</code>
+
+Definition: partially aggregate <code>In</code> according to end of group indicator.
+Example:
+
+```python
+Group = {1, 0, 0, 1, 1}
+In = [{1, 3, 2, 4, 0}, {9, 8, 7, 6, 5}]
+Out = [{1, 3, 2, 2, 0}, {9, 8, 7, 6, 5}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>Group</code>(single, T): End of group indicator(shape \[M]\[1]). Element 1 means the row is the last element of the group, 0 is not.
+2. <code>In</code>(variadic, T): Values to be aggregated (shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Partially aggregated values (shape \[M]\[1]).
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: secret
+
+:target{#obliviousgroupsum}
+
+# <code>ObliviousGroupSum</code>
+
+Definition: partially aggregate <code>In</code> according to end of group indicator.
+Example:
+
+```python
+Group = {1, 0, 0, 1, 1}
+In = [{1, 3, 2, 4, 0}, {9, 8, 7, 6, 5}]
+Out = [{1, 3, 5, 9, 0}, {9, 8, 15, 21, 5}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>Group</code>(single, T): End of group indicator(shape \[M]\[1]). Element 1 means the row is the last element of the group, 0 is not.
+2. <code>In</code>(variadic, T): Values to be aggregated (shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Partially aggregated values (shape \[M]\[1]).
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: secret
+
+:target{#publish}
+
+# <code>Publish</code>
+
+This operator publishes the DAG results.
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(variadic, T): Tensors to be published.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Result tensors of the publish op. Tensors are in TensorOption VALUE.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+
+:target{#reduceavg}
+
+# <code>ReduceAvg</code>
+
+Definition: Given a input tensor In, return the average of input tensor’s elements.
+Example:
+
+```python
+In = {1, 2, 3, 4, 5}
+Out = {3}
+
+In = {1, 2, 3, 4}
+Out = {2.5}
+```
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(single, T): Tensor to be reduced (shape \[M]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(single, T): The average Tensor (shape \[1]).
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private,secret
+
+:target{#reducemax}
+
+# <code>ReduceMax</code>
+
+Definition: Given a input tensor In, return the max of input tensor’s elements.
+Example:
+
+```python
+In = {1, 2, 3, 4, 5, 6}
+Out = {6}
+```
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(single, T): Tensor to be maxed (shape \[M]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(single, T): The maxed Tensor (shape \[1]).
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private,secret
+
+:target{#reducemin}
+
+# <code>ReduceMin</code>
+
+Definition: Given a input tensor In, return the min of input tensor’s elements.
+Example:
+
+```python
+In = {1, 2, 3, 4, 5, 6}
+Out = {1}
+```
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(single, T): Tensor to be mined (shape \[M]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(single, T): The mined Tensor (shape \[1]).
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private,secret
+
+:target{#reducesum}
+
+# <code>ReduceSum</code>
+
+Definition: Given an input tensor In, return the sum of input tensor’s elements.
+Example:
+
+```python
+In = {1, 2, 3, 4, 5, 6}
+Out = {21}
+```
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(single, T): Tensor to be summed (shape \[M]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(single, T): The summed Tensor (shape \[1]).
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private,secret
+
+:target{#runsql}
+
+# <code>RunSQL</code>
+
+Run a SQL statement and return a list of tensors in private status
+
+<strong>Inputs:</strong>
+
+No input parameter.
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Result tensors of the SQL statement.
+
+<strong>Attributes:</strong>
+
+1. <code>sql</code>: SQL statement
+2. <code>table\_refs</code>: tables referenced by query
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private
+
+:target{#shape}
+
+# <code>Shape</code>
+
+Definition: Given tensors In, return shapes of each tensor. Axis starts from 0. If axis is set, dimensions of each shape are returned. If axis is not set(default -1), shapes are returned.
+Example:
+
+```python
+In = { {1, 2}, {2, 3}, {4, 3, 3} } # {1, 2} here is a column vector
+Out = { {2, 1}, {2, 1}, {3, 1} }
+```
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(variadic, T): Input Tensors
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T1): Shape Tensors
+
+<strong>Attributes:</strong>
+
+1. <code>axis</code>: Int64. Specific dimension of the shape.
+
+<strong>Default Attribute Values:</strong>
+
+1. <code>axis</code>: -1
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: public,private,secret
+2. <code>T1</code>: private
+
+:target{#shuffle}
+
+# <code>Shuffle</code>
+
+Definition: Shuffle <code>In</code>.
+Example:
+
+```python
+In = [{1, 2, 3, 4}, {9, 8, 7, 6}]
+Out = [{4, 3, 2, 1}, {6, 7, 8, 9}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>In</code>(variadic, T): Input Value(shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Output Value(shape \[M]\[1])
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: secret
+
+:target{#sort}
+
+# <code>Sort</code>
+
+Definition: sort <code>In</code> using <code>Key</code>.
+Example:
+
+```python
+Key = {3, 1, 2, 4}
+In = [{3, 1, 2, 4}, {1, 2, 3, 4}, {9, 8, 7, 6}]
+Out = [{1, 2, 3, 4}, {2, 3, 1, 4}, {8, 7, 9, 6}]
+```
+
+<strong>Inputs:</strong>
+
+1. <code>Key</code>(variadic, T): Sort Key(shape \[M]\[1]).
+2. <code>In</code>(variadic, T): Sort Value(shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>Out</code>(variadic, T): Sorted Value(shape \[M]\[1])
+
+<strong>Attributes:</strong>
+
+1. <code>reverse</code>: Bool. If True, the sorted tensor in descending order.
+
+<strong>Default Attribute Values:</strong>
+
+1. <code>reverse</code>: false
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private,secret
+
+:target{#unique}
+
+# <code>Unique</code>
+
+Definition: Unique of Key tensor.
+Example:
+
+```python
+Key = {"a", "b", "a", "d"}
+UniqueKey = {"a", "b", "d"}
+```
+
+<strong>Inputs:</strong>
+
+1. <code>Key</code>(single, T): Input key tensors(shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. <code>UniqueKey</code>(single, T): Output unique key tensor(shape \[K]\[1]).
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. <code>T</code>: private

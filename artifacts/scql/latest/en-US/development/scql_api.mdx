@@ -1,0 +1,2176 @@
+:target{#scql-api}
+
+# SCQL API
+
+SCQL supports two types of APIs: synchronous and asynchronous. The synchronous interface is suitable for executing fast queries, such as DDL, DCL, and simple DQL.
+Meanwhile, the asynchronous interface is recommended when the query may take a long time to run.
+
+:target{#asynchronous}
+
+## Asynchronous
+
+:target{#public-submit-query}
+
+### public/submit\_query
+
+Submit the query (DDL/DCL/DQL) to SCQL, SCQL will return a session ID immediately which can be used to fetch result, and processes the query in the background.
+
+:target{#request}
+
+#### Request
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [RequestHeader](#requestheader)
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Common request header
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        user
+      </td>
+
+      <td>
+        [SCDBCredential](#scdbcredential)
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        User information
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        query
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        SCQL query to be run
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        :target{#callback-url}
+
+        query\_result\_callback\_url
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        callback URL to report query result. See [<span>Asynchronous send result</span>](#async-send-result) for more
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        biz\_request\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Biz request id which often be unique per biz action
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        db\_name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Current database name
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#response}
+
+#### Response
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [Status](#status)
+      </td>
+
+      <td>
+        See [Status code](#status-code) for more information
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        :target{#session-id}
+
+        scdb\_session\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        Unique ID of a session
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#example}
+
+#### Example
+
+If you want execute <cite>show databases</cite>, the request and response message should be structured as follows:
+
+- request
+
+```javascript
+{
+    "user": {
+        "user": {
+            "account_system_type": "NATIVE_USER",
+            "native_user": { "name": "someuser", "password": "somepassword" }
+        },
+        "grm_token": "sometoken"
+    },
+    "query": "show databases;",
+    "biz_request_id": "1234"
+}
+```
+
+- response
+
+```javascript
+{
+    "status": {
+        "code": 0,
+        "message": "",
+        "details": []
+    },
+    "scdb_session_id": "some_session_id"
+}
+```
+
+:target{#public-fetch-result}
+
+### public/fetch\_result
+
+Fetch result of the query submitted via the “submit\_query” method before, if the query is still running, It will return <cite>NOT\_READY</cite> status code.
+
+:target{#id1}
+
+#### Request
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [RequestHeader](#requestheader)
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Common request header
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        user
+      </td>
+
+      <td>
+        [SCDBCredential](#scdbcredential)
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        User information
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_session\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Given by scdb when submit the query before, same with [session\_id](#session-id)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id2}
+
+#### Response
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [Status](#status)
+      </td>
+
+      <td>
+        See [Status code](#status-code) for more information
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        out\_columns
+      </td>
+
+      <td>
+        [Tensor](#tensor) list
+      </td>
+
+      <td>
+        Query result
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_session\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        Same with [session\_id](#session-id)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        affected\_rows
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        The num of rows affected
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id3}
+
+#### Example
+
+If you want to get the result of the query <cite>show databases</cite>, you can send a request like this.
+
+```javascript
+{
+    "user": {
+        "user": {
+            "account_system_type": "NATIVE_USER",
+            "native_user": { "name": "some_user", "password": "some_password" }
+        },
+        "grm_token": "some_token"
+    },
+    "scdb_session_id": "some_session_id"
+}
+```
+
+If succeed, a response will be received with status code 0 like this:
+
+```javascript
+{
+    "status": {
+        "code": 0,
+        "message": "",
+        "details": []
+    },
+    "out_columns": [
+        {
+            "name": "Database",
+            "shape": {
+                "dim": [
+                    {
+                        "dim_value": "1"
+                    },
+                    {
+                        "dim_value": "1"
+                    }
+                ]
+            },
+            "elem_type": "STRING",
+            "option": "VALUE",
+            "annotation": null,
+            "int32_data":[],
+            "int64_data":[],
+            "float_data":[],
+            "double_data":[],
+            "bool_data":[],
+            "string_data": ["scdb"]
+        }
+    ],
+    "scdb_session_id": "some_session_id",
+    "affected_rows": "0"
+}
+```
+
+If result is not ready, the response can be show as follows:
+
+```javascript
+{
+    "status": {
+        "code": 104,
+        "message": "result not ready, please retry later",
+        "details": []
+    },
+    "out_columns": [],
+    "scdb_session_id": "some_session_id",
+    "affected_rows": "0"
+}
+```
+
+:target{#asynchronous-send-result}
+
+### Asynchronous send result
+
+Automatically send the result to the user by post the following message when the result is available. To accomplish this, [query\_result\_callback\_url](#callback-url) should be set.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [Status](#status)
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        See [Status code](#status-code) for more information
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        out\_columns
+      </td>
+
+      <td>
+        [Tensor](#tensor) list
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Query result, See [Tensor](#tensor) for more information
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_session\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Given by scdb when submit the query before, same with [session\_id](#session-id)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        affected\_rows
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        The num of rows affected
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#synchronous}
+
+## Synchronous
+
+:target{#public-submit-and-get}
+
+### public/submit\_and\_get
+
+Submit a query to SCQL, SCQL will wait for all tasks to complete before returning the result to the use.
+
+:target{#id4}
+
+#### Request
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [RequestHeader](#requestheader)
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Common request header
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        user
+      </td>
+
+      <td>
+        [SCDBCredential](#scdbcredential)
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        User information
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        query
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        SCQL query to be run
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        biz\_request\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Biz request id which often be unique per biz action
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        db\_name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Current database name
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id5}
+
+#### Response
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [Status](#status)
+      </td>
+
+      <td>
+        See [Status code](#status-code) for more information
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        out\_columns
+      </td>
+
+      <td>
+        [Tensor](#tensor) list
+      </td>
+
+      <td>
+        Query result, See [Tensor](#tensor) for more information
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scdb\_session\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        SCDB session id
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        affected\_rows
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        The num of rows affected
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id6}
+
+#### Example
+
+If you want submit a query <cite>show databases</cite>, you can send a request as follows:
+
+```javascript
+{
+    "user": {
+        "user": {
+            "account_system_type": "NATIVE_USER",
+            "native_user": { "name": "someuser", "password": "somepassword" }
+        },
+        "grm_token": "sometoken"
+    },
+    "query": "show databases;",
+    "biz_request_id": "1234",
+    "db_name": "scdb"
+}
+```
+
+If successful, a response will be received like this:
+
+```javascript
+{
+    "status": {
+        "code": 0,
+        "message": "",
+        "details": []
+    },
+    "out_columns": [
+        {
+            "name": "Database",
+            "shape": {
+                "dim": [
+                    {
+                        "dim_value": "1"
+                    },
+                    {
+                        "dim_value": "1"
+                    }
+                ]
+            },
+            "elem_type": "STRING",
+            "option": "VALUE",
+            "annotation": null,
+            "int32_data":[],
+            "int64_data":[],
+            "float_data":[],
+            "double_data":[],
+            "bool_data":[],
+            "string_data": ["scdb"]
+        }
+    ],
+    "scdb_session_id": "some_session_id",
+    "affected_rows": "0"
+}
+```
+
+:target{#message-structure}
+
+## Message Structure
+
+:target{#requestheader}
+
+### RequestHeader
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        custom\_headers
+      </td>
+
+      <td>
+        map\<string, string>
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Custom headers used to record custom information
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#scdbcredential}
+
+### SCDBCredential
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        user
+      </td>
+
+      <td>
+        [User](#user)
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        User information, contains password and name
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        grm\_token
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        The unique identifier of the user in GRM
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#user}
+
+#### User
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        account\_system\_type
+      </td>
+
+      <td>
+        [AccountSystemType](#accountsystemtype)
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Account Type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        native\_user
+      </td>
+
+      <td>
+        [NativeUser](#nativeuser)
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Native user information
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#nativeuser}
+
+##### NativeUser
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        name of user
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        password
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        password of user
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tensor}
+
+### Tensor
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Tensor name
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        shape
+      </td>
+
+      <td>
+        [TensorShape](#tensorshape)
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        It’s normally \[M] (a vector with M elements)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        elem\_type
+      </td>
+
+      <td>
+        [PrimitiveDataType](#primitivedatatype)
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        The data type of the value data in tensor
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        option
+      </td>
+
+      <td>
+        [TensorOptions](#tensoroptions)
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Tensor options
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        annotation
+      </td>
+
+      <td>
+        [TensorAnnotation](#tensorannotation)
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Carries physical status information, It MUST be there if the \<option> is “Reference”
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        int32\_data
+      </td>
+
+      <td>
+        int32 list
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        The value data in tensor, for int8, int16, int32 data types
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        int64\_data
+      </td>
+
+      <td>
+        int64 list
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        The value data in tensor, for int64 and timestamp data types
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        float\_data
+      </td>
+
+      <td>
+        float list
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        The value data in tensor, for float32 data type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        double\_data
+      </td>
+
+      <td>
+        double list
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        The value data in tensor, for float64 data type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bool\_data
+      </td>
+
+      <td>
+        bool list
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        The value data in tensor, for bool data type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        string\_data
+      </td>
+
+      <td>
+        string list
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        The value data in tensor, for string and datetime data types
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tensorshape}
+
+#### TensorShape
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        dim
+      </td>
+
+      <td>
+        [TensorShape\_Dimension](#tensorshape-dimension) list
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td />
+    </tr>
+  </tbody>
+</table>
+
+:target{#tensorshape-dimension}
+
+##### TensorShape\_Dimension
+
+TensorShape\_Dimension could be dim\_value or dim\_param.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        dim\_value
+      </td>
+
+      <td>
+        int64
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        dim\_param
+      </td>
+
+      <td>
+        string
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tensorannotation}
+
+#### TensorAnnotation
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [TensorStatus](#tensorstatus)
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Status of tensor
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#status}
+
+### Status
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        code
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        The status code, see [Status code](#status-code) for more information
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Messages
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Message for recording the error information
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        details
+      </td>
+
+      <td>
+        protobuf.Any list
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        A list of messages that carry the additional supplementary error details
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#enum-values}
+
+## Enum Values
+
+:target{#accountsystemtype}
+
+### AccountSystemType
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        UNKNOWN
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        Unknown account type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        NATIVE\_USER
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Native user type
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#primitivedatatype}
+
+### PrimitiveDataType
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        PrimitiveDataType\_UNDEFINED
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        undefined data type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        INT8
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        the 8-bit signed integer type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        INT16
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        the 16-bit signed integer type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        INT32
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        the 32-bit signed integer type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        INT64
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        the 64-bit signed integer type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        FLOAT32
+      </td>
+
+      <td>
+        5
+      </td>
+
+      <td>
+        the 32-bit binary floating point type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        FLOAT64
+      </td>
+
+      <td>
+        6
+      </td>
+
+      <td>
+        the 64-bit binary floating point type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        BOOL
+      </td>
+
+      <td>
+        7
+      </td>
+
+      <td>
+        the bool data type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        STRING
+      </td>
+
+      <td>
+        8
+      </td>
+
+      <td>
+        the string data type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DATETIME
+      </td>
+
+      <td>
+        9
+      </td>
+
+      <td>
+        see [datetime in mysql](https://dev.mysql.com/doc/refman/8.0/en/datetime.html) to get more
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        TIMESTAMP
+      </td>
+
+      <td>
+        10
+      </td>
+
+      <td>
+        seconds since ‘1970-01-01 00:00:00’ UTC
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tensoroptions}
+
+### TensorOptions
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        VALUE
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        A tensor with data
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        REFERENCE
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        A tensor with reference (URI)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        VARIABLE
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        A tensor variable (declaration)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tensorstatus}
+
+### TensorStatus
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        TENSORSTATUS\_UNKNOWN
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        Unknown
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        TENSORSTATUS\_PRIVATE
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Private
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        TENSORSTATUS\_SECRET
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        Secret, usually in the form of secret sharing
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        TENSORSTATUS\_CIPHER
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        Ciphertext, usually in the form of homomorphic encryption ciphertext
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        TENSORSTATUS\_PUBLIC
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        Public
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#status-code}
+
+## Status code
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Error code
+      </td>
+
+      <td>
+        Status Code
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        0
+      </td>
+
+      <td>
+        Code\_OK
+      </td>
+
+      <td>
+        Success
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        100
+      </td>
+
+      <td>
+        Code\_BAD\_REQUEST
+      </td>
+
+      <td>
+        Invalid request body
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        101
+      </td>
+
+      <td>
+        Code\_UNAUTHENTICATED
+      </td>
+
+      <td>
+        User authentication failed
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        102
+      </td>
+
+      <td>
+        Code\_SQL\_PARSE\_ERROR
+      </td>
+
+      <td>
+        Invalid SCQL statement
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        103
+      </td>
+
+      <td>
+        Code\_INVALID\_ARGUMENT
+      </td>
+
+      <td>
+        Invalid parameter in Request
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        104
+      </td>
+
+      <td>
+        Code\_NOT\_READY
+      </td>
+
+      <td>
+        Result not ready
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        131
+      </td>
+
+      <td>
+        Code\_DDL\_PERMISSION\_DENIED
+      </td>
+
+      <td>
+        User does not have permission to execute the DDL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        132
+      </td>
+
+      <td>
+        Code\_GRM\_RESOURCE\_PERMISSION\_DENIED
+      </td>
+
+      <td>
+        User has no required permissions on grm resources
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        140
+      </td>
+
+      <td>
+        Code\_NOT\_FOUND
+      </td>
+
+      <td>
+        General not found error
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        141
+      </td>
+
+      <td>
+        Code\_SESSION\_NOT\_FOUND
+      </td>
+
+      <td>
+        SCDB session not found
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        160
+      </td>
+
+      <td>
+        Code\_CCL\_CHECK\_FAILED
+      </td>
+
+      <td>
+        Query CCL check failed
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        201
+      </td>
+
+      <td>
+        Code\_STORAGE\_ERROR
+      </td>
+
+      <td>
+        SCDB DB error
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        300
+      </td>
+
+      <td>
+        Code\_INTERNAL
+      </td>
+
+      <td>
+        Server Internal Error
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        320
+      </td>
+
+      <td>
+        Code\_UNKNOWN\_ENGINE\_ERROR
+      </td>
+
+      <td>
+        Unknown error occurs in Engine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        332
+      </td>
+
+      <td>
+        Code\_ENGINE\_RUNSQL\_ERROR
+      </td>
+
+      <td>
+        Unknown error occurs in Engine during RunSQL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        340
+      </td>
+
+      <td>
+        Code\_NOT\_SUPPORTED
+      </td>
+
+      <td>
+        Feature not supported
+      </td>
+    </tr>
+  </tbody>
+</table>

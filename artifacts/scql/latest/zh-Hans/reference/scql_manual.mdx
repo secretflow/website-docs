@@ -1,0 +1,292 @@
+:target{#scql-manual}
+
+# SCQL 指南
+
+:target{#scql-data-types}
+
+## SCQL 数据类型
+
+SCQL 支持常用的数据类型，如下表所示。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        数据类型
+      </td>
+
+      <td>
+        别名
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>integer</code>
+      </td>
+
+      <td>
+        <code>int</code>, <code>long</code>, <code>int64</code>
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        <code>float</code>
+      </td>
+
+      <td>
+        <code>double</code>
+      </td>
+
+      <td>
+        存储和计算都在 float32 类型中完成
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>string</code>
+      </td>
+
+      <td>
+        <code>str</code>
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        <code>datetime</code>
+      </td>
+
+      <td />
+
+      <td>
+        暂不支持，即将推出
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>timestamp</code>
+      </td>
+
+      <td />
+
+      <td>
+        暂不支持，即将推出
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#scql-statements}
+
+## SCQL 语句
+
+SCQL 兼容大多数 MySQL 语法，这使得它易于使用。关于 SCQL 和 MySQL 之间的语法差异，请阅读 [与 MySQL 的兼容性](mysql_compatibility.mdx)。
+
+:target{#create-drop-alter-user-statement}
+
+### CREATE/DROP/ALTER USER 语句
+
+```SQL
+CREATE USER [IF NOT EXISTS] user PARTY_CODE party_code IDENTIFIED BY 'auth_string'
+
+DROP USER [IF EXISTS] user
+
+ALTER USER [IF EXISTS] user IDENTIFIED BY 'new_auth_string'
+```
+
+样例：
+
+```SQL
+-- create an user named alice,
+-- with password `alice123`,
+-- belongs to party `party_alice`
+CREATE USER alice PARTY_CODE "party_alice" IDENTIFIED BY "alice123";
+
+-- drop user alice
+DROP USER alice;
+
+-- change user alice password
+ALTER USER alice IDENTIFIED BY "new_password";
+```
+
+:target{#create-drop-database-statement}
+
+### CREATE/DROP DATABASE 语句
+
+```SQL
+CREATE DATABASE [IF NOT EXISTS] database;
+
+DROP DATABASE [IF EXISTS] database;
+```
+
+样例：
+
+```SQL
+-- create db `db_test`
+CREATE DATABASE db_test;
+
+-- drop db `db_test`
+DROP DATABASE db_test;
+```
+
+:target{#create-drop-table-statement}
+
+### CREATE/DROP TABLE 语句
+
+```SQL
+CREATE TABLE [IF NOT EXISTS] tbl_name TID [=] value
+
+DROP TABLE [IF EXISTS] tbl_name
+```
+
+<Container type="note">
+  此处创建表意味着将 ‘tbl\_name’ 映射到现有的物理表，该物理表由 ‘TID’ 指定且位于相关参与方上。在 SCQL 中，用户在虚拟表上运行查询可以有助于简化权限控制和使用。
+</Container>
+
+样例：
+
+```SQL
+-- create a table `ta` in database `db_test`,
+-- the new table references the table with TID = `table-id` in GRM,
+-- SCQL would fetch the table schema from GRM with given `TID`.
+CREATE TABLE db_test.ta TID="table-id";
+
+DROP TABLE db_test.ta;
+```
+
+:target{#grant-revoke-statement}
+
+### GRANT/REVOKE 语句
+
+```SQL
+GRANT
+extend_priv_type [(column_list)]
+  [, extend_priv_type[(column_list)]] ...
+ON priv_level
+TO user
+
+REVOKE [IF EXISTS]
+extend_priv_type [(column_list)]
+  [, extend_priv_type[(column_list)]] ...
+ON priv_level
+FROM user
+
+extend_priv_type:
+    priv_type | SELECT [CCL level]
+```
+
+样例：
+
+```SQL
+-- GRANT privileges
+GRANT CREATE VIEW on db.* to alice;
+GRANT SHOW, DESCRIBE ON db.* TO 'someuser'@'somehost';
+-- GRANT CCL
+GRANT SELECT PLAINTEXT_AFTER_JOIN(column) on db.table to user;
+-- REVOKE CCL
+REVOKE SELECT PLAINTEXT_AFTER_AGGREGATE(column) ON db.table FROM user;
+```
+
+:target{#show-describe-statement}
+
+### SHOW/DESCRIBE 语句
+
+```SQL
+SHOW DATABASES;
+
+SHOW TABLES;
+
+SHOW GRANTS on <db_name> FOR <user>;
+
+DESCRIBE <db_name>.<table_name>;
+```
+
+:target{#select-statement}
+
+### SELECT 语句
+
+```SQL
+SELECT [DISTINCT] select_expr [, select_expr] ...
+[FROM table_reference]
+[WHERE where_condition]
+[GROUP BY column]
+
+select_expr:
+    col_reference [AS alias]
+
+col_reference:
+    column
+| agg_function(column)
+
+column:
+    *
+| db_name.tbl_name.col_name field_as_name_opt
+| alias.col_name field_as_name_opt
+| expression field_as_name_opt
+
+field_as_name_opt:
+    ""
+| field_as_name
+
+field_as_name:
+    identifier
+| "AS" identifier
+
+table_reference:
+    table_factor
+| join_table
+| union_table
+
+table_factor:
+    db_name.tbl_name [[AS] alias]
+
+join_table:
+    table_reference [INNER] JOIN table_factor [join_specification]
+
+union_table:
+    select_expr
+    | UNION [ALL] union_table
+
+join_specification:
+    ON search_condition
+
+expression:
+    expression "SUPPORTED_OP" expression
+    | "NOT" expression
+    | predicate_expr
+
+predicate_expr:
+    column InOrNotOp '(' expression_list ')'
+    | column InOrNotOp sub_select
+    | column
+
+sub_select:
+    '(' select_stmt ')'
+```
+
+<strong>限制：</strong>
+
+- JOIN 仅仅支持
+  > - <code>INNER JOIN</code>
+
+:target{#functions-and-operators}
+
+## 函数与操作符
+
+<Container type="todo_node" id="id2" title={"\u5f85\u5904\u7406"}>
+  该部分尚未准备好，请之后查看
+</Container>
