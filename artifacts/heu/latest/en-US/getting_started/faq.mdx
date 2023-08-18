@@ -1,0 +1,43 @@
+:target{#id1}
+
+# Frequently asked questions (FAQ)
+
+:target{#id2}
+
+## Category: Install and deployment
+
+:target{#heu-mac}
+
+### Does HEU support installation on Mac ?
+
+Yes, HEU supports both Intel and Apple Silicon CPU based macOS.
+
+:target{#pip}
+
+### Pip cannot find a suitable installation package
+
+Please check whether the installation environment meets the requirements:
+
+1. Python version must be 3.8
+2. Pip version must be 22.0+
+3. Check whether the OS version meets the requirements, see [installation documentation](installation.mdx) for details.
+
+:target{#heu-python}
+
+### Docs HEU support other versions of Python
+
+The package in the PyPI repository only supports the Python 3.8 environment. If you want to support more Python versions, you can try \:doc\:compiling from source\<./installation>. Additionally, you need to modify the declaration regarding the Python version in this file\<https\://github.com/secretflow/heu/blob/main/heu/pylib/BUILD.bazel>.
+
+Due to the constraints of Pybind’s characteristics, the Python version used for running HEU must match the Python version used for compilation. For instance, if Python 3.10 is used for compilation, it also must be used for execution.
+
+:target{#id4}
+
+## Functionally relevant
+
+:target{#heu-fhe}
+
+### What features does HEU currently provide, and does it support FHE?
+
+HEU is a leading PHE Library in the industry, supporting encryption and decryption, plaintext-ciphertext addition and subtraction, and ciphertext-plaintext multiplication calculations. It provides APIs in both C++ and Python. You can use HEU as a pure library, or you can use it as a secure computing device through the Secretflow \<[https://github.com/secretflow/secretflow](https://github.com/secretflow/secretflow)>\_ programming framework.
+
+Support for FHE functionality is on the way, which will additionally support operations such as ciphertext multiplication and ciphertext comparison. Please stay tuned.

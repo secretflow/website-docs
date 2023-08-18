@@ -1,0 +1,1128 @@
+:target{#id1}
+
+# Algorithm Selection
+
+HEU provides a variety of PHE algorithms, and this document describes the characteristics of each to help you choose the right one.
+
+<Container type="note">
+  Initialize HEU requires specifying the SchemaType parameter, for example:
+
+  ```Python
+  from heu import phe
+  kit = phe.setup(phe.SchemaType.ZPaillier, 2048)
+  ```
+</Container>
+
+This doc indicates how to choose phe.SchemaType parameter.
+
+:target{#id2}
+
+## Algorithm Overview
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        SchemaType
+      </td>
+
+      <td>
+        Algorithm family
+      </td>
+
+      <td>
+        brief description
+      </td>
+
+      <td>
+        综合推荐度
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        ZPaillier
+      </td>
+
+      <td>
+        Paillier
+      </td>
+
+      <td>
+        Highly optimized Paillier algorithm, suitable for use on all platforms.
+      </td>
+
+      <td>
+        ★★★★★
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        FPaillier
+      </td>
+
+      <td>
+        Paillier
+      </td>
+
+      <td>
+        The performance is very low and ZPaillier is recommended instead
+      </td>
+
+      <td>
+        ★
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        IPCL
+      </td>
+
+      <td>
+        Paillier
+      </td>
+
+      <td>
+        Intel’s contributed implementation of Paillier, which supports AVX512-IFMA instruction set and Intel QAT hardware acceleration, is currently being gradually improved and refined.
+      </td>
+
+      <td>
+        ★★★
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        OU
+      </td>
+
+      <td>
+        Okamoto-Uchiyama
+      </td>
+
+      <td>
+        Functionality is the same as Paillier, but with higher performance and less ciphertext bloat, but with slightly lower security, see below for a detailed description.
+      </td>
+
+      <td>
+        ★★★★★
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        EC ElGamal
+      </td>
+
+      <td>
+        ElGamal
+      </td>
+
+      <td>
+        基于椭圆曲线的 ElGamal 算法，性能和密文膨胀率比 Paillier、OU 都好，缺点是解密比较慢，且值域空间很小，一旦超过大小解密将失败
+      </td>
+
+      <td>
+        ★★★★
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Mock
+      </td>
+
+      <td>
+        None
+      </td>
+
+      <td>
+        Not encrypted, for testing or debugging purposes only, strictly for online use.
+      </td>
+
+      <td>
+        ★
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Note: The recommendation index is comprehensively based on performance, security, applicability and stability, and dynamically changes with the iterative upgrading of the algorithm.
+
+:target{#paillier}
+
+## Paillier
+
+:target{#id3}
+
+### Introduction to Algorithmic Theory
+
+Paillier’s algorithm was proposed by Pascal Paillier in 1999, see: [Algorithm details](https://en.wikipedia.org/wiki/Paillier_cryptosystem).
+
+<table id="id24">
+  <caption>
+    Information of Paillier
+  </caption>
+
+  <tbody>
+    <tr>
+      <td>
+        Type of Algorithm
+      </td>
+
+      <td>
+        Additive homomorphic encryption
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        security
+      </td>
+
+      <td>
+        IND-CPA Security, Semantic Security
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Hard Assumption
+      </td>
+
+      <td>
+        <LineBlock>
+          判定性复合剩余假设
+
+          decisional composite residuosity assumption (DCRA)
+        </LineBlock>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Security Strength
+      </td>
+
+      <td>
+        <LineBlock>
+          2048-bit key length equal to or slightly lower than 112 bits of security strength
+
+          3072-bit key length equal to or slightly lower than 128 bits of security strength
+        </LineBlock>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<Container type="admonition" title={"Decisional composite residuosity assumption"}>
+  DCRA states that given a composite N and an integer z, it is hard to decide whether z is an <InlineMath>$N$</InlineMath>-residue modulo <InlineMath>$N^2$</InlineMath> (whether there exists a y such that <InlineMath>$z \equiv y^N \bmod N^2$</InlineMath>)
+</Container>
+
+<strong>关于安全强度</strong>
+
+目前未有直接的文献表明 DCRA 密钥长度与安全比特位数之间的关联，一般认为的难度 DCRA \<= FACTORING（因数分解）\<= DLP in <InlineMath>$\mathbb{Z}^*_N$</InlineMath> <sup>:target{#id4}[1](#id6)</sup>，在 DLP（离散对数难题）中，2048 group size 对应 112 bits，3072 group size 对应 128 bits <sup>:target{#id5}[2](#id7)</sup>，因此 Paillier 的安全强度等效或略低于这个数值。
+
+<Footnote label="1" backrefs={["id4"]} id="id6">
+  European Network of Excellence in Cryptology II. [https://www.ecrypt.eu.org/ecrypt2/documents/D.MAYA.6.pdf](https://www.ecrypt.eu.org/ecrypt2/documents/D.MAYA.6.pdf)
+</Footnote>
+
+<Footnote label="2" backrefs={["id5"]} id="id7">
+  [https://www.keylength.com/en/4/](https://www.keylength.com/en/4/)
+</Footnote>
+
+:target{#zpaillier}
+
+### Implementation: Paillier
+
+Z in ZPaillier has the same meaning as <InlineMath>$\mathbb{Z}$</InlineMath> in mathematics, which represents integers, that is, a set of Paillier
+
+<table id="id25">
+  <caption>
+    ZPaillier Feature Quick Check
+  </caption>
+
+  <tbody>
+    <tr>
+      <td>
+        SchemaType parameter name
+      </td>
+
+      <td>
+        phe.SchemaType.ZPaillier
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Implementation Algorithm
+      </td>
+
+      <td>
+        Paillier
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        stability
+      </td>
+
+      <td>
+        stabilize
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Supported Platforms
+      </td>
+
+      <td>
+        Linux，macOS（Intel & Arm）
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Whether it depends on specific hardware
+      </td>
+
+      <td>
+        Independent
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Whether hardware acceleration is supported
+      </td>
+
+      <td>
+        Not supported
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Relative performance
+      </td>
+
+      <td>
+        High
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<Container type="tip">
+  HEU has made a number of optimizations to ZPaillier, which is a high performance set of Paillier algorithm implementations and does not depend on specific hardware. ZPaillier is a high performance Paillier algorithm implementation that is hardware-independent and available on all platforms, so when you don’t know how to choose an algorithm, you can use ZPaillier by default.
+</Container>
+
+Implementation of Paper based on:
+
+- Jurik, M. (2003). Extensions to the paillier cryptosystem with applications to cryptological protocols. Brics, August. [http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.4.2396\&amp;rep=rep1\&amp;type=pdf](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.4.2396\&amp;rep=rep1\&amp;type=pdf)
+
+:target{#fpaillier}
+
+### Implementation: Paillier
+
+The F in FPaillier denotes a floating point number <InlineMath>$\\mathbb{F}$</InlineMath>, the Paillier algorithm itself only supports integers, FPaillier FPaillier extends Paillier to support floating point numbers.
+
+<table id="id26">
+  <caption>
+    FPaillier Features Quick Facts
+  </caption>
+
+  <tbody>
+    <tr>
+      <td>
+        SchemaType parameter name
+      </td>
+
+      <td>
+        phe.SchemaType.FPaillier
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Implementation Algorithm
+      </td>
+
+      <td>
+        Paillier
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        stability
+      </td>
+
+      <td>
+        stabilize
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Supported Platforms
+      </td>
+
+      <td>
+        Linux，macOS（Intel & Arm）
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Whether it depends on specific hardware
+      </td>
+
+      <td>
+        Independent
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Whether hardware acceleration is supported
+      </td>
+
+      <td>
+        Not supported
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Relative performance
+      </td>
+
+      <td>
+        Low
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<Container type="note">
+  The algorithm principle of FPaillier is similar to the [Python-Paillier](https://github.com/data61/pythonpaillier) library.
+</Container>
+
+The principle of FPaillier supporting floating point numbers is to represent the input data in the form of int\_rep: <code>scalar = int\_rep \* (BASE \*\* exponent)</code>
+
+<figure id="id27">
+  <figcaption>
+    Calculation of int\_rep and exponent
+  </figcaption>
+
+  ```Python
+  # math.frexp() returns the mantissa and exponent of x, as pair (m, e). m is a float and e is an int, such that x = m * 2.**e.
+  bin_flt_exponent = math.frexp(scalar)[1]
+  # The least significant bit has value 2 ** bin_lsb_exponent
+  bin_lsb_exponent = bin_flt_exponent - cls.FLOAT_MANTISSA_BITS # FLOAT_MANTISSA_BITS = 53
+
+  exponent = bin_lsb_exponent # math.floor(bin_lsb_exponent / cls.LOG2_BASE)
+  int_rep = round(fractions.Fraction(scalar) * fractions.Fraction(cls.BASE) ** -exponent)
+  ```
+</figure>
+
+<strong>Encryption</strong>
+
+When scalar is encrypted, only the value of int\_rep is encrypted, and exponent is stored in plaintext. Please note the security risk.
+
+<strong>Homomorphic Operation</strong>
+
+First align the exponents, reduce the exponent of the number with the larger exponent to the smaller exponent (new\_exp), that is, <code>int\_rep =  int\_rep \* (base\*\*(exponent-new\_exp))</code>, then perform the homomorphic operation.
+
+<Container type="tip">
+  The floating-point operation interface of FPaillier is not exposed at the Python level. The interface provided by FPaillier at the Python end is consistent with ZPaillier. To use the FPaillier floating-point functionality, you must call it through the C++ interface. For more details, please refer to [FPaillier Unit Test](https://github.com/secretflow/heu/blob/main/heu/library/algorithms/paillier_float/paillier_test.cc).
+</Container>
+
+:target{#ipcl}
+
+### 算法实现: IPCL
+
+IPCL stands for Intel Paillier Cryptosystem Library, which is a Paillier algorithm implementation contributed by Intel. Its features are that it supports AVX512-IFMA instruction set and Intel QAT hardware accelerator for acceleration.
+
+<table id="id28">
+  <caption>
+    IPCL Feature Quick Check
+  </caption>
+
+  <tbody>
+    <tr>
+      <td>
+        SchemaType parameter name
+      </td>
+
+      <td>
+        phe.SchemaType.IPCL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Implementation Algorithm
+      </td>
+
+      <td>
+        Paillier
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        stability
+      </td>
+
+      <td>
+        Experimental, for testing and evaluation purposes only, still in continuous improvement
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Supported Platforms
+      </td>
+
+      <td>
+        Linux，macOS（Intel）
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Whether it depends on specific hardware
+      </td>
+
+      <td>
+        Independent
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Whether hardware acceleration is supported
+      </td>
+
+      <td>
+        Supports AVX512-IFMA instruction set and/or Intel QAT accelerator
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Relative performance
+      </td>
+
+      <td>
+        High
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Implementation is based on this code library:
+
+- [pailliercryptolib](https://github.com/intel/pailliercryptolib)
+
+:target{#okamoto-uchiyama}
+
+## Okamoto-Uchiyama
+
+:target{#id9}
+
+### Introduction to Algorithmic Theory
+
+The Okamoto-Uchiyama algorithm was proposed by Tatsuaki Okamoto and Shigenori Uchiyama in 1998. See Algorithm Details \<[https://en.wikipedia.org/wiki/Okamoto%E2%80%93Uchiyama\_cryptosystem](https://en.wikipedia.org/wiki/Okamoto%E2%80%93Uchiyama_cryptosystem)>\`\_\_
+
+<table id="id29">
+  <caption>
+    Information of Okamoto-Uchiyama
+  </caption>
+
+  <tbody>
+    <tr>
+      <td>
+        Type of Algorithm
+      </td>
+
+      <td>
+        Additive homomorphic encryption
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        security
+      </td>
+
+      <td>
+        IND-CPA Security, Semantic Security
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Hard Assumption
+      </td>
+
+      <td>
+        <strong>p</strong>-subgroup assumption
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Security Strength
+      </td>
+
+      <td>
+        <LineBlock>
+          存在争议，相同的密钥长度下 OU 的强度比特与 Paillier 相同或略低，见下文解释
+        </LineBlock>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<Container type="admonition" title={"p-subgroup assumption"}>
+  It is difficult to determine whether an element x in <InlineMath>$({\mathbb Z}/n{\mathbb Z})^{*}$</InlineMath> is in the subgroup of order p
+</Container>
+
+<strong>关于安全强度</strong>
+
+Paillier 的 <InlineMath>$n=pq$</InlineMath>，而 OU 的 <InlineMath>$n=p^2q$</InlineMath>，当 n 长度相同时两者安全强度是否相同，存在不同的观点。OU 的原始论文 <sup>:target{#id10}[3](#id13)</sup> 认为目前最快的因式分解算法是 Field sieve method，这种算法的复杂度只和 n 相关，因此只要对齐 n 就可以得到相同的安全强度。
+
+但也有一些 Paper 认为 OU 的 n 需要比 Paillier 多 500\~600 比特两者安全性才相等 <sup>:target{#id11}[4](#id14)</sup>，甚至还有文章 <sup>:target{#id12}[5](#id15)</sup> 说 n 的分解只与 p 相关。因此如果您特别在意安全性，请适当加大 OU 密钥长度。
+
+<Footnote label="3" backrefs={["id10"]} id="id13">
+  Okamoto, T., & Uchiyama, S. (1998). A new public-key cryptosystem as secure as factoring. Lecture Notes in Computer Science (Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics), 1403, 308-318. [https://doi.org/10.1007/BFb0054135](https://doi.org/10.1007/BFb0054135)
+</Footnote>
+
+<Footnote label="4" backrefs={["id11"]} id="id14">
+  Boneh, D., Durfee, G., Howgrave-Graham, N. (1999). Factoring N = p r q for Large r . In: Wiener, M. (eds) Advances in Cryptology — CRYPTO’ 99. CRYPTO 1999. Lecture Notes in Computer Science, vol 1666. Springer, Berlin, Heidelberg. [https://doi.org/10.1007/3-540-48405-1\_21](https://doi.org/10.1007/3-540-48405-1_21)
+</Footnote>
+
+<Footnote label="5" backrefs={["id12"]} id="id15">
+  [https://crypto.stanford.edu/cs359c/17sp/projects/NathanManoharBenFisch.pdf](https://crypto.stanford.edu/cs359c/17sp/projects/NathanManoharBenFisch.pdf)
+</Footnote>
+
+:target{#ou-paillier}
+
+#### Comparison between OU and Paillier
+
+Advantages of OU:
+
+1. In the same usage scenario, the computational performance of OU is much higher than that of Paillier.
+2. In the same usage scenario, the ciphertext size of OU is only half that of Paillier. Assuming the key length is N, the ciphertext size of Paillier is 2N bits, while the ciphertext of OU is N bits.
+3. The security of OU is the same as that of Paillier, both achieve IND-CPA security, and neither satisfy IND-CCA security
+
+Disadvantages of OU.
+
+1. OU is not as well-known academically as Paillier.
+2. The plaintext value range of OU is not clear. Assuming the key length is N, the plaintext value range of Paillier is \:math\:Z\_N, while the plaintext value range of OU is \:math\:Z\_p, where p is a parameter in the private key, so the value range of OU is not public.
+3. Although theoretically neither satisfy the IND-CCA security definition, in practical IND-CCA scenarios OU has known attacks, while no effective attacks have been found for Paillier.
+
+:target{#id16}
+
+#### 风险提示
+
+虽然 OU 与 Paillier 在学术上的安全级别相同，两者都满足 IND-CPA 安全，且都达不到 IND-CCA 安全，但实际情况是 OU 已经被发现有高效的攻击手段，而 Paillier 尚未发现有效攻击。
+
+:target{#ou}
+
+##### OU Plaintext Space Overflow Attack
+
+The plaintext space of OU is \:math\:Z\_p, that is, the decryption of OU’s ciphertext exists with a mod p effect. If an attacker is allowed to encrypt a plaintext larger than p, it is easy to infer p, leading to the leakage of the private key. The specific principle is as follows:
+
+1. The attacker chooses a plaintext <InlineMath>$m_1 > p$</InlineMath>, encrypts it, and can get the decrypted result <InlineMath>$m_2$</InlineMath>.
+2. Obviously, <InlineMath>$m_1 > p, m_2 < p$</InlineMath>，and <InlineMath>$m_1 \equiv m_2 \bmod p$</InlineMath>。
+3. By calculating the greatest common divisor <InlineMath>$gcd(m_1 - m_2, n)$</InlineMath>, p can be obtained.
+
+OU usually has restrictions in its implementation and does not directly allow encryption of plaintext larger than p. However, since OU supports homomorphic addition and plaintext-ciphertext multiplication, the above overflow attack is still possible:
+
+1. The attacker selects a plaintext m close to but less than <InlineMath>$p$</InlineMath>, encrypts it to get c
+2. 对该密文 c 执行 t 次密文加法（或一次明密文乘法）满足 <InlineMath>$m * t > p$</InlineMath>，然后解密得到 <InlineMath>$m'$</InlineMath>
+3. The attacker obtains <InlineMath>$m', and can get the private key :math:`p$</InlineMath> using the congruence relation
+
+<Container type="warning">
+  在使用 OU 算法时，请务必判断上层应用环境中该攻击是否成立，如果成立，请立刻使用下文的防御方法来检测和阻断攻击，确保上层应用可以规避这种攻击。
+</Container>
+
+:target{#id17}
+
+##### 攻击防御
+
+The key to the above attack lies in two points, one is that the attacker needs to be able to construct a ciphertext larger than p, and the other is that the attacker needs to obtain the decryption result. Both are indispensable. This is a typical chosen ciphertext attack (CCA) scenario. When using OU, <strong>one should avoid using OU where CCA is valid</strong>.
+
+For some simple scenarios, such as the calculation between Alice and Bob, assuming Alice has a private key and Bob is a malicious participant, the calculation process is that Alice encrypts the data and sends it to Bob for calculation, and Bob returns the calculation result to Alice. At this time, even if Bob constructs a malicious ciphertext c, Bob cannot get the decryption result of c. Bob’s attack will cause calculation errors, but the key will not be leaked.
+
+在一些复杂的隐私计算场景中，下一轮的交互取决于上一轮交互的结果，CCA 场景成立也许是不可避免的，但并非说明 OU 就一定无法使用，如果 Alice 有有效的手段阻断攻击，OU 仍旧可以选用。让我们再来回顾一下攻击的过程：Bob 构造的密文 c 对应明文 m，Alice 解密后得到 <InlineMath>$m'=m \bmod p$</InlineMath>，实际的问题是，<InlineMath>$m'$</InlineMath> 有可能非常大，远超一般业务中使用的 int64 所能表达的范围，因为 Bob 想要构造一个 <strong>略大于</strong> p 的密文是非常困难的，p 一般非常大，key size 为 2048 时 p 大约为 682bits，Bob 盲猜一个数 m 满足 <InlineMath>$m' < 2^{64}$</InlineMath>，其概率小于 <InlineMath>$2^{-(682-64)}$</InlineMath>，即盲猜的 m 的高 618bits 与 p exactly same，这个概率是可以忽略不计的，因此可以认为 <InlineMath>$m'$</InlineMath> 仍旧是一个大数，当 Alice 解密发现明文不在合理值域范围时，可以拒绝 Bob 的结果，从而阻止 Bob 的攻击。
+
+:target{#id18}
+
+### 算法实现: OU
+
+OU 实现了 Okamoto-Uchiyama 算法，其功能与 ZPaillier 一致，且性能更高，很多时候可以成为 ZPaillier 的替代品，但 OU 存在一个已知攻击，详见上文关于安全性的论述，使用时需评估该攻击造成的影响。
+
+<table id="id30">
+  <caption>
+    OU Feature Quick Check
+  </caption>
+
+  <tbody>
+    <tr>
+      <td>
+        SchemaType parameter name
+      </td>
+
+      <td>
+        phe.SchemaType.OU
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Implementation Algorithm
+      </td>
+
+      <td>
+        Okamoto-Uchiyama
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        stability
+      </td>
+
+      <td>
+        stabilize
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Supported Platforms
+      </td>
+
+      <td>
+        Linux，macOS（Intel & Arm）
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Whether it depends on specific hardware
+      </td>
+
+      <td>
+        Independent
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Whether hardware acceleration is supported
+      </td>
+
+      <td>
+        Not supported
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Relative performance
+      </td>
+
+      <td>
+        High
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Implementation of Paper based on:
+
+- Coron, J. S., Naccache, D., & Paillier, P. (1999). Accelerating Okamoto-Uchiyama public-key cryptosystem. Electronics Letters, 35(4), 291–292. [https://doi.org/10.1049/el:19990229](https://doi.org/10.1049/el:19990229)
+
+:target{#elgamal}
+
+## ElGamal
+
+:target{#id19}
+
+### Introduction to Algorithmic Theory
+
+ElGamal 是一个基于 Diffie–Hellman 密钥交换的非对称加密算法，由 Taher Elgamal 在 1985 年提出 <sup>:target{#id20}[6](#id21)</sup>。原始的 ElGamal 具有乘法同态性质，其同态性来自于密文块 <InlineMath>$mh^r$</InlineMath>。
+
+在之后的 Generalized ElGamal 算法中，整个密码体制被定义在循环群 G 上，其加密的安全性也取决于 G 上离散对数问题的困难性，为此，用于构建 Generalized ElGamal 的循环群 G 必须满足以下两项要求：
+
+1. 高效性：G 上的计算必须非常快速
+2. 安全性：求解 G 上的离散对数问题(DLP)非常困难
+
+以下是一些满足上述要求的具体的 G 的例子：
+
+1. The multiplicative group <InlineMath>$\mathbb{Z}^*_p$</InlineMath> of the integers modulo a prime <InlineMath>$p$</InlineMath>.
+2. The multiplicative group <InlineMath>$\mathbb{F}^*_{2^m}$</InlineMath> of the finite field <InlineMath>$\mathbb{F}_{2^m}$</InlineMath> of characteristic two.
+3. The group of points on an elliptic curve over a finite field.
+4. The multiplicative group <InlineMath>$\mathbb{F}^*_q$</InlineMath> of the finite field <InlineMath>$\mathbb{F}_q$</InlineMath>, where <InlineMath>$q=p^m$</InlineMath> and p is a prime.
+5. The group of units <InlineMath>$\mathbb{Z}^*_n$</InlineMath>, where n is a composite integer.
+6. The jacobian of a hyperelliptic curve defined over a finite field
+7. The class group of an imaginary quadratic number field.
+
+为了获得加法同态特性，以及兼顾计算上的高效性，我们选择了 3 将椭圆曲线上的点群（EC Group）作为 ElGamal 底层的 G，因此 HEU 中的 ElGamal 也称为 EC ElGamal。
+
+<table id="id31">
+  <caption>
+    Information of ElGamal
+  </caption>
+
+  <tbody>
+    <tr>
+      <td>
+        Type of Algorithm
+      </td>
+
+      <td>
+        同态特性取决于底层循环群 G 的定义，根据 G 的不同 Elgamal 可能为加法同态、乘法同态或没有同态特性。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        security
+      </td>
+
+      <td>
+        取决于 G 上离散对数问题（DLP）的困难性
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Hard Assumption
+      </td>
+
+      <td>
+        离散对数难题 DLP
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Security Strength
+      </td>
+
+      <td>
+        取决于 G
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+若循环群选定为椭圆曲线点群（EC Group），则算法信息如下：
+
+<table id="id32">
+  <caption>
+    Information of EC ElGamal
+  </caption>
+
+  <tbody>
+    <tr>
+      <td>
+        Type of Algorithm
+      </td>
+
+      <td>
+        取决于明文到 EC Group 的映射方式，如果映射妥当，则 EC ElGamal 满足加法同态特性
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        security
+      </td>
+
+      <td>
+        取决于椭圆曲线离散对数问题（ECDLP）的困难性
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Hard Assumption
+      </td>
+
+      <td>
+        椭圆曲线离散对数难题 ECDLP
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Security Strength
+      </td>
+
+      <td>
+        取决于具体选择的曲线，[此处](http://safecurves.cr.yp.to/rho.html) 列出了一部分曲线的安全强度
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<Footnote label="6" backrefs={["id20"]} id="id21">
+  ElGamal, T. (1985). A Public Key Cryptosystem and a Signature Scheme Based on Discrete Logarithms. Lecture Notes in Computer Science (Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics), 196 LNCS(4), 10–18. [https://doi.org/10.1007/3-540-39568-7\_2](https://doi.org/10.1007/3-540-39568-7_2)
+</Footnote>
+
+:target{#ec-elgamal}
+
+### 算法实现: EC ElGamal
+
+HEU 实现了 EC ElGamal 算法，这是一种定义在椭圆曲线点群（EC Group）上的 ElGamal 算法，相比其他循环群 G，EC Group 的计算效率更高，使得 EC ElGamal 最终性能表现非常优秀。
+
+另一方面，为了维持加法同态特性，EC ElGamal 将明文映射到 EC Group 的方式为：<InlineMath>$m'=mG$</InlineMath>，其中 <InlineMath>$m$</InlineMath> 是明文，<InlineMath>$m'$</InlineMath> 是映射后的明文，即椭圆曲线上的一个点，G 是 EC Group 的生成元。这是一个典型的单向函数（one-way function），EC ElGamal 解密之后得到 <InlineMath>$m'$</InlineMath> 想要反向计算出真正的明文 <InlineMath>$m$</InlineMath> 是非常困难的，没有直接求解算法，以至于 EC ElGamal 解密非常慢，这是 EC ElGamal 的缺点。
+
+<table id="id33">
+  <caption>
+    EC ElGamal 特性速查
+  </caption>
+
+  <tbody>
+    <tr>
+      <td>
+        SchemaType parameter name
+      </td>
+
+      <td>
+        phe.SchemaType.ElGamal
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Implementation Algorithm
+      </td>
+
+      <td>
+        ElGamal
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        同态特性
+      </td>
+
+      <td>
+        Additive homomorphic encryption
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        stability
+      </td>
+
+      <td>
+        仅供非生产环境使用
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Supported Platforms
+      </td>
+
+      <td>
+        Linux，macOS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Whether it depends on specific hardware
+      </td>
+
+      <td>
+        Independent
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Whether hardware acceleration is supported
+      </td>
+
+      <td>
+        取决于曲线种类的选择。（注：目前所有曲线都不支持硬件加速）
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Relative performance
+      </td>
+
+      <td>
+        High
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+EC ElGamal 底层椭圆曲线计算基于 [Yacl ECC SPI](https://github.com/secretflow/yacl/tree/main/yacl/crypto/base/ecc)。
+
+:target{#id22}
+
+## Algorithm Performance
+
+HEU provides a Benchmark to test the performance of each algorithm. To run the Benchmark, please clone the HEU code repository, then execute the following command in the project root directory:
+
+```shell
+# 测试算法在 scalar 运算场景下的性能
+# Test the performance of algorithms in scalar computing scenarios
+bazel run -c opt heu/library/benchmark:phe -- --schema=zpaillier
+
+# 测试算法在矩阵运算场景下的性能
+# Test the performance of algorithms in matrix operation scenarios
+bazel run -c opt heu/library/benchmark:np -- --schema=zpaillier
+```
+
+Note: By changing the schema parameter in the above command, you can run the Benchmark of different algorithms. The first run of Benchmark will automatically trigger code compilation.
+
+:target{#id23}
+
+### Reference Performance
+
+Below are the reference performances of some algorithms, excluding acceleration hardware. Configuration parameters:
+
+- CPU Intel(R) Xeon(R) Gold 5218 CPU @ 2.30GHz
+- Key size = 2048
+
+The entries in the table indicate the total time in ms for 10,000 operations in a single thread.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        SchemaType
+      </td>
+
+      <td>
+        encryption
+      </td>
+
+      <td>
+        Ciphertext + Ciphertext
+      </td>
+
+      <td>
+        Ciphertext + Plaintext
+      </td>
+
+      <td>
+        Ciphertext + Plaintext
+      </td>
+
+      <td>
+        Decryption
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        OU
+      </td>
+
+      <td>
+        278
+      </td>
+
+      <td>
+        18.1
+      </td>
+
+      <td>
+        52.5
+      </td>
+
+      <td>
+        529
+      </td>
+
+      <td>
+        2458
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ZPaillier
+      </td>
+
+      <td>
+        8141
+      </td>
+
+      <td>
+        70.9
+      </td>
+
+      <td>
+        192
+      </td>
+
+      <td>
+        1960
+      </td>
+
+      <td>
+        86984
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        FPaillier
+      </td>
+
+      <td>
+        151187
+      </td>
+
+      <td>
+        230
+      </td>
+
+      <td>
+        150529
+      </td>
+
+      <td>
+        1692
+      </td>
+
+      <td>
+        150580
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+再次提醒，即使算法的 Key size 相同，他们的安全强度未必一致，OU 的安全性可能弱于 Paillier，详见 [Okamoto-Uchiyama](#okamoto-uchiyama) 算法理论介绍章节。
+
+<Container type="note">
+  本页面的英文文档较为陈旧，您愿意翻译吗？感谢您对隐语社区做出的贡献！
+</Container>

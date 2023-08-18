@@ -1,0 +1,102 @@
+---
+sitemap:
+- children:
+  - children: []
+    file: getting_started/installation.mdx
+    hidden: false
+    title: 安装
+    uri: null
+  - children: []
+    file: getting_started/quick_start.mdx
+    hidden: false
+    title: 快速入门
+    uri: null
+  - children: []
+    file: getting_started/numpy.mdx
+    hidden: false
+    title: 矩阵运算
+    uri: null
+  - children: []
+    file: getting_started/algo_choice.mdx
+    hidden: false
+    title: 算法选择
+    uri: null
+  - children: []
+    file: getting_started/faq.mdx
+    hidden: false
+    title: 常见问题
+    uri: null
+  file: getting_started/index.mdx
+  hidden: false
+  title: 准备开始
+  uri: null
+- children:
+  - children: []
+    file: development/arch.mdx
+    hidden: false
+    title: HEU 架构
+    uri: null
+  - children: []
+    file: development/phe_dev.mdx
+    hidden: false
+    title: 开发新算法
+    uri: null
+  file: development/index.mdx
+  hidden: false
+  title: 开发
+  uri: null
+- children:
+  - children: []
+    file: references/phe_api.mdx
+    hidden: false
+    title: PHE 模块
+    uri: null
+  - children: []
+    file: references/numpy_api.mdx
+    hidden: false
+    title: Numpy 模块
+    uri: null
+  - children: []
+    file: references/upgrade_guide.mdx
+    hidden: false
+    title: 升级指南
+    uri: null
+  file: references/index.mdx
+  hidden: false
+  title: API 手册
+  uri: null
+---
+
+:target{#heu}
+
+# HEU 文档
+
+同态加密计算引擎（homomorphic encryption processing unit, HEU) 是隐语的一个子项目，实现了高性能的同态加密算法。
+
+HEU 的目的是降低同态加密的使用门槛，使得用户无需专业知识就能利用同态加密算法构建任意程序。
+
+![](_assets/heu_arch.png)
+
+由于 HEU 还处在起步阶段，当前 HEU 仅仅是一个加法同态加密的 library，还不具备像 SPU 一样执行任意程序的能力。
+
+<TableOfContents>
+
+
+  <p className="caption">
+    Contents
+  </p>
+
+  - [准备开始](getting_started/index.mdx)
+    - [安装](getting_started/installation.mdx)
+    - [快速入门](getting_started/quick_start.mdx)
+    - [矩阵运算](getting_started/numpy.mdx)
+    - [算法选择](getting_started/algo_choice.mdx)
+    - [常见问题](getting_started/faq.mdx)
+  - [开发](development/index.mdx)
+    - [HEU 架构](development/arch.mdx)
+    - [开发新算法](development/phe_dev.mdx)
+  - [API 手册](references/index.mdx)
+    - [PHE 模块](references/phe_api.mdx)
+    - [Numpy 模块](references/numpy_api.mdx)
+    - [升级指南](references/upgrade_guide.mdx)
+</TableOfContents>

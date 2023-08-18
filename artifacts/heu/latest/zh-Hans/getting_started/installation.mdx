@@ -1,0 +1,77 @@
+:target{#id1}
+
+# 安装
+
+:target{#id2}
+
+## 环境准备
+
+Python == 3.8
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>OS：</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - Centos 7
+      - Ubuntu 18.04+
+      - macOS 11.1+ (macOS Big Sur+)
+    </dd>
+  </dl>
+</DefinitionList>
+
+:target{#id3}
+
+## 安装
+
+:target{#pip}
+
+### 通过 Pip 安装
+
+HEU 安装包已经发布到了 PyPi，您可以通过 pip 工具安装 HEU
+
+```bash
+pip install sf-heu
+```
+
+:target{#id4}
+
+### 从源码安装
+
+如果您需要使用最新测试版本，可以从 [源码](https://github.com/secretflow/heu) 编译安装。
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>依赖工具：</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      - [Bazel](https://docs.bazel.build/versions/main/install.html)
+      - GCC >= 11
+    </dd>
+  </dl>
+</DefinitionList>
+
+安装：
+
+```bash
+git clone --recursive git@github.com:secretflow/heu.git
+cd heu
+bazel build //heu/pylib -c opt
+pip install bazel-bin/heu/pylib/(cat bazel-bin/heu/pylib/pylib.name) --force-reinstall
+```
+
+:target{#id6}
+
+## 测试运行
+
+安装完成后，建议执行以下命令检查 HEU 是否工作正常
+
+```bash
+python -c "from heu import phe"
+```
+
+上述命令，如果没有任何输出，则说明安装成功；反之如果报错，则说明安装未成功，请参考 [FAQ](faq.mdx)
