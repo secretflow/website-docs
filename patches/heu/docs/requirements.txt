@@ -1,7 +1,6 @@
 sphinx>=7
-sphinx-intl
-sphinx-copybutton
-sphinx-togglebutton
-sphinx-inline-tabs
-pydata-sphinx-theme
+linkify-it-py
+myst-parser
+nbsphinx
+sphinx_design
 sf-heu

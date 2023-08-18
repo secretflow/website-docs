@@ -3,3 +3,6 @@ build
 *.css
 *.js
 *.doctree
+*.pickle
+objects.inv
+.buildinfo
