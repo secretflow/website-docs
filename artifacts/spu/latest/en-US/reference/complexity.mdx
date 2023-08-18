@@ -1,0 +1,495 @@
+:target{#semi2k}
+
+# Semi2k
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        kernel
+      </td>
+
+      <td>
+        latency
+      </td>
+
+      <td>
+        comm
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        a2b
+      </td>
+
+      <td>
+        (log(K)+1)\*log(N)
+      </td>
+
+      <td>
+        (2\*log(K)+1)\*2\*K\*(N-1)\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        b2a
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        a2p
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        b2p
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        add\_bb
+      </td>
+
+      <td>
+        log(K)+1
+      </td>
+
+      <td>
+        log(K)\*K\*2+K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        add\_aa
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        add\_ap
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mul\_aa
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*2\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mul\_ap
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mmul\_aa
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*2\*(N-1)\*m\*n
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mmul\_ap
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        trunc\_a
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        xor\_bb
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        xor\_bp
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        and\_bb
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*2\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        and\_bp
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#aby3}
+
+# Aby3
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        kernel
+      </td>
+
+      <td>
+        latency
+      </td>
+
+      <td>
+        comm
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        a2b
+      </td>
+
+      <td>
+        log(K)+1+1
+      </td>
+
+      <td>
+        log(K)\*K+K\*2
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        b2a
+      </td>
+
+      <td>
+        TODO
+      </td>
+
+      <td>
+        TODO
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        a2p
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        b2p
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        add\_bb
+      </td>
+
+      <td>
+        log(K)+1
+      </td>
+
+      <td>
+        log(K)\*K\*2+K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        add\_aa
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        add\_ap
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mul\_aa
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mul\_ap
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mmul\_aa
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*m\*n
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mmul\_ap
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        trunc\_a
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        4\*K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        xor\_bb
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        xor\_bp
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        and\_bb
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        and\_bp
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+  </tbody>
+</table>

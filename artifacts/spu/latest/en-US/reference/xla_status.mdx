@@ -1,0 +1,1965 @@
+:target{#xla-implementation-status}
+
+# XLA Implementation Status
+
+List of XLA(mhlo-mlir) Ops that SPU supports:
+
+```none
+The list of mhlo ops is obtained from this file:
+    https://github.com/openxla/xla/blob/main/xla/mlir_hlo/mhlo/IR/hlo_ops.td
+
+General limitation with SPU:
+    * Dynamic shape is not supported
+    * Complex number is not supported
+    * SPU only supports fixed-point numbers, so no-finite is not supported
+```
+
+:target{#xla-nullary-ops}
+
+## XLA nullary ops
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Op Name
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>constant</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+        Always yields a public value
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>iota</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+        Always yields a public value
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>dynamic\_iota</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>create\_token</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Count: Total = 4, fully supported = 2
+
+:target{#xla-unary-element-wise-ops}
+
+## XLA unary element-wise ops
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Op Name
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>abs</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>cbrt</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>ceil</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>convert</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>count\_leading\_zeros</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>cosine</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>exponential</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>exponential\_minus\_one</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>floor</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>imag</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>is\_finite</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>log</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>log\_plus\_one</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>logistic</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>not</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>negate</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>popcnt</code>
+      </td>
+
+      <td>
+        not
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>real</code>
+      </td>
+
+      <td>
+        not
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>round\_nearest\_afz</code>
+      </td>
+
+      <td>
+        not
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rsqrt</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>sign</code>
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>sine</code>
+      </td>
+
+      <td>
+        not
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>sqrt</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>tanh</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Count: Total = 24, fully supported = 12, partial = 0
+
+:target{#xla-binary-element-wise-ops}
+
+## XLA binary element-wise ops
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Op Name
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>add</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>atan2</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>complex</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>compare</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>divide</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>maximum</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>minimum</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>multiply</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>power</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>remainder</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>shift\_left</code>
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        rhs must be a public
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>shift\_right\_arithmetic</code>
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        rhs must be a public
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>shift\_right\_logical</code>
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        rhs must be a public
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>subtract</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Count: Total = 14, fully supported = 9, partial = 3
+
+:target{#xla-binary-logical-element-wise-ops}
+
+## XLA binary logical element-wise ops
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Op Name
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>and</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>or</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>xor</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Count: Total = 3, fully supported = 3
+
+:target{#xla-communication-ops}
+
+## XLA communication ops
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Op Name
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>infeed</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>outfeed</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>send</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>recv</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Count: Total = 4, fully supported = 0
+
+:target{#xla-parallelism-related-ops}
+
+## XLA parallelism related ops
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Op Name
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>replica\_id</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Count: Total = 1, fully supported = 0
+
+:target{#xla-control-flow-ops}
+
+## XLA control flow ops
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Op Name
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>after\_all</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>if</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>case</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>while</code>
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        condition region must return a public scalar
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>all\_gather</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>all\_reduce</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>reduce\_scatter</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>all\_to\_all</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>reduce</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+        inherits limitations from reduce function
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Count: Total = 9, fully supported = 2, partial = 1
+
+:target{#xla-tuple-ops}
+
+## XLA tuple ops
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Op Name
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>get\_tuple\_element</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>tuple</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Count: Total = 2, fully supported = 2
+
+:target{#xla-other-ops}
+
+## XLA other ops
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Op Name
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>slice</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>dynamic-slice</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>dynamic-update-slice</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>batch\_norm\_grad</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+        Rely on XLA’s batchnorm\_expander pass
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>batch\_norm\_inference</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+        Rely on XLA’s batchnorm\_expander pass
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>batch\_norm\_training</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+        Rely on XLA’s batchnorm\_expander pass
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>bitcast\_convert</code>
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        Only supports convert to type of same size
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>broadcast</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>broadcast\_in\_dim</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>dynamic\_broadcast\_in\_dim</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>cholesky</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+        Rely on CholeskyExpander pass
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>clamp</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>concatenate</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>collective\_permute</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>convolution</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>copy</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>cross-replica-sum</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>custom\_call</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>dot</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>dot\_general</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>einsum</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>unary\_einsum</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>fft</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>gather</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>get\_dimension\_size</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>map</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+        Rely on XLA’s MapInliner pass
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>reshape</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>dynamic\_reshape</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>scatter</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>select</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>select\_and\_scatter</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>set\_dimension\_size</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>sort</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>reverse</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>pad</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>trace</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>transpose</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>triangular\_solve</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+        Rely on XLA’s TriangularSolverExpander pass
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>reduce\_window</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>return</code>
+      </td>
+
+      <td>
+        fully
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>torch\_index\_select</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>optimization\_barrier</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Count: Total = 42, fully supported = 28, partial = 1
+
+:target{#xla-rng-ops}
+
+## XLA RNG ops
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Op Name
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>rng\_uniform</code>
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        Bound \[a, b) must all be public scalar, result is also a public tensor
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rng\_normal</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rng\_bit\_generator</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Count: Total = 3, fully supported = 0, partial = 1
+
+:target{#xla-quantize-op}
+
+## XLA quantize op
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Op Name
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>dequantize</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Count: Total = 1, fully supported = 0, partial = 0
+
+:target{#xla-miscellaneous-ops}
+
+## XLA miscellaneous ops
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Op Name
+      </td>
+
+      <td>
+        supported(fully/partial/no)
+      </td>
+
+      <td>
+        notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>fusion</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>bitcast</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+        Internal op to XLA/GPU
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>reduce\_precision</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>real\_dynamic\_slice</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>dynamic\_pad</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>dynamic\_gather</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>dynamic\_conv</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>print</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>compute\_reshape\_shape</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>cstr\_reshapable</code>
+      </td>
+
+      <td>
+        no
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Count: Total = 10, fully supported = 0, partial = 0

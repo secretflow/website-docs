@@ -1,0 +1,1207 @@
+:target{#spu-psi-configuration}
+
+# SPU PSI Configuration
+
+:target{#table-of-contents}
+
+## Table of Contents
+
+- Messages
+  - [BucketPsiConfig](#bucketpsiconfig)
+  - [DpPsiParams](#dppsiparams)
+  - [InputParams](#inputparams)
+  - [MemoryPsiConfig](#memorypsiconfig)
+  - [OutputParams](#outputparams)
+  - [PsiResultReport](#psiresultreport)
+- Enums
+  - [CurveType](#curvetype)
+  - [PsiType](#psitype)
+- [Scalar Value Types](#scalar-value-types)
+
+:target{#messages}
+
+## Messages
+
+:target{#bucketpsiconfig}
+
+### BucketPsiConfig
+
+The Bucket-psi configuration.
+
+```python
+config = psi.BucketPsiConfig(  # prepare config
+      psi_type=PsiType.ECDH_PSI_2PC,
+      broadcast_result=True,
+      receiver_rank=0,
+      input_params=psi.InputParams(path='/xxx/ccc.csv', select_fields=['c1', 'c2']),
+      output_params=psi.OutputParams(path='/yyyy/oooo.csv', need_sort=True),
+  )
+  report = psi.bucket_psi(lctx, config)  # run psi and get report
+```
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        psi\_type
+      </td>
+
+      <td>
+        [<span> PsiType</span>](#psitype)
+      </td>
+
+      <td>
+        The psi type.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        receiver\_rank
+      </td>
+
+      <td>
+        &#x20;uint32
+      </td>
+
+      <td>
+        Specified the receiver rank. Receiver can get psi result.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        broadcast\_result
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Whether to broadcast psi result to all parties.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        input\_params
+      </td>
+
+      <td>
+        [<span> InputParams</span>](#inputparams)
+      </td>
+
+      <td>
+        The input parameters of psi.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        output\_params
+      </td>
+
+      <td>
+        [<span> OutputParams</span>](#outputparams)
+      </td>
+
+      <td>
+        The output parameters of psi.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        curve\_type
+      </td>
+
+      <td>
+        [<span> CurveType</span>](#curvetype)
+      </td>
+
+      <td>
+        Optional, specified elliptic curve cryptography used in psi when needed.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bucket\_size
+      </td>
+
+      <td>
+        &#x20;uint32
+      </td>
+
+      <td>
+        Optional, specified the hash bucket size used in psi.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        preprocess\_path
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Optional，The path of offline preprocess file.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ecdh\_secret\_key\_path
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        Optional，secret key path of ecdh\_oprf, 256bit/32bytes binary file.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        dppsi\_params
+      </td>
+
+      <td>
+        [<span> DpPsiParams</span>](#dppsiparams)
+      </td>
+
+      <td>
+        Optional，Params for dp-psi
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#dppsiparams}
+
+### DpPsiParams
+
+The input parameters of dp-psi.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        bob\_sub\_sampling
+      </td>
+
+      <td>
+        &#x20;double
+      </td>
+
+      <td>
+        bob sub-sampling bernoulli\_distribution probability.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        epsilon
+      </td>
+
+      <td>
+        &#x20;double
+      </td>
+
+      <td>
+        dp epsilon
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#inputparams}
+
+### InputParams
+
+The input parameters of psi.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        path
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        The path of input csv file.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        select\_fields
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        The select fields of input data.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        precheck
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Whether to check select fields duplicate.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#memorypsiconfig}
+
+### MemoryPsiConfig
+
+The In-memory psi configuration.
+
+```python
+config = psi.MemoryPsiConfig(  # prepare config
+      psi_type=PsiType.ECDH_PSI_2PC,
+      broadcast_result=True,
+      receiver_rank=0,
+  )
+  joined_list = psi.mem_psi(
+      lctx, config, ['a1', 'v2', 'b3', 'v4']
+  )  # run psi and get joined list
+```
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        psi\_type
+      </td>
+
+      <td>
+        [<span> PsiType</span>](#psitype)
+      </td>
+
+      <td>
+        The psi type.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        receiver\_rank
+      </td>
+
+      <td>
+        &#x20;uint32
+      </td>
+
+      <td>
+        Specified the receiver rank. Receiver can get psi result.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        broadcast\_result
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Whether to broadcast psi result to all parties.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        curve\_type
+      </td>
+
+      <td>
+        [<span> CurveType</span>](#curvetype)
+      </td>
+
+      <td>
+        Optional, specified elliptic curve cryptography used in psi when needed.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        dppsi\_params
+      </td>
+
+      <td>
+        [<span> DpPsiParams</span>](#dppsiparams)
+      </td>
+
+      <td>
+        Optional，Params for dp-psi
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#outputparams}
+
+### OutputParams
+
+The output parameters of psi.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        path
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        The path of output csv file.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        need\_sort
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Whether to sort output file by select fields.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#psiresultreport}
+
+### PsiResultReport
+
+The report of psi result.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        original\_count
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        The data count of input.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        intersection\_count
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        The count of intersection. Get <code>-1</code> when self party can not get result.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#enums}
+
+## Enums
+
+:target{#curvetype}
+
+### CurveType
+
+The specified elliptic curve cryptography used in psi.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        CURVE\_INVALID\_TYPE
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        CURVE\_25519
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Daniel J. Bernstein. Curve25519: new diffie-hellman speed records
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        CURVE\_FOURQ
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        FourQ: four-dimensional decompositions on a Q-curve over the Mersenne prime
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        CURVE\_SM2
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        SM2 is an elliptic curve based cryptosystem (ECC) published as a Chinese National Standard as GBT.32918.1-2016 and published in ISO/IEC 14888-3:2018
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        CURVE\_SECP256K1
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        parameters of the elliptic curve defined in Standards for Efficient Cryptography (SEC) [http://www.secg.org/sec2-v2.pdf](http://www.secg.org/sec2-v2.pdf)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#psitype}
+
+### PsiType
+
+The algorithm type of psi.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        INVALID\_PSI\_TYPE
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ECDH\_PSI\_2PC
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        DDH based PSI
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        KKRT\_PSI\_2PC
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        Efficient Batched Oblivious PRF with Applications to Private Set Intersection [https://eprint.iacr.org/2016/799.pdf](https://eprint.iacr.org/2016/799.pdf)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        BC22\_PSI\_2PC
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        PSI from Pseudorandom Correlation Generators [https://eprint.iacr.org/2022/334](https://eprint.iacr.org/2022/334)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ECDH\_PSI\_3PC
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        Multi-party PSI based on ECDH (Say A, B, C (receiver)) notice: two-party intersection cardinarlity leak (
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ECDH\_PSI\_NPC
+      </td>
+
+      <td>
+        5
+      </td>
+
+      <td>
+        Iterative running 2-party ecdh psi to get n-party PSI. Notice: two-party intersection leak
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        KKRT\_PSI\_NPC
+      </td>
+
+      <td>
+        6
+      </td>
+
+      <td>
+        Iterative running 2-party kkrt psi to get n-party PSI. Notice: two-party intersection leak
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ECDH\_OPRF\_UB\_PSI\_2PC\_GEN\_CACHE
+      </td>
+
+      <td>
+        7
+      </td>
+
+      <td>
+        ecdh-oprf 2-party Unbalanced-PSI Generate CACHE.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ECDH\_OPRF\_UB\_PSI\_2PC\_TRANSFER\_CACHE
+      </td>
+
+      <td>
+        8
+      </td>
+
+      <td>
+        ecdh-oprf 2-party Unbalanced-PSI transfer CACHE.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ECDH\_OPRF\_UB\_PSI\_2PC\_OFFLINE
+      </td>
+
+      <td>
+        9
+      </td>
+
+      <td>
+        ecdh-oprf 2-party Unbalanced-PSI offline phase.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ECDH\_OPRF\_UB\_PSI\_2PC\_ONLINE
+      </td>
+
+      <td>
+        10
+      </td>
+
+      <td>
+        ecdh-oprf 2-party Unbalanced-PSI online phase.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ECDH\_OPRF\_UB\_PSI\_2PC\_SHUFFLE\_ONLINE
+      </td>
+
+      <td>
+        11
+      </td>
+
+      <td>
+        ecdh-oprf 2-party Unbalanced-PSI with shuffling online phase. large set party get intersection result
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DP\_PSI\_2PC
+      </td>
+
+      <td>
+        12
+      </td>
+
+      <td>
+        Differentially-Private PSI [https://arxiv.org/pdf/2208.13249.pdf](https://arxiv.org/pdf/2208.13249.pdf) bases on ECDH-PSI, and provides: Differentially private PSI results.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#scalar-value-types}
+
+## Scalar Value Types
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        .proto Type
+      </td>
+
+      <td>
+        Notes
+      </td>
+
+      <td>
+        C++ Type
+      </td>
+
+      <td>
+        Java Type
+      </td>
+
+      <td>
+        Python Type
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <div /><h4 id="double" /><a name="double" /> double
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        double
+      </td>
+
+      <td>
+        double
+      </td>
+
+      <td>
+        float
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="float" /><a name="float" /> float
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        float
+      </td>
+
+      <td>
+        float
+      </td>
+
+      <td>
+        float
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="int32" /><a name="int32" /> int32
+      </td>
+
+      <td>
+        Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="int64" /><a name="int64" /> int64
+      </td>
+
+      <td>
+        Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="uint32" /><a name="uint32" /> uint32
+      </td>
+
+      <td>
+        Uses variable-length encoding.
+      </td>
+
+      <td>
+        uint32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="uint64" /><a name="uint64" /> uint64
+      </td>
+
+      <td>
+        Uses variable-length encoding.
+      </td>
+
+      <td>
+        uint64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="sint32" /><a name="sint32" /> sint32
+      </td>
+
+      <td>
+        Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="sint64" /><a name="sint64" /> sint64
+      </td>
+
+      <td>
+        Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="fixed32" /><a name="fixed32" /> fixed32
+      </td>
+
+      <td>
+        Always four bytes. More efficient than uint32 if values are often greater than 2^28.
+      </td>
+
+      <td>
+        uint32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="fixed64" /><a name="fixed64" /> fixed64
+      </td>
+
+      <td>
+        Always eight bytes. More efficient than uint64 if values are often greater than 2^56.
+      </td>
+
+      <td>
+        uint64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="sfixed32" /><a name="sfixed32" /> sfixed32
+      </td>
+
+      <td>
+        Always four bytes.
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="sfixed64" /><a name="sfixed64" /> sfixed64
+      </td>
+
+      <td>
+        Always eight bytes.
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="bool" /><a name="bool" /> bool
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        bool
+      </td>
+
+      <td>
+        boolean
+      </td>
+
+      <td>
+        boolean
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="string" /><a name="string" /> string
+      </td>
+
+      <td>
+        A string must always contain UTF-8 encoded or 7-bit ASCII text.
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        str/unicode
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="bytes" /><a name="bytes" /> bytes
+      </td>
+
+      <td>
+        May contain any arbitrary sequence of bytes.
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        ByteString
+      </td>
+
+      <td>
+        str
+      </td>
+    </tr>
+  </tbody>
+</table>
