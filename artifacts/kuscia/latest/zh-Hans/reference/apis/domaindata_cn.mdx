@@ -1,0 +1,1848 @@
+:target{#domaindata}
+
+# DomainData
+
+DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts/domaindata_cn.mdx)。
+你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domaindata.proto) 找到 DomainData 对应的 protobuf 文件。
+
+:target{#id1}
+
+## 接口总览
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        方法名
+      </td>
+
+      <td>
+        请求类型
+      </td>
+
+      <td>
+        响应类型
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        [<span>CreateDomainData</span>](#create-domain-data)
+      </td>
+
+      <td>
+        CreateDomainDataRequest
+      </td>
+
+      <td>
+        CreateDomainDataResponse
+      </td>
+
+      <td>
+        创建数据对象
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>UpdateDomainData</span>](#update-domain-data)
+      </td>
+
+      <td>
+        UpdateDomainDataRequest
+      </td>
+
+      <td>
+        UpdateDomainDataResponse
+      </td>
+
+      <td>
+        更新数据对象
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>DeleteDomainData</span>](#delete-domain-data)
+      </td>
+
+      <td>
+        DeleteDomainDataRequest
+      </td>
+
+      <td>
+        DeleteDomainDataResponse
+      </td>
+
+      <td>
+        删除数据对象
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>QueryDomainData</span>](#query-domain-data)
+      </td>
+
+      <td>
+        QueryDomainDataRequest
+      </td>
+
+      <td>
+        QueryDomainDataResponse
+      </td>
+
+      <td>
+        查询数据对象
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>BatchQueryDomainData</span>](#batch-query-domain-data)
+      </td>
+
+      <td>
+        BatchQueryDomainDataRequest
+      </td>
+
+      <td>
+        BatchQueryDomainDataResponse
+      </td>
+
+      <td>
+        批量查询数据对象
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>ListDomainData</span>](#list-domain-data)
+      </td>
+
+      <td>
+        ListDomainDataRequest
+      </td>
+
+      <td>
+        ListDomainDataResponse
+      </td>
+
+      <td>
+        列出数据对象
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id2}
+
+## 接口详情
+
+:target{#create-domain-data}
+
+### 创建数据对象
+
+:target{#http}
+
+#### HTTP路径
+
+/api/v1/domaindata/create
+
+:target{#create-domain-data-request}
+
+#### 请求（CreateDomainDataRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domaindata\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        数据对象ID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        类型，\[table,model,rule,report,unknown]，大小写敏感
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        relative\_uri
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datasource\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        数据源ID，不填写则使用默认数据源，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attributes
+      </td>
+
+      <td>
+        map\<string,string>
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        partition
+      </td>
+
+      <td>
+        [<span>Partition</span>](#partition)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        暂不支持
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        columns
+      </td>
+
+      <td>
+        [<span>DataColumn</span>](#data-column) array
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        列信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        vendor
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        来源，用于查询接口筛选数据对象，参考 [<span>ListDomainDataRequestData</span>](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#create-domain-data-response}
+
+#### 响应（CreateDomainDataResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        CreateDomainDataResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        数据对象ID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#update-domain-data}
+
+### 更新数据对象
+
+:target{#id3}
+
+#### HTTP路径
+
+/api/v1/domaindata/update
+
+:target{#updatedomaindatarequest}
+
+#### 请求（UpdateDomainDataRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domaindata\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        数据对象ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        类型，\[table,model,rule,report,unknown]，大小写敏感
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        relative\_uri
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datasource\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        数据源ID，不填写则使用默认数据源，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attributes
+      </td>
+
+      <td>
+        map\<string,string>
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        partition
+      </td>
+
+      <td>
+        [<span>Partition</span>](#partition)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        暂不支持
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        columns
+      </td>
+
+      <td>
+        [<span>DataColumn</span>](#data-column)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        列信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        vendor
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        来源，用于批量查询接口筛选数据对象，参考 [<span>ListDomainDataRequestData</span>](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#updatedomaindataresponse}
+
+#### 响应（UpdateDomainDataResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#delete-domain-data}
+
+### 删除DomainData
+
+:target{#id4}
+
+#### HTTP路径
+
+/api/v1/domaindata/delete
+
+:target{#deletedomaindatarequest}
+
+#### 请求（DeleteDomainDataRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domaindata\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        数据对象ID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#deletedomaindataresponse}
+
+#### 响应（DeleteDomainDataResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#query-domain-data}
+
+### 查询数据对象
+
+:target{#id5}
+
+#### HTTP路径
+
+/api/v1/domaindata/query
+
+:target{#querydomainrequest}
+
+#### 请求（QueryDomainRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        [<span>QueryDomainDataRequestData</span>](#query-domain-data-request-data)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        查询内容
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#querydomainresponse}
+
+#### 响应（QueryDomainResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        [<span>DomainData</span>](#domain-data-entity)
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#batch-query-domain-data}
+
+### 批量查询数据对象
+
+:target{#id6}
+
+#### HTTP路径
+
+/api/v1/domaindata/batchQuery
+
+:target{#batchquerydomaindatarequest}
+
+#### 请求（BatchQueryDomainDataRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        [<span>QueryDomainDataRequestData</span>](#query-domain-data-request-data)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        查询内容
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#batchquerydomaindataresponse}
+
+#### 响应（BatchQueryDomainDataResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        [<span>DomainDataList</span>](#domain-data-list)
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#list-domain-data}
+
+### 列出数据对象
+
+:target{#id7}
+
+#### HTTP路径
+
+/api/v1/domaindata/list
+
+:target{#listdomaindatarequest}
+
+#### 请求（ListDomainDataRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        [<span>ListDomainDataRequestData</span>](#list-domain-data-request-data)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        查询请求
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#listdomaindataresponse}
+
+#### 响应（ListDomainDataResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        [<span>DomainDataList</span>](#domain-data-list)
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id8}
+
+## 公共
+
+:target{#query-domain-data-request-data}
+
+### QueryDomainDataRequestData
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domaindata\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        数据对象ID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#list-domain-data-request-data}
+
+#### ListDomainDataRequestData
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domaindata\_type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domaindata\_vendor
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        来源
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#domain-data-list}
+
+### DomainDataList
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domaindata\_list
+      </td>
+
+      <td>
+        [<span>DomainData</span>](#domain-data-entity)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        数据对象列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#domain-data-entity}
+
+### DomainData
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domaindata\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        数据对象ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        类型，\[table,model,rule,report,unknown]，大小写敏感
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        relative\_uri
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datasource\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        数据源ID，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attributes
+      </td>
+
+      <td>
+        map\<string,string>
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        partition
+      </td>
+
+      <td>
+        [<span>Partition</span>](#partition)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        暂不支持
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        columns
+      </td>
+
+      <td>
+        [<span>DataColumn</span>](#data-column)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        列信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        vendor
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        来源，用于批量查询接口筛选数据对象，参考 [<span>ListDomainDataRequestData</span>](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#partition}
+
+### Partition
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        fields
+      </td>
+
+      <td>
+        [<span>DataColumn</span>](#data-column)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        列信息
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#data-column}
+
+### DataColumn
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        列名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        类型，当前版本由应用算法组件定义和消费，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        comment
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        列注释
+      </td>
+    </tr>
+  </tbody>
+</table>

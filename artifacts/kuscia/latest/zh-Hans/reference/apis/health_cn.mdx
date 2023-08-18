@@ -1,0 +1,194 @@
+:target{#health}
+
+# Health
+
+Health 提供了服务的健康检查，你可以借助这些 API 了解服务的健康状态。
+你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/health.proto) 找到 Domain 对应的 protobuf 文件。
+
+:target{#id1}
+
+## 接口总览
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        方法名
+      </td>
+
+      <td>
+        请求类型
+      </td>
+
+      <td>
+        响应类型
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        [<span>healthZ</span>](#healthz)
+      </td>
+
+      <td>
+        HealthRequest
+      </td>
+
+      <td>
+        HealthResponse
+      </td>
+
+      <td>
+        服务是否健康
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id2}
+
+## 接口详情
+
+:target{#healthz}
+
+### 健康检查
+
+:target{#http}
+
+#### HTTP路径
+
+/healthZ
+
+:target{#healthrequest}
+
+#### 请求（HealthRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#healthresponse}
+
+#### 响应（HealthResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        HealthResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.ready
+      </td>
+
+      <td>
+        bool
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        是否就绪
+      </td>
+    </tr>
+  </tbody>
+</table>

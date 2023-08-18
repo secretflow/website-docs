@@ -1,0 +1,1460 @@
+:target{#domainroute}
+
+# DomainRoute
+
+DomainRoute 用于在中心化网络中配置 Lite 节点与 Master 之间的路由规则、Lite 节点之间的路由规则，以及点对点（P2P）网络中 Autonomy 节点之间的路由规则。请参考 [DomainRoute](../concepts/domainroute_cn.mdx) 。
+你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domainroute.proto) 找到 DomainRoute 对应的 protobuf 文件。
+
+:target{#id1}
+
+## 接口总览
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        方法名
+      </td>
+
+      <td>
+        请求类型
+      </td>
+
+      <td>
+        响应类型
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        [<span>CreateDomainRoute</span>](#create-domain-route)
+      </td>
+
+      <td>
+        CreateDomainRouteRequest
+      </td>
+
+      <td>
+        CreateDomainRouteResponse
+      </td>
+
+      <td>
+        创建节点路由
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>DeleteDomainRoute</span>](#delete-domain-route)
+      </td>
+
+      <td>
+        DeleteDomainRouteRequest
+      </td>
+
+      <td>
+        DeleteDomainRouteResponse
+      </td>
+
+      <td>
+        查询节点路由
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>QueryDomainRoute</span>](#query-domain-route)
+      </td>
+
+      <td>
+        QueryDomainRouteRequest
+      </td>
+
+      <td>
+        QueryDomainRouteResponse
+      </td>
+
+      <td>
+        更新节点路由
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [<span>BatchQueryDomainRouteStatus</span>](#batch-query-domain-route-status)
+      </td>
+
+      <td>
+        BatchQueryDomainRouteStatusRequest
+      </td>
+
+      <td>
+        BatchQueryDomainRouteStatusResponse
+      </td>
+
+      <td>
+        批量查询节点路由状态
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id2}
+
+## 接口详情
+
+:target{#create-domain-route}
+
+### 创建节点路由
+
+:target{#http}
+
+#### HTTP路径
+
+/api/v1/route/create
+
+:target{#createdomainrouterequest}
+
+#### 请求（CreateDomainRouteRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        authentication\_type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        认证类型：\[Token，MTLS，None]，参考 [<span>DomainRoute概念</span>](../concepts/domainroute_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        destination
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        目标节点
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        endpoint
+      </td>
+
+      <td>
+        [<span>RouteEndpoint</span>](#route-endpoint)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        目标节点的地址
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        source
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        源节点
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#createdomainrouteresponse}
+
+#### 响应（CreateDomainRouteResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        CreateDomainRouteResponseData
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [data.name](http://data.name)
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        名称
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#delete-domain-route}
+
+### 删除节点路由
+
+:target{#id3}
+
+#### HTTP路径
+
+/api/v1/route/delete
+
+:target{#deletedomainrequest}
+
+#### 请求（DeleteDomainRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        destination
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        目标节点
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        source
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        源节点
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#deletedomainresponse}
+
+#### 响应（DeleteDomainResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#query-domain-route}
+
+### 查询节点路由
+
+:target{#id4}
+
+#### HTTP路径
+
+/api/v1/route/query
+
+:target{#querydomainrouterequest}
+
+#### 请求（QueryDomainRouteRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        destination
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        目标地址
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        source
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        源地址
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#querydomainrouteresponse}
+
+#### 响应（QueryDomainRouteResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](#./summary.html#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        QueryDomainRouteResponseData
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [data.name](http://data.name)
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.authentication\_type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        认证类型：\[Token，MTLS，None]，参考 [<span>DomainRoute概念</span>](../concepts/domainroute_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.destination
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        目标节点
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.endpoint
+      </td>
+
+      <td>
+        [<span>RouteEndpoint</span>](#route-endpoint)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        目标节点的地址，参考 [<span>DomainRoute概念</span>](../concepts/domainroute_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.source
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        源节点
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.token\_config
+      </td>
+
+      <td>
+        [<span>TokenConfig</span>](#token-config)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        Token配置
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.mtls\_config
+      </td>
+
+      <td>
+        [<span>MTLSConfig</span>](#mtls-config)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        MTLS配置
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.status
+      </td>
+
+      <td>
+        [<span>RouteStatus</span>](#route-status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#batch-query-domain-route-status}
+
+### 批量查询节点路由状态
+
+:target{#id5}
+
+#### HTTP路径
+
+/api/v1/route/status/batchQuery
+
+:target{#batchquerydomainroutestatusrequest}
+
+#### 请求（BatchQueryDomainRouteStatusRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        route\_keys
+      </td>
+
+      <td>
+        [<span>DomainRouteKey</span>](#domain-route-key)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        路由列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#batchquerydomainroutestatusresponse}
+
+#### 响应（BatchQueryDomainRouteStatusResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        BatchQueryDomainRouteStatusResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.routes
+      </td>
+
+      <td>
+        [<span>DomainRouteStatus</span>](#domain-route-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        授权路由列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id6}
+
+## 公共
+
+:target{#domain-route-key}
+
+### DomainRouteKey
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        source
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        源节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        destination
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        目标节点ID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#domain-route-status}
+
+### DomainRouteStatus
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        destination
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        目标节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        source
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        源节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>RouteStatus</span>](#route-status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#endpoint-port}
+
+### EndpointPort
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        port
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        端口号
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        protocol
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        端口协议：\[HTTP, GRPC]
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#route-endpoint}
+
+### RouteEndpoint
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        host
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        目标主机
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ports
+      </td>
+
+      <td>
+        [<span>EndpointPort</span>](#endpoint-port)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        目标端口
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#route-status}
+
+### RouteStatus
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        是否成功：\[Succeeded,Failed]
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        reason
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        原因
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#mtls-config}
+
+### MTLSConfig
+
+详细参考 [DomainRoute概念](../concepts/domainroute_cn.mdx) 。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        tls\_ca
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        TLS的CA
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        source\_client\_private\_key
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        来源客户端的私钥
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        source\_client\_cert
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        来源客户端的证书
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#token-config}
+
+### TokenConfig
+
+详细参考 [DomainRoute概念](../concepts/domainroute_cn.mdx) 。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        destination\_public\_key
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        目标节点的公钥
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        rolling\_update\_period
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        滚动更新间隔，单位 秒
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        source\_public\_key
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        源节点的公钥
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        token\_gen\_method
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        签名方式：\[RSA-GEN, RAND-GEN]
+      </td>
+    </tr>
+  </tbody>
+</table>
