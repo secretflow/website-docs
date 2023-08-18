@@ -8,14 +8,369 @@ Python API is used to control & access SPU, for example, to do data infeed/outfe
 
 ## Runtime Setup
 
+<Outline domain="py" objectType="class" target={"spu.Runtime"} module={"spu"} fullname={"Runtime"} parameters={["link", "config"]} description={"The SPU Virtual Machine Slice."}>
+  <Outline.Signature fullname="Runtime" id="spu.Runtime">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>spu.</Outline.Prefix><Outline.Name>Runtime</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">link</span><span>:</span><span>{" "}</span><span className="name">Context</span></Outline.Parameter>, <Outline.Parameter><span className="name">config</span><span>:</span><span>{" "}</span><span className="name">RuntimeConfig</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+  </Outline.Signature>
+
+  <Outline.Content>
+    The SPU Virtual Machine Slice.
+
+    <Outline domain="py" objectType="method" target={"spu.Runtime.clear"} module={"spu"} fullname={"Runtime.clear"} parameters={[]} description={"Delete all SPU values."}>
+      <Outline.Signature fullname="Runtime.clear" id="spu.Runtime.clear">
+        <Outline.Name>clear</Outline.Name><Outline.ParameterList><span>(</span><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>None</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Delete all SPU values.
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"spu.Runtime.del_var"} module={"spu"} fullname={"Runtime.del_var"} parameters={["name"]} description={"Delete an SPU value."}>
+      <Outline.Signature fullname="Runtime.del_var" id="spu.Runtime.del_var">
+        <Outline.Name>del\_var</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">name</span><span>:</span><span>{" "}</span><span className="name">str</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>None</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Delete an SPU value.
+
+        <FieldList>
+          <dl>
+            <dt className="field-name">
+              Parameters
+            </dt>
+
+            <dd className="field-body">
+              <Outline.ParameterTarget>name</Outline.ParameterTarget> (<em>str</em>) – Id of the value.
+            </dd>
+          </dl>
+        </FieldList>
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"spu.Runtime.get_var"} module={"spu"} fullname={"Runtime.get_var"} parameters={["name"]} description={"Get an SPU value."}>
+      <Outline.Signature fullname="Runtime.get_var" id="spu.Runtime.get_var">
+        <Outline.Name>get\_var</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">name</span><span>:</span><span>{" "}</span><span className="name">str</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>bytes</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get an SPU value.
+
+        <FieldList>
+          <dl>
+            <dt className="field-name">
+              Parameters
+            </dt>
+
+            <dd className="field-body">
+              <Outline.ParameterTarget>name</Outline.ParameterTarget> (<em>str</em>) – Id of value.
+            </dd>
+
+            <dt className="field-name">
+              Returns
+            </dt>
+
+            <dd className="field-body">
+              Data data.
+            </dd>
+
+            <dt className="field-name">
+              Return type
+            </dt>
+
+            <dd className="field-body">
+              spu\_pb2.ValueProto
+            </dd>
+          </dl>
+        </FieldList>
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"spu.Runtime.get_var_meta"} module={"spu"} fullname={"Runtime.get_var_meta"} parameters={["name"]} description={"Get an SPU value without content."}>
+      <Outline.Signature fullname="Runtime.get_var_meta" id="spu.Runtime.get_var_meta">
+        <Outline.Name>get\_var\_meta</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">name</span><span>:</span><span>{" "}</span><span className="name">str</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>ValueMeta</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get an SPU value without content.
+
+        <FieldList>
+          <dl>
+            <dt className="field-name">
+              Parameters
+            </dt>
+
+            <dd className="field-body">
+              <Outline.ParameterTarget>name</Outline.ParameterTarget> (<em>str</em>) – Id of value.
+            </dd>
+
+            <dt className="field-name">
+              Returns
+            </dt>
+
+            <dd className="field-body">
+              Data with out content.
+            </dd>
+
+            <dt className="field-name">
+              Return type
+            </dt>
+
+            <dd className="field-body">
+              spu\_pb2.ValueProto
+            </dd>
+          </dl>
+        </FieldList>
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"spu.Runtime.run"} module={"spu"} fullname={"Runtime.run"} parameters={["executable"]} description={"Run an SPU executable."}>
+      <Outline.Signature fullname="Runtime.run" id="spu.Runtime.run">
+        <Outline.Name>run</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">executable</span><span>:</span><span>{" "}</span><span className="name">ExecutableProto</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>None</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Run an SPU executable.
+
+        <FieldList>
+          <dl>
+            <dt className="field-name">
+              Parameters
+            </dt>
+
+            <dd className="field-body">
+              <Outline.ParameterTarget>executable</Outline.ParameterTarget> (<em>spu\_pb2.ExecutableProto</em>) – executable.
+            </dd>
+          </dl>
+        </FieldList>
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"spu.Runtime.set_var"} module={"spu"} fullname={"Runtime.set_var"} parameters={["name", "value"]} description={"Set an SPU value."}>
+      <Outline.Signature fullname="Runtime.set_var" id="spu.Runtime.set_var">
+        <Outline.Name>set\_var</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">name</span><span>:</span><span>{" "}</span><span className="name">str</span></Outline.Parameter>, <Outline.Parameter><span className="name">value</span><span>:</span><span>{" "}</span><span className="name">bytes</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>None</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Set an SPU value.
+
+        <FieldList>
+          <dl>
+            <dt className="field-name">
+              Parameters
+            </dt>
+
+            <dd className="field-body">
+              - <Outline.ParameterTarget>name</Outline.ParameterTarget> (<em>str</em>) – Id of value.
+              - <Outline.ParameterTarget>value</Outline.ParameterTarget> (<em>spu\_pb2.ValueProto</em>) – value data.
+            </dd>
+          </dl>
+        </FieldList>
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
 :target{#runtime-io}
 
 ## Runtime IO
+
+<Outline domain="py" objectType="class" target={"spu.Io"} module={"spu"} fullname={"Io"} parameters={["world_size", "config"]} description={"The SPU IO interface."}>
+  <Outline.Signature fullname="Io" id="spu.Io">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>spu.</Outline.Prefix><Outline.Name>Io</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">world\_size</span><span>:</span><span>{" "}</span><span className="name">int</span></Outline.Parameter>, <Outline.Parameter><span className="name">config</span><span>:</span><span>{" "}</span><span className="name">RuntimeConfig</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+  </Outline.Signature>
+
+  <Outline.Content>
+    The SPU IO interface.
+
+    <Outline domain="py" objectType="method" target={"spu.Io.make_shares"} module={"spu"} fullname={"Io.make_shares"} parameters={["x", "vtype", "owner_rank"]} description={"Convert from NumPy array to list of SPU value(s)."}>
+      <Outline.Signature fullname="Io.make_shares" id="spu.Io.make_shares">
+        <Outline.Name>make\_shares</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">x</span><span>:</span><span>{" "}</span><span className="name">np.ndarray</span></Outline.Parameter>, <Outline.Parameter><span className="name">vtype</span><span>:</span><span>{" "}</span><span className="name">spu\_pb2.Visibility</span></Outline.Parameter>, <Outline.Parameter><span className="name">owner\_rank</span><span>:</span><span>{" "}</span><span className="name">int</span><span>{" "}</span><span>=</span><span>{" "}</span><span>-1</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>List<span>\[</span>bytes<span>]</span></Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Convert from NumPy array to list of SPU value(s).
+
+        <FieldList>
+          <dl>
+            <dt className="field-name">
+              Parameters
+            </dt>
+
+            <dd className="field-body">
+              - <Outline.ParameterTarget>x</Outline.ParameterTarget> (<em>np.ndarray</em>) – input.
+              - <Outline.ParameterTarget>vtype</Outline.ParameterTarget> (<em>spu\_pb2.Visibility</em>) – visibility.
+              - <Outline.ParameterTarget>owner\_rank</Outline.ParameterTarget> (<em>int</em>) – the index of the trusted piece. if >= 0, colocation optimization may be applied.
+            </dd>
+
+            <dt className="field-name">
+              Returns
+            </dt>
+
+            <dd className="field-body">
+              output.
+            </dd>
+
+            <dt className="field-name">
+              Return type
+            </dt>
+
+            <dd className="field-body">
+              \[spu\_pb2.ValueProto]
+            </dd>
+          </dl>
+        </FieldList>
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"spu.Io.reconstruct"} module={"spu"} fullname={"Io.reconstruct"} parameters={["str_shares"]} description={"Convert from list of SPU value(s) to NumPy array."}>
+      <Outline.Signature fullname="Io.reconstruct" id="spu.Io.reconstruct">
+        <Outline.Name>reconstruct</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">str\_shares</span><span>:</span><span>{" "}</span><span className="name">List<span>\[</span>bytes<span>]</span></span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>np.ndarray</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Convert from list of SPU value(s) to NumPy array.
+
+        <FieldList>
+          <dl>
+            <dt className="field-name">
+              Parameters
+            </dt>
+
+            <dd className="field-body">
+              <Outline.ParameterTarget>xs</Outline.ParameterTarget> (<em>spu\_pb2.ValueProto</em><em>]</em>) – input.
+            </dd>
+
+            <dt className="field-name">
+              Returns
+            </dt>
+
+            <dd className="field-body">
+              output.
+            </dd>
+
+            <dt className="field-name">
+              Return type
+            </dt>
+
+            <dd className="field-body">
+              np.ndarray
+            </dd>
+          </dl>
+        </FieldList>
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
 
 :target{#compiler}
 
 ## Compiler
 
+<Outline domain="py" objectType="function" target={"spu.compile"} module={"spu"} fullname={"compile"} parameters={["source", "copts"]} description={"Compile from textual HLO/MHLO IR to SPU bytecode."}>
+  <Outline.Signature fullname="compile" id="spu.compile">
+    <Outline.Prefix>spu.</Outline.Prefix><Outline.Name>compile</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">source</span><span>:</span><span>{" "}</span><span className="name">CompilationSource</span></Outline.Parameter>, <Outline.Parameter><span className="name">copts</span><span>:</span><span>{" "}</span><span className="name">CompilerOptions</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>str</Outline.ReturnType>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Compile from textual HLO/MHLO IR to SPU bytecode.
+
+    <FieldList>
+      <dl>
+        <dt className="field-name">
+          Parameters
+        </dt>
+
+        <dd className="field-body">
+          - <Outline.ParameterTarget>source</Outline.ParameterTarget> (<em>spu\_pb2.CompilationSource</em>) – input to compiler.
+          - <Outline.ParameterTarget>copts</Outline.ParameterTarget> (<em>spu\_pb2.CompilerOptions</em>) – compiler options.
+        </dd>
+
+        <dt className="field-name">
+          Returns
+        </dt>
+
+        <dd className="field-body">
+          output.
+        </dd>
+
+        <dt className="field-name">
+          Return type
+        </dt>
+
+        <dd className="field-body">
+          \[spu\_pb2.ValueProto]
+        </dd>
+      </dl>
+    </FieldList>
+  </Outline.Content>
+</Outline>
+
 :target{#simulation}
 
 ## Simulation
+
+<Outline domain="py" objectType="class" target={"spu.utils.simulation.Simulator"} module={"spu.utils.simulation"} fullname={"Simulator"} parameters={["wsize", "rt_config"]} description={"helper method to create an SPU Simulator"}>
+  <Outline.Signature fullname="Simulator" id="spu.utils.simulation.Simulator">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>spu.utils.simulation.</Outline.Prefix><Outline.Name>Simulator</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">wsize</span><span>:</span><span>{" "}</span><span className="name">int</span></Outline.Parameter>, <Outline.Parameter><span className="name">rt\_config</span><span>:</span><span>{" "}</span><span className="name">RuntimeConfig</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"spu.utils.simulation.Simulator.simple"} module={"spu.utils.simulation"} fullname={"Simulator.simple"} parameters={["wsize: int", "prot: <google.protobuf.internal.enum_type_wrapper.EnumTypeWrapper object at 0x7fb27a8d4640>", "field: <google.protobuf.internal.enum_type_wrapper.EnumTypeWrapper object at 0x7fb27a8d4760>"]} description={"helper method to create an SPU Simulator"}>
+      <Outline.Signature fullname="Simulator.simple" id="spu.utils.simulation.Simulator.simple">
+        <Outline.Keyword>classmethod<span>{" "}</span></Outline.Keyword><Outline.Name>simple</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">wsize: int</span></Outline.Parameter>, <Outline.Parameter><span className="name">prot: \<google.protobuf.internal.enum\_type\_wrapper.EnumTypeWrapper object at 0x7fb27a8d4640></span></Outline.Parameter>, <Outline.Parameter><span className="name">field: \<google.protobuf.internal.enum\_type\_wrapper.EnumTypeWrapper object at 0x7fb27a8d4760></span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        helper method to create an SPU Simulator
+
+        <FieldList>
+          <dl>
+            <dt className="field-name">
+              Parameters
+            </dt>
+
+            <dd className="field-body">
+              - <Outline.ParameterTarget>wsize</Outline.ParameterTarget> (<em>int</em>) – the world size.
+              - <Outline.ParameterTarget>prot</Outline.ParameterTarget> (<em>spu\_pb2.ProtocolKind</em>) – protocol.
+              - <Outline.ParameterTarget>field</Outline.ParameterTarget> (<em>spu\_pb2.FieldType</em>) – field type.
+            </dd>
+
+            <dt className="field-name">
+              Returns
+            </dt>
+
+            <dd className="field-body">
+              A SPU Simulator
+            </dd>
+          </dl>
+        </FieldList>
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="function" target={"spu.utils.simulation.sim_jax"} module={"spu.utils.simulation"} fullname={"sim_jax"} parameters={["sim: ~spu.utils.simulation.Simulator", "fun: ~typing.Callable", "static_argnums=()", "copts="]} description={"Decorates a jax numpy fn that simulated on SPU."}>
+  <Outline.Signature fullname="sim_jax" id="spu.utils.simulation.sim_jax">
+    <Outline.Prefix>spu.utils.simulation.</Outline.Prefix><Outline.Name>sim\_jax</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">sim: \~spu.utils.simulation.Simulator</span></Outline.Parameter>, <Outline.Parameter><span className="name">fun: \~typing.Callable</span></Outline.Parameter>, <Outline.Parameter><span className="name">static\_argnums=()</span></Outline.Parameter>, <Outline.Parameter><span className="name">copts=</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Decorates a jax numpy fn that simulated on SPU.
+
+    ```python
+    >>> sim = Simulator.simple(3, spu_pb2.ProtocolKind.ABY3, spu_pb2.FieldType.FM64)
+    >>> spu_fn = sim_jax(sim, jnp.add)
+    ```
+
+    Then we can call spu\_fn like normal jnp fn.
+
+    ```python
+    >>> x = np.array([[1, 2], [3, 4]])
+    >>> y = np.array([[5, 6], [7, 8]])
+    >>> z = spu_fn(x, y)
+    ```
+
+    The function will be evaluated in an spu simulator.
+  </Outline.Content>
+</Outline>
