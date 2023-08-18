@@ -2,7 +2,7 @@
 
 # 决策树模型
 
-SecretFlow使用多方安全计算的秘密分享技术实现了可证安全的梯度下降决策树模型 <code>Xgb()</code> ，目前支持线性回归问题训练和二分类问题训练。
+SecretFlow使用多方安全计算的秘密分享技术实现了可证安全的梯度下降决策树模型 [<code>Xgb()</code>](../../source/secretflow.ml.boost.ml.boost.ss_xgb_v.mdx#secretflow.ml.boost.ss_xgb_v.model.Xgb "secretflow.ml.boost.ss_xgb_v.model.Xgb") ，目前支持线性回归问题训练和二分类问题训练。
 
 :target{#dataset-settings}
 
@@ -39,7 +39,7 @@ SecretFlow使用多方安全计算的秘密分享技术实现了可证安全的�
 
 ## SS-XGB 训练算法
 
-SS-XGB <code>Xgb()</code> 使用秘密分享计算分裂增益值和叶权重。
+SS-XGB [<code>Xgb()</code>](../../source/secretflow.ml.boost.ml.boost.ss_xgb_v.mdx#secretflow.ml.boost.ss_xgb_v.model.Xgb "secretflow.ml.boost.ss_xgb_v.model.Xgb") 使用秘密分享计算分裂增益值和叶权重。
 
 我们使用秘密分享协议提供的加/乘等操作来实现安全的多方联合计算。特别需要关注的问题是：如何在计算分桶加和时，不泄漏任何样本分布相关的信息。
 
@@ -57,7 +57,7 @@ SS-XGB <code>Xgb()</code> 使用秘密分享计算分裂增益值和叶权重。
 
 在本示例中使用单节点模式做示范。集群模式的部署方式： [Deployment](../../getting_started/deployment.html.mdx)
 
-API详情：<code>Xgb()</code>
+API详情：[<code>Xgb()</code>](../../source/secretflow.ml.boost.ml.boost.ss_xgb_v.mdx#secretflow.ml.boost.ss_xgb_v.model.Xgb "secretflow.ml.boost.ss_xgb_v.model.Xgb")
 
 ```python
 import sys
