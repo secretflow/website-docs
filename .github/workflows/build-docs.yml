@@ -77,8 +77,8 @@ jobs:
           delete-branch: true
           title: 'chore(${{ matrix.project }}): Update docs'
           body: |
-            This PR builds documentation for ${{ matrix.project }}.
+            This PR updates documentation artifacts for ${{ matrix.project }}.
 
-            Generated from [`${{ steps.get-project-sha.outputs.sha }}`][commit]
+            Built from [`${{ steps.get-project-sha.outputs.sha }}`][commit]
 
             [commit]: https://github.com/secretflow/${{ matrix.project }}/commit/${{ steps.get-project-sha.outputs.sha }}
