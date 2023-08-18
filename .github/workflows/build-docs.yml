@@ -62,7 +62,10 @@ jobs:
       - name: 'Copy artifacts'
         run: |
           rm -rf ${{ github.workspace }}/artifacts/${{ matrix.project }}/latest/*
-          cp -rf ${{ github.workspace }}/build/${{ matrix.project }}/docs/_build/mdx/* ${{ github.workspace }}/artifacts/${{ matrix.project }}/latest/
+          mkdir -p ${{ github.workspace }}/artifacts/${{ matrix.project }}/latest
+          cp -rf \
+            ${{ github.workspace }}/build/${{ matrix.project }}/docs/_build/mdx/* \
+            ${{ github.workspace }}/artifacts/${{ matrix.project }}/latest/
 
       - name: 'Create pull request'
         uses: peter-evans/create-pull-request@v5
