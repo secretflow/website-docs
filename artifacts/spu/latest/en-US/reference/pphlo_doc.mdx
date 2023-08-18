@@ -1,0 +1,6719 @@
+:target{#pphlo-api-reference}
+
+# PPHlo API reference
+
+PPHlo is short for (SPU High level ops), it’s the assembly language of SPU.
+
+PPHlo is built on [MLIR](https://mlir.llvm.org/) infrastructure, the concrete ops definition could be found [here](https://github.com/secretflow/spu/blob/master/spu%2Fdialect%2Fpphlo_ops.td).
+
+:target{#op-list}
+
+## Op List
+
+:target{#pphlo-pad-pphlo-padop}
+
+### <code>pphlo.pad</code> (pphlo::PadOp)
+
+<em>Pad operator</em>
+
+Pads the edges of <code>operand</code> with the <code>padding\_value</code> and according to
+the passed configuration.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#pad](https://www.tensorflow.org/xla/operation_semantics#pad).
+
+Traits: AlwaysSpeculatableImplTrait, InferTensorType, SameOperandsAndResultElementType
+
+Interfaces: ConditionallySpeculatable, InferShapedTypeOpInterface, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#attributes}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>edge\_padding\_low</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>edge\_padding\_high</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>interior\_padding</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#operands}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>padding\_value</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#results}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-abs-pphlo-absop}
+
+### <code>pphlo.abs</code> (pphlo::AbsOp)
+
+<em>Absolute value operator</em>
+
+Returns <code>abs(operand)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id1}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id2}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-add-pphlo-addop}
+
+### <code>pphlo.add</code> (pphlo::AddOp)
+
+<em>Addition operator</em>
+
+Returns <code>lhs + rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Commutative, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id3}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id4}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-and-pphlo-andop}
+
+### <code>pphlo.and</code> (pphlo::AndOp)
+
+<em>Logical and</em>
+
+Returns <code>logical\_and(lhs, rhs)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Commutative, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id5}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id6}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-argmax-pphlo-argmaxop}
+
+### <code>pphlo.argmax</code> (pphlo::ArgMaxOp)
+
+<em>ArgMax operator</em>
+
+Returns the max value and index in a window.
+
+Traits: AlwaysSpeculatableImplTrait
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id7}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>window\_dimensions</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>window\_strides</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>base\_dilations</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>window\_dilations</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>padding</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>onehot\_index</code>
+      </td>
+
+      <td>
+        \::mlir::BoolAttr
+      </td>
+
+      <td>
+        bool attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id8}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>input</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id9}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-bitcast-convert-pphlo-bitcastconvertop}
+
+### <code>pphlo.bitcast\_convert</code> (pphlo::BitcastConvertOp)
+
+<em>BitcastConvert operator</em>
+
+Similar to a ‘tf.bitcast’ in TensorFlow, performs an element-wise bitcast
+operation from a data shape to a target shape. The dimensions must match,
+and the conversion is an element-wise one. Bitcast is implemented as a
+low-level cast, so machines with different floating-point representations
+will give different results.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#bitcastconverttype](https://www.tensorflow.org/xla/operation_semantics#bitcastconverttype).
+
+Traits: AlwaysSpeculatableImplTrait
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id10}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id11}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-broadcast-pphlo-broadcastop}
+
+### <code>pphlo.broadcast</code> (pphlo::BroadcastOp)
+
+<em>Broadcast a tensor into the given shape by adding dimensions.</em>
+
+Broadcasts the <code>operand</code> tensor to a higher rank. This is not the limited
+form of broadcasting exposed as the XLA client broadcast op, but rather the
+more powerful “InDim” broadcasting, which is closer to the HLO broadcast op
+and exposed in the XLA client BroadcastInDim method.
+
+<code>broadcast\_dimensions</code> maps the operand dimension number to the target shape
+dimension number. It must have the same size as the rank of the operand. The
+mapped dimensions must either be the same size or the dimension being
+broadcast from must be size 1 (degenerate broadcasting).
+
+For a scalar (0D tensor) operand, <code>broadcast\_dimensions</code> must be empty. The
+The scalar value will be broadcast to every element in the target shape.
+
+See [https://www.tensorflow.org/xla/broadcasting](https://www.tensorflow.org/xla/broadcasting).
+
+Traits: AlwaysSpeculatableImplTrait, SameOperandsAndResultElementType
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id12}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>broadcast\_dimensions</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id13}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id14}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-case-pphlo-caseop}
+
+### <code>pphlo.case</code> (pphlo::CaseOp)
+
+<em>Switch-Case operator</em>
+
+Returns the result of executing <code>branches\[index]</code>. If <code>index</code> is \< 0 or >=
+N, then <code>branches\[N-1]</code> is executed as the default branch.
+
+The type of the returned values of each branch must be the same and equal
+to the types of the values returned by the operation.
+
+Note that if index is public only one of the branches will be executed depending on the value
+of index, otherwise all branches will be executed and select results based on index value.
+
+Traits: RecursiveMemoryEffects, SingleBlockImplicitTerminator<returnop />
+
+:target{#id15}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>index</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id16}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-ceil-pphlo-ceilop}
+
+### <code>pphlo.ceil</code> (pphlo::CeilOp)
+
+<em>Ceil operator</em>
+
+Returns <code>Ceil(operand)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id17}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id18}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-clamp-pphlo-clampop}
+
+### <code>pphlo.clamp</code> (pphlo::ClampOp)
+
+<em>Clamp operator</em>
+
+Clamps an operand to within the range between a minimum and maximum value.
+
+Note: All three arrays must be the same shape. Alternatively, as a
+restricted form of broadcasting, min and/or max can be a scalar (0D
+tensor) of the element type of the tensor operand.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#clamp](https://www.tensorflow.org/xla/operation_semantics#clamp).
+
+Traits: AlwaysSpeculatableImplTrait, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id19}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>min</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>max</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id20}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-concatenate-pphlo-concatenateop}
+
+### <code>pphlo.concatenate</code> (pphlo::ConcatenateOp)
+
+<em>Concatenate op</em>
+
+Concatenates a set of tensors along the specified dimension.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#concatenate](https://www.tensorflow.org/xla/operation_semantics#concatenate).
+
+Traits: AlwaysSpeculatableImplTrait, SameOperandsAndResultElementType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id21}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>dimension</code>
+      </td>
+
+      <td>
+        \::mlir::IntegerAttr
+      </td>
+
+      <td>
+        64-bit signless integer attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id22}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>val</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id23}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-constant-pphlo-constantop}
+
+### <code>pphlo.constant</code> (pphlo::ConstantOp)
+
+<em>Constant operator</em>
+
+Create a constant value.
+Traits: AlwaysSpeculatableImplTrait, ConstantLike
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id24}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>value</code>
+      </td>
+
+      <td>
+        \::mlir::ElementsAttr
+      </td>
+
+      <td>
+        constant vector/tensor attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id25}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>output</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-convert-pphlo-convertop}
+
+### <code>pphlo.convert</code> (pphlo::ConvertOp)
+
+<em>Convert operator</em>
+
+Performs element-wise conversion of values from one type to another,
+e.g.fxp to int.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#convertelementtype](https://www.tensorflow.org/xla/operation_semantics#convertelementtype).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id26}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id27}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-convolution-pphlo-convolutionop}
+
+### <code>pphlo.convolution</code> (pphlo::ConvolutionOp)
+
+<em>Convolution operator</em>
+
+Syntax:
+
+```default
+operation ::= `pphlo.convolution` `(`operands`)`
+              `dim_numbers` `=` custom<ConvolutionDimensions>($dimension_numbers) `,`
+              `window` `=` `{` custom<WindowAttributes>($window_strides) `}`
+              attr-dict `:` functional-type(operands, results)
+```
+
+Computes a convolution of the kind used in neural networks.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#conv\_convolution](https://www.tensorflow.org/xla/operation_semantics#conv_convolution).
+
+Traits: AlwaysSpeculatableImplTrait
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id28}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>window\_strides</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>dimension\_numbers</code>
+      </td>
+
+      <td>
+        \::mlir::pphlo::ConvDimensionNumbersAttr
+      </td>
+
+      <td>
+        Structure of dimension information for conv op
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>feature\_group\_count</code>
+      </td>
+
+      <td>
+        \::mlir::IntegerAttr
+      </td>
+
+      <td>
+        64-bit signless integer attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>batch\_group\_count</code>
+      </td>
+
+      <td>
+        \::mlir::IntegerAttr
+      </td>
+
+      <td>
+        64-bit signless integer attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id29}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id30}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-custom-call-pphlo-customcallop}
+
+### <code>pphlo.custom\_call</code> (pphlo::CustomCallOp)
+
+<em>CustomCall operation</em>
+
+Syntax:
+
+```default
+operation ::= `pphlo.custom_call` custom<CustomCallTarget>($call_target_name) `(` $inputs `)`
+              attr-dict `:` functional-type(operands, results)
+```
+
+Encapsulates an implementation-defined operation <code>call\_target\_name</code> that
+takes <code>inputs</code> and <code>called\_computations</code> and produces <code>results</code>.
+
+See:
+[https://github.com/openxla/stablehlo/blob/main/docs/spec.md#custom\_call](https://github.com/openxla/stablehlo/blob/main/docs/spec.md#custom_call)
+
+Example:
+
+```mlir
+%results = stablehlo.custom_call @foo(%input0) {
+  backend_config = "bar",
+  called_computations = [@foo]
+} : (tensor<f64>) -> tensor<f64>
+```
+
+Interfaces: MemoryEffectOpInterface
+
+:target{#id31}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>call\_target\_name</code>
+      </td>
+
+      <td>
+        \::mlir::StringAttr
+      </td>
+
+      <td>
+        string attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>has\_side\_effect</code>
+      </td>
+
+      <td>
+        \::mlir::BoolAttr
+      </td>
+
+      <td>
+        bool attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id32}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>inputs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id33}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-dbg-print-pphlo-dbgprintop}
+
+### <code>pphlo.dbg\_print</code> (pphlo::DbgPrintOp)
+
+:target{#id34}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-divide-pphlo-divop}
+
+### <code>pphlo.divide</code> (pphlo::DivOp)
+
+<em>Division operator</em>
+
+Returns <code>lhs / rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id35}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id36}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-dot-general-pphlo-dotgeneralop}
+
+### <code>pphlo.dot\_general</code> (pphlo::DotGeneralOp)
+
+<em>General Dot operator</em>
+
+Performs general dot products between vectors, vector/matrix and
+matrix/matrix multiplication.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#dotgeneral](https://www.tensorflow.org/xla/operation_semantics#dotgeneral).
+
+Traits: AlwaysSpeculatableImplTrait
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id37}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>dot\_dimension\_numbers</code>
+      </td>
+
+      <td>
+        \::mlir::pphlo::DotDimensionNumbersAttr
+      </td>
+
+      <td>
+        Attribute that models the dimension information for dot.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id38}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id39}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-dot-pphlo-dotop}
+
+### <code>pphlo.dot</code> (pphlo::DotOp)
+
+<em>Dot operator</em>
+
+Performs dot products between vectors, vector/matrix and matrix/matrix
+multiplication.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#dot](https://www.tensorflow.org/xla/operation_semantics#dot).
+
+Traits: AlwaysSpeculatableImplTrait
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id40}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id41}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-dynamic-slice-pphlo-dynamicsliceop}
+
+### <code>pphlo.dynamic-slice</code> (pphlo::DynamicSliceOp)
+
+<em>Dynamic Slice operator</em>
+
+Extracts a sub-array from the input array at dynamic start\_indices.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#dynamicslice](https://www.tensorflow.org/xla/operation_semantics#dynamicslice).
+
+Traits: AlwaysSpeculatableImplTrait
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id42}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>slice\_sizes</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id43}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>start\_indices</code>
+      </td>
+
+      <td>
+        0D tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id44}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>result</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-dynamic-update-slice-pphlo-dynamicupdatesliceop}
+
+### <code>pphlo.dynamic-update-slice</code> (pphlo::DynamicUpdateSliceOp)
+
+<em>Dynamic Update Slice operator</em>
+
+DynamicUpdateSlice generates a result which is the value of the input array
+operand, with a slice update overwritten at start\_indices.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#dynamicupdateslice](https://www.tensorflow.org/xla/operation_semantics#dynamicupdateslice).
+
+Traits: AlwaysSpeculatableImplTrait
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id45}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>update</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>start\_indices</code>
+      </td>
+
+      <td>
+        0D tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id46}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>result</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-epsilon-pphlo-epsilonop}
+
+### <code>pphlo.epsilon</code> (pphlo::EpsilonOp)
+
+<em>Epsilon operator</em>
+
+Return a value that representation runtime epsilon.
+Traits: AlwaysSpeculatableImplTrait
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id47}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>output</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-equal-pphlo-equalop}
+
+### <code>pphlo.equal</code> (pphlo::EqualOp)
+
+<em>Equal comparison operator</em>
+
+Returns <code>lhs</code> == <code>rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_comparison\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_comparison_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id48}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id49}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-exponential-pphlo-expop}
+
+### <code>pphlo.exponential</code> (pphlo::ExpOp)
+
+<em>Exponential operator</em>
+
+Returns <code>e ^ (operand)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id50}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id51}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-exponential-minus-one-pphlo-expm1op}
+
+### <code>pphlo.exponential\_minus\_one</code> (pphlo::Expm1Op)
+
+<em>Exponential minus one operator</em>
+
+Returns <code>e^(operand) - 1</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id52}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id53}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-floor-pphlo-floorop}
+
+### <code>pphlo.floor</code> (pphlo::FloorOp)
+
+<em>Floor operator</em>
+
+Returns <code>Floor(operand)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id54}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id55}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-free-pphlo-freeop}
+
+### <code>pphlo.free</code> (pphlo::FreeOp)
+
+:target{#id56}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-gather-pphlo-gatherop}
+
+### <code>pphlo.gather</code> (pphlo::GatherOp)
+
+<em>Gather operator</em>
+
+Stitches together several slices of <code>operand</code> from offsets specified in
+<code>start\_indices</code> (each slice at a potentially different runtime offset).
+
+See [https://www.tensorflow.org/xla/operation\_semantics#gather](https://www.tensorflow.org/xla/operation_semantics#gather).
+
+Traits: AlwaysSpeculatableImplTrait
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id57}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>dimension\_numbers</code>
+      </td>
+
+      <td>
+        \::mlir::pphlo::GatherDimensionNumbersAttr
+      </td>
+
+      <td>
+        Attribute that models the dimension information for gather
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>slice\_sizes</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>indices\_are\_sorted</code>
+      </td>
+
+      <td>
+        \::mlir::BoolAttr
+      </td>
+
+      <td>
+        bool attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id58}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>start\_indices</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id59}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-greater-equal-pphlo-greaterequalop}
+
+### <code>pphlo.greater\_equal</code> (pphlo::GreaterEqualOp)
+
+<em>Greater\_equal comparison operator</em>
+
+Returns <code>lhs</code> >= <code>rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_comparison\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_comparison_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id60}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id61}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-greater-pphlo-greaterop}
+
+### <code>pphlo.greater</code> (pphlo::GreaterOp)
+
+<em>Greater comparison operator</em>
+
+elementwise <code>lhs</code> > <code>rhs</code>.
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id62}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id63}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-if-pphlo-ifop}
+
+### <code>pphlo.if</code> (pphlo::IfOp)
+
+<em>If operator</em>
+
+Returns the result of executing either a true or false function depending on
+the result of a condition function.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#conditional](https://www.tensorflow.org/xla/operation_semantics#conditional).
+
+Traits: RecursiveMemoryEffects, SingleBlockImplicitTerminator<returnop />
+
+:target{#id64}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>condition</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id65}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-iota-pphlo-iotaop}
+
+### <code>pphlo.iota</code> (pphlo::IotaOp)
+
+<em>Iota operator</em>
+
+Creates a rank 1 array of values starting at zero and incrementing by one.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#iota](https://www.tensorflow.org/xla/operation_semantics#iota)
+
+Traits: AlwaysSpeculatableImplTrait
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id66}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>iota\_dimension</code>
+      </td>
+
+      <td>
+        \::mlir::IntegerAttr
+      </td>
+
+      <td>
+        64-bit signless integer attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id67}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>output</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-less-equal-pphlo-lessequalop}
+
+### <code>pphlo.less\_equal</code> (pphlo::LessEqualOp)
+
+<em>Less\_equal comparison operator</em>
+
+elementwise <code>lhs</code> \<= <code>rhs</code>.
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id68}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id69}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-less-pphlo-lessop}
+
+### <code>pphlo.less</code> (pphlo::LessOp)
+
+<em>Less comparison operator</em>
+
+Returns <code>lhs</code> \< <code>rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_comparison\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_comparison_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id70}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id71}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-log-plus-one-pphlo-log1pop}
+
+### <code>pphlo.log\_plus\_one</code> (pphlo::Log1pOp)
+
+<em>Log1p operator</em>
+
+Returns <code>log(operand + 1)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id72}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id73}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-log-pphlo-logop}
+
+### <code>pphlo.log</code> (pphlo::LogOp)
+
+<em>Log operator</em>
+
+Returns <code>log(operand)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id74}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id75}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-logistic-pphlo-logisticop}
+
+### <code>pphlo.logistic</code> (pphlo::LogisticOp)
+
+<em>Reciprocal operator</em>
+
+Returns <code>logistic(operand)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id76}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id77}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-maximum-pphlo-maxop}
+
+### <code>pphlo.maximum</code> (pphlo::MaxOp)
+
+<em>Maximum operator</em>
+
+Returns <code>max(lhs, rhs)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Commutative, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id78}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id79}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-maxpool-scatter-pphlo-maxpoolscatterop}
+
+### <code>pphlo.maxpool\_scatter</code> (pphlo::MaxPoolScatterOp)
+
+<em>MaxPool Scatter operator</em>
+
+Generates a result which is the value of the input array <code>operand</code>,
+with several slices (at indices specified by <code>scatter\_indices</code>)
+updated with the values in <code>updates</code> using <code>update\_computation</code>.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#scatter](https://www.tensorflow.org/xla/operation_semantics#scatter).
+
+Traits: AlwaysSpeculatableImplTrait
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id80}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>window\_dimensions</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>window\_strides</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>padding</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id81}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>scatter\_indices</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>update</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id82}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-minimum-pphlo-minop}
+
+### <code>pphlo.minimum</code> (pphlo::MinOp)
+
+<em>Minimum operator</em>
+
+Returns <code>min(lhs, rhs)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Commutative, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id83}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id84}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-multiply-pphlo-mulop}
+
+### <code>pphlo.multiply</code> (pphlo::MulOp)
+
+<em>Multiplication operator</em>
+
+Returns <code>lhs \* rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Commutative, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id85}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id86}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-negate-pphlo-negop}
+
+### <code>pphlo.negate</code> (pphlo::NegOp)
+
+<em>Negation operator</em>
+
+Returns <code>- operand</code> element -
+wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id87}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id88}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-not-equal-pphlo-notequalop}
+
+### <code>pphlo.not\_equal</code> (pphlo::NotEqualOp)
+
+<em>Not-equal comparison operator</em>
+
+Returns <code>lhs</code> != <code>rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_comparison\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_comparison_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id89}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id90}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-not-pphlo-notop}
+
+### <code>pphlo.not</code> (pphlo::NotOp)
+
+<em>Not operator</em>
+
+Returns <code>!operand</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id91}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id92}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-or-pphlo-orop}
+
+### <code>pphlo.or</code> (pphlo::OrOp)
+
+<em>Logical or</em>
+
+Returns <code>logical\_or(lhs, rhs)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Commutative, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id93}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id94}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-power-pphlo-powop}
+
+### <code>pphlo.power</code> (pphlo::PowOp)
+
+<em>Power operator</em>
+
+Returns <code>lhs ^ rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id95}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id96}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-prefer-a-pphlo-preferaop}
+
+### <code>pphlo.prefer\_a</code> (pphlo::PreferAOp)
+
+<em>Prefer AShare operator</em>
+
+Convert input to AShare if possible.
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id97}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id98}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-reciprocal-pphlo-reciprocalop}
+
+### <code>pphlo.reciprocal</code> (pphlo::ReciprocalOp)
+
+<em>Reciprocal operator</em>
+
+Returns <code>1.0 / operand</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id99}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id100}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-reduce-pphlo-reduceop}
+
+### <code>pphlo.reduce</code> (pphlo::ReduceOp)
+
+<em>Reduce operator</em>
+
+Returns the result of executing a reduction function on one or more arrays
+in parallel.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#reduce](https://www.tensorflow.org/xla/operation_semantics#reduce).
+
+Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerminator<returnop />
+
+:target{#id101}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>dimensions</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id102}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>inputs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>init\_values</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id103}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-reduce-window-pphlo-reducewindowop}
+
+### <code>pphlo.reduce\_window</code> (pphlo::ReduceWindowOp)
+
+<em>ReduceWindow operator</em>
+
+Returns the result of executing a reduction function over all elements in
+each window of one or more arrays.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#reducewindow](https://www.tensorflow.org/xla/operation_semantics#reducewindow).
+
+Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerminator<returnop />
+
+:target{#id104}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>window\_dimensions</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>window\_strides</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>base\_dilations</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>window\_dilations</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>padding</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id105}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>inputs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>init\_values</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id106}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-remainder-pphlo-remop}
+
+### <code>pphlo.remainder</code> (pphlo::RemOp)
+
+<em>Remainder operator</em>
+
+Returns <code>lhs % rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id107}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id108}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-reshape-pphlo-reshapeop}
+
+### <code>pphlo.reshape</code> (pphlo::ReshapeOp)
+
+<em>Reshape operator</em>
+
+Reshapes the dimensions of <code>operand</code> into a new configuration.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#reshape](https://www.tensorflow.org/xla/operation_semantics#reshape).
+
+Traits: AlwaysSpeculatableImplTrait, SameOperandsAndResultElementType
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id109}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id110}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-return-pphlo-returnop}
+
+### <code>pphlo.return</code> (pphlo::ReturnOp)
+
+\_
+The <code>pphlo.return</code> operation terminates a region and returns values.
+\_
+
+Traits: AlwaysSpeculatableImplTrait, Terminator
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id111}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>results</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-reverse-pphlo-reverseop}
+
+### <code>pphlo.reverse</code> (pphlo::ReverseOp)
+
+<em>Reverse operator</em>
+
+Reverses the specified dimensions of <code>operand</code> according to the given
+<code>dimensions</code>.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#rev\_reverse](https://www.tensorflow.org/xla/operation_semantics#rev_reverse).
+
+Traits: AlwaysSpeculatableImplTrait, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id112}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>dimensions</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id113}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id114}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-rng-pphlo-rngop}
+
+### <code>pphlo.rng</code> (pphlo::RngOp)
+
+<em>RNG with uniform distribution.</em>
+
+Constructs an output of a given shape with random numbers generated
+following the uniform distribution over the interval <code>\[a,b)</code>. The parameters
+and output element type have to be an integral type or a
+fixed point type, and the types have to be consistent.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#rnguniform](https://www.tensorflow.org/xla/operation_semantics#rnguniform).
+
+Traits: SameOperandsAndResultElementType
+
+:target{#id115}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>a</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>b</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id116}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-round-nearest-afz-pphlo-roundop}
+
+### <code>pphlo.round\_nearest\_afz</code> (pphlo::RoundOp)
+
+<em>Round operator, ties away from zero</em>
+
+Returns <code>Round(operand)</code> element-wise, rounding to nearest integer with
+half-way cases rounding away from zero.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id117}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id118}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-rsqrt-pphlo-rsqrtop}
+
+### <code>pphlo.rsqrt</code> (pphlo::RsqrtOp)
+
+<em>Reciprocal of square-root operator</em>
+
+Returns <code>rsqrt(operand)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id119}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id120}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-select-and-scatter-pphlo-selectandscatterop}
+
+### <code>pphlo.select\_and\_scatter</code> (pphlo::SelectAndScatterOp)
+
+<em>SelectAndScatter operator</em>
+
+Runs a windowed selection <code>select</code> function over <code>operand</code> with shape
+<code>window\_dimensions</code> and stride <code>window\_strides</code>. This will produce an amount
+of selected locations whose shape matches <code>source</code>. These are then scattered
+to the output which is initialized with <code>init\_value</code>.
+Multiple scattered elements which land in the same output location are
+combined using the <code>scatter</code> function.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#selectandscatter](https://www.tensorflow.org/xla/operation_semantics#selectandscatter).
+
+Traits: RecursiveMemoryEffects
+
+:target{#id121}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>window\_dimensions</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>window\_strides</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>padding</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id122}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>source</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>init\_value</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id123}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-select-pphlo-selectop}
+
+### <code>pphlo.select</code> (pphlo::SelectOp)
+
+<em>Select operator</em>
+
+Constructs an output tensor from the elements of <code>on\_true</code> and <code>on\_false</code>
+based on the values of <code>pred</code>. All three operands must be of the same shape
+with the exception of <code>pred</code>, which may also be a scalar in which case it is
+broadcasted.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#select](https://www.tensorflow.org/xla/operation_semantics#select).
+
+Traits: AlwaysSpeculatableImplTrait
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id124}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>pred</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>on\_true</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>on\_false</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id125}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-shift-left-pphlo-shiftleftop}
+
+### <code>pphlo.shift\_left</code> (pphlo::ShiftLeftOp)
+
+<em>Shift Left operator</em>
+
+Returns <code>lhs \<\< rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id126}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id127}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-shift-right-arithmetic-pphlo-shiftrightarithmeticop}
+
+### <code>pphlo.shift\_right\_arithmetic</code> (pphlo::ShiftRightArithmeticOp)
+
+<em>Shift right arithmetic operator</em>
+
+Returns arithmetic <code>lhs >> rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id128}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id129}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-shift-right-logical-pphlo-shiftrightlogicalop}
+
+### <code>pphlo.shift\_right\_logical</code> (pphlo::ShiftRightLogicalOp)
+
+<em>Shift right logical operator</em>
+
+Returns logical <code>lhs >> rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id130}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id131}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-sign-pphlo-signop}
+
+### <code>pphlo.sign</code> (pphlo::SignOp)
+
+<em>Sign operator</em>
+
+Returns <code>sign(operand)</code> element-wise, where
+
+```default
+sign(x) = -1  : x < 0
+        = 0   : x = 0
+        = 1   : x > 0
+```
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id132}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id133}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-slice-pphlo-sliceop}
+
+### <code>pphlo.slice</code> (pphlo::SliceOp)
+
+The dynamic shape version of SliceOp. Extracts a sub-array from the input
+array according to start\_indices, limit\_indices and strides. Expect
+start\_indices/limit\_indices/strides to be statically shaped and matching
+the rank of the input.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#slice](https://www.tensorflow.org/xla/operation_semantics#slice)
+
+Traits: AlwaysSpeculatableImplTrait, SameOperandsAndResultElementType
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id134}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>start\_indices</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>limit\_indices</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>strides</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id135}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id136}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-sort-pphlo-sortop}
+
+### <code>pphlo.sort</code> (pphlo::SortOp)
+
+<em>Sort operator</em>
+
+Sorts the given <code>operands</code> at the given <code>dimension</code> with the given
+<code>comparator</code>.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#sort](https://www.tensorflow.org/xla/operation_semantics#sort).
+
+Traits: RecursiveMemoryEffects, SameOperandsAndResultShape
+
+:target{#id137}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>dimension</code>
+      </td>
+
+      <td>
+        \::mlir::IntegerAttr
+      </td>
+
+      <td>
+        64-bit signless integer attribute
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>is\_stable</code>
+      </td>
+
+      <td>
+        \::mlir::BoolAttr
+      </td>
+
+      <td>
+        bool attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id138}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operands</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id139}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-sqrt-pphlo-sqrtop}
+
+### <code>pphlo.sqrt</code> (pphlo::SqrtOp)
+
+<em>Square-root operator</em>
+
+Returns <code>sqrt(operand)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id140}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id141}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-subtract-pphlo-subtractop}
+
+### <code>pphlo.subtract</code> (pphlo::SubtractOp)
+
+<em>Subtraction operator</em>
+
+Returns <code>lhs - rhs</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id142}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id143}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-tanh-pphlo-tanhop}
+
+### <code>pphlo.tanh</code> (pphlo::TanhOp)
+
+<em>Tanh operator</em>
+
+Returns <code>tanh(operand)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
+
+Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape, SameOperandsAndResultType
+
+Interfaces: ConditionallySpeculatable, InferTypeOpInterface, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id144}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id145}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of public fixed-point type or secret fixed-point type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-transpose-pphlo-transposeop}
+
+### <code>pphlo.transpose</code> (pphlo::TransposeOp)
+
+<em>Transpose operator</em>
+
+Permutes the dimensions of <code>operand</code> according to the given <code>permutation</code>.
+
+<code>res\_dimensions\[i] = operand\_dimensions\[permutation\[i]]</code>
+
+See [https://www.tensorflow.org/xla/operation\_semantics#transpose](https://www.tensorflow.org/xla/operation_semantics#transpose).
+
+Traits: AlwaysSpeculatableImplTrait, SameOperandsAndResultElementType
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id146}
+
+#### Attributes:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Attribute
+      </td>
+
+      <td>
+        MLIR Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>permutation</code>
+      </td>
+
+      <td>
+        \::mlir::DenseIntElementsAttr
+      </td>
+
+      <td>
+        64-bit signless integer elements attribute
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id147}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>operand</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id148}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-while-pphlo-whileop}
+
+### <code>pphlo.while</code> (pphlo::WhileOp)
+
+<em>While operator</em>
+
+Returns the result of executing a body function until the cond body
+returns true.
+
+See [https://www.tensorflow.org/xla/operation\_semantics#while](https://www.tensorflow.org/xla/operation_semantics#while).
+
+Traits: PPHLO\_PairwiseSameOperandAndResultType, RecursiveMemoryEffects, SingleBlockImplicitTerminator<returnop />
+
+:target{#id149}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>args</code>
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id150}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pphlo-xor-pphlo-xorop}
+
+### <code>pphlo.xor</code> (pphlo::XorOp)
+
+<em>Logical xor</em>
+
+Returns <code>logical\_xor(lhs, rhs)</code> element-wise.
+
+See
+[https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
+
+Traits: AlwaysSpeculatableImplTrait, Commutative, Elementwise, SameOperandsAndResultShape
+
+Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
+
+Effects: MemoryEffects::Effect\{}
+
+:target{#id151}
+
+#### Operands:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Operand
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <code>lhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <code>rhs</code>
+      </td>
+
+      <td>
+        statically shaped tensor of public integer type or secret integer type values
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id152}
+
+#### Results:
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Result
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        «unnamed»
+      </td>
+
+      <td>
+        statically shaped tensor of PPHlo public type or PPHlo secret type values
+      </td>
+    </tr>
+  </tbody>
+</table>

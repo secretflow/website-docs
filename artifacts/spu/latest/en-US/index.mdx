@@ -1,0 +1,203 @@
+---
+sitemap:
+- children:
+  - children: []
+    file: getting_started/introduction.mdx
+    hidden: false
+    title: What is SPU?
+    uri: null
+  - children: []
+    file: getting_started/install.mdx
+    hidden: false
+    title: Installation Guidelines
+    uri: null
+  - children: []
+    file: getting_started/issue.mdx
+    hidden: false
+    title: Reporting an Issue
+    uri: null
+  - children: []
+    file: getting_started/faq.mdx
+    hidden: false
+    title: Frequently Asked Questions (FAQ)
+    uri: null
+  file: getting_started/index.mdx
+  hidden: false
+  title: Getting started
+  uri: null
+- children:
+  - children: []
+    file: reference/py_api.mdx
+    hidden: false
+    title: Python API Reference
+    uri: null
+  - children: []
+    file: reference/cpp_api.mdx
+    hidden: false
+    title: C++ API Reference
+    uri: null
+  - children: []
+    file: reference/psi_config.mdx
+    hidden: false
+    title: SPU PSI Configuration
+    uri: null
+  - children: []
+    file: reference/runtime_config.mdx
+    hidden: false
+    title: SPU Runtime Configuration
+    uri: null
+  - children: []
+    file: reference/np_op_status.mdx
+    hidden: false
+    title: JAX NumPy Operators Status
+    uri: null
+  - children: []
+    file: reference/xla_status.mdx
+    hidden: false
+    title: XLA Implementation Status
+    uri: null
+  - children: []
+    file: reference/pphlo_doc.mdx
+    hidden: false
+    title: PPHlo API reference
+    uri: null
+  - children: []
+    file: reference/mpc_status.mdx
+    hidden: false
+    title: Supported MPC Protocol
+    uri: null
+  - children: []
+    file: reference/change_log.mdx
+    hidden: false
+    title: CHANGELOGS
+    uri: null
+  file: reference/index.mdx
+  hidden: false
+  title: Reference
+  uri: null
+- children:
+  - children: []
+    file: tutorials/quick_start.mdx
+    hidden: false
+    title: SPU Quickstart
+    uri: null
+  - children: []
+    file: tutorials/spu_inside.mdx
+    hidden: false
+    title: SPU Inside
+    uri: null
+  - children: []
+    file: tutorials/cpp_lr_example.mdx
+    hidden: false
+    title: 'C++ Example: Logistic Regression'
+    uri: null
+  - children: []
+    file: tutorials/develop_your_first_mpc_application.mdx
+    hidden: false
+    title: Develop Your First MPC-Application
+    uri: null
+  - children: []
+    file: tutorials/psi.mdx
+    hidden: false
+    title: PSI QuickStart
+    uri: null
+  - children: []
+    file: tutorials/pir.mdx
+    hidden: false
+    title: PIR QuickStart
+    uri: null
+  file: tutorials/index.mdx
+  hidden: false
+  title: Tutorials
+  uri: null
+- children:
+  - children: []
+    file: development/basic_concepts.mdx
+    hidden: false
+    title: Basic concepts
+    uri: null
+  - children: []
+    file: development/pipeline.mdx
+    hidden: false
+    title: Pipeline
+    uri: null
+  - children: []
+    file: development/compiler.mdx
+    hidden: false
+    title: Compiler
+    uri: null
+  - children: []
+    file: development/runtime.mdx
+    hidden: false
+    title: Runtime
+    uri: null
+  - children: []
+    file: development/type_system.mdx
+    hidden: false
+    title: Type System
+    uri: null
+  - children: []
+    file: development/ir_dump.mdx
+    hidden: false
+    title: Dump IR to DAG
+    uri: null
+  - children: []
+    file: development/policy_sgd_insight.mdx
+    hidden: false
+    title: 'Background: SGD in MPC-ML'
+    uri: null
+  - children: []
+    file: development/fxp.mdx
+    hidden: false
+    title: Pitfalls - Fxp Arithmetic
+    uri: null
+  - children: []
+    file: development/add_protocols.mdx
+    hidden: false
+    title: Adding New MPC Protocols
+    uri: null
+  - children: []
+    file: development/psi_protocol_intro.mdx
+    hidden: false
+    title: PSI Protocols Introduction
+    uri: null
+  file: development/index.mdx
+  hidden: false
+  title: Development
+  uri: null
+---
+
+:target{#spu}
+
+# SPU
+
+SPU(Secure Processing Unit) consists of a frontend <strong>compiler</strong> and a backend <strong>runtime</strong>.
+The frontend compiler accepts an ML program as input and converts it into an <strong>MPC-specific intermediate representation</strong>.
+After a series of delicate code optimizations, programs will be executed by a performant backend runtime as MPC protocols.
+Based on SPU, we can run ML programs of different frameworks with minor modifications in a privacy-preserving manner.
+
+SPU is a major part of [SecretFlow](https://www.secretflow.org.cn/docs/secretflow/en/) project.
+SPU is designed to be easily integrated into other distributed system, it’s <strong>recommended to use</strong> SecretFlow to write SPU program.
+
+:target{#citing}
+
+## Citing
+
+SPU was accepted by USENIX ATC’23. Please check the paper [here](https://www.usenix.org/conference/atc23/presentation/ma).
+
+```default
+@inproceedings {288747,
+   author = {Junming Ma and Yancheng Zheng and Jun Feng and Derun Zhao and Haoqi Wu and Wenjing Fang and Jin Tan and Chaofan Yu and Benyu Zhang and Lei Wang},
+   title = {{SecretFlow-SPU}: A Performant and {User-Friendly} Framework for {Privacy-Preserving} Machine Learning},
+   booktitle = {2023 USENIX Annual Technical Conference (USENIX ATC 23)},
+   year = {2023},
+   isbn = {978-1-939133-35-9},
+   address = {Boston, MA},
+   pages = {17--33},
+   url = {https://www.usenix.org/conference/atc23/presentation/ma},
+   publisher = {USENIX Association},
+   month = jul,
+}
+```
+
+<TableOfContents />

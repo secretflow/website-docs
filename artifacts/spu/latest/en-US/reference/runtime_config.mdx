@@ -1,0 +1,2502 @@
+:target{#spu-runtime-configuration}
+
+# SPU Runtime Configuration
+
+:target{#table-of-contents}
+
+## Table of Contents
+
+- Messages
+  - [CompilationSource](#compilationsource)
+  - [CompilerOptions](#compileroptions)
+  - [ExecutableProto](#executableproto)
+  - [RuntimeConfig](#runtimeconfig)
+  - [ShapeProto](#shapeproto)
+  - [TTPBeaverConfig](#ttpbeaverconfig)
+  - [ValueChunkProto](#valuechunkproto)
+  - [ValueMetaProto](#valuemetaproto)
+- Enums
+  - [DataType](#datatype)
+  - [FieldType](#fieldtype)
+  - [ProtocolKind](#protocolkind)
+  - [PtType](#pttype)
+  - RuntimeConfig.BeaverType
+  - RuntimeConfig.ExpMode
+  - RuntimeConfig.LogMode
+  - RuntimeConfig.SigmoidMode
+  - [SourceIRType](#sourceirtype)
+  - [Visibility](#visibility)
+  - [XLAPrettyPrintKind](#xlaprettyprintkind)
+- [Scalar Value Types](#scalar-value-types)
+
+:target{#messages}
+
+## Messages
+
+:target{#compilationsource}
+
+### CompilationSource
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        ir\_type
+      </td>
+
+      <td>
+        [<span> SourceIRType</span>](#sourceirtype)
+      </td>
+
+      <td>
+        Input IR type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ir\_txt
+      </td>
+
+      <td>
+        &#x20;bytes
+      </td>
+
+      <td>
+        IR
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        input\_visibility
+      </td>
+
+      <td>
+        [<span>repeated Visibility</span>](#visibility)
+      </td>
+
+      <td>
+        Input visibilities
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#compileroptions}
+
+### CompilerOptions
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        enable\_pretty\_print
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Pretty print
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        pretty\_print\_dump\_dir
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        xla\_pp\_kind
+      </td>
+
+      <td>
+        [<span> XLAPrettyPrintKind</span>](#xlaprettyprintkind)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        disable\_sqrt\_plus\_epsilon\_rewrite
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Disable sqrt(x) + eps to sqrt(x+eps) rewrite
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        disable\_div\_sqrt\_rewrite
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Disable x/sqrt(y) to x\*rsqrt(y) rewrite
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        disable\_reduce\_truncation\_optimization
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Disable reduce truncation optimization
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        disable\_maxpooling\_optimization
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Disable maxpooling optimization
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        disallow\_mix\_types\_opts
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Disallow mix type operations
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        disable\_select\_optimization
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Disable SelectOp optimization
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_optimize\_denominator\_with\_broadcast
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Enable optimize x/bcast(y) -> x \* bcast(1/y)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#executableproto}
+
+### ExecutableProto
+
+The executable format accepted by SPU runtime.
+
+- Inputs should be prepared before running executable.
+- Output is maintained after execution, and can be fetched by output name.
+
+```python
+rt = spu.Runtime(...)            # create an spu runtime.
+  rt.set_var('x', ...)             # set variable to the runtime.
+  exe = spu.ExecutableProto(       # prepare the executable.
+          name = 'balabala',
+          input_names = ['x'],
+          output_names = ['y'],
+          code = ...)
+  rt.run(exe)                      # run the executable.
+  y = rt.get_var('y')              # get the executable from spu runtime.
+```
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        The name of the executable.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        input\_names
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        The input names.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        output\_names
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        The output names.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        code
+      </td>
+
+      <td>
+        &#x20;bytes
+      </td>
+
+      <td>
+        The bytecode of the program, with format IR\_MLIR\_SPU.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#runtimeconfig}
+
+### RuntimeConfig
+
+The SPU runtime configuration.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        protocol
+      </td>
+
+      <td>
+        [<span> ProtocolKind</span>](#protocolkind)
+      </td>
+
+      <td>
+        The protocol kind.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        field
+      </td>
+
+      <td>
+        [<span> FieldType</span>](#fieldtype)
+      </td>
+
+      <td>
+        The field type.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        fxp\_fraction\_bits
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        Number of fraction bits of fixed-point number. 0(default) indicates implementation defined.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_action\_trace
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        When enabled, runtime prints verbose info of the call stack, debug purpose only.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_type\_checker
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        When enabled, runtime checks runtime type infos against the compile-time ones, exceptions are raised if mismatches happen. Note: Runtime outputs prefer runtime type infos even when flag is on.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_pphlo\_trace
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        When enabled, runtime prints executed pphlo list, debug purpose only.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_processor\_dump
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        When enabled, runtime dumps executed executables in the dump\_dir, debug purpose only.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        processor\_dump\_dir
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_pphlo\_profile
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        When enabled, runtime records detailed pphlo timing data, debug purpose only. WARNING: the <code>send bytes</code> information is only accurate when <code>experimental\_enable\_inter\_op\_par</code> and <code>experimental\_enable\_intra\_op\_par</code> options are disabled.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_hal\_profile
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        When enabled, runtime records detailed hal timing data, debug purpose only. WARNING: the <code>send bytes</code> information is only accurate when <code>experimental\_enable\_inter\_op\_par</code> and <code>experimental\_enable\_intra\_op\_par</code> options are disabled.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        public\_random\_seed
+      </td>
+
+      <td>
+        &#x20;uint64
+      </td>
+
+      <td>
+        The public random variable generated by the runtime, the concrete prg function is implementation defined. Note: this seed only applies to <code>public variable</code> only, it has nothing to do with security.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        share\_max\_chunk\_size
+      </td>
+
+      <td>
+        &#x20;uint64
+      </td>
+
+      <td>
+        max chunk size for Value::toProto default: 128 \* 1024 \* 1024
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        fxp\_div\_goldschmidt\_iters
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        The iterations use in f\_div with Goldschmidt method. 0(default) indicates implementation defined.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        fxp\_exp\_mode
+      </td>
+
+      <td>
+        &#x20;RuntimeConfig.ExpMode
+      </td>
+
+      <td>
+        The exponent approximation method.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        fxp\_exp\_iters
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        Number of iterations of <code>exp</code> approximation, 0(default) indicates impl defined.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        fxp\_log\_mode
+      </td>
+
+      <td>
+        &#x20;RuntimeConfig.LogMode
+      </td>
+
+      <td>
+        The logarithm approximation method.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        fxp\_log\_iters
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        Number of iterations of <code>log</code> approximation, 0(default) indicates impl-defined.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        fxp\_log\_orders
+      </td>
+
+      <td>
+        &#x20;int64
+      </td>
+
+      <td>
+        Number of orders of <code>log</code> approximation, 0(default) indicates impl defined.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        sigmoid\_mode
+      </td>
+
+      <td>
+        &#x20;RuntimeConfig.SigmoidMode
+      </td>
+
+      <td>
+        The sigmoid function approximation model.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_lower\_accuracy\_rsqrt
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Enable a simpler rsqrt approximation
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        beaver\_type
+      </td>
+
+      <td>
+        &#x20;RuntimeConfig.BeaverType
+      </td>
+
+      <td>
+        beaver config, works for semi2k and spdz2k for now.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ttp\_beaver\_config
+      </td>
+
+      <td>
+        [<span> TTPBeaverConfig</span>](#ttpbeaverconfig)
+      </td>
+
+      <td>
+        TrustedThirdParty configs.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        trunc\_allow\_msb\_error
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        For protocol like SecureML, the most significant bit may have error with low probability, which lead to huge calculation error.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        experimental\_disable\_mmul\_split
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        Experimental: DO NOT USE
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        experimental\_enable\_inter\_op\_par
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        inter op parallel, aka, DAG level parallel.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        experimental\_enable\_intra\_op\_par
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        intra op parallel, aka, hal/mpc level parallel.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        experimental\_disable\_vectorization
+      </td>
+
+      <td>
+        &#x20;bool
+      </td>
+
+      <td>
+        disable kernel level vectorization.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        experimental\_inter\_op\_concurrency
+      </td>
+
+      <td>
+        &#x20;uint64
+      </td>
+
+      <td>
+        inter op concurrency.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#shapeproto}
+
+### ShapeProto
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        dims
+      </td>
+
+      <td>
+        repeated int64
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ttpbeaverconfig}
+
+### TTPBeaverConfig
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        server\_host
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        TrustedThirdParty beaver server’s remote ip\:port or load-balance uri.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        session\_id
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        if empty, use link id as session id.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        adjust\_rank
+      </td>
+
+      <td>
+        &#x20;int32
+      </td>
+
+      <td>
+        which rank do adjust rpc call, usually choose the rank closer to the server.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#valuechunkproto}
+
+### ValueChunkProto
+
+The spu Value proto, used for spu value serialization.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        total\_bytes
+      </td>
+
+      <td>
+        &#x20;uint64
+      </td>
+
+      <td>
+        chunk info
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        chunk\_offset
+      </td>
+
+      <td>
+        &#x20;uint64
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        content
+      </td>
+
+      <td>
+        &#x20;bytes
+      </td>
+
+      <td>
+        chunk bytes
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#valuemetaproto}
+
+### ValueMetaProto
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        data\_type
+      </td>
+
+      <td>
+        [<span> DataType</span>](#datatype)
+      </td>
+
+      <td>
+        The data type.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        visibility
+      </td>
+
+      <td>
+        [<span> Visibility</span>](#visibility)
+      </td>
+
+      <td>
+        The data visibility.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        shape
+      </td>
+
+      <td>
+        [<span> ShapeProto</span>](#shapeproto)
+      </td>
+
+      <td>
+        The shape of the value.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage\_type
+      </td>
+
+      <td>
+        &#x20;string
+      </td>
+
+      <td>
+        The storage type, defined by the underline evaluation engine. i.e. <code>aby3.AShr\<FM64></code> means an aby3 arithmetic share in FM64. usually, the application does not care about this attribute.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#enums}
+
+## Enums
+
+:target{#datatype}
+
+### DataType
+
+The SPU datatype
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        DT\_INVALID
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DT\_I1
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        1bit integer (bool).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DT\_I8
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        int8
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DT\_U8
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        uint8
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DT\_I16
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        int16
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DT\_U16
+      </td>
+
+      <td>
+        5
+      </td>
+
+      <td>
+        uint16
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DT\_I32
+      </td>
+
+      <td>
+        6
+      </td>
+
+      <td>
+        int32
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DT\_U32
+      </td>
+
+      <td>
+        7
+      </td>
+
+      <td>
+        uint32
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DT\_I64
+      </td>
+
+      <td>
+        8
+      </td>
+
+      <td>
+        int64
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DT\_U64
+      </td>
+
+      <td>
+        9
+      </td>
+
+      <td>
+        uint64
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DT\_F16
+      </td>
+
+      <td>
+        10
+      </td>
+
+      <td>
+        half
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DT\_F32
+      </td>
+
+      <td>
+        11
+      </td>
+
+      <td>
+        float
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DT\_F64
+      </td>
+
+      <td>
+        12
+      </td>
+
+      <td>
+        double
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#fieldtype}
+
+### FieldType
+
+A security parameter type.
+
+The secure evaluation is based on some algebraic structure (ring or field),
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        FT\_INVALID
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        FM32
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Ring 2^32
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        FM64
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        Ring 2^64
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        FM128
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        Ring 2^128
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#protocolkind}
+
+### ProtocolKind
+
+The protocol kind.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        PROT\_INVALID
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        Invalid protocol.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        REF2K
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        The reference implementation in <code>ring^2k</code>, note: this ‘protocol’ only behave-like a fixed point secure protocol without any security guarantee. Hence, it should only be selected for debugging purposes.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        SEMI2K
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        A semi-honest multi-party protocol. This protocol requires a trusted third party to generate the offline correlated randoms. Currently, SecretFlow by default ships this protocol with a trusted first party. Hence, it should only be used for debugging purposes.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ABY3
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        A honest majority 3PC-protocol. SecretFlow provides the semi-honest implementation without Yao.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        CHEETAH
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        The famous [Cheetah](https://eprint.iacr.org/2022/207) protocol, a very fast 2PC protocol.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#pttype}
+
+### PtType
+
+Plaintext type
+
+SPU runtime does not process with plaintext directly, plaintext type is
+mainly used for IO purposes, when converting a plaintext buffer to an SPU
+buffer, we have to let spu know which type the plaintext buffer is.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        PT\_INVALID
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_I8
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        int8\_t
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_U8
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        uint8\_t
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_I16
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        int16\_t
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_U16
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        uint16\_t
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_I32
+      </td>
+
+      <td>
+        5
+      </td>
+
+      <td>
+        int32\_t
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_U32
+      </td>
+
+      <td>
+        6
+      </td>
+
+      <td>
+        uint32\_t
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_I64
+      </td>
+
+      <td>
+        7
+      </td>
+
+      <td>
+        int64\_t
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_U64
+      </td>
+
+      <td>
+        8
+      </td>
+
+      <td>
+        uint64\_t
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_F32
+      </td>
+
+      <td>
+        9
+      </td>
+
+      <td>
+        float
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_F64
+      </td>
+
+      <td>
+        10
+      </td>
+
+      <td>
+        double
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_I128
+      </td>
+
+      <td>
+        11
+      </td>
+
+      <td>
+        int128\_t
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_U128
+      </td>
+
+      <td>
+        12
+      </td>
+
+      <td>
+        uint128\_t
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_BOOL
+      </td>
+
+      <td>
+        13
+      </td>
+
+      <td>
+        bool
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_F16
+      </td>
+
+      <td>
+        14
+      </td>
+
+      <td>
+        half
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#runtimeconfig-beavertype}
+
+### RuntimeConfig.BeaverType
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        TrustedFirstParty
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        assume first party (rank0) as trusted party to generate beaver triple.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        TrustedThirdParty
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        generate beaver triple through an additional trusted third party.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        MultiParty
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        generate beaver triple through multi-party.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#runtimeconfig-expmode}
+
+### RuntimeConfig.ExpMode
+
+The exponential approximation method.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        EXP\_DEFAULT
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        Implementation defined.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        EXP\_PADE
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        The pade approximation.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        EXP\_TAYLOR
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        Taylor series approximation.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#runtimeconfig-logmode}
+
+### RuntimeConfig.LogMode
+
+The logarithm approximation method.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        LOG\_DEFAULT
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        Implementation defined.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        LOG\_PADE
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        The pade approximation.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        LOG\_NEWTON
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        The newton approximation.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#runtimeconfig-sigmoidmode}
+
+### RuntimeConfig.SigmoidMode
+
+The sigmoid approximation method.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        SIGMOID\_DEFAULT
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        Implementation defined.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        SIGMOID\_MM1
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Minmax approximation one order. f(x) = 0.5 + 0.125 \* x
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        SIGMOID\_SEG3
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        Piece-wise simulation. f(x) = 0.5 + 0.125x if -4 \<= x \<= 4 1 if x > 4 0 if -4 > x
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        SIGMOID\_REAL
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        The real definition, which depends on exp’s accuracy. f(x) = 1 / (1 + exp(-x))
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#sourceirtype}
+
+### SourceIRType
+
+Compiler relate definition
+////////////////////////////////////////////////////////////////////////
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        XLA
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        MLIR\_HLO
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#visibility}
+
+### Visibility
+
+The visibility type.
+
+SPU is a secure evaluation runtime, but not all data are secret, some of them
+are publicly known to all parties, marking them as public will improve
+performance significantly.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        VIS\_INVALID
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        VIS\_SECRET
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Invisible(unknown) for all or some of the parties.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        VIS\_PUBLIC
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        Visible(public) for all parties.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#xlaprettyprintkind}
+
+### XLAPrettyPrintKind
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        TEXT
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DOT
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        HTML
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#scalar-value-types}
+
+## Scalar Value Types
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        .proto Type
+      </td>
+
+      <td>
+        Notes
+      </td>
+
+      <td>
+        C++ Type
+      </td>
+
+      <td>
+        Java Type
+      </td>
+
+      <td>
+        Python Type
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <div /><h4 id="double" /><a name="double" /> double
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        double
+      </td>
+
+      <td>
+        double
+      </td>
+
+      <td>
+        float
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="float" /><a name="float" /> float
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        float
+      </td>
+
+      <td>
+        float
+      </td>
+
+      <td>
+        float
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="int32" /><a name="int32" /> int32
+      </td>
+
+      <td>
+        Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="int64" /><a name="int64" /> int64
+      </td>
+
+      <td>
+        Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="uint32" /><a name="uint32" /> uint32
+      </td>
+
+      <td>
+        Uses variable-length encoding.
+      </td>
+
+      <td>
+        uint32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="uint64" /><a name="uint64" /> uint64
+      </td>
+
+      <td>
+        Uses variable-length encoding.
+      </td>
+
+      <td>
+        uint64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="sint32" /><a name="sint32" /> sint32
+      </td>
+
+      <td>
+        Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="sint64" /><a name="sint64" /> sint64
+      </td>
+
+      <td>
+        Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="fixed32" /><a name="fixed32" /> fixed32
+      </td>
+
+      <td>
+        Always four bytes. More efficient than uint32 if values are often greater than 2^28.
+      </td>
+
+      <td>
+        uint32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="fixed64" /><a name="fixed64" /> fixed64
+      </td>
+
+      <td>
+        Always eight bytes. More efficient than uint64 if values are often greater than 2^56.
+      </td>
+
+      <td>
+        uint64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="sfixed32" /><a name="sfixed32" /> sfixed32
+      </td>
+
+      <td>
+        Always four bytes.
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="sfixed64" /><a name="sfixed64" /> sfixed64
+      </td>
+
+      <td>
+        Always eight bytes.
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="bool" /><a name="bool" /> bool
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        bool
+      </td>
+
+      <td>
+        boolean
+      </td>
+
+      <td>
+        boolean
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="string" /><a name="string" /> string
+      </td>
+
+      <td>
+        A string must always contain UTF-8 encoded or 7-bit ASCII text.
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        str/unicode
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="bytes" /><a name="bytes" /> bytes
+      </td>
+
+      <td>
+        May contain any arbitrary sequence of bytes.
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        ByteString
+      </td>
+
+      <td>
+        str
+      </td>
+    </tr>
+  </tbody>
+</table>

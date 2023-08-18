@@ -1,0 +1,256 @@
+:target{#type-system}
+
+# Type System
+
+:target{#overview}
+
+## Overview
+
+This document is for VM developers.
+
+Everything in SPU could be treated as an object, each object has a type.
+
+There are only two types of objects, <em>value</em> or <em>operator</em>, which means if a symbol is not a <em>value</em>, it’s an <em>operator</em>.
+
+- <strong>value</strong>: an object that is managed by SPU runtime, representing a public/secret data.
+- <strong>operator</strong>: an object that takes one or more values and outputs a return value, i.e. <cite>multiply</cite> is an operator.
+
+:target{#value-type}
+
+### Value type
+
+A value type is a tuple (<strong>V</strong>, <strong>D</strong>, <strong>S</strong>), where:
+
+- <strong>V</strong> is <em>visibility</em>, could be one of <em>\{public, secret}</em>
+- <strong>D</strong> is <em>data type</em>, could be one of <em>\{int, fxp}</em>
+- <strong>S</strong> is <em>shape</em>, which makes the value a tensor.
+
+We can define a hyper type function, which takes three parameters and return a concrete value type.
+
+```haskell
+type(V, D, S) -> ValueType
+```
+
+To simplify things a little bit, we can ignore <em>shape</em> for now and assume that runtime will handle it correctly.
+
+```haskell
+type(V, D) -> ValueType
+```
+
+With this type function, we can define a list of types in the SPU type system.
+
+```haskell
+sint = type(secret, int)
+sfxp = type(secret, fxp)
+pint = type(public, int)
+pfxp = type(public, fxp)
+```
+
+:target{#operator-type}
+
+### Operator type
+
+<em>Operators</em> takes a list of values as parameters and returns exactly one value as result, operator’s type is determined by the types of input parameters and return values.
+
+In SPU IR, an operator could take a polymorphic typed parameter and the return type could be deduced from the parameters. For example:
+
+```haskell
+add (sint, pint) -> sint
+add (sint, sint) -> sint
+add (pint, pint) -> pint
+...
+add (sfxp, pint) -> sfxp
+...
+```
+
+The <cite>add</cite> operator takes a pair of <cite>type(V, D)</cite> as parameter, which has 2x2x2x2 = 16 different kinds of combinations. To support this type of operators, we introduce the following <em>type functor</em>.
+
+1. <strong>dtype promotion</strong>, which promotes two dtypes to a more relaxed type, in SPU system, <em>int</em> is always promoted to <em>fxp</em>.
+
+```haskell
+promote :: list[D] -> D
+-- for example
+add (int, fxp) -> fxp
+```
+
+2. <strong>visibility narrow</strong>, which narrows the visibility when two or more operands have different visibility properties, this is the key to maintain the “secure semantic” of SPU VM, since the resulting visibility of ops will always be more strict. i.e. if one of operands is <em>secret</em>, the result is a <em>secret</em>.
+
+```haskell
+narrow :: list[V] -> V
+
+-- for example
+add (secret, public) -> secret
+add (public, public) -> public
+```
+
+Now we can represent the polymorphic mul op as:
+
+```haskell
+mul :: type(V0, D0) -> type(V1, D1) -> type(narrow(V0, V1), promote(D0, D1))
+```
+
+- the op takes two parameters, first type is <code>type(V0, D0)</code>, second type is <code>type(V1, D1)</code>.
+- the op returns <code>type(narrow(V0, V1), promote(D0, D1))</code> as a result.
+- when applying the op to two arbitrary arguments, the result could be deduced from the above type expressions.
+
+:target{#use-of-type}
+
+### Use of type
+
+There are many uses for types.
+
+- First, the most important one, type is self descriptive, with an accurate defined type system, we can describe <em>SPU IR</em> more accurately.
+- Second, runtime type information is used to do runtime dispatch, which is important for polymorphic operators.
+- Third, the type system could be used by static type checker, and could be used to double check runtime implementation.
+
+:target{#ops-dispatch}
+
+## Ops dispatch
+
+As described above, type helps for dispatching, here we use <cite>MUL</cite> instruction as an example.
+
+```text
+%3 = MUL %1 %2
+```
+
+The above <cite>MUL</cite> instruction does element-wise multiplication, <cite>%1</cite> and <cite>%2</cite> are parameters and <cite>%3</cite> is the return value.
+
+:target{#the-dispatch-problem}
+
+### The dispatch problem
+
+In this example, <cite>%1</cite> and <cite>%2</cite> are SPU values, each of them belongs one of four types <cite>\{sint, pint, sfxp, pfxp}</cite>, the type of <cite>MUL</cite> is:
+
+<Math>
+  $$
+  \begin{Bmatrix} sint \\ pint \\ sfxp \\ pfxp \end{Bmatrix}
+  \times
+  \begin{Bmatrix} sint \\ pint \\ sfxp \\ pfxp \end{Bmatrix}
+  $$
+</Math>
+
+<strong>The problem is how to dispatch operations to correct kernel according to the arguments’ type information</strong>.
+
+A simple idea is to pattern match all these type combinations and dispatch to different kernels accordingly, with this way we got 4x4=16 different kernels.
+
+<Mermaid code={"graph LR\n  mul[mul] --> dispatch((dispatch))\n  dispatch:::dispatch --> mul_si_si[mul<sint,sint>]\n  dispatch:::dispatch --> mul_si_sf[mul<sint,sfxp>]\n  dispatch:::dispatch --> mul_si_pi[mul<sint,pint>]\n  dispatch:::dispatch --> mul_si_pf[mul<sint,pfxp>]\n  dispatch:::dispatch --> mul_sf_si[mul<sfxp,sint>]\n  dispatch:::dispatch --> mul____[...]\n  dispatch:::dispatch --> mul_pf_pf[mul<pfxp,pfxp>]\n  classDef dispatch fill:#f96;\n  classDef compose fill:#03fcb1;"} />
+
+:target{#layered-dispatch}
+
+### Layered dispatch
+
+A better way is to dispatch layer by layer, for example, first dispatch by dtype, then dispatch by vtype.
+
+<Mermaid code={"graph LR\n  mul[mul] --> mul_ddispatch((dtype dispatch))\n  mul_ddispatch:::dispatch --> imul[imul]\n  imul --> rmul\n  mul_ddispatch --> fmul[fmul]\n  fmul --> fmul_d{+}\n  fmul_d:::compose --> rmul[rmul]\n  rmul --> rmul_vdispatch((vtype dispatch))\n  rmul_vdispatch:::dispatch  --> mulss[mulss]\n  rmul_vdispatch --> mulsp[mulsp]\n  rmul_vdispatch --> mulpp[mulpp]\n  fmul_d --> rtrunc[rtrunc]\n  rtrunc --> rtrunc_vdispatch((vtype dispatch))\n  rtrunc_vdispatch:::dispatch  --> truncss[truncss]\n  rtrunc_vdispatch --> truncsp[truncsp]\n  rtrunc_vdispatch --> truncpp[truncpp]\n\n  classDef dispatch fill:#f96;\n  classDef compose fill:#03fcb1;"} />
+
+In the above diagram:
+
+- <strong>mul</strong> is general <em>multiplication</em> method.
+- <strong>imul</strong> is integer multiplication method.
+- <strong>fmul</strong> is fixedpoint multiplication method.
+- <strong>rmul</strong> is untyped multiplication method over ring 2k.
+- <strong>mulss</strong> multiplies two secrets, the domain and behavior are secure protocol dependent.
+
+The above idea can be expressed in code like:
+
+```cpp
+Value i2f(Value); // convert int to fxp
+
+Value mul(Value x, Value y) {
+  Type xt = x.type();
+  Type yt = y.type();
+
+  // first level, dispatch by dtype.
+  if (is_int(xt) && is_int(yt)) return imul(x, y);
+  if (is_int(xt) && is_fxp(yt)) return fmul(i2f(x), y);
+  if (is_fxp(xt) && is_int(yt)) return fmul(x, i2f(y));
+  if (is_fxp(xt) && is_fxp(yt)) return fmul(x, y);
+}
+
+Value imul(Value x, Value y) {
+  Type xt = x.type();
+  Type yt = y.type();
+
+  // second level, dispatch by vtype.
+  if (is_secret(xt) && is_secret(yt)) return _mul_ss(x, y);
+  if (is_secret(xt) && is_public(yt)) return _mul_sp(x, y);
+  if (is_public(xt) && is_secret(yt)) return _mul_sp(y, x); // commutative
+  if (is_public(xt) && is_public(yt)) return _mul_pp(x, y);
+}
+
+Value fmul(Value x, Value y) {
+  Value z = imul(x, y);
+  return truncate(z);
+}
+```
+
+:target{#fast-dispatch}
+
+### Fast dispatch
+
+In the above example, we observe that <cite>i2f</cite> and <cite>truncation</cite> could be optimized, the intuition is that when a value is converted from <cite>int</cite> to <cite>fxp</cite> and later convert back, these two conversion introduce non-trivial computation overhead in MPC setting.
+
+We use the so called <em>fast dispatch</em> to optimize it, when doing cross <cite>int</cite> and <cite>fxp</cite> multiplication, we could directly do <cite>imul</cite> without type lift and truncation.
+
+```cpp
+Value i2f(Value); // convert int to fxp
+
+Value mul(Value x, Value y) {
+  Type xt = x.type();
+  Type yt = y.type();
+
+  // fast dispatch
+  if (one_int_another_fxp(xt, yt)) return imul(x, y);
+
+  if (is_int(xt) && is_int(yt)) return imul(x, y);
+  if (is_int(xt) && is_fxp(yt)) return fmul(i2f(x), y);  // lift to f, then truncation back.
+  if (is_fxp(xt) && is_int(yt)) return fmul(x, i2f(y));  // lift to f, then truncation back.
+  if (is_fxp(xt) && is_fxp(yt)) return fmul(x, y);
+}
+```
+
+Note:
+
+- in the above implementation we didn’t maintain the type correctness.
+- this pattern match based <em>fast dispatch</em> is exactly the same as compile-time <em>peephole optimization</em>.
+- dispatch inside a protocol is also complicated and beyond the scope of this article.
+
+:target{#implementation}
+
+### Implementation
+
+With <em>type functor</em>, we have the following op definitions in <cite>mul</cite> dispatch chain.
+
+```haskell
+mul   :: type(#V0,$D0) -> type(#V1,$D1) -> type(narrow(#V0, #V1), promote($D0, $D1))
+fmul  :: type(#V0,FXP) -> type(#V1,FXP) -> type(narrow(#V0, #V1), FXP)
+rmul  :: type(#V0,$$) -> type(#V1,$$) -> type(narrow(#V0, #V1), $$)
+mulss :: type(SECRET,$$) -> type(SECRET,$$) -> type(SECRET,$$)
+```
+
+In dispatch phrase, SPU runtime uses type information to select next dispatch op. In this example, <cite>(x\:sfxp, y\:sfxp)</cite> is applied op <cite>mul</cite>, via pattern matching we got <cite>(V0=SECRET,D0=FXP), (V1=SECRET,D1=FXP)</cite>, and the dispatch stack looks like:
+
+```text
+mul(x:sfxp, y:sfxp)            # dtype dispatch, use D0=FXP, D1=FXP to select fmul
+  fmul(x:sfxp, y:sfxp)         # fixed point arithmetic implementation,
+                               #   first do ring multiplication, then truncate the result.
+    z = rmul(x:s<T>, y:s<T>)   # rmul does ring arithmetic over protocol dependent
+                               #   encoding, and use (V0=SECRET,V1=SECRET) to select mulss
+      mulss(x:U, y:U)          # mulss dispatch to concrete protocol implementation,
+                               #   in protocol defined field.
+    rtruncate(z:s<T>)          # rtrunc does ring truncation over protocol dependent
+                               #   field, and use (V0=SECERT) to select truncates
+      truncs(z:U)              # dispatch to concrete protocol implementation.
+```
+
+Note:
+
+- We use C++-like template type notation to represent polymorphic type constraints.
+
+:target{#partial-type}
+
+#### Partial type
+
+In the type dispatch step, type information is used to select next op, and when partial of type information is used, it’s <em>erased</em>. For example, when <cite>dtype</cite> is used to select <cite>fmul</cite> in the above example, dtype is useless in the future and could be erased, the lower level op does not distinguish dtype (via a generic type parameter). In a real implementation, we don’t erase the type explicitly, just leave it there without further use.
+
+The return value takes the <cite>reverse progress</cite> of dispatch. The return type is filled from bottom to up. For example, in the above progress, when <code>z=rmul(x,y)</code> is called, <cite>rmul</cite> knows <cite>z</cite>’s visibility type is <cite>SECRET</cite> but does not know its dtype yet, so here <cite>z</cite> has a partial type <cite>type(SECRET, \$UNKNOWN)</cite>. The type will be filled step by step during stack popup, and eventually be completed as a full type when the whole dispatch progress is done.

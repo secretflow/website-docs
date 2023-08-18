@@ -1,0 +1,90 @@
+:target{#basic-concepts}
+
+# Basic concepts
+
+SPU has quite a different programming model than CPU/GPU, this guide introduces the basic concepts.
+
+:target{#machine-model}
+
+## Machine model
+
+In normal CPU model, we could treat the machine as an <em>arithmetic blackbox</em>, which accepts user’s <em>code</em> and <em>data</em>, runs the computation, and returns result <em>data</em> to user. If we draw a picture to show the relationship between user and machine, it’s something like this.
+
+<figure id="id1">
+  ![](../_assets/cpu_model.svg)
+
+  <figcaption>
+    user and CPU
+  </figcaption>
+</figure>
+
+In SPU, the first notable difference is that, <em>input</em> is not provided by a single user, it’s from <strong>multiple parties</strong>, and the <em>code</em> could be provided by a separate party, finally, the output could be received by another party. So <strong>SPU is born to be used in a distributed context</strong>. It looks like:
+
+<figure id="id2">
+  ![](../_assets/spu_model.svg)
+
+  <figcaption>
+    multi-user and SPU
+  </figcaption>
+</figure>
+
+If we take a closer look, SPU itself is not a physical machine, it is hosted by multiple parties that don’t trust on each other. For example, in the following picture, we have three parties (red, blue and green) that work together with some MPC protocols, and provide computation service as a <strong>virtual machine</strong>.
+
+<figure id="id3">
+  ![](../_assets/spu_model_inside.svg)
+
+  <figcaption>
+    inside SPU
+  </figcaption>
+</figure>
+
+So we have treated SPU as a (multi-party visualized) <strong>secure arithmetic blackbox</strong>, which can evaluate computations securely.
+
+:target{#programming-model}
+
+## Programming model
+
+With the above VM model, the next question is <strong>how to program on it</strong>?
+
+Inside SPU, each physical node behaves differently for the same progress, i.e. some nodes act as senders, while others act as receivers.
+
+But from the users’ (of SPU) perspective, SPU behaves as one single VM. One important responsibility of SPU compiler/runtime pipeline is to translate <strong>homogeneous</strong> program to another for <strong>heterogeneous</strong> runtime engines.
+
+For example, in the following computation graph, given <cite>x</cite>, <cite>y</cite>, we want to compute <cite>f(x, y)</cite>, and the big circle represent a compute node which can evaluate f.
+
+![](../_assets/physical_eval.svg)
+
+In SPU, a group of nodes work together to provide functionality of <cite>f</cite>, as shown blow.
+
+![](../_assets/virtual_eval.svg)
+
+With the above abstraction, SPU can:
+
+- Hide the underline protocols, <em>write once, run on all protocols</em>.
+- Hide the number of parties, <em>write once, run for a variable number of parties</em>.
+
+:target{#api-level}
+
+## API level
+
+With the above programming model, the next question is <strong>which language is supported</strong>? SPU provides multi-level API, from upper to lower:
+
+- <strong>Frontend API</strong> (like TensorFlow/JAX), SPU compiles them into SPU IR before running.
+- <strong>SPU IR</strong>, an Intermediate Representation format defined by SPU, which is not quite readable but easier for computers to understand.
+- <strong>C++ API</strong>, which could directly access the underline MPC protocols.
+
+The API hierarchy looks like:
+
+<figure id="id4">
+  ![](../_assets/api_level.svg)
+
+  <figcaption>
+    SPU API hierarchy
+  </figcaption>
+</figure>
+
+<Container type="important">
+  An important goal of SPU is to allow people to write secure programs with their familiar frameworks they are familiar with, so it’s recommended to use Frontend API.
+
+  Currently, only JAX frontend is supported for now. Please check [<span>JAX on SPU</span>](../tutorials/quick_start.mdx).
+</Container>

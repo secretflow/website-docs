@@ -1,0 +1,534 @@
+:target{#supported-mpc-protocol}
+
+# Supported MPC Protocol
+
+Currently, SPU implements the following protocols.
+
+- [ABY3](https://eprint.iacr.org/2018/403.pdf): A <strong>honest majority</strong> 3PC-protocol, SPU provides <strong>semi-honest</strong> implementation, note, it’s hard to resist collusion attacks if more than two computing nodes deployed together.
+- [Semi2k-SPDZ\*](https://eprint.iacr.org/2018/482.pdf) : A <strong>semi-honest</strong> NPC-protocol similar to SPDZ but requires a trusted third party to generate offline randoms. By default this protocol now uses trusted first party. Hence, it should be used for debugging purposes only.
+- [Cheetah\*](https://eprint.iacr.org/2022/207) : A fast 2pc semi-honest protocol, which uses carefully designed homomorphic encryption-based protocols for arithmetic operations and [Ferret](https://eprint.iacr.org/2020/924.pdf) for boolean operations.
+
+Currently, we mainly focus on bridging existing AI frameworks to SPU via XLA, an intermediate
+representation where we can hook Tensorflow, Torch and Jax.
+
+We welcome security experts to help contribute more security protocols.
+
+:target{#complexity}
+
+## Complexity
+
+<Container type="note">
+  - The complexity metrics are dumped from the source code, it’s supposed to be accurate and could be used as a formal cost model.
+  - In Semi2k, only <em>online stage</em> complexity is considered.
+</Container>
+
+Notation:
+
+- <strong>N</strong> is short for the <em>number of parties</em>.
+- <strong>K</strong> is short for the <em>k in module 2^k</em>.
+- <strong>m</strong> is short for <em>rows of mmul lhs operand</em>.
+- <strong>n</strong> is short for <em>cols of mmul rhs operand</em>.
+
+Naming convention:
+
+- <strong>a</strong> for <em>arithmetic share</em>.
+- <strong>b</strong> for <em>boolean share</em>.
+- <strong>p</strong> for <em>public value</em>.
+
+For example, <cite>mul\_aa</cite> is short for multiply of two arithmetic shares.
+
+:target{#semi2k}
+
+### Semi2k
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        kernel
+      </td>
+
+      <td>
+        latency
+      </td>
+
+      <td>
+        comm
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        a2b
+      </td>
+
+      <td>
+        (log(K)+1)\*log(N)
+      </td>
+
+      <td>
+        (2\*log(K)+1)\*2\*K\*(N-1)\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        b2a
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        a2p
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        b2p
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        add\_bb
+      </td>
+
+      <td>
+        log(K)+1
+      </td>
+
+      <td>
+        log(K)\*K\*2+K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        add\_aa
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        add\_ap
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mul\_aa
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*2\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mul\_ap
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mmul\_aa
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*2\*(N-1)\*m\*n
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mmul\_ap
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        trunc\_a
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        xor\_bb
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        xor\_bp
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        and\_bb
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*2\*(N-1)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        and\_bp
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#aby3}
+
+### Aby3
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        kernel
+      </td>
+
+      <td>
+        latency
+      </td>
+
+      <td>
+        comm
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        a2b
+      </td>
+
+      <td>
+        log(K)+1+1
+      </td>
+
+      <td>
+        log(K)\*K+K\*2
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        b2a
+      </td>
+
+      <td>
+        TODO
+      </td>
+
+      <td>
+        TODO
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        a2p
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        b2p
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        add\_bb
+      </td>
+
+      <td>
+        log(K)+1
+      </td>
+
+      <td>
+        log(K)\*K\*2+K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        add\_aa
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        add\_ap
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mul\_aa
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mul\_ap
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mmul\_aa
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K\*m\*n
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        mmul\_ap
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        trunc\_a
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        4\*K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        xor\_bb
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        xor\_bp
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        and\_bb
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        K
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        and\_bp
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        0
+      </td>
+    </tr>
+  </tbody>
+</table>

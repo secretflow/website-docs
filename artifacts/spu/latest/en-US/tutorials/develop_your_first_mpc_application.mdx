@@ -1,0 +1,1379 @@
+:target{#Develop-Your-First-MPC-Application}
+
+# Develop Your First MPC-Application
+
+> The following codes are demos only. It’s NOT for production due to system security concerns, please DO NOT use it directly in production.
+
+This is an introductory secretflow tutorial that contains:
+
+- Implement a simple algorithm and run it in plaintext as baseline.
+- Use simulator to check the <strong>precision loss</strong> and try to fix it.
+- Run elaborated emulations to give reports on both <strong>efficiency and correctness</strong>.
+
+We <strong>highly recommend</strong> the reader to read [spu-quickstart](quick_start.mdx) before continuing read this tutorial, which you can learn some basic usage of Device, DeviceObject and how to run program in secret.
+
+:target{#Part-0:-Prepare-the-environment-and-dataset}
+
+## Part 0: Prepare the environment and dataset
+
+1. Environment: To run this tutorial, you should have spu installed in your environment(if not, you can refer to [this](https://www.secretflow.org.cn/docs/spu/en/getting_started/install.html)).
+2. Dataset: We use the breast cancer wisconsin dataset, which can be obtained from sklearn. And we just do simple minmax transform for preprocessing
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    from sklearn.datasets import load_breast_cancer
+    from sklearn.preprocessing import MinMaxScaler
+    import pandas as pd
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    X, y = load_breast_cancer(return_X_y=True, as_frame=True)
+    # normally, LR works only when the features have been normalized!
+    scalar = MinMaxScaler(feature_range=(-2, 2))
+    cols = X.columns
+    X = scalar.fit_transform(X)
+    X = pd.DataFrame(X, columns=cols)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    X.head()
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[3]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"mean radius"}</th><th>{"mean texture"}</th><th>{"mean perimeter"}</th><th>{"mean area"}</th><th>{"mean smoothness"}</th><th>{"mean compactness"}</th><th>{"mean concavity"}</th><th>{"mean concave points"}</th><th>{"mean symmetry"}</th><th>{"mean fractal dimension"}</th><th>{"..."}</th><th>{"worst radius"}</th><th>{"worst texture"}</th><th>{"worst perimeter"}</th><th>{"worst area"}</th><th>{"worst smoothness"}</th><th>{"worst compactness"}</th><th>{"worst concavity"}</th><th>{"worst concave points"}</th><th>{"worst symmetry"}</th><th>{"worst fractal dimension"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"0"}</th><td>{"0.084150"}</td><td>{"-1.909368"}</td><td>{"0.183954"}</td><td>{"-0.545069"}</td><td>{"0.375011"}</td><td>{"1.168149"}</td><td>{"0.812559"}</td><td>{"0.924453"}</td><td>{"0.745455"}</td><td>{"0.422072"}</td><td>{"..."}</td><td>{"0.483102"}</td><td>{"-1.433902"}</td><td>{"0.673241"}</td><td>{"-0.197208"}</td><td>{"0.404543"}</td><td>{"0.477166"}</td><td>{"0.274441"}</td><td>{"1.648110"}</td><td>{"0.393850"}</td><td>{"-0.324544"}</td>
+          </tr>
+
+          <tr>
+            <th>{"1"}</th><td>{"0.572578"}</td><td>{"-0.909706"}</td><td>{"0.463133"}</td><td>{"0.006363"}</td><td>{"-0.840480"}</td><td>{"-1.272928"}</td><td>{"-1.185567"}</td><td>{"-0.604970"}</td><td>{"-0.480808"}</td><td>{"-1.434709"}</td><td>{"..."}</td><td>{"0.427606"}</td><td>{"-0.785714"}</td><td>{"0.159271"}</td><td>{"-0.259143"}</td><td>{"-0.609787"}</td><td>{"-1.381747"}</td><td>{"-1.228115"}</td><td>{"0.556701"}</td><td>{"-1.065642"}</td><td>{"-1.108487"}</td>
+          </tr>
+
+          <tr>
+            <th>{"2"}</th><td>{"0.405982"}</td><td>{"-0.438958"}</td><td>{"0.382973"}</td><td>{"-0.202333"}</td><td>{"0.057236"}</td><td>{"-0.275934"}</td><td>{"-0.149953"}</td><td>{"0.542744"}</td><td>{"0.038384"}</td><td>{"-1.155013"}</td><td>{"..."}</td><td>{"0.225543"}</td><td>{"-0.559701"}</td><td>{"0.033767"}</td><td>{"-0.501966"}</td><td>{"-0.065641"}</td><td>{"-0.458499"}</td><td>{"-0.561022"}</td><td>{"1.340206"}</td><td>{"-0.385176"}</td><td>{"-1.146268"}</td>
+          </tr>
+
+          <tr>
+            <th>{"3"}</th><td>{"-1.159638"}</td><td>{"-0.556645"}</td><td>{"-1.065994"}</td><td>{"-1.588378"}</td><td>{"1.245283"}</td><td>{"1.245445"}</td><td>{"0.262418"}</td><td>{"0.091451"}</td><td>{"1.105051"}</td><td>{"2.000000"}</td><td>{"..."}</td><td>{"-1.006759"}</td><td>{"-0.456290"}</td><td>{"-1.034613"}</td><td>{"-1.623968"}</td><td>{"1.661890"}</td><td>{"1.256047"}</td><td>{"0.194569"}</td><td>{"1.539519"}</td><td>{"2.000000"}</td><td>{"1.094845"}</td>
+          </tr>
+
+          <tr>
+            <th>{"4"}</th><td>{"0.519570"}</td><td>{"-1.373690"}</td><td>{"0.523944"}</td><td>{"-0.042842"}</td><td>{"-0.278595"}</td><td>{"-0.608429"}</td><td>{"-0.144330"}</td><td>{"0.073559"}</td><td>{"-0.486869"}</td><td>{"-1.252738"}</td><td>{"..."}</td><td>{"0.078975"}</td><td>{"-1.504264"}</td><td>{"0.027790"}</td><td>{"-0.633700"}</td><td>{"-0.250545"}</td><td>{"-1.310339"}</td><td>{"-0.722045"}</td><td>{"0.233677"}</td><td>{"-1.369998"}</td><td>{"-1.429621"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"5 rows × 30 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+:target{#Part-1:-Implement-algorithm-in-plaintext}
+
+## Part 1: Implement algorithm in plaintext
+
+[SGD](https://en.wikipedia.org/wiki/Stochastic_gradient_descent)(Stochastic Gradient Descent) is a simple but effective optimization algorithm, so in MPC settings, it’s common to use it to optimize the model.
+
+[LR](https://en.wikipedia.org/wiki/Logistic_regression)(Logistic Regression) is a widely used linear model especially in financial industry. So in this tutorial, as an example, we will implement LR with a modified SGD, called [policy-sgd](../development/policy_sgd_insight.mdx), which can accelerate the speeds of training in most scenery.
+
+Here, we just list some important equations used in policy-sgd: - LR compute gradient with(<code>n</code> is batch\_size):
+
+<Math>
+  $$
+  grad = \frac{1}{n} \sum_{i} (sigmoid(w^T x_i) - y_i) x_i
+
+
+  $$
+</Math>
+
+- Policy-sgd compute dk in first epoch with(<code>p</code> is number of features):
+
+<Math>
+  $$
+  d_k = \frac{1}{\sqrt{\sum_j^{p} grad_j^2} + \epsilon}
+
+
+  $$
+</Math>
+
+- Then, update weights with(<code>i</code> means i-th epoch, <code>k</code> means k-th iter):
+
+<Math>
+  $$
+  w_{i,k} = w_{i, k-1} -  d_k * \alpha *  grad
+
+
+  $$
+</Math>
+
+In this part, we first forget the MPC setting(data split, protocol…) and implement the algorithm in plaintext. Secretflow recommends user to do this with [Jax](https://jax.readthedocs.io/en/latest/), which <code>jax.numpy</code> provides a familiar NumPy-style API for ease of adoption. If you are familiar with Numpy, you can go through [this blog](https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html) and gets some caveats and then write jax-code just like numpy-code.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    # import some basic library
+    # use jnp just like np
+    import jax.numpy as jnp
+    import jax.lax
+
+    import numpy as np
+    from functools import partial
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+The original response function for LR is sigmoid function, which contains time-consuming ops like exp and division in MPC. So it’s common to approximate sigmoid function with other MPC-friendly function. Here we give two method, i.e. first-order Taylor and square root approximation.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    def sigmoid_t1(x, limit: bool = True):
+        '''
+        taylor series referenced from:
+        https://mortendahl.github.io/2017/04/17/private-deep-learning-with-mpc/
+        '''
+        T0 = 1.0 / 2
+        T1 = 1.0 / 4
+        ret = T0 + x * T1
+        if limit:
+            return jnp.select([ret < 0, ret > 1], [0, 1], ret)
+        else:
+            return ret
+
+
+    def sigmoid_sr(x):
+        """
+        https://en.wikipedia.org/wiki/Sigmoid_function#Examples
+        Square Root approximation functions:
+        F(x) = 0.5 * ( x / ( 1 + x^2 )^0.5 ) + 0.5
+        sigmoid_sr almost perfect fit to sigmoid if x out of range [-3,3]
+        highly recommended use this appr as GDBT's default sigmoid method.
+        """
+        return 0.5 * (x / jnp.sqrt(1 + jnp.power(x, 2))) + 0.5
+
+
+    def sigmoid(x, method='t1'):
+        if method == 't1':
+            return sigmoid_t1(x)
+        else:
+            return sigmoid_sr(x)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+policy-sgd needs scale learning rate in first epoch.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    # Note: we leave a method param in this function for next part, in plaintext, we won't invoke low-level op in most conditions.
+    def compute_dk_func(x, eps=1e-6, method='norm'):
+        # Same as Adam, need add small eps to avoid zero-division error
+        if method == 'norm':
+            return 1 / (jnp.linalg.norm(x) + eps)
+        else:
+            # invoke low-level rsqrt op by hand
+            return jax.lax.rsqrt(jnp.sum(jnp.square(x)) + eps)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Then, we give a brief implementation of LR with policy-sgd, and have similar interface(but less) with sklearn.
+
+<strong>Note</strong>: for simplicity, we will always fit intercept in LR model and omit regularization and other techniques. For full version of SSLR, can refer to <code>SSRegression</code> in secretflow.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
+    ```python
+    class SSLRSGDClassifier:
+        def __init__(
+            self,
+            epochs: int,
+            learning_rate: float,
+            batch_size: int,
+            sig_type: str = 't1',
+            eps: float = 1e-6,  # eps is the small number for computing dk
+            dk_method: str = 'norm',  # method to compute dk, default is use jnp.linalg.norm function
+        ):
+            # parameter check.
+            assert epochs > 0, f"epochs should >0"
+            assert learning_rate > 0, f"learning_rate should >0"
+            assert batch_size > 0, f"batch_size should >0"
+            assert sig_type in ['t1', 'sr'], f"sig_type should one of ['t1', 'sr']"
+            assert eps > 0, f"eps should >0"
+            assert dk_method in [
+                'norm',
+                'rsqrt',
+            ], f"dk_method should one of ['norm', 'rsqrt']"
+
+            self._epochs = epochs
+            self._learning_rate = learning_rate
+            self._batch_size = batch_size
+            self._sig_type = sig_type
+            self._eps = eps
+            self._dk_method = dk_method
+
+            self._weights = jnp.zeros(())
+
+        def _update_weights(
+            self,
+            x,  # array-like
+            y,  # array-like
+            w,  # array-like
+            total_batch: int,
+            batch_size: int,
+            dk_arr,  # array-like
+        ):
+            num_feat = x.shape[1]
+            assert w.shape[0] == num_feat + 1, "w shape is mismatch to x"
+            assert len(w.shape) == 1 or w.shape[1] == 1, "w should be list or 1D array"
+            w = w.reshape((w.shape[0], 1))
+
+            compute_dk = False
+            if dk_arr is None:
+                compute_dk = True
+                dk_arr = []
+
+            for idx in range(total_batch):
+                begin = idx * batch_size
+                end = min((idx + 1) * batch_size, x.shape[0])
+                rows = end - begin
+                # padding one col for bias in w
+                x_slice = jnp.concatenate((x[begin:end, :], jnp.ones((rows, 1))), axis=1)
+                y_slice = y[begin:end, :]
+
+                pred = jnp.matmul(x_slice, w)
+                pred = sigmoid(pred, method=self._sig_type)
+
+                err = pred - y_slice
+                grad = jnp.matmul(jnp.transpose(x_slice), err) / rows
+
+                if compute_dk:
+                    dk = compute_dk_func(grad, self._eps, self._dk_method)
+                    dk_arr.append(dk)
+                else:
+                    dk = dk_arr[idx]
+
+                step = self._learning_rate * grad * dk
+
+                w = w - step
+
+            if compute_dk:
+                dk_arr = jnp.array(dk_arr)
+
+            return w, dk_arr
+
+        def fit(self, x, y):
+            """Fit LR with policy-sgd.
+
+            Parameters
+            ----------
+            X : {array-like}, shape (n_samples, n_features)
+                Training data.
+
+            y : ndarray of shape (n_samples, 1)
+                Target values.
+
+            """
+            assert len(x.shape) == 2, f"expect x to be 2 dimension array, got {x.shape}"
+            assert len(y.shape) == 2, f"expect y to be 2 dimension array, got {y.shape}"
+
+            num_sample = x.shape[0]
+            num_feat = x.shape[1]
+            batch_size = min(self._batch_size, num_sample)
+            total_batch = (num_sample + batch_size - 1) // batch_size
+
+            # always fit intercept
+            weights = jnp.zeros((num_feat + 1, 1))
+            dk_arr = None
+
+            # do train
+            for _ in range(self._epochs):
+                weights, dk_arr = self._update_weights(
+                    x, y, weights, total_batch, batch_size, dk_arr
+                )
+
+            self._weights = weights
+            self.dk_arr = dk_arr
+
+            return
+
+        def predict_proba(self, x):
+            """Probability estimates.
+
+            Parameters
+            ----------
+            X : {array-like}, shape (n_samples, n_features)
+                Input data for prediction.
+
+            Returns
+            -------
+            ndarray of shape (n_samples, n_classes)
+                Returns the probability of the sample for each class in the model,
+                where classes are ordered as they are in `self.classes_`.
+            """
+            num_feat = x.shape[1]
+            w = self._weights
+            assert w.shape[0] == num_feat + 1, f"w shape is mismatch to x={x.shape}"
+            assert len(w.shape) == 1 or w.shape[1] == 1, "w should be list or 1D array"
+            w.reshape((w.shape[0], 1))
+
+            bias = w[-1, 0]
+            w = jnp.resize(w, (num_feat, 1))
+
+            pred = jnp.matmul(x, w) + bias
+            pred = sigmoid(pred, method=self._sig_type)
+
+            return pred
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Now, let’s try this algorithm in plaintext!
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    plain_model = SSLRSGDClassifier(
+        epochs=3, learning_rate=0.1, batch_size=8, sig_type='t1', eps=1e-6, dk_method='norm'
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
+    ```python
+    plain_model.fit(X.values, y.values.reshape(-1, 1))  # X, y should be two-dimension array
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Things seem go well, try to predict the dataset and compute auc.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
+    ```python
+    predict_prob = plain_model.predict_proba(X.values)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
+    ```python
+    from sklearn.metrics import roc_auc_score
+
+    roc_auc_score(y.values, predict_prob)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[11]:" stderr={false} type="output">
+    <pre>
+      {"0.9903083875059459\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Part-2:-Run-algorithm-with-simulator}
+
+## Part 2: Run algorithm with simulator
+
+Normally, you can just do something like [LR with spu](https://www.secretflow.org.cn/docs/secretflow/en/tutorial/lr_with_spu.html) to run your program within a secure context: move you dataset to PYU or SPU, run program with SPU you declare and reveal some information you need(<code>reveal</code> is a <strong>very dangerous</strong> op, and you should use it very carefully in real application).
+
+However, we will see later that you may come across large <strong>metric gap</strong>(like auc in LR) between plaintext and secret. It will be a better choice that developer can run MPC program simpler with high flexibility to adjust hyper-parameters like the size of ring, fxp or underlying MPC protocol etc.
+
+So in this part, we will show how to use simulator to run our algorithm just like running normal MPC program, and do minimum experiments to focus and verify the pitfall of the program. To use simulator but not running program with SPU Device directly has two advantages:
+
+1. <strong>Fewer Code</strong>: No need to deal with tons of <code>DeviceObject</code> and move data from PYU between SPU.
+2. <strong>Quicker Experiment</strong>: No ray cluster connected, run experiments end-to-end.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
+    ```python
+    import spu.utils.simulation as spsim
+    import spu.spu_pb2 as spu_pb2
+    import spu
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Here, to simulate , we first define a simple simulator with CHEETAH protocol and 64 bits ring in 2pc settings. We will talk about 3pc later.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
+    ```python
+    sim = spsim.Simulator.simple(2, spu_pb2.ProtocolKind.CHEETAH, spu_pb2.FieldType.FM64)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
+    ```python
+    def fit_and_predict(
+        x,
+        y,
+        epochs=3,
+        learning_rate=0.1,
+        batch_size=8,
+        sig_type='t1',
+        eps=1e-6,
+        dk_method='norm',
+    ):
+        model = SSLRSGDClassifier(
+            epochs=epochs,
+            learning_rate=learning_rate,
+            batch_size=batch_size,
+            sig_type=sig_type,
+            eps=eps,
+            dk_method=dk_method,
+        )
+        model.fit(x, y)
+        return model.predict_proba(x)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
+    ```python
+    result = spsim.sim_jax(sim, fit_and_predict)(
+        X.values, y.values.reshape(-1, 1)
+    )  # X, y should be two-dimension array
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-27 15:42:55.514] [info] [cheetah_dot.cc:328] CheetahDot uses 3@2 modulus 8192 degree for 64 bit ring\n[2023-03-27 15:42:55.520] [info] [cheetah_dot.cc:328] CheetahDot uses 3@2 modulus 8192 degree for 64 bit ring\n[2023-03-27 15:42:55.547] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-27 15:42:55.547] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-27 15:42:55.612] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[17]:" stderr={false} type="input">
+    ```python
+    roc_auc_score(y, result)  # rather pool under cheetah protocol!
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[17]:" stderr={false} type="output">
+    <pre>
+      {"0.49056603773584906\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Then, we try it in 3pc setting, i.e. use ABY3 protocol.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
+    ```python
+    sim_aby = spsim.Simulator.simple(3, spu_pb2.ProtocolKind.ABY3, spu_pb2.FieldType.FM64)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[35]:" stderr={false} type="input">
+    ```python
+    result = spsim.sim_jax(sim_aby, fit_and_predict)(X.values, y.values.reshape(-1, 1))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[36]:" stderr={false} type="input">
+    ```python
+    roc_auc_score(y, result)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[36]:" stderr={false} type="output">
+    <pre>
+      {"0.970865704772475\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[39]:" stderr={false} type="input">
+    ```python
+    # not very stable, if you run the fit procedure multiple times, you will sometimes get 0.97
+    result = spsim.sim_jax(sim_aby, fit_and_predict)(X.values, y.values.reshape(-1, 1))
+    roc_auc_score(y, result)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[39]:" stderr={false} type="output">
+    <pre>
+      {"0.9903083875059457\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+When the program runs in secret without any modification, the auc may drop dramatically after training 3 epochs(from 0.990 to 0.490 for cheetah)!
+
+We will give some analysis and try to fix it first from application perspective and think deeper in MPC perspective.
+
+:target{#Application-Perspective}
+
+### Application Perspective
+
+Before we dive into this question, we can first summarize the differences of policy-sgd between naive-sgd are:
+
+1. Using approximation function to compute sigmoid(default is t1).
+2. The scale of learning rate, which contains the computation of dk as defined in <code>compute\_dk\_func</code>.
+
+Doing some simple math, we can notice that t1 approximation will force the pred to 0 when inner product is less than -2 and to 1 when inner product is large than 2. So when we compute gradient with:
+
+<Math>
+  $$
+  grad = \frac{1}{n} \sum_{i} (sigmoid(w^T x_i) - y_i) x_i
+
+
+  $$
+</Math>
+
+If coincidentally, we can get all elements of grad very near to 0(may have little error in MPC), then the <code>dk</code> computed in first epoch becomes very large, and may result in the failure of training. We can verify this by simply enlarge the <code>batch\_size</code> to 64 which can decrease the probability of all-zero problem.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[17]:" stderr={false} type="input">
+    ```python
+    # use partial to fix batch_size=64
+    result = spsim.sim_jax(sim, partial(fit_and_predict, batch_size=64))(
+        X.values, y.values.reshape(-1, 1)
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-07 15:07:27.750] [info] [cheetah_dot.cc:328] CheetahDot uses 3@2 modulus 8192 degree for 64 bit ring\n[2023-03-07 15:07:27.753] [info] [cheetah_dot.cc:328] CheetahDot uses 3@2 modulus 8192 degree for 64 bit ring\n[2023-03-07 15:07:27.787] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-07 15:07:27.787] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
+    ```python
+    roc_auc_score(y, result)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[18]:" stderr={false} type="output">
+    <pre>
+      {"0.9892711801701812\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Restricting large batch\_size is not an appropriate way, the key is to make the scale factor smaller, we can also fix the question by enlarging the <code>eps</code>, e.g. change <code>eps</code> from 1e-6 to 1e-2.
+
+<strong>Note</strong>: <code>eps</code> in policy-sgd indeed has two affects, one is to prevent the zero-division error, the other is to restrict the maximum scale factor in warm-start phase(first epoch).
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[19]:" stderr={false} type="input">
+    ```python
+    result = spsim.sim_jax(sim, partial(fit_and_predict, eps=1e-2))(
+        X.values, y.values.reshape(-1, 1)
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-07 15:07:39.660] [info] [cheetah_dot.cc:328] CheetahDot uses 3@2 modulus 8192 degree for 64 bit ring\n[2023-03-07 15:07:39.660] [info] [cheetah_dot.cc:328] CheetahDot uses 3@2 modulus 8192 degree for 64 bit ring\n[2023-03-07 15:07:39.695] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-07 15:07:39.695] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[20]:" stderr={false} type="input">
+    ```python
+    roc_auc_score(y, result)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[20]:" stderr={false} type="output">
+    <pre>
+      {"0.9884387717351092\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+The above analyses are based on t1 sigmoid, which leads to 0 in grad. So we can switch the t1 approximation to other non-truncate but costly form(e.g. sr approximation).
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[88]:" stderr={false} type="input">
+    ```python
+    result = spsim.sim_jax(sim, partial(fit_and_predict, sig_type='sr'))(
+        X.values, y.values.reshape(-1, 1)
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-22 11:19:55.316] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-22 11:19:55.316] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-22 11:19:55.450] [info] [cheetah_dot.cc:328] CheetahDot uses 3@2 modulus 8192 degree for 64 bit ring\n[2023-03-22 11:19:55.450] [info] [cheetah_dot.cc:328] CheetahDot uses 3@2 modulus 8192 degree for 64 bit ring\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[89]:" stderr={false} type="input">
+    ```python
+    roc_auc_score(y, result)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[89]:" stderr={false} type="output">
+    <pre>
+      {"0.9921647904444797\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+So, if we just consider it on app layer, we can get three rules for fixing:
+
+1. enlarge <code>batch\_size</code>.
+2. enlarge <code>eps</code>.
+3. use non-truncate sigmoid approximation(e.g. sr approximation).
+
+:target{#MPC-Perspective}
+
+### MPC Perspective
+
+In this part, we concentrate more on why huge error occurs. To achieve this goal, we will talk according to underlying protocol and use simulator to do some <strong>experiments</strong> to confirm our hypothesis. Readers can do the similar things when you develop your own secure application.
+
+Before diving into the problem deeper, we highly recommend the reader to read:
+
+1. [spu\_inside](https://www.secretflow.org.cn/docs/spu/en/getting_started/tutorials/spu_inside.html#Tracing): gives some introductions how spu works inside for float-point operations.
+2. [pitfall](https://www.secretflow.org.cn/docs/spu/en/reference/fxp.html): spu implements math function(like <code>reciprocal</code>, <code>log</code> and so on) with approximation algorithm, so some precision issue will occur when inputs fall into some intervals. We list some known issue about this.
+3. [protocols](https://www.secretflow.org.cn/docs/spu/en/reference/mpc_status.html): list all protocols spu implements now. Generally speaking, for 2pc, it’s safe to use cheetah, while for 3pc, ABY3 is the only choice.
+
+First define a function just like <code>fit\_and\_predict</code> to get dk\_arr.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[21]:" stderr={false} type="input">
+    ```python
+    def get_dk(
+        x,
+        y,
+        epochs=3,
+        learning_rate=0.1,
+        batch_size=8,
+        sig_type='t1',
+        eps=1e-6,
+        dk_method='norm',
+    ):
+        model = SSLRSGDClassifier(
+            epochs=epochs,
+            learning_rate=learning_rate,
+            batch_size=batch_size,
+            sig_type=sig_type,
+            eps=eps,
+            dk_method=dk_method,
+        )
+        model.fit(x, y)
+        return model.dk_arr
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#2PC:-Cheetah-Protocol}
+
+#### 2PC: Cheetah Protocol
+
+Recap:
+
+1. [cheetah](https://eprint.iacr.org/2022/207) is a fast 2pc semi-honest protocol which uses FHE to accelerate the computation. But it will have 0-2 bits error when do <code>mul</code> or <code>dot</code>.
+2. If 64-bits ring, about 18 bitwidth fixed-point number will be used. So the minimum positive float spu can represent is <InlineMath>$\frac{1}{2^{18}}$</InlineMath>.
+
+We first check the output of dk\_arr and try to find the caveat.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[75]:" stderr={false} type="input">
+    ```python
+    result = spsim.sim_jax(sim, get_dk)(X.values, y.values.reshape(-1, 1))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-21 20:05:05.795] [info] [cheetah_dot.cc:328] CheetahDot uses 3@2 modulus 8192 degree for 64 bit ring\n[2023-03-21 20:05:05.795] [info] [cheetah_dot.cc:328] CheetahDot uses 3@2 modulus 8192 degree for 64 bit ring\n[2023-03-21 20:05:05.834] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-21 20:05:05.834] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Surprisingly, we get a very <strong>small negative number</strong> which makes that weight update wrong!(the opposite direction and large scale factor for sgd)
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[24]:" stderr={false} type="input">
+    ```python
+    result[38]
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[24]:" stderr={false} type="output">
+    <pre>
+      {"-131072.25\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+However, if we use a bigger ring, then everything is ok.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[31]:" stderr={false} type="input">
+    ```python
+    # define a simulator with 128 rings
+    sim128 = spsim.Simulator.simple(
+        2, spu_pb2.ProtocolKind.CHEETAH, spu_pb2.FieldType.FM128
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[36]:" stderr={false} type="input">
+    ```python
+    result = spsim.sim_jax(sim128, fit_and_predict)(X.values, y.values.reshape(-1, 1))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-07 15:43:05.702] [info] [cheetah_dot.cc:328] CheetahDot uses 5@3 modulus 16384 degree for 128 bit ring\n[2023-03-07 15:43:05.703] [info] [cheetah_dot.cc:328] CheetahDot uses 5@3 modulus 16384 degree for 128 bit ring\n[2023-03-07 15:43:05.776] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 8 modulus (36 bit each) for 128 bit ring\n[2023-03-07 15:43:05.776] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 8 modulus (36 bit each) for 128 bit ring\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[37]:" stderr={false} type="input">
+    ```python
+    roc_auc_score(y, result)  # auc is just like plaintext
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[37]:" stderr={false} type="output">
+    <pre>
+      {"0.9903083875059457\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[38]:" stderr={false} type="input">
+    ```python
+    result = spsim.sim_jax(sim128, get_dk)(X.values, y.values.reshape(-1, 1))[38]
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-07 15:44:07.277] [info] [cheetah_dot.cc:328] CheetahDot uses 5@3 modulus 16384 degree for 128 bit ring\n[2023-03-07 15:44:07.278] [info] [cheetah_dot.cc:328] CheetahDot uses 5@3 modulus 16384 degree for 128 bit ring\n[2023-03-07 15:44:07.349] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 8 modulus (36 bit each) for 128 bit ring\n[2023-03-07 15:44:07.349] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 8 modulus (36 bit each) for 128 bit ring\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[39]:" stderr={false} type="input">
+    ```python
+    result
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[39]:" stderr={false} type="output">
+    <pre>
+      {"137.03009\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+From the above outputs, we can guess if input is near <InlineMath>$\frac{1}{2^{18}}$</InlineMath> and use cheetah protocol, when doing <code>square</code> and <code>sum</code>, the bit error may be significant and not negligible(<code>mul</code> and <code>dot</code> have 0-2 bit errors).
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[80]:" stderr={false} type="input">
+    ```python
+    # Let's test this
+    def test_square_and_sum_when_x_small(x):
+        return jnp.sum(jnp.square(x))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[81]:" stderr={false} type="input">
+    ```python
+    spsim.sim_jax(sim, test_square_and_sum_when_x_small)(np.array([1e-5] * 10))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-21 20:12:09.710] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-21 20:12:09.711] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[81]:" stderr={false} type="output">
+    <pre>
+      {"array(-3.8146973e-05, dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[41]:" stderr={false} type="input">
+    ```python
+    def test_norm_when_x_small(x):
+        return jnp.sqrt(jnp.sum(jnp.square(x)))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[42]:" stderr={false} type="input">
+    ```python
+    spsim.sim_jax(sim, test_norm_when_x_small)(
+        np.array([1e-5] * 10)
+    )  # for small input, sqrt just output very small number!
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-27 15:50:34.921] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-27 15:50:34.922] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[42]:" stderr={false} type="output">
+    <pre>
+      {"array(-7.6293945e-06, dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+So if <code>eps=1e-6</code>, the two norm of grad may be a negative number when each element of grad is near to <InlineMath>$\frac{1}{2^{18}}$</InlineMath>, then we get a very small negative dk.
+
+<LineBlock>
+  This explains the claims we get from app layer:
+
+  1\. Enlarging <code>batch\_size</code>: the probability of all elements of grad is zero becomes small.
+</LineBlock>
+
+2. Enlarging <code>eps</code>: force the denominator to be positive number.
+
+:target{#3PC:-ABY3-Protocol}
+
+#### 3PC: ABY3 Protocol
+
+We still check the dk\_arr first.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[55]:" stderr={false} type="input">
+    ```python
+    result = spsim.sim_jax(sim_aby, get_dk)(X.values, y.values.reshape(-1, 1))
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+emmmmmm, strange value occurs again, we find <strong>0</strong> in dk\_arr!
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[57]:" stderr={false} type="input">
+    ```python
+    result[66]
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[57]:" stderr={false} type="output">
+    <pre>
+      {"0.0\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Comparing with small negative number, 0 is a mild error for our update procedure. It just does nothing in that iter, so the final auc may drop a little(from 0.99 to 0.97, users can test yourself that if you set eps to 1e-2, then the result will be very stable).
+
+Likewise, We always check the computation of 2-norm.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[43]:" stderr={false} type="input">
+    ```python
+    spsim.sim_jax(sim_aby, test_norm_when_x_small)(
+        np.array([1e-5] * 10)
+    )  # get 0 is acceptable
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[43]:" stderr={false} type="output">
+    <pre>
+      {"array(0., dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[44]:" stderr={false} type="input">
+    ```python
+    test_norm_when_x_small(np.array([1e-5] * 10))  # 2-norm in plaintext
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[44]:" stderr={false} type="output">
+    <pre>
+      {"Array(3.1622774e-05, dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+Then, check the reciprocal op.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[45]:" stderr={false} type="input">
+    ```python
+    def test_reciprocal_when_x_small(x):
+        return 1 / (x + 1e-6)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[46]:" stderr={false} type="input">
+    ```python
+    # get 0 when denominator very small, which is the caveat of reciprocal!
+    spsim.sim_jax(sim_aby, test_reciprocal_when_x_small)(np.array([0]))
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[46]:" stderr={false} type="output">
+    <pre>
+      {"array([0.], dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Something-More}
+
+### Something More
+
+Indeed, there are some other interesting things in SSLR. Here, due to length limitations, we just give some hints, and readers can do more simulations yourself!
+
+:target{id="Rsqrt-v.s.-Norm"}
+
+#### Rsqrt v.s. Norm
+
+We can recall that the <code>compute\_dk\_func</code> function defined in Part 1 contains a <code>method</code> arg, and we just ignore this arg before. Indeed, we can tell simulator to print more information like [spu\_inside](https://www.secretflow.org.cn/docs/spu/en/getting_started/tutorials/spu_inside.html#Tracing) do: enable <strong>hlo</strong>(High Level Operations) trace and profile on. Then we can figure out which op has been invoked and its time cost.
+
+Here, we list some advantages of using <code>jax.lax.rsqrt</code> rather than <code>jnp.linalg.norm</code>:
+
+1. Fewer bytes and few send actions: which leads to smaller running time(See the following comments and notes for details).
+2. More stable when given same <code>eps</code>: if we regard <code>f(x)</code> as <code>compute\_dk\_func</code> with <code>method=norm</code>, and <code>g(x)</code> with <code>method=rsqrt</code>, then the users can do simulation yourself, and find <code>f(x)</code> has higher relative error than <code>g(x)</code>.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[47]:" stderr={false} type="input">
+    ```python
+    # we define a cheetah config with pphlo trace and profile on
+    config_che = spu.RuntimeConfig(
+        protocol=spu_pb2.ProtocolKind.CHEETAH,
+        field=spu.FieldType.FM64,
+        fxp_fraction_bits=18,
+        enable_pphlo_trace=True,
+        enable_pphlo_profile=True,
+    )
+    simulator_che = spsim.Simulator(2, config_che)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[67]:" stderr={false} type="input">
+    ```python
+    spsim.sim_jax(simulator_che, partial(compute_dk_func, method='norm'))(
+        np.arange(1000) / 1000
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-27 16:41:14.168] [info] [pphlo_executor.cc:1107] PPHLO %0 = \"pphlo.constant\"() {value = dense<9.99999997E-7> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 16:41:14.168] [info] [pphlo_executor.cc:1107] PPHLO %0 = \"pphlo.constant\"() {value = dense<9.99999997E-7> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 16:41:14.168] [info] [pphlo_executor.cc:1107] PPHLO %1 = \"pphlo.constant\"() {value = dense<0.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 16:41:14.168] [info] [pphlo_executor.cc:1107] PPHLO %1 = \"pphlo.constant\"() {value = dense<0.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 16:41:14.168] [info] [pphlo_executor.cc:1107] PPHLO %2 = \"pphlo.constant\"() {value = dense<1.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 16:41:14.168] [info] [pphlo_executor.cc:1107] PPHLO %3 = \"pphlo.multiply\"(%arg0, %arg0) : (tensor<1000x!pphlo.sec<f32>>, tensor<1000x!pphlo.sec<f32>>) -> tensor<1000x!pphlo.sec<f32>>\n[2023-03-27 16:41:14.168] [info] [pphlo_executor.cc:1107] PPHLO %2 = \"pphlo.constant\"() {value = dense<1.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 16:41:14.168] [info] [pphlo_executor.cc:1107] PPHLO %3 = \"pphlo.multiply\"(%arg0, %arg0) : (tensor<1000x!pphlo.sec<f32>>, tensor<1000x!pphlo.sec<f32>>) -> tensor<1000x!pphlo.sec<f32>>\n[2023-03-27 16:41:14.168] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-27 16:41:14.168] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-27 16:41:15.782] [info] [pphlo_executor.cc:1107] PPHLO %4 = \"pphlo.convert\"(%1) : (tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:15.782] [info] [pphlo_executor.cc:1107] PPHLO %5 = \"pphlo.reduce\"(%3, %4) ({\n^bb0(%arg1: tensor<!pphlo.sec<f32>>, %arg2: tensor<!pphlo.sec<f32>>):\n  %9 = \"pphlo.add\"(%arg1, %arg2) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n  \"pphlo.return\"(%9) : (tensor<!pphlo.sec<f32>>) -> ()\n}) {dimensions = dense<0> : tensor<1xi64>} : (tensor<1000x!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:15.782] [info] [pphlo_executor.cc:1107] PPHLO %4 = \"pphlo.convert\"(%1) : (tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:15.782] [info] [pphlo_executor.cc:1107] PPHLO %5 = \"pphlo.reduce\"(%3, %4) ({\n^bb0(%arg1: tensor<!pphlo.sec<f32>>, %arg2: tensor<!pphlo.sec<f32>>):\n  %9 = \"pphlo.add\"(%arg1, %arg2) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n  \"pphlo.return\"(%9) : (tensor<!pphlo.sec<f32>>) -> ()\n}) {dimensions = dense<0> : tensor<1xi64>} : (tensor<1000x!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:15.782] [info] [pphlo_executor.cc:1107] PPHLO %6 = \"pphlo.sqrt\"(%5) : (tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:15.783] [info] [pphlo_executor.cc:1107] PPHLO %6 = \"pphlo.sqrt\"(%5) : (tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:15.791] [info] [pphlo_executor.cc:1107] PPHLO %7 = \"pphlo.add\"(%6, %0) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:15.791] [info] [pphlo_executor.cc:1107] PPHLO %7 = \"pphlo.add\"(%6, %0) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:15.791] [info] [pphlo_executor.cc:1107] PPHLO %8 = \"pphlo.divide\"(%2, %7) : (tensor<!pphlo.pub<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:15.791] [info] [pphlo_executor.cc:1107] PPHLO %8 = \"pphlo.divide\"(%2, %7) : (tensor<!pphlo.pub<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:15.794] [info] [api.cc:131] [Profiling] SPU execution compute_dk_func completed, input processing took 1.66e-06s, execution took 1.628297569s, output processing took 2.143e-06s, total time 1.628301372s.\n[2023-03-27 16:41:15.794] [info] [api.cc:163] HLO profiling: total time 1.6252017869999997\n[2023-03-27 16:41:15.794] [info] [api.cc:166] - pphlo.add, executed 1 times, duration 8.887e-06s\n[2023-03-27 16:41:15.794] [info] [api.cc:166] - pphlo.constant, executed 3 times, duration 4.6888e-05s\n[2023-03-27 16:41:15.794] [info] [api.cc:166] - pphlo.convert, executed 1 times, duration 2.9952e-05s\n[2023-03-27 16:41:15.794] [info] [api.cc:166] - pphlo.divide, executed 1 times, duration 0.002838882s\n[2023-03-27 16:41:15.794] [info] [api.cc:166] - pphlo.multiply, executed 1 times, duration 1.613989704s\n[2023-03-27 16:41:15.794] [info] [api.cc:166] - pphlo.reduce, executed 1 times, duration 0.00016315s\n[2023-03-27 16:41:15.794] [info] [api.cc:166] - pphlo.sqrt, executed 1 times, duration 0.008124324s\n[2023-03-27 16:41:15.794] [info] [api.cc:175] Link details: total send bytes 1479115, send actions 203\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[67]:" stderr={false} type="output">
+    <pre>
+      {"array(0.05480957, dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+If directly invoking rsqrt, you can find send actions have obvious drop!
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[68]:" stderr={false} type="input">
+    ```python
+    # Note:
+    # 1. the total time cost by rsqrt may be even larger than norm, the reason of this is that CHEETAH use FHE, so the cost of multiply is very huge comparing to other ops.
+    # 2. time(rsqrt) = 0.005607 < time(sqrt+divide) = 0.00812 + 0.00283
+    spsim.sim_jax(simulator_che, partial(compute_dk_func, method='rsqrt'))(
+        np.arange(1000) / 1000
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-27 16:41:21.767] [info] [pphlo_executor.cc:1107] PPHLO %0 = \"pphlo.constant\"() {value = dense<9.99999997E-7> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 16:41:21.767] [info] [pphlo_executor.cc:1107] PPHLO %0 = \"pphlo.constant\"() {value = dense<9.99999997E-7> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 16:41:21.768] [info] [pphlo_executor.cc:1107] PPHLO %1 = \"pphlo.constant\"() {value = dense<0.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 16:41:21.768] [info] [pphlo_executor.cc:1107] PPHLO %1 = \"pphlo.constant\"() {value = dense<0.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 16:41:21.768] [info] [pphlo_executor.cc:1107] PPHLO %2 = \"pphlo.multiply\"(%arg0, %arg0) : (tensor<1000x!pphlo.sec<f32>>, tensor<1000x!pphlo.sec<f32>>) -> tensor<1000x!pphlo.sec<f32>>\n[2023-03-27 16:41:21.768] [info] [pphlo_executor.cc:1107] PPHLO %2 = \"pphlo.multiply\"(%arg0, %arg0) : (tensor<1000x!pphlo.sec<f32>>, tensor<1000x!pphlo.sec<f32>>) -> tensor<1000x!pphlo.sec<f32>>\n[2023-03-27 16:41:21.768] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-27 16:41:21.768] [info] [cheetah_mul.cc:290] BeaverCheetah::Mul uses 4 modulus (36 bit each) for 64 bit ring\n[2023-03-27 16:41:23.241] [info] [pphlo_executor.cc:1107] PPHLO %3 = \"pphlo.convert\"(%1) : (tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:23.241] [info] [pphlo_executor.cc:1107] PPHLO %4 = \"pphlo.reduce\"(%2, %3) ({\n^bb0(%arg1: tensor<!pphlo.sec<f32>>, %arg2: tensor<!pphlo.sec<f32>>):\n  %7 = \"pphlo.add\"(%arg1, %arg2) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n  \"pphlo.return\"(%7) : (tensor<!pphlo.sec<f32>>) -> ()\n}) {dimensions = dense<0> : tensor<1xi64>} : (tensor<1000x!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:23.241] [info] [pphlo_executor.cc:1107] PPHLO %3 = \"pphlo.convert\"(%1) : (tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:23.241] [info] [pphlo_executor.cc:1107] PPHLO %5 = \"pphlo.add\"(%4, %0) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:23.241] [info] [pphlo_executor.cc:1107] PPHLO %4 = \"pphlo.reduce\"(%2, %3) ({\n^bb0(%arg1: tensor<!pphlo.sec<f32>>, %arg2: tensor<!pphlo.sec<f32>>):\n  %7 = \"pphlo.add\"(%arg1, %arg2) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n  \"pphlo.return\"(%7) : (tensor<!pphlo.sec<f32>>) -> ()\n}) {dimensions = dense<0> : tensor<1xi64>} : (tensor<1000x!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:23.241] [info] [pphlo_executor.cc:1107] PPHLO %6 = \"pphlo.rsqrt\"(%5) : (tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:23.242] [info] [pphlo_executor.cc:1107] PPHLO %5 = \"pphlo.add\"(%4, %0) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:23.242] [info] [pphlo_executor.cc:1107] PPHLO %6 = \"pphlo.rsqrt\"(%5) : (tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 16:41:23.247] [info] [api.cc:131] [Profiling] SPU execution compute_dk_func completed, input processing took 1.495e-06s, execution took 1.481584644s, output processing took 1.772e-06s, total time 1.481587911s.\n[2023-03-27 16:41:23.247] [info] [api.cc:163] HLO profiling: total time 1.478751855\n[2023-03-27 16:41:23.247] [info] [api.cc:166] - pphlo.add, executed 1 times, duration 8.05e-06s\n[2023-03-27 16:41:23.247] [info] [api.cc:166] - pphlo.constant, executed 2 times, duration 2.857e-05s\n[2023-03-27 16:41:23.247] [info] [api.cc:166] - pphlo.convert, executed 1 times, duration 3.5875e-05s\n[2023-03-27 16:41:23.247] [info] [api.cc:166] - pphlo.multiply, executed 1 times, duration 1.472898415s\n[2023-03-27 16:41:23.247] [info] [api.cc:166] - pphlo.reduce, executed 1 times, duration 0.000173326s\n[2023-03-27 16:41:23.247] [info] [api.cc:166] - pphlo.rsqrt, executed 1 times, duration 0.005607619s\n[2023-03-27 16:41:23.247] [info] [api.cc:175] Link details: total send bytes 1474898, send actions 89\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[68]:" stderr={false} type="output">
+    <pre>
+      {"array(0.05480957, dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[50]:" stderr={false} type="input">
+    ```python
+    # Also, we can define an aby3 config with pphlo trace and profile on
+    config_aby = spu.RuntimeConfig(
+        protocol=spu_pb2.ProtocolKind.ABY3,
+        field=spu.FieldType.FM64,
+        fxp_fraction_bits=18,
+        enable_pphlo_trace=True,
+        enable_pphlo_profile=True,
+    )
+    simulator_aby = spsim.Simulator(3, config_aby)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[51]:" stderr={false} type="input">
+    ```python
+    spsim.sim_jax(simulator_aby, partial(compute_dk_func, method='norm'))(
+        np.arange(1000) / 1000
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %0 = \"pphlo.constant\"() {value = dense<9.99999997E-7> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %0 = \"pphlo.constant\"() {value = dense<9.99999997E-7> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %1 = \"pphlo.constant\"() {value = dense<0.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %1 = \"pphlo.constant\"() {value = dense<0.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %0 = \"pphlo.constant\"() {value = dense<9.99999997E-7> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %2 = \"pphlo.constant\"() {value = dense<1.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %2 = \"pphlo.constant\"() {value = dense<1.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %1 = \"pphlo.constant\"() {value = dense<0.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %3 = \"pphlo.multiply\"(%arg0, %arg0) : (tensor<1000x!pphlo.sec<f32>>, tensor<1000x!pphlo.sec<f32>>) -> tensor<1000x!pphlo.sec<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %3 = \"pphlo.multiply\"(%arg0, %arg0) : (tensor<1000x!pphlo.sec<f32>>, tensor<1000x!pphlo.sec<f32>>) -> tensor<1000x!pphlo.sec<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %2 = \"pphlo.constant\"() {value = dense<1.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %3 = \"pphlo.multiply\"(%arg0, %arg0) : (tensor<1000x!pphlo.sec<f32>>, tensor<1000x!pphlo.sec<f32>>) -> tensor<1000x!pphlo.sec<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %4 = \"pphlo.convert\"(%1) : (tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %4 = \"pphlo.convert\"(%1) : (tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.735] [info] [pphlo_executor.cc:1107] PPHLO %4 = \"pphlo.convert\"(%1) : (tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.736] [info] [pphlo_executor.cc:1107] PPHLO %5 = \"pphlo.reduce\"(%3, %4) ({\n^bb0(%arg1: tensor<!pphlo.sec<f32>>, %arg2: tensor<!pphlo.sec<f32>>):\n  %9 = \"pphlo.add\"(%arg1, %arg2) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n  \"pphlo.return\"(%9) : (tensor<!pphlo.sec<f32>>) -> ()\n}) {dimensions = dense<0> : tensor<1xi64>} : (tensor<1000x!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.736] [info] [pphlo_executor.cc:1107] PPHLO %5 = \"pphlo.reduce\"(%3, %4) ({\n^bb0(%arg1: tensor<!pphlo.sec<f32>>, %arg2: tensor<!pphlo.sec<f32>>):\n  %9 = \"pphlo.add\"(%arg1, %arg2) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n  \"pphlo.return\"(%9) : (tensor<!pphlo.sec<f32>>) -> ()\n}) {dimensions = dense<0> : tensor<1xi64>} : (tensor<1000x!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.736] [info] [pphlo_executor.cc:1107] PPHLO %5 = \"pphlo.reduce\"(%3, %4) ({\n^bb0(%arg1: tensor<!pphlo.sec<f32>>, %arg2: tensor<!pphlo.sec<f32>>):\n  %9 = \"pphlo.add\"(%arg1, %arg2) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n  \"pphlo.return\"(%9) : (tensor<!pphlo.sec<f32>>) -> ()\n}) {dimensions = dense<0> : tensor<1xi64>} : (tensor<1000x!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.736] [info] [pphlo_executor.cc:1107] PPHLO %6 = \"pphlo.sqrt\"(%5) : (tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.736] [info] [pphlo_executor.cc:1107] PPHLO %6 = \"pphlo.sqrt\"(%5) : (tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.736] [info] [pphlo_executor.cc:1107] PPHLO %6 = \"pphlo.sqrt\"(%5) : (tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.740] [info] [pphlo_executor.cc:1107] PPHLO %7 = \"pphlo.add\"(%6, %0) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.740] [info] [pphlo_executor.cc:1107] PPHLO %7 = \"pphlo.add\"(%6, %0) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.740] [info] [pphlo_executor.cc:1107] PPHLO %7 = \"pphlo.add\"(%6, %0) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.740] [info] [pphlo_executor.cc:1107] PPHLO %8 = \"pphlo.divide\"(%2, %7) : (tensor<!pphlo.pub<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.740] [info] [pphlo_executor.cc:1107] PPHLO %8 = \"pphlo.divide\"(%2, %7) : (tensor<!pphlo.pub<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.740] [info] [pphlo_executor.cc:1107] PPHLO %8 = \"pphlo.divide\"(%2, %7) : (tensor<!pphlo.pub<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:22.743] [info] [api.cc:131] [Profiling] SPU execution compute_dk_func completed, input processing took 1.842e-06s, execution took 0.010443034s, output processing took 2.523e-06s, total time 0.010447399s.\n[2023-03-27 15:51:22.743] [info] [api.cc:163] HLO profiling: total time 0.0073849860000000005\n[2023-03-27 15:51:22.743] [info] [api.cc:166] - pphlo.add, executed 1 times, duration 1.6082e-05s\n[2023-03-27 15:51:22.743] [info] [api.cc:166] - pphlo.constant, executed 3 times, duration 4.971e-05s\n[2023-03-27 15:51:22.743] [info] [api.cc:166] - pphlo.convert, executed 1 times, duration 7.6821e-05s\n[2023-03-27 15:51:22.743] [info] [api.cc:166] - pphlo.divide, executed 1 times, duration 0.002891194s\n[2023-03-27 15:51:22.743] [info] [api.cc:166] - pphlo.multiply, executed 1 times, duration 0.000235304s\n[2023-03-27 15:51:22.743] [info] [api.cc:166] - pphlo.reduce, executed 1 times, duration 0.000514333s\n[2023-03-27 15:51:22.743] [info] [api.cc:166] - pphlo.sqrt, executed 1 times, duration 0.003601542s\n[2023-03-27 15:51:22.743] [info] [api.cc:175] Link details: total send bytes 41668, send actions 149\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[51]:" stderr={false} type="output">
+    <pre>
+      {"array(0.05481339, dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+When using aby3, you can find both the send actions and send bytes drop large if using rsqrt!
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[52]:" stderr={false} type="input">
+    ```python
+    # Note:
+    # 1. you can find total time of rsqrt will always smaller than norm
+    # 2. likewise, time(rsqrt) = 0.003096 < time(sqrt+divide) = 0.003601 + 0.002891
+
+    spsim.sim_jax(simulator_aby, partial(compute_dk_func, method='rsqrt'))(
+        np.arange(1000) / 1000
+    )
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %0 = \"pphlo.constant\"() {value = dense<9.99999997E-7> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %0 = \"pphlo.constant\"() {value = dense<9.99999997E-7> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %0 = \"pphlo.constant\"() {value = dense<9.99999997E-7> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %1 = \"pphlo.constant\"() {value = dense<0.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %1 = \"pphlo.constant\"() {value = dense<0.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %1 = \"pphlo.constant\"() {value = dense<0.000000e+00> : tensor<f32>} : () -> tensor<!pphlo.pub<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %2 = \"pphlo.multiply\"(%arg0, %arg0) : (tensor<1000x!pphlo.sec<f32>>, tensor<1000x!pphlo.sec<f32>>) -> tensor<1000x!pphlo.sec<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %2 = \"pphlo.multiply\"(%arg0, %arg0) : (tensor<1000x!pphlo.sec<f32>>, tensor<1000x!pphlo.sec<f32>>) -> tensor<1000x!pphlo.sec<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %2 = \"pphlo.multiply\"(%arg0, %arg0) : (tensor<1000x!pphlo.sec<f32>>, tensor<1000x!pphlo.sec<f32>>) -> tensor<1000x!pphlo.sec<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %3 = \"pphlo.convert\"(%1) : (tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %3 = \"pphlo.convert\"(%1) : (tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %3 = \"pphlo.convert\"(%1) : (tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %4 = \"pphlo.reduce\"(%2, %3) ({\n^bb0(%arg1: tensor<!pphlo.sec<f32>>, %arg2: tensor<!pphlo.sec<f32>>):\n  %7 = \"pphlo.add\"(%arg1, %arg2) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n  \"pphlo.return\"(%7) : (tensor<!pphlo.sec<f32>>) -> ()\n}) {dimensions = dense<0> : tensor<1xi64>} : (tensor<1000x!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %4 = \"pphlo.reduce\"(%2, %3) ({\n^bb0(%arg1: tensor<!pphlo.sec<f32>>, %arg2: tensor<!pphlo.sec<f32>>):\n  %7 = \"pphlo.add\"(%arg1, %arg2) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n  \"pphlo.return\"(%7) : (tensor<!pphlo.sec<f32>>) -> ()\n}) {dimensions = dense<0> : tensor<1xi64>} : (tensor<1000x!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:25.671] [info] [pphlo_executor.cc:1107] PPHLO %4 = \"pphlo.reduce\"(%2, %3) ({\n^bb0(%arg1: tensor<!pphlo.sec<f32>>, %arg2: tensor<!pphlo.sec<f32>>):\n  %7 = \"pphlo.add\"(%arg1, %arg2) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n  \"pphlo.return\"(%7) : (tensor<!pphlo.sec<f32>>) -> ()\n}) {dimensions = dense<0> : tensor<1xi64>} : (tensor<1000x!pphlo.sec<f32>>, tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:25.672] [info] [pphlo_executor.cc:1107] PPHLO %5 = \"pphlo.add\"(%4, %0) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:25.672] [info] [pphlo_executor.cc:1107] PPHLO %5 = \"pphlo.add\"(%4, %0) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:25.672] [info] [pphlo_executor.cc:1107] PPHLO %5 = \"pphlo.add\"(%4, %0) : (tensor<!pphlo.sec<f32>>, tensor<!pphlo.pub<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:25.672] [info] [pphlo_executor.cc:1107] PPHLO %6 = \"pphlo.rsqrt\"(%5) : (tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:25.672] [info] [pphlo_executor.cc:1107] PPHLO %6 = \"pphlo.rsqrt\"(%5) : (tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:25.672] [info] [pphlo_executor.cc:1107] PPHLO %6 = \"pphlo.rsqrt\"(%5) : (tensor<!pphlo.sec<f32>>) -> tensor<!pphlo.sec<f32>>\n[2023-03-27 15:51:25.676] [info] [api.cc:131] [Profiling] SPU execution compute_dk_func completed, input processing took 1.92e-06s, execution took 0.006332778s, output processing took 1.933e-06s, total time 0.006336631s.\n[2023-03-27 15:51:25.676] [info] [api.cc:163] HLO profiling: total time 0.003986974\n[2023-03-27 15:51:25.676] [info] [api.cc:166] - pphlo.add, executed 1 times, duration 2.5793e-05s\n[2023-03-27 15:51:25.676] [info] [api.cc:166] - pphlo.constant, executed 2 times, duration 2.5628e-05s\n[2023-03-27 15:51:25.676] [info] [api.cc:166] - pphlo.convert, executed 1 times, duration 3.6405e-05s\n[2023-03-27 15:51:25.676] [info] [api.cc:166] - pphlo.multiply, executed 1 times, duration 0.000298557s\n[2023-03-27 15:51:25.676] [info] [api.cc:166] - pphlo.reduce, executed 1 times, duration 0.00050405s\n[2023-03-27 15:51:25.676] [info] [api.cc:166] - pphlo.rsqrt, executed 1 times, duration 0.003096541s\n[2023-03-27 15:51:25.676] [info] [api.cc:175] Link details: total send bytes 24704, send actions 63\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="[52]:" stderr={false} type="output">
+    <pre>
+      {"array(0.05481339, dtype=float32)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Computing-Loss}
+
+#### Computing Loss
+
+Many ML frameworks will show validation loss during training procedure when using a validation dataset. It’s straight to compute the loss in LR as follows:
+
+<Math>
+  $$
+  loss = -\frac{1}{N} \sum_{i=1}^N [y_i log(p_i) + (1-y_i) log(1-p_i)] \quad  (1)
+
+
+  $$
+</Math>
+
+But when you use t1 approximation for sigmoid, then you may come across <InlineMath>$log(0)$</InlineMath> problem. Here, we list two potential recipes to alleviate it.
+
+1. <strong>Costly but accurate</strong>: we plug in <InlineMath>$p_i = \frac{1}{1+e^{-w^Tx_i}}$</InlineMath> to (1), then we can get:
+   <Math>
+     $$
+     loss = -\frac{1}{N} \sum_{i=1}^N [y_i w^Tx_i - log(1+e^{w^Tx_i})] \quad  (2)
+
+
+     $$
+   </Math>
+   this formula solve the <InlineMath>$log(0)$</InlineMath> problem, but if <InlineMath>$w^Tx_i$</InlineMath> gets too large, as we already know in [pitfall](https://www.secretflow.org.cn/docs/spu/en/reference/fxp.html), this gets <strong>huge errors</strong>! To get stable and accurate formula to compute loss, we notice <InlineMath>$log(1+e^{w^T x_i})$</InlineMath> is well-known <em>Softplus</em> function, so we can use the equation of Softplus: <InlineMath>$log(1+e^{x}) = log(1 + e^{-|x|}) + max(0, x)$</InlineMath>, then we can get:
+   <Math>
+     $$
+     loss = -\frac{1}{N} \sum_{i=1}^N [y_i w^Tx_i - log(1+e^{-|w^Tx_i|}) - max(w^T x_i, 0)] \quad (3)
+
+
+     $$
+   </Math>
+2. <strong>Cheap but approximate</strong> \:Equation (3) can give accurate result, but it contains time-consuming ops(<InlineMath>$log$</InlineMath>, <InlineMath>$exp$</InlineMath>), which cost a lot! If you just want to compute an approximation of loss(e.g. maybe you want to do early stop with loss), you can try Taylor expansion, which gives:
+   <Math>
+     $$
+     loss = \frac{1}{N} \sum_{i=1}^N [log(2) - (y-0.5)w^T x_i + 0.125 * (w^T x_i)^2]
+
+
+     $$
+   </Math>
+
+:target{#Part-3:-Run-elaborated-emulations}
+
+## Part 3: Run elaborated emulations
+
+> Emulations is an <strong>experimental</strong> feature for now, and is under rapid development, so we do not package the code of sml into spu. Users can try this feature from <strong>source code</strong> and run with bazel .Till now, we only have support for LAN setting(<code>MULTIPROCESS</code> mode). <code>Docker</code> mode, which runs program like under WAN setting, will be posted in future version.
+
+Finally, we talk about how to do emulations. Comparing to simulator, emulator runs with a simple scheduler like Secretflow does, and offers some facility(e.g. generate mock data) to make benchmark simpler. So spu provides an <code>Emulator</code> class and gives an easy-to-use interface.
+
+Usually, the emulation will be done with larger dataset, so we won’t run directly in this tutorial notebook. Instead, we will show a big picture on how to design and run emulations for MPC application step by step.
+
+:target{#Setup:-define-running-function}
+
+### Setup: define running function
+
+Just like what we do in secretflow, we should first define a python function, which will be run in spu. Here, as an example, we just define a very simple function that accepts data from two parties and return the predicted probability after the model trained(you can also split data into training & validation parts, and return the probs of validation dataset.).
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    # import library
+    import sml.utils.emulation as emulation
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    # import model impl which has been tested with simulator
+    # from Model import model
+
+
+    def run_model(model, x1, x2, y):
+        # here, suppose we divide the dataset into two party
+        x = jnp.concatenate((x1, x2), axis=1)
+        y = y.reshape((y.shape[0], 1))
+
+        model.fit(x, y)
+        return model.predict_proba(x)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Design-experiments}
+
+### Design experiments
+
+Taking <code>SSLRSGDClassifier</code> as an example, we mainly want to argue that policy-sgd is better than naive-sgd in MPC setting, so we can design the following experiments:
+
+1. Find best <code>dk\_method</code> and <code>eps</code> for policy-sgd: for all datasets, compare the accuracy and efficiency.
+2. Compare the accuracy and efficiency when switching <code>sig\_type</code> for both policy-sgd and naive-sgd.
+3. To compare policy-sgd and naive-sgd, we fix <code>epochs</code> and test the influence of <code>learning\_rate</code> and <code>batch\_size</code>.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    # for sig_type in ['t1', 'sr']
+    # for dk_method in ['norm', 'rsqrt']
+    # for batch_size in [1024, 2048, 4096]
+    # ...
+    model = SSLRSGDClassifier(
+        epochs=10,
+        learning_rate=0.1,
+        batch_size=2048,
+        sig_type='t1',
+        eps=1e-4,
+        dk_method='rsqrt',
+    )
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Define-running-config}
+
+### Define running config
+
+After designing all the experiments, we can prepare our running config. Currently, we only support <code>MULTIPROCESS</code> mode, which uses multiprocess to emulate multi-party and just like running in LAN(<code>DOCKER</code> mode which can set <code>bandwidth</code> and <code>latency</code> to simulate the different WAN settings will be supported in future version).
+
+For now, our goal is to compare the accuracy/efficiency diff when switching hyper-param, running program in LAN can be a good choice. Besides, in order to simulate diverse node deployment ways, users can flexibly configure the number of nodes and device situations yourself. You can get some examples of config in <code>examples/python/conf/</code>.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    mode = emulation.Mode.MULTIPROCESS  # emulation.Mode.DOCKER for docker not support now
+    # take the mock config as sample, it deploys some nodes in outsourcing way and use ABY3 protocol
+    # Note: in MULTIPROCESS mode, bandwidth and latency are NOT working!
+    emulator = emulation.Emulator(
+        emulation.CLUSTER_ABY3_3PC, mode, bandwidth=100, latency=10
+    )
+    # start up the running processes or containers
+    emulator.up()
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    # here, we just use the mock dataset.
+    # user can prepare your dataset: you need to always choose data that is close to reality!
+    # IMPORTANT Note: you should always "seal" your data before running in SPU, else spu will treats these data as PUBLIC!!!
+    # ref: https://www.secretflow.org.cn/docs/spu/en/getting_started/quick_start.html#Move-JAX-program-to-SPU
+
+    # step1: prepare your plaintext dataset
+    x1 = np.random.rand(1000, 40)
+    y = np.random.randint(0, 2, 1000)
+    x2 = np.random.rand(1000, 60)
+
+    # step2: "seal" the data, you can do it by calling emulator.seal().
+    x1, x2, y = emulator.seal(x1, x2, y)
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    # start running program and get results
+    result = emulator.run(run_model)(x1, x2, y)
+
+    # For safety, can put the program in a try-catch block
+    emulator.down()
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#Put-them-together}
+
+### Put them together
+
+Now we put all these together, we can get a simple paradigm of emulation.
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    ###########################################################################
+    # 0). Import library & define running function used by emulator
+    ###########################################################################
+    import sml.utils.emulation as emulation
+
+
+    # normally, we will import a Model that we have tested in simulator, e.g:
+    # from model import Model
+
+
+    def run_model(model, x1, x2, y):
+        x = jnp.concatenate((x1, x2), axis=1)
+        y = y.reshape((y.shape[0], 1))
+
+        model.fit(x, y)
+        return model.predict_proba(x)
+
+
+    ###########################################################################
+    # 2). Define model and design experiments
+    ###########################################################################
+    # you can use a loop to define your multiple experiment configs
+    # for batch_size in [1024, 2048, 4096]
+    # for sig_type in ['t1', 'sr']
+    # ...
+    model = SSLRSGDClassifier(
+        epochs=5,
+        learning_rate=0.1,
+        batch_size=2048,
+        sig_type='t1',
+        eps=1e-4,
+        dk_method='rsqrt',
+    )
+
+    ###########################################################################
+    # 3). Define running config and run emulations
+    ###########################################################################
+    #  Set mode to MULTIPROCESS for LAN test.
+    mode = emulation.Mode.MULTIPROCESS  # emulation.Mode.DOCKER for docker not supported yet
+
+    # bandwidth and latency only work for docker mode
+    emulator = emulation.Emulator(
+        emulation.CLUSTER_ABY3_3PC, mode, bandwidth=100, latency=10
+    )
+
+    # For safety, it's a good practice that putting the running part in a try-catch block
+    try:
+        # start up the running processes
+        emulator.up()
+
+        # prepare your dataset here.
+        #   a. Normally, you should choose your dataset carefully. e.g. for lr,
+        # we need to examine the performance on imbalanced, tail-heavy(or real dataset if possible) datasets.
+        #   b. If you just want to get some efficiency number, we have some mock apis to produce dataset(check `examples.python.utils.dataset_utils`).
+        #   c. IMPORTANT NOTE: MUST make sure your data has been "sealed" BEFORE running the program! (call emulator.seal())
+        x1 = np.random.rand(1000, 40)
+        y = np.random.randint(0, 2, 1000)
+        x2 = np.random.rand(1000, 60)
+        x1, x2, y = emulator.seal(x1, x2, y)
+
+        # magic happens here! running the program in emulator like SPU
+        result = emulator.run(run_model)(model, x1, x2, y)
+    except Exception as e:
+        print(e)
+    finally:
+        emulator.down()
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>

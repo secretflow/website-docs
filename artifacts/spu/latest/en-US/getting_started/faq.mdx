@@ -1,0 +1,79 @@
+:target{#frequently-asked-questions-faq}
+
+# Frequently Asked Questions (FAQ)
+
+:target{#installation}
+
+## Installation
+
+:target{#when-i-install-from-pypi-it-complains-could-not-find-a-version-that-satisfies-the-requirement}
+
+### When I install from PyPI, it complains “Could not find a version that satisfies the requirement”.
+
+We have only uploaded SPU binaries with limited version.
+Please check [https://pypi.org/project/spu/#files](https://pypi.org/project/spu/#files) to confirm whether your environment meets the requirement of tags.
+Please refer to [https://github.com/pypa/manylinux](https://github.com/pypa/manylinux) to check the tags.
+
+:target{#what-is-the-requirement-for-glibc}
+
+### What is the requirement for glibc?
+
+If you are using the binaries provided from us, the minimum requirement of glibc is 2.17.
+If you couldn’t meet this restriction, please build your own binary from source.
+
+:target{#usage}
+
+## Usage
+
+:target{#how-can-i-check-logs-of-spu}
+
+### How can I check logs of SPU?
+
+You have to enable these flags in [SPU Runtime Configuration](../reference/runtime_config.mdx) when you start SPU cluster:
+
+- enable\_action\_trace
+- enable\_pphlo\_trace
+
+:target{#how-could-i-use-cheetah-protocol}
+
+### How could I use Cheetah protocol?
+
+You only need to select Cheetah protocol in [SPU Runtime Configuration](../reference/runtime_config.mdx). Please search for <em>protocol</em> field in RuntimeConfig.
+And please keep in mind that Cheetah protocol is a 2PC protocol.
+
+:target{#do-i-need-to-remove-duplicated-keys-locally-before-psi}
+
+### Do I need to remove duplicated keys locally before PSI?
+
+Yes. Otherwise an error would be raised.
+
+:target{#general}
+
+## General
+
+:target{#does-spu-support-pytorch}
+
+### Does SPU support PyTorch?
+
+At this moment, we only ship SPU with JAX support. But theoretically, all the frontend languages which could be transferred into XLA could be
+consumed by SPU compiler, please check other opensource projects which work on transferring other languages to XLA.
+
+:target{#i-have-met-huge-inconsistency-between-spu-result-and-plaintext-jax-result}
+
+### I have met huge inconsistency between SPU result and Plaintext(JAX) result.
+
+Arithmetic operation of SPU is based on Fxp. Please check [Pitfalls - Fxp Arithmetic](../development/fxp.mdx). In most cases, you have
+to choose:
+
+1. Use large field or modify fraction bits.
+2. Modify arithmetic ops approximation approach.
+
+But there’s no such thing as a free lunch. More accurate result sometimes requires a huger cost.
+
+:target{#could-i-convert-any-jax-code-to-xla-and-run-by-spu}
+
+### Could I convert any Jax code to XLA and run by SPU?
+
+Well, first you must make sure your Jax code is <strong>jitable</strong>. You have to apply some tricks to achieve this actually.
+Then even your code is jitable, sometime we will still disappoint you since we haven’t implemented all XLA ops. Please
+check [XLA Implementation Status](../reference/xla_status.mdx). We are working hard to finish them, you have my word!
