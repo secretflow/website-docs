@@ -29,17 +29,20 @@ author = "SecretFlow authors"
 # ones.
 extensions = [
     "autodocsumm",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.graphviz",
-    "sphinx.ext.todo",
-    "sphinx.ext.extlinks",
-    "sphinx.ext.autosectionlabel",
-    "sphinx.ext.intersphinx",
     "myst_parser",
     "nbsphinx",
-    "sphinx_design",
     "secretflow_doctools",
+    "sphinx_design",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.extlinks",
+    "sphinx.ext.graphviz",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
+    "sphinxcontrib.mermaid",
 ]
 
 nbsphinx_requirejs_path = ""

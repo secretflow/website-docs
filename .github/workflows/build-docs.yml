@@ -55,6 +55,11 @@ jobs:
         working-directory: build/${{ matrix.project }}
         run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
+      - name: 'Install pandoc'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc
+
       - name: 'Build docs'
         working-directory: build/${{ matrix.project }}
         run: ./build_docs.sh

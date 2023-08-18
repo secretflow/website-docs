@@ -3,3 +3,4 @@ linkify-it-py
 myst-parser
 nbsphinx
 sphinx_design
+sphinxcontrib-mermaid
