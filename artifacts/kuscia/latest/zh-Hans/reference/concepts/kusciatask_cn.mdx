@@ -34,7 +34,7 @@ spec:
     domainID: alice
   - appImageRef: secretflow-image
     domainID: bob
-  taskInputConfig: '{"sf_datasource_config":{"bob":{"id":"default-data-source"},"alice":{"id":"default-data-source"}},"sf_cluster_desc":{"parties":["alice","bob"],"devices":[{"name":"spu","type":"spu","parties":["alice","bob"],"config":"{\"runtime_config\":{\"protocol\":\"REF2K\",\"field\":\"FM64\"},\"link_desc\":{\"connect_retry_times\":60,\"connect_retry_interval_ms\":1000,\"brpc_channel_protocol\":\"http\",\"brpc_channel_connection_type\":\"pooled\",\"recv_timeout_ms\":1200000,\"http_timeout_ms\":1200000}}"},{"name":"heu","type":"heu","parties":["alice","bob"],"config":"{\"mode\": \"PHEU\", \"schema\": \"paillier\", \"key_size\": 2048}"}]},"sf_node_eval_param":{"domain":"preprocessing","name":"psi","version":"0.0.1","attr_paths":["input/receiver_input/key","input/sender_input/key","protocol","precheck_input","bucket_size","curve_type"],"attrs":[{"ss":["id1"]},{"ss":["id2"]},{"s":"ECDH_PSI_2PC"},{"b":true},{"i64":"1048576"},{"s":"CURVE_FOURQ"}],"inputs":[{"type":"sf.table.individual","meta":{"@type":"type.googleapis.com/secretflow.component.IndividualTable","schema":{"ids":["id1"],"features":["age","education","default","balance","housing","loan","day","duration","campaign","pdays","previous","job_blue-collar","job_entrepreneur","job_housemaid","job_management","job_retired","job_self-employed","job_services","job_student","job_technician","job_unemployed","marital_divorced","marital_married","marital_single"],"id_types":["str"],"feature_types":["float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float"]},"num_lines":"-1"},"data_refs":[{"uri":"alice.csv","party":"alice","format":"csv"}]},{"type":"sf.table.individual","meta":{"@type":"type.googleapis.com/secretflow.component.IndividualTable","schema":{"ids":["id2"],"features":["contact_cellular","contact_telephone","contact_unknown","month_apr","month_aug","month_dec","month_feb","month_jan","month_jul","month_jun","month_mar","month_may","month_nov","month_oct","month_sep","poutcome_failure","poutcome_other","poutcome_success","poutcome_unknown"],"labels":["y"],"id_types":["str"],"feature_types":["float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float"],"label_types":["int"]},"num_lines":"-1"},"data_refs":[{"uri":"bob.csv","party":"bob","format":"csv"}]}]},"sf_output_uris":["psi-output.csv"],"sf_output_ids":["psi-output"]}'
+  taskInputConfig: '{"sf_datasource_config":{"bob":{"id":"default-data-source"},"alice":{"id":"default-data-source"}},"sf_cluster_desc":{"parties":["alice","bob"],"devices":[{"name":"spu","type":"spu","parties":["alice","bob"],"config":"{\"runtime_config\":{\"protocol\":\"REF2K\",\"field\":\"FM64\"},\"link_desc\":{\"connect_retry_times\":60,\"connect_retry_interval_ms\":1000,\"brpc_channel_protocol\":\"http\",\"brpc_channel_connection_type\":\"pooled\",\"recv_timeout_ms\":1200000,\"http_timeout_ms\":1200000}}"},{"name":"heu","type":"heu","parties":["alice","bob"],"config":"{\"mode\": \"PHEU\", \"schema\": \"paillier\", \"key_size\": 2048}"}]},"sf_node_eval_param":{"domain":"preprocessing","name":"psi","version":"0.0.1","attr_paths":["input/receiver_input/key","input/sender_input/key","protocol","precheck_input","bucket_size","curve_type"],"attrs":[{"ss":["id1"]},{"ss":["id2"]},{"s":"ECDH_PSI_2PC"},{"b":true},{"i64":"1048576"},{"s":"CURVE_FOURQ"}],"inputs":[{"type":"sf.table.individual","meta":{"@type":"type.googleapis.com/secretflow.component.IndividualTable","schema":{"ids":["id1"],"features":["age","education","default","balance","housing","loan","day","duration","campaign","pdays","previous","job_blue-collar","job_entrepreneur","job_housemaid","job_management","job_retired","job_self-employed","job_services","job_student","job_technician","job_unemployed","marital_divorced","marital_married","marital_single"],"id_types":["str"],"feature_types":["f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32"]},"num_lines":"-1"},"data_refs":[{"uri":"alice.csv","party":"alice","format":"csv"}]},{"type":"sf.table.individual","meta":{"@type":"type.googleapis.com/secretflow.component.IndividualTable","schema":{"ids":["id2"],"features":["contact_cellular","contact_telephone","contact_unknown","month_apr","month_aug","month_dec","month_feb","month_jan","month_jul","month_jun","month_mar","month_may","month_nov","month_oct","month_sep","poutcome_failure","poutcome_other","poutcome_success","poutcome_unknown"],"labels":["y"],"id_types":["str"],"feature_types":["f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32"],"label_types":["i32"]},"num_lines":"-1"},"data_refs":[{"uri":"bob.csv","party":"bob","format":"csv"}]}]},"sf_output_uris":["psi-output.csv"],"sf_output_ids":["psi-output"]}'
 ```
 
 在该示例中:
@@ -81,25 +81,25 @@ secretflow-task-psi   7s          7s               7s                  Succeeded
 ```shell
 kubectl get kt secretflow-task-psi -o jsonpath={.status} | jq
 {
-  "completionTime": "2023-08-21T07:43:34Z",
+  "completionTime": "2023-06-26T03:46:58Z",
   "conditions": [
     {
-      "lastTransitionTime": "2023-08-21T07:43:15Z",
+      "lastTransitionTime": "2023-06-26T03:46:38Z",
       "status": "True",
       "type": "ResourceCreated"
     },
     {
-      "lastTransitionTime": "2023-08-21T07:43:15Z",
+      "lastTransitionTime": "2023-06-26T03:46:52Z",
       "status": "True",
       "type": "Running"
     },
     {
-      "lastTransitionTime": "2023-08-21T07:43:34Z",
+      "lastTransitionTime": "2023-06-26T03:46:58Z",
       "status": "True",
       "type": "Success"
     }
   ],
-  "lastReconcileTime": "2023-08-21T07:43:34Z",
+  "lastReconcileTime": "2023-06-26T03:46:58Z",
   "partyTaskStatus": [
     {
       "domainID": "alice",
@@ -113,65 +113,21 @@ kubectl get kt secretflow-task-psi -o jsonpath={.status} | jq
   "phase": "Succeeded",
   "podStatuses": {
     "alice/secretflow-task-psi-0": {
-      "createTime": "2023-08-21T07:43:15Z",
       "namespace": "alice",
       "nodeName": "070a9fc7ff24",
       "podName": "secretflow-task-psi-0",
       "podPhase": "Succeeded",
-      "readyTime": "2023-08-21T07:43:18Z",
-      "reason": "Completed",
-      "startTime": "2023-08-21T07:43:17Z"
+      "reason": "Completed"
     },
     "bob/secretflow-task-psi-0": {
-      "createTime": "2023-08-21T07:43:15Z",
       "namespace": "bob",
       "nodeName": "dd3bdda2b853",
       "podName": "secretflow-task-psi-0",
       "podPhase": "Succeeded",
-      "readyTime": "2023-08-21T07:43:18Z",
-      "reason": "Completed",
-      "startTime": "2023-08-21T07:43:17Z"
+      "reason": "Completed"
     }
   },
-  "serviceStatuses": {
-    "alice/secretflow-task-psi-0-fed": {
-      "createTime": "2023-08-21T07:43:15Z",
-      "namespace": "alice",
-      "readyTime": "2023-08-21T07:43:18Z",
-      "serviceName": "secretflow-task-psi-0-fed"
-    },
-    "alice/secretflow-task-psi-0-global": {
-      "createTime": "2023-08-21T07:43:15Z",
-      "namespace": "alice",
-      "readyTime": "2023-08-21T07:43:18Z",
-      "serviceName": "secretflow-task-psi-0-global"
-    },
-    "alice/secretflow-task-psi-0-spu": {
-      "createTime": "2023-08-21T07:43:15Z",
-      "namespace": "alice",
-      "readyTime": "2023-08-21T07:43:18Z",
-      "serviceName": "secretflow-task-psi-0-spu"
-    },
-    "bob/secretflow-task-psi-0-fed": {
-      "createTime": "2023-08-21T07:43:15Z",
-      "namespace": "bob",
-      "readyTime": "2023-08-21T07:43:18Z",
-      "serviceName": "secretflow-task-psi-0-fed"
-    },
-    "bob/secretflow-task-psi-0-global": {
-      "createTime": "2023-08-21T07:43:15Z",
-      "namespace": "bob",
-      "readyTime": "2023-08-21T07:43:18Z",
-      "serviceName": "secretflow-task-psi-0-global"
-    },
-    "bob/secretflow-task-psi-0-spu": {
-      "createTime": "2023-08-21T07:43:15Z",
-      "namespace": "bob",
-      "readyTime": "2023-08-21T07:43:18Z",
-      "serviceName": "secretflow-task-psi-0-spu"
-    }
-  },
-  "startTime": "2023-08-21T07:43:15Z"
+  "startTime": "2023-06-26T03:46:38Z"
 }
 ```
 
@@ -212,7 +168,7 @@ spec:
     resourceReservedSeconds: 30
     lifecycleSeconds: 300
     retryIntervalSeconds: 15
-  taskInputConfig: '{"sf_datasource_config":{"bob":{"id":"default-data-source"},"alice":{"id":"default-data-source"}},"sf_cluster_desc":{"parties":["alice","bob"],"devices":[{"name":"spu","type":"spu","parties":["alice","bob"],"config":"{\"runtime_config\":{\"protocol\":\"REF2K\",\"field\":\"FM64\"},\"link_desc\":{\"connect_retry_times\":60,\"connect_retry_interval_ms\":1000,\"brpc_channel_protocol\":\"http\",\"brpc_channel_connection_type\":\"pooled\",\"recv_timeout_ms\":1200000,\"http_timeout_ms\":1200000}}"},{"name":"heu","type":"heu","parties":["alice","bob"],"config":"{\"mode\": \"PHEU\", \"schema\": \"paillier\", \"key_size\": 2048}"}]},"sf_node_eval_param":{"domain":"preprocessing","name":"psi","version":"0.0.1","attr_paths":["input/receiver_input/key","input/sender_input/key","protocol","precheck_input","bucket_size","curve_type"],"attrs":[{"ss":["id1"]},{"ss":["id2"]},{"s":"ECDH_PSI_2PC"},{"b":true},{"i64":"1048576"},{"s":"CURVE_FOURQ"}],"inputs":[{"type":"sf.table.individual","meta":{"@type":"type.googleapis.com/secretflow.component.IndividualTable","schema":{"ids":["id1"],"features":["age","education","default","balance","housing","loan","day","duration","campaign","pdays","previous","job_blue-collar","job_entrepreneur","job_housemaid","job_management","job_retired","job_self-employed","job_services","job_student","job_technician","job_unemployed","marital_divorced","marital_married","marital_single"],"id_types":["str"],"feature_types":["float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float"]},"num_lines":"-1"},"data_refs":[{"uri":"alice.csv","party":"alice","format":"csv"}]},{"type":"sf.table.individual","meta":{"@type":"type.googleapis.com/secretflow.component.IndividualTable","schema":{"ids":["id2"],"features":["contact_cellular","contact_telephone","contact_unknown","month_apr","month_aug","month_dec","month_feb","month_jan","month_jul","month_jun","month_mar","month_may","month_nov","month_oct","month_sep","poutcome_failure","poutcome_other","poutcome_success","poutcome_unknown"],"labels":["y"],"id_types":["str"],"feature_types":["float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float","float"],"label_types":["int"]},"num_lines":"-1"},"data_refs":[{"uri":"bob.csv","party":"bob","format":"csv"}]}]},"sf_output_uris":["psi-output.csv"],"sf_output_ids":["psi-output"]}'
+  taskInputConfig: '{"sf_datasource_config":{"bob":{"id":"default-data-source"},"alice":{"id":"default-data-source"}},"sf_cluster_desc":{"parties":["alice","bob"],"devices":[{"name":"spu","type":"spu","parties":["alice","bob"],"config":"{\"runtime_config\":{\"protocol\":\"REF2K\",\"field\":\"FM64\"},\"link_desc\":{\"connect_retry_times\":60,\"connect_retry_interval_ms\":1000,\"brpc_channel_protocol\":\"http\",\"brpc_channel_connection_type\":\"pooled\",\"recv_timeout_ms\":1200000,\"http_timeout_ms\":1200000}}"},{"name":"heu","type":"heu","parties":["alice","bob"],"config":"{\"mode\": \"PHEU\", \"schema\": \"paillier\", \"key_size\": 2048}"}]},"sf_node_eval_param":{"domain":"preprocessing","name":"psi","version":"0.0.1","attr_paths":["input/receiver_input/key","input/sender_input/key","protocol","precheck_input","bucket_size","curve_type"],"attrs":[{"ss":["id1"]},{"ss":["id2"]},{"s":"ECDH_PSI_2PC"},{"b":true},{"i64":"1048576"},{"s":"CURVE_FOURQ"}],"inputs":[{"type":"sf.table.individual","meta":{"@type":"type.googleapis.com/secretflow.component.IndividualTable","schema":{"ids":["id1"],"features":["age","education","default","balance","housing","loan","day","duration","campaign","pdays","previous","job_blue-collar","job_entrepreneur","job_housemaid","job_management","job_retired","job_self-employed","job_services","job_student","job_technician","job_unemployed","marital_divorced","marital_married","marital_single"],"id_types":["str"],"feature_types":["f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32"]},"num_lines":"-1"},"data_refs":[{"uri":"alice.csv","party":"alice","format":"csv"}]},{"type":"sf.table.individual","meta":{"@type":"type.googleapis.com/secretflow.component.IndividualTable","schema":{"ids":["id2"],"features":["contact_cellular","contact_telephone","contact_unknown","month_apr","month_aug","month_dec","month_feb","month_jan","month_jul","month_jun","month_mar","month_may","month_nov","month_oct","month_sep","poutcome_failure","poutcome_other","poutcome_success","poutcome_unknown"],"labels":["y"],"id_types":["str"],"feature_types":["f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32","f32"],"label_types":["i32"]},"num_lines":"-1"},"data_refs":[{"uri":"bob.csv","party":"bob","format":"csv"}]}]},"sf_output_uris":["psi-output.csv"],"sf_output_ids":["psi-output"]}'
   parties:
     - domainID: alice
       appImageRef: app-template

@@ -583,11 +583,185 @@
   </tbody>
 </table>
 
+:target{#query-job-status}
+
+### 查询Job状态
+
+:target{#id4}
+
+#### HTTP路径
+
+/api/v1/job/query
+
+:target{#id5}
+
+#### 请求（QueryJobRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#jobstatusresponse}
+
+#### 响应（JobStatusResponse
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        JobStatusResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.status
+      </td>
+
+      <td>
+        [<span>JobStatusDetail</span>](#job-status-detail)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Job状态
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 :target{#batch-query-job-status}
 
 ### 批量查询Job状态
 
-:target{#id4}
+:target{#id6}
 
 #### HTTP路径
 
@@ -743,7 +917,7 @@
 
 ### 删除Job
 
-:target{#id5}
+:target{#id7}
 
 #### HTTP路径
 
@@ -899,7 +1073,7 @@
 
 ### 停止Job
 
-:target{#id6}
+:target{#id8}
 
 #### HTTP路径
 
@@ -1055,7 +1229,7 @@
 
 ### 监控Job
 
-:target{#id7}
+:target{#id9}
 
 #### HTTP路径
 
@@ -1189,7 +1363,7 @@
   </tbody>
 </table>
 
-:target{#id8}
+:target{#id10}
 
 ## 公共
 

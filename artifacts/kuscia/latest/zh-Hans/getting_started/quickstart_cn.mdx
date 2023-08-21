@@ -154,54 +154,6 @@ id1,age,education,default,balance,housing,loan,day,duration,campaign,pdays,previ
 
 :target{#id10}
 
-## 停止/卸载体验集群
-
-:target{#stop}
-
-### 停止体验集群
-
-如果你需要停止并卸载体验集群，可以直接运行[卸载脚本](#uninstall)。
-
-获取 Kuscia 停止脚本，脚本会下载到当前目录：
-
-```bash
-docker run --rm $KUSCIA_IMAGE cat /home/kuscia/scripts/deploy/stop.sh > stop.sh && chmod u+x stop.sh
-```
-
-使用方法：
-
-```bash
-./stop.sh [center/p2p/all]
-
-# 停止点对点组网模式集群
-./stop.sh p2p
-
-# 停止中心化组网模式集群
-./stop.sh center
-
-# 停止所有组网模式集群（可省略参数）
-./stop.sh all
-```
-
-:target{#uninstall}
-
-### 卸载体验集群
-
-获取 Kuscia 卸载脚本，脚本会下载到当前目录：
-
-```bash
-docker run --rm $KUSCIA_IMAGE cat /home/kuscia/scripts/deploy/uninstall.sh > uninstall.sh && chmod u+x uninstall.sh
-```
-
-与[停止脚本](#stop)使用方法相同，运行卸载脚本将卸载相应组网模式的集群，包括删除 Kuscia 容器、volume 和 network（若无其他容器使用）等。例如：
-
-```bash
-# 卸载所有组网模式集群
-./uninstall.sh
-```
-
-:target{#id11}
-
 ## 接下来
 
 如果你希望使用自己的数据来执行作业，请参考[如何运行一个 Secretflow 作业](../tutorial/run_secretflow_cn.mdx)。
