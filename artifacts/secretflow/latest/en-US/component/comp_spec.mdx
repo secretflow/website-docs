@@ -1128,8 +1128,22 @@ The schema of a table.
   feature.
 - All names must match the regexp <code>\[A-Za-z0-9.]\[A-Za-z0-9\_>./]\*</code>.
 - All data type must be one of
-  <code>component.data\_utils.SUPPORTED\_VTABLE\_DATA\_TYPE</code>, including
-  <code>i8 | i16 | i32 | i64 | u8 | u16 | u32 | u64 | f16 | f32 | f64 | str</code>.
+
++ int8
++ int16
++ int32
++ int64
++ uint8
++ uint16
++ uint32
++ uint64
++ float16
++ float32
++ float64
++ bool
++ int
++ float
++ str
 
 <table>
   <thead>
@@ -1634,7 +1648,7 @@ Including: <code>AT\_FLOAT | AT\_INT | AT\_STRING | AT\_BOOL | AT\_FLOATS | AT\_
       </td>
 
       <td>
-        none
+        If True, when Atmoic Attr is not provided or is\_na, default\_value would be used. Else, Atmoic Attr must be provided.
       </td>
     </tr>
 
@@ -2732,11 +2746,11 @@ Displays multiple read-only fields in groups.
       </td>
 
       <td>
-        [<span> AttrType</span>](#attrtype)
+        &#x20;string
       </td>
 
       <td>
-        none
+        Must be one of bool/int/float/str
       </td>
     </tr>
 
@@ -3204,11 +3218,11 @@ Displays rows of data.
       </td>
 
       <td>
-        [<span> AttrType</span>](#attrtype)
+        &#x20;string
       </td>
 
       <td>
-        none
+        Must be one of bool/int/float/str
       </td>
     </tr>
   </tbody>

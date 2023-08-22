@@ -2,7 +2,7 @@
 
 # SecretFlow组件列表
 
-Last update: Wed Jul 12 14:00:40 2023
+Last update: Wed Aug 16 15:20:41 2023
 
 Version: 0.0.1
 
@@ -238,7 +238,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        用于生成规则的输入数据集。
+        输入联合表
       </td>
 
       <td>
@@ -356,7 +356,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        WOE替代规则。
+        输入WOE分箱规则
       </td>
 
       <td>
@@ -402,7 +402,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输出的替代之后的数据集
+        输出联合表
       </td>
 
       <td>
@@ -543,7 +543,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        labels
+        Input table with labels
       </td>
 
       <td>
@@ -561,7 +561,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        predictions
+        输入预测表
       </td>
 
       <td>
@@ -759,7 +759,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        labels
+        Input table with labels.
       </td>
 
       <td>
@@ -777,7 +777,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        predictions
+        输入预测表
       </td>
 
       <td>
@@ -895,7 +895,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输入数据集
+        输入联合表
       </td>
 
       <td>
@@ -941,7 +941,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输出报告
+        输出P-VALUE结果表
       </td>
 
       <td>
@@ -1137,7 +1137,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输入特征数据集。
+        输入联合表
       </td>
 
       <td>
@@ -1197,6 +1197,266 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
+:target{#ss-glm-predict}
+
+### ss\_glm\_predict
+
+组件版本：0.0.1
+
+使用 SSGLM 模型进行预测
+
+:target{#id14}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        receiver
+      </td>
+
+      <td>
+        接收方
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        默认 .
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        pred\_name
+      </td>
+
+      <td>
+        预测值列名
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：pred.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_ids
+      </td>
+
+      <td>
+        是否将ids列保存到输出预测表中。如果为true，则输入feature\_dataset必须包含id列，并且接收方必须是id所有者。
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：False。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_label
+      </td>
+
+      <td>
+        是否将真实标签列保存到输出预测表中。如果为true，则输入的feature\_dataset必须包含标签列，并且接收方必须是标签所有者。
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：False。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        offset\_col
+      </td>
+
+      <td>
+        Specify a column to use as the offset
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认 .
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id15}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        model
+      </td>
+
+      <td>
+        输入模型
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_glm’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        feature\_dataset
+      </td>
+
+      <td>
+        输入联合表
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id16}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        pred
+      </td>
+
+      <td>
+        输出预测值
+      </td>
+
+      <td>
+        \[‘sf.table.individual’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 :target{#ss-sgd-predict}
 
 ### ss\_sgd\_predict
@@ -1205,7 +1465,7 @@ SecretFlow官方组件。
 
 使用 SS-SGD 模型预测
 
-:target{#id14}
+:target{#id17}
 
 #### 参数
 
@@ -1347,7 +1607,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id15}
+:target{#id18}
 
 #### 输入
 
@@ -1397,7 +1657,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输入特征数据集。
+        输入联合表
       </td>
 
       <td>
@@ -1411,7 +1671,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id16}
+:target{#id19}
 
 #### 输出
 
@@ -1465,7 +1725,7 @@ SecretFlow官方组件。
 
 使用 SS-XGB 模型预测
 
-:target{#id17}
+:target{#id20}
 
 #### 参数
 
@@ -1585,7 +1845,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id18}
+:target{#id21}
 
 #### 输入
 
@@ -1635,7 +1895,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输入特征。
+        输入联合表
       </td>
 
       <td>
@@ -1649,7 +1909,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id19}
+:target{#id22}
 
 #### 输出
 
@@ -1710,7 +1970,7 @@ SecretFlow官方组件。
 - SGB是SecureBoost的缩写。与更安全的SS-XGB相比，SecureBoost专注于保护标签持有人。
 - 详情请见：[https://arxiv.org/pdf/2005.08479.pdf。](https://arxiv.org/pdf/2005.08479.pdf%E3%80%82)
 
-:target{#id20}
+:target{#id23}
 
 #### 参数
 
@@ -1874,28 +2134,6 @@ SecretFlow官方组件。
 
     <tr>
       <td>
-        subsample
-      </td>
-
-      <td>
-        训练实例的子采样比率。
-      </td>
-
-      <td>
-        Float
-      </td>
-
-      <td>
-        N
-      </td>
-
-      <td>
-        默认: 1.0. 范围: (0.0, 1.0].
-      </td>
-    </tr>
-
-    <tr>
-      <td>
         colsample\_by\_tree
       </td>
 
@@ -2000,13 +2238,277 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        默认: 20. 范围: \[0, <InlineMath>$\infty$</InlineMath>).
+        默认: 20. 范围: \[1, 16].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        first\_tree\_with\_label\_holder\_feature
+      </td>
+
+      <td>
+        Whether to train the first tree with label holder’s own features.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：False。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        batch\_encoding\_enabled
+      </td>
+
+      <td>
+        If use batch encoding optimization.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: True.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_quantization
+      </td>
+
+      <td>
+        Whether enable quantization of g and h.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：False。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        quantization\_scale
+      </td>
+
+      <td>
+        Scale the sum of g to the specified value.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 10000. 范围: \[0.0, 10000000.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        max\_leaf
+      </td>
+
+      <td>
+        Maximum leaf of a tree. Only effective if train leaf wise.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 15. 范围: \[1, 32768].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        rowsample\_by\_tree
+      </td>
+
+      <td>
+        训练实例的行子采样比率。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 1.0. 范围: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_goss
+      </td>
+
+      <td>
+        Whether to enable GOSS.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：False。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        top\_rate
+      </td>
+
+      <td>
+        GOSS-specific parameter. The fraction of large gradients to sample.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.3. 范围: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bottom\_rate
+      </td>
+
+      <td>
+        GOSS-specific parameter. The fraction of small gradients to sample.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.5. 范围: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        early\_stop\_criterion\_g\_abs\_sum
+      </td>
+
+      <td>
+        If sum(abs(g)) is lower than or equal to this threshold, training will stop.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.0. 范围: \[0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        early\_stop\_criterion\_g\_abs\_sum\_change\_ratio
+      </td>
+
+      <td>
+        If absolute g sum change ratio is lower than or equal to this threshold, training will stop.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.0. 范围: \[0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tree\_growing\_method
+      </td>
+
+      <td>
+        How to grow tree?
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认：level。
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#id21}
+:target{#id24}
 
 #### 输入
 
@@ -2038,7 +2540,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输入训练数据集
+        输入联合表
       </td>
 
       <td>
@@ -2052,7 +2554,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id22}
+:target{#id25}
 
 #### 输出
 
@@ -2098,6 +2600,449 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
+:target{#ss-glm-train}
+
+### ss\_glm\_train
+
+组件版本：0.0.1
+
+generalized linear model (GLM) is a flexible generalization of ordinary linear regression.
+The GLM generalizes linear regression by allowing the linear model to be related to the response
+variable via a link function and by allowing the magnitude of the variance of each measurement to
+be a function of its predicted value.
+
+:target{#id26}
+
+#### 参数
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        epochs
+      </td>
+
+      <td>
+        完整遍历训练数据的次数。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 10. 范围: \[1, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        learning\_rate
+      </td>
+
+      <td>
+        每次迭代中的步长。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.1. 范围: (0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        batch\_size
+      </td>
+
+      <td>
+        在一次迭代中使用的训练样本数量。
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 1024. 范围: (0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        链接函数类型
+      </td>
+
+      <td>
+        link function type
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        默认: None. 可选: \[‘Logit’, ‘Log’, ‘Reciprocal’, ‘Indentity’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        label\_dist\_type
+      </td>
+
+      <td>
+        label distribution type
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        默认: None. 可选: \[‘Bernoulli’, ‘Poisson’, ‘Gamma’, ‘Tweedie’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tweedie\_power
+      </td>
+
+      <td>
+        Tweedie distribution power parameter
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 1.0. 范围: (0.0, 2.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        dist\_scale
+      </td>
+
+      <td>
+        A guess value for distribution’s scale
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 1.0. 范围: \[1.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        eps
+      </td>
+
+      <td>
+        如果权重的变化率小于此阈值，该模型被认为是收敛的，训练提前停止。0表示禁用。
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.0001. 范围: (0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        iter\_start\_irls
+      </td>
+
+      <td>
+        run a few rounds of IRLS training as the initialization of w, 0 disable
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0. 范围: \[0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        decay\_epoch
+      </td>
+
+      <td>
+        decay learning interval
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0. 范围: \[0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        decay\_rate
+      </td>
+
+      <td>
+        decay learning rate
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认: 0.0. 范围: \[0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        optimizer
+      </td>
+
+      <td>
+        which optimizer to use: IRLS(Iteratively Reweighted Least Squares) or SGD(Stochastic Gradient Descent)
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        默认：spu。可选：\[‘SGD’, ‘IRLS’]。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        offset\_col
+      </td>
+
+      <td>
+        Specify a column to use as the offset
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认 .
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        weight\_col
+      </td>
+
+      <td>
+        Specify a column to use for the observation weights
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        默认 .
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id27}
+
+#### 输入
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        train\_dataset
+      </td>
+
+      <td>
+        输入联合表
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id28}
+
+#### 输出
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        描述
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        注释
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        output\_model
+      </td>
+
+      <td>
+        输出模型
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_glm’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 :target{#ss-sgd-train}
 
 ### ss\_sgd\_train
@@ -2108,7 +3053,7 @@ SecretFlow官方组件。
 
 - SS-SGD是秘密共享SGD训练的缩写
 
-:target{#id23}
+:target{#id29}
 
 #### 参数
 
@@ -2316,7 +3261,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id24}
+:target{#id30}
 
 #### 输入
 
@@ -2348,7 +3293,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输入训练数据集
+        输入联合表
       </td>
 
       <td>
@@ -2362,7 +3307,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id25}
+:target{#id31}
 
 #### 输出
 
@@ -2419,7 +3364,7 @@ SecretFlow官方组件。
 - SS-XGB是秘密分享XGB的缩写。
 - 详情请见：[https://arxiv.org/pdf/2005.08479.pdf。](https://arxiv.org/pdf/2005.08479.pdf%E3%80%82)
 
-:target{#id26}
+:target{#id32}
 
 #### 参数
 
@@ -2671,7 +3616,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id27}
+:target{#id33}
 
 #### 输入
 
@@ -2703,7 +3648,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        训练数据集
+        输入联合表
       </td>
 
       <td>
@@ -2717,7 +3662,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id28}
+:target{#id34}
 
 #### 输出
 
@@ -2775,7 +3720,7 @@ SecretFlow官方组件。
 
 从数据集中删除特征
 
-:target{#id29}
+:target{#id35}
 
 #### 输入
 
@@ -2807,7 +3752,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输入数据集
+        输入联合表
       </td>
 
       <td>
@@ -2821,7 +3766,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id30}
+:target{#id36}
 
 #### 输出
 
@@ -2853,7 +3798,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        筛选特征后的输出数据集。
+        输出联合表
       </td>
 
       <td>
@@ -2875,7 +3820,7 @@ SecretFlow官方组件。
 
 两方之间的PSI（隐私保护交集计算）。
 
-:target{#id31}
+:target{#id37}
 
 #### 参数
 
@@ -2973,7 +3918,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id32}
+:target{#id38}
 
 #### 输入
 
@@ -3005,7 +3950,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        Input for receiver
+        Individual table for receiver
       </td>
 
       <td>
@@ -3023,7 +3968,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        发送方的输入
+        发送方的样本表
       </td>
 
       <td>
@@ -3037,7 +3982,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id33}
+:target{#id39}
 
 #### 输出
 
@@ -3069,7 +4014,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输出
+        输出联合表
       </td>
 
       <td>
@@ -3093,7 +4038,7 @@ SecretFlow官方组件。
 
 - 请参阅：[https://scikit-learn.org/stable/modules/generated/sklearn.model\_selection.train\_test\_split.html](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
 
-:target{#id34}
+:target{#id40}
 
 #### 参数
 
@@ -3213,7 +4158,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id35}
+:target{#id41}
 
 #### 输入
 
@@ -3245,7 +4190,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输入数据集
+        输入联合表
       </td>
 
       <td>
@@ -3259,7 +4204,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id36}
+:target{#id42}
 
 #### 输出
 
@@ -3337,7 +4282,7 @@ SecretFlow官方组件。
 
 - 对于大型数据集（大于10w个样本和200个特征），建议使用\[Ring size: 128，Fxp: 40]选项来 SPU 设备。
 
-:target{#id37}
+:target{#id43}
 
 #### 输入
 
@@ -3369,7 +4314,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输入数据集
+        输入联合表
       </td>
 
       <td>
@@ -3383,7 +4328,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id38}
+:target{#id44}
 
 #### 输出
 
@@ -3415,7 +4360,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输出报告
+        输出相关系数矩阵表。
       </td>
 
       <td>
@@ -3439,7 +4384,7 @@ SecretFlow官方组件。
 
 - 对于大型数据集（大于10w个样本和200个特征），建议使用\[Ring size: 128，Fxp: 40]选项来 SPU 设备。
 
-:target{#id39}
+:target{#id45}
 
 #### 输入
 
@@ -3471,7 +4416,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输入数据集
+        输入联合表
       </td>
 
       <td>
@@ -3485,7 +4430,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id40}
+:target{#id46}
 
 #### 输出
 
@@ -3517,7 +4462,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输出报告
+        Output Variance Inflation Factor(VIF) report.
       </td>
 
       <td>
@@ -3568,7 +4513,7 @@ SecretFlow官方组件。
 - central\_moment\_2 表示 E\[(X - mean(X))^2].
 - sum\_2 表示 sum(X^2).
 
-:target{#id41}
+:target{#id47}
 
 #### 输入
 
@@ -3614,7 +4559,7 @@ SecretFlow官方组件。
   </tbody>
 </table>
 
-:target{#id42}
+:target{#id48}
 
 #### 输出
 
@@ -3646,7 +4591,7 @@ SecretFlow官方组件。
       </td>
 
       <td>
-        输出报告
+        输出全表统计结果表
       </td>
 
       <td>
