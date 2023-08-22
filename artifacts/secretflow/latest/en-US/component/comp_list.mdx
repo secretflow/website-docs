@@ -2,7 +2,7 @@
 
 # SecretFlow Component List
 
-Last update: Wed Jul 12 14:00:40 2023
+Last update: Wed Aug 16 15:20:41 2023
 
 Version: 0.0.1
 
@@ -238,7 +238,7 @@ Generate Weight of Evidence (WOE) binning rules for vertical partitioning datase
       </td>
 
       <td>
-        Input dataset for generating rule.
+        Input vertical table.
       </td>
 
       <td>
@@ -356,7 +356,7 @@ Substitute datasets’ value by WOE substitution rules.
       </td>
 
       <td>
-        WOE substitution rule.
+        Input WOE substitution rule.
       </td>
 
       <td>
@@ -402,7 +402,7 @@ Substitute datasets’ value by WOE substitution rules.
       </td>
 
       <td>
-        Output substituted dataset.
+        Output vertical table.
       </td>
 
       <td>
@@ -543,7 +543,7 @@ Statistics evaluation for a bi-classification model on a dataset.
       </td>
 
       <td>
-        labels
+        Input table with labels
       </td>
 
       <td>
@@ -561,7 +561,7 @@ Statistics evaluation for a bi-classification model on a dataset.
       </td>
 
       <td>
-        predictions
+        Input table with predictions
       </td>
 
       <td>
@@ -759,7 +759,7 @@ Calculate prediction bias, ie. average of predictions - average of labels.
       </td>
 
       <td>
-        labels
+        Input table with labels.
       </td>
 
       <td>
@@ -777,7 +777,7 @@ Calculate prediction bias, ie. average of predictions - average of labels.
       </td>
 
       <td>
-        predictions
+        Input table with predictions.
       </td>
 
       <td>
@@ -897,7 +897,7 @@ recommend to use \[Ring size: 128, Fxp: 40] options for SPU device.
       </td>
 
       <td>
-        Input dataset.
+        Input vertical table.
       </td>
 
       <td>
@@ -943,7 +943,7 @@ recommend to use \[Ring size: 128, Fxp: 40] options for SPU device.
       </td>
 
       <td>
-        Output report.
+        Output P-Value report.
       </td>
 
       <td>
@@ -1139,7 +1139,7 @@ Predict using SGB model.
       </td>
 
       <td>
-        Input feature dataset.
+        Input vertical table.
       </td>
 
       <td>
@@ -1185,7 +1185,267 @@ Predict using SGB model.
       </td>
 
       <td>
-        Output prediction
+        Output prediction.
+      </td>
+
+      <td>
+        \[‘sf.table.individual’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ss-glm-predict}
+
+### ss\_glm\_predict
+
+Component version: 0.0.1
+
+Predict using the SSGLM model.
+
+:target{#id14}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        receiver
+      </td>
+
+      <td>
+        Party of receiver.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Default: .
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        pred\_name
+      </td>
+
+      <td>
+        Column name for predictions.
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: pred.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_ids
+      </td>
+
+      <td>
+        Whether to save ids columns into output prediction table. If true, input feature\_dataset must contain id columns, and receiver party must be id owner.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: False.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        save\_label
+      </td>
+
+      <td>
+        Whether or not to save real label columns into output pred file. If true, input feature\_dataset must contain label columns and receiver party must be label owner.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: False.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        offset\_col
+      </td>
+
+      <td>
+        Specify a column to use as the offset
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: .
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id15}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        model
+      </td>
+
+      <td>
+        Input model.
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_glm’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        feature\_dataset
+      </td>
+
+      <td>
+        Input vertical table.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id16}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        pred
+      </td>
+
+      <td>
+        Output prediction.
       </td>
 
       <td>
@@ -1207,7 +1467,7 @@ Component version: 0.0.1
 
 Predict using the SS-SGD model.
 
-:target{#id14}
+:target{#id17}
 
 #### Attrs
 
@@ -1349,7 +1609,7 @@ Predict using the SS-SGD model.
   </tbody>
 </table>
 
-:target{#id15}
+:target{#id18}
 
 #### Inputs
 
@@ -1399,7 +1659,7 @@ Predict using the SS-SGD model.
       </td>
 
       <td>
-        Input feature dataset.
+        Input vertical table.
       </td>
 
       <td>
@@ -1413,7 +1673,7 @@ Predict using the SS-SGD model.
   </tbody>
 </table>
 
-:target{#id16}
+:target{#id19}
 
 #### Outputs
 
@@ -1467,7 +1727,7 @@ Component version: 0.0.1
 
 Predict using the SS-XGB model.
 
-:target{#id17}
+:target{#id20}
 
 #### Attrs
 
@@ -1587,7 +1847,7 @@ Predict using the SS-XGB model.
   </tbody>
 </table>
 
-:target{#id18}
+:target{#id21}
 
 #### Inputs
 
@@ -1637,7 +1897,7 @@ Predict using the SS-XGB model.
       </td>
 
       <td>
-        Input features.
+        Input vertical table.
       </td>
 
       <td>
@@ -1651,7 +1911,7 @@ Predict using the SS-XGB model.
   </tbody>
 </table>
 
-:target{#id19}
+:target{#id22}
 
 #### Outputs
 
@@ -1713,7 +1973,7 @@ for vertical split dataset setting by using secure boost.
 - SGB is short for SecureBoost. Compared to its safer counterpart SS-XGB, SecureBoost focused on protecting label holder.
 - Check [https://arxiv.org/abs/1901.08755](https://arxiv.org/abs/1901.08755).
 
-:target{#id20}
+:target{#id23}
 
 #### Attrs
 
@@ -1877,28 +2137,6 @@ for vertical split dataset setting by using secure boost.
 
     <tr>
       <td>
-        subsample
-      </td>
-
-      <td>
-        Subsample ratio of the training instances.
-      </td>
-
-      <td>
-        Float
-      </td>
-
-      <td>
-        N
-      </td>
-
-      <td>
-        Default: 1.0. Range: (0.0, 1.0].
-      </td>
-    </tr>
-
-    <tr>
-      <td>
         colsample\_by\_tree
       </td>
 
@@ -2003,13 +2241,277 @@ for vertical split dataset setting by using secure boost.
       </td>
 
       <td>
-        Default: 20. Range: \[0, <InlineMath>$\infty$</InlineMath>).
+        Default: 20. Range: \[1, 100].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        first\_tree\_with\_label\_holder\_feature
+      </td>
+
+      <td>
+        Whether to train the first tree with label holder’s own features.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: False.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        batch\_encoding\_enabled
+      </td>
+
+      <td>
+        If use batch encoding optimization.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: True.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_quantization
+      </td>
+
+      <td>
+        Whether enable quantization of g and h.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: False.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        quantization\_scale
+      </td>
+
+      <td>
+        Scale the sum of g to the specified value.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 10000.0. Range: \[0.0, 10000000.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        max\_leaf
+      </td>
+
+      <td>
+        Maximum leaf of a tree. Only effective if train leaf wise.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 15. Range: \[1, 32768].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        rowsample\_by\_tree
+      </td>
+
+      <td>
+        Row sub sample ratio of the training instances.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 1.0. Range: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_goss
+      </td>
+
+      <td>
+        Whether to enable GOSS.
+      </td>
+
+      <td>
+        Boolean
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: False.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        top\_rate
+      </td>
+
+      <td>
+        GOSS-specific parameter. The fraction of large gradients to sample.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.3. Range: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bottom\_rate
+      </td>
+
+      <td>
+        GOSS-specific parameter. The fraction of small gradients to sample.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.5. Range: (0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        early\_stop\_criterion\_g\_abs\_sum
+      </td>
+
+      <td>
+        If sum(abs(g)) is lower than or equal to this threshold, training will stop.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.0. Range: \[0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        early\_stop\_criterion\_g\_abs\_sum\_change\_ratio
+      </td>
+
+      <td>
+        If absolute g sum change ratio is lower than or equal to this threshold, training will stop.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.0. Range: \[0.0, 1.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tree\_growing\_method
+      </td>
+
+      <td>
+        How to grow tree?
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: level.
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#id21}
+:target{#id24}
 
 #### Inputs
 
@@ -2041,7 +2543,7 @@ for vertical split dataset setting by using secure boost.
       </td>
 
       <td>
-        Input train dataset.
+        Input vertical table.
       </td>
 
       <td>
@@ -2055,7 +2557,7 @@ for vertical split dataset setting by using secure boost.
   </tbody>
 </table>
 
-:target{#id22}
+:target{#id25}
 
 #### Outputs
 
@@ -2101,6 +2603,449 @@ for vertical split dataset setting by using secure boost.
   </tbody>
 </table>
 
+:target{#ss-glm-train}
+
+### ss\_glm\_train
+
+Component version: 0.0.1
+
+generalized linear model (GLM) is a flexible generalization of ordinary linear regression.
+The GLM generalizes linear regression by allowing the linear model to be related to the response
+variable via a link function and by allowing the magnitude of the variance of each measurement to
+be a function of its predicted value.
+
+:target{#id26}
+
+#### Attrs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Required
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        epochs
+      </td>
+
+      <td>
+        The number of complete pass through the training data.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 10. Range: \[1, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        learning\_rate
+      </td>
+
+      <td>
+        The step size at each iteration in one iteration.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.1. Range: (0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        batch\_size
+      </td>
+
+      <td>
+        The number of training examples utilized in one iteration.
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 1024. Range: (0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        link\_type
+      </td>
+
+      <td>
+        link function type
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Default: . Allowed: \[‘Logit’, ‘Log’, ‘Reciprocal’, ‘Indentity’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        label\_dist\_type
+      </td>
+
+      <td>
+        label distribution type
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Default: . Allowed: \[‘Bernoulli’, ‘Poisson’, ‘Gamma’, ‘Tweedie’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tweedie\_power
+      </td>
+
+      <td>
+        Tweedie distribution power parameter
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 1.0. Range: \[0.0, 2.0].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        dist\_scale
+      </td>
+
+      <td>
+        A guess value for distribution’s scale
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 1.0. Range: \[1.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        eps
+      </td>
+
+      <td>
+        If the change rate of weights is less than this threshold, the model is considered to be converged, and the training stops early. 0 to disable.
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.0001. Range: \[0.0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        iter\_start\_irls
+      </td>
+
+      <td>
+        run a few rounds of IRLS training as the initialization of w, 0 disable
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0. Range: \[0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        decay\_epoch
+      </td>
+
+      <td>
+        decay learning interval
+      </td>
+
+      <td>
+        Integer
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0. Range: \[0, <InlineMath>$\infty$</InlineMath>).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        decay\_rate
+      </td>
+
+      <td>
+        decay learning rate
+      </td>
+
+      <td>
+        Float
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: 0.0. Range: \[0.0, 1.0).
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        optimizer
+      </td>
+
+      <td>
+        which optimizer to use: IRLS(Iteratively Reweighted Least Squares) or SGD(Stochastic Gradient Descent)
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        Y
+      </td>
+
+      <td>
+        Default: . Allowed: \[‘SGD’, ‘IRLS’].
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        offset\_col
+      </td>
+
+      <td>
+        Specify a column to use as the offset
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: .
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        weight\_col
+      </td>
+
+      <td>
+        Specify a column to use for the observation weights
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        N
+      </td>
+
+      <td>
+        Default: .
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id27}
+
+#### Inputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        train\_dataset
+      </td>
+
+      <td>
+        Input vertical table.
+      </td>
+
+      <td>
+        \[‘sf.table.vertical\_table’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id28}
+
+#### Outputs
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Description
+      </td>
+
+      <td>
+        Type(s)
+      </td>
+
+      <td>
+        Notes
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        output\_model
+      </td>
+
+      <td>
+        Output model.
+      </td>
+
+      <td>
+        \[‘sf.model.ss\_glm’]
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 :target{#ss-sgd-train}
 
 ### ss\_sgd\_train
@@ -2112,7 +3057,7 @@ linear models for vertical partitioning dataset with mini batch SGD training sol
 
 - SS-SGD is short for secret sharing SGD training.
 
-:target{#id23}
+:target{#id29}
 
 #### Attrs
 
@@ -2320,7 +3265,7 @@ linear models for vertical partitioning dataset with mini batch SGD training sol
   </tbody>
 </table>
 
-:target{#id24}
+:target{#id30}
 
 #### Inputs
 
@@ -2352,7 +3297,7 @@ linear models for vertical partitioning dataset with mini batch SGD training sol
       </td>
 
       <td>
-        Input train dataset.
+        Input vertical table.
       </td>
 
       <td>
@@ -2366,7 +3311,7 @@ linear models for vertical partitioning dataset with mini batch SGD training sol
   </tbody>
 </table>
 
-:target{#id25}
+:target{#id31}
 
 #### Outputs
 
@@ -2398,7 +3343,7 @@ linear models for vertical partitioning dataset with mini batch SGD training sol
       </td>
 
       <td>
-        Output model
+        Output model.
       </td>
 
       <td>
@@ -2424,7 +3369,7 @@ for vertical partitioning dataset setting by using secret sharing.
 - SS-XGB is short for secret sharing XGB.
 - More details: [https://arxiv.org/pdf/2005.08479.pdf](https://arxiv.org/pdf/2005.08479.pdf)
 
-:target{#id26}
+:target{#id32}
 
 #### Attrs
 
@@ -2676,7 +3621,7 @@ for vertical partitioning dataset setting by using secret sharing.
   </tbody>
 </table>
 
-:target{#id27}
+:target{#id33}
 
 #### Inputs
 
@@ -2708,7 +3653,7 @@ for vertical partitioning dataset setting by using secret sharing.
       </td>
 
       <td>
-        Train dataset
+        Input vertical table.
       </td>
 
       <td>
@@ -2722,7 +3667,7 @@ for vertical partitioning dataset setting by using secret sharing.
   </tbody>
 </table>
 
-:target{#id28}
+:target{#id34}
 
 #### Outputs
 
@@ -2780,7 +3725,7 @@ Component version: 0.0.1
 
 Drop features from the dataset.
 
-:target{#id29}
+:target{#id35}
 
 #### Inputs
 
@@ -2812,7 +3757,7 @@ Drop features from the dataset.
       </td>
 
       <td>
-        Input dataset.
+        Input vertical table.
       </td>
 
       <td>
@@ -2826,7 +3771,7 @@ Drop features from the dataset.
   </tbody>
 </table>
 
-:target{#id30}
+:target{#id36}
 
 #### Outputs
 
@@ -2858,7 +3803,7 @@ Drop features from the dataset.
       </td>
 
       <td>
-        Output dataset with filtered features.
+        Output vertical table.
       </td>
 
       <td>
@@ -2880,7 +3825,7 @@ Component version: 0.0.1
 
 PSI between two parties.
 
-:target{#id31}
+:target{#id37}
 
 #### Attrs
 
@@ -2978,7 +3923,7 @@ PSI between two parties.
   </tbody>
 </table>
 
-:target{#id32}
+:target{#id38}
 
 #### Inputs
 
@@ -3010,7 +3955,7 @@ PSI between two parties.
       </td>
 
       <td>
-        Input for receiver
+        Individual table for receiver
       </td>
 
       <td>
@@ -3028,7 +3973,7 @@ PSI between two parties.
       </td>
 
       <td>
-        Input for sender
+        Individual table for sender
       </td>
 
       <td>
@@ -3042,7 +3987,7 @@ PSI between two parties.
   </tbody>
 </table>
 
-:target{#id33}
+:target{#id39}
 
 #### Outputs
 
@@ -3074,7 +4019,7 @@ PSI between two parties.
       </td>
 
       <td>
-        Output
+        Output vertical table
       </td>
 
       <td>
@@ -3098,7 +4043,7 @@ Split datasets into random train and test subsets.
 
 - Please check: [https://scikit-learn.org/stable/modules/generated/sklearn.model\_selection.train\_test\_split.html](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
 
-:target{#id34}
+:target{#id40}
 
 #### Attrs
 
@@ -3218,7 +4163,7 @@ Split datasets into random train and test subsets.
   </tbody>
 </table>
 
-:target{#id35}
+:target{#id41}
 
 #### Inputs
 
@@ -3250,7 +4195,7 @@ Split datasets into random train and test subsets.
       </td>
 
       <td>
-        Input dataset.
+        Input vertical table.
       </td>
 
       <td>
@@ -3264,7 +4209,7 @@ Split datasets into random train and test subsets.
   </tbody>
 </table>
 
-:target{#id36}
+:target{#id42}
 
 #### Outputs
 
@@ -3343,7 +4288,7 @@ by using secret sharing.
 
 - For large dataset(large than 10w samples & 200 features), recommend to use \[Ring size: 128, Fxp: 40] options for SPU device.
 
-:target{#id37}
+:target{#id43}
 
 #### Inputs
 
@@ -3375,7 +4320,7 @@ by using secret sharing.
       </td>
 
       <td>
-        Input dataset.
+        Input vertical table.
       </td>
 
       <td>
@@ -3389,7 +4334,7 @@ by using secret sharing.
   </tbody>
 </table>
 
-:target{#id38}
+:target{#id44}
 
 #### Outputs
 
@@ -3421,7 +4366,7 @@ by using secret sharing.
       </td>
 
       <td>
-        Output report.
+        Output Pearson’s product-moment correlation coefficient report.
       </td>
 
       <td>
@@ -3446,7 +4391,7 @@ by using secret sharing.
 
 - For large dataset(large than 10w samples & 200 features), recommend to use \[Ring size: 128, Fxp: 40] options for SPU device.
 
-:target{#id39}
+:target{#id45}
 
 #### Inputs
 
@@ -3478,7 +4423,7 @@ by using secret sharing.
       </td>
 
       <td>
-        Input dataset.
+        Input vertical table.
       </td>
 
       <td>
@@ -3492,7 +4437,7 @@ by using secret sharing.
   </tbody>
 </table>
 
-:target{#id40}
+:target{#id46}
 
 #### Outputs
 
@@ -3524,7 +4469,7 @@ by using secret sharing.
       </td>
 
       <td>
-        Output report.
+        Output Variance Inflation Factor(VIF) report.
       </td>
 
       <td>
@@ -3576,7 +4521,7 @@ including each column’s
 - central\_moment\_2 means E\[(X - mean(X))^2].
 - sum\_2 means sum(X^2).
 
-:target{#id41}
+:target{#id47}
 
 #### Inputs
 
@@ -3608,7 +4553,7 @@ including each column’s
       </td>
 
       <td>
-        Input data.
+        Input table.
       </td>
 
       <td>
@@ -3622,7 +4567,7 @@ including each column’s
   </tbody>
 </table>
 
-:target{#id42}
+:target{#id48}
 
 #### Outputs
 
@@ -3654,7 +4599,7 @@ including each column’s
       </td>
 
       <td>
-        Output report.
+        Output table statistics report.
       </td>
 
       <td>

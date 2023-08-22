@@ -1120,7 +1120,23 @@ IndividualTable 描述属于单个参与方的表。
 
 - Col 必须是 id | feature | label 其中之一。默认情况下，应该是一个 feature。
 - 所有名称必须匹配正则表达式 \[A-Za-z0-9.]\[A-Za-z0-9\_>./]\*。
-- 所有数据类型必须是 component.data\_utils.SUPPORTED\_VTABLE\_DATA\_TYPE 其中之一，包括 i8、i16、i32、i64、u8、u16、u32、u64、f16、f32、f64、str。
+- 所有数据类型必须属于
+
++ int8
++ int16
++ int32
++ int64
++ uint8
++ uint16
++ uint32
++ uint64
++ float16
++ float32
++ float64
++ bool
++ int
++ float
++ str
 
 <table>
   <thead>
@@ -1622,7 +1638,7 @@ Proto file: [secretflow/protos/component/comp.proto](https://github.com/secretfl
       </td>
 
       <td>
-        none
+        如果为True，当Atmoic Attr没有提供或者is\_na为True是，default\_value将会被使用。否则，Atmoic Attr必须提供。
       </td>
     </tr>
 
@@ -2717,11 +2733,11 @@ Proto file: [secretflow/protos/component/report.proto](https://github.com/secret
       </td>
 
       <td>
-        [<span> AttrType</span>](#attrtype)
+        &#x20;string
       </td>
 
       <td>
-        none
+        必须属于 bool/int/float/str 之一
       </td>
     </tr>
 
@@ -3189,11 +3205,11 @@ report的一页
       </td>
 
       <td>
-        [<span> AttrType</span>](#attrtype)
+        &#x20;string
       </td>
 
       <td>
-        none
+        必须属于 bool/int/float/str 之一
       </td>
     </tr>
   </tbody>
