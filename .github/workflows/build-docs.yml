@@ -14,23 +14,24 @@ jobs:
       fail-fast: false
       matrix:
         project:
-          #- secretflow
-          #- spu
-          #- heu
-          #- interconnection
-          #- scql
+          - secretflow
+          - spu
+          - heu
+          - interconnection
+          - scql
           - kuscia
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Create temporary directory
-        run: mkdir -p ${{ github.workspace }}/build
+        run: |
+          rm -rf ${{ github.workspace }}/build
+          mkdir -p ${{ github.workspace }}/build
       - name: Checkout project
         uses: actions/checkout@v3
         with:
           repository: secretflow/${{ matrix.project }}
-          ref: tmp718
           path: ${{ github.workspace }}/build/${{ matrix.project }}
       - name: Patch config
         run: |
@@ -68,7 +69,7 @@ jobs:
 
       - name: 'Copy artifacts'
         run: |
-          rm -rf ${{ github.workspace }}/artifacts/${{ matrix.project }}/latest/*
+          rm -rf ${{ github.workspace }}/artifacts/${{ matrix.project }}
           mkdir -p ${{ github.workspace }}/artifacts/${{ matrix.project }}/latest
           cp -rf \
             ${{ github.workspace }}/build/${{ matrix.project }}/docs/_build/mdx/* \
