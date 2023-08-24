@@ -59,7 +59,7 @@ Now we can create SPU simulator and run program on it.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-In the above code. - First, we create an SPU simulator backed by <em>ABY3</em> protocol with <em>FM64</em> field. - Then we decorates a jax function <code>jax.add</code> to make it a SPU simulated function. - Then we can use the simulated function just like normal python functions.
+In the above code. - First, we create an SPU simulator backed by <em>ABY3</em> protocol with <em>FM64</em> field. - Then we decorates a jax function `jax.add` to make it a SPU simulated function. - Then we can use the simulated function just like normal python functions.
 
 As the result suggests, it behaves like a python function, we can also print the compiled pphlo program with
 
@@ -77,9 +77,9 @@ As the result suggests, it behaves like a python function, we can also print the
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-The above code is a pphlo dialect in [MLIR](https://mlir.llvm.org/) format, which defines a <code>main</code> function that accepts two arguments and returns the sum as result.
+The above code is a pphlo dialect in [MLIR](https://mlir.llvm.org/) format, which defines a `main` function that accepts two arguments and returns the sum as result.
 
-Besides single <code>jax.numpy</code> op, we can simulate any jax function on SPU, i.e.
+Besides single `jax.numpy` op, we can simulate any jax function on SPU, i.e.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -102,7 +102,7 @@ Besides single <code>jax.numpy</code> op, we can simulate any jax function on SP
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-The above code is <code>spu function</code> which is composed of spu builtin ops.
+The above code is `spu function` which is composed of spu builtin ops.
 
 Note: since spu use [JIT](https://en.wikipedia.org/wiki/Just-in-time_compilation) compilation, so we have to execute the function before printing the compiled bytecode.
 
@@ -124,7 +124,7 @@ To use profiling, we have enabled some feature flags.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-<code>enable\_pphlo\_profile</code> tells SPU runtime to print information about pphlo, now, let’s run the function on this new runtime.
+`enable_pphlo_profile` tells SPU runtime to print information about pphlo, now, let’s run the function on this new runtime.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
@@ -143,15 +143,15 @@ To use profiling, we have enabled some feature flags.
 
 The above log tells the total execution time and the detailed statistics of each builtin function.
 
-Besides the <code>enable\_pphlo\_profile</code> feature flag, SPU has other flags like <code>enable\_hal\_profile</code> to dump runtime information in different levels of instructions.
+Besides the `enable_pphlo_profile` feature flag, SPU has other flags like `enable_hal_profile` to dump runtime information in different levels of instructions.
 
 :target{#Tracing}
 
 ## Tracing
 
-<em>Profiling</em> can only tell the statistics of SPU instructions, it’s still hard to understand what happened inside it. <em>Tracing</em> is a feature that used to print verbose <code>call stack</code>, which helps to understand/inspect what exactly happened.
+<em>Profiling</em> can only tell the statistics of SPU instructions, it’s still hard to understand what happened inside it. <em>Tracing</em> is a feature that used to print verbose `call stack`, which helps to understand/inspect what exactly happened.
 
-To enable tracing features, just set <code>enable\_action\_trace</code> in the runtime config.
+To enable tracing features, just set `enable_action_trace` in the runtime config.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
@@ -163,7 +163,7 @@ To enable tracing features, just set <code>enable\_action\_trace</code> in the r
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Now, let’s run another function on this <code>tracing enabled</code> simulator.
+Now, let’s run another function on this `tracing enabled` simulator.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
@@ -182,7 +182,7 @@ Now, let’s run another function on this <code>tracing enabled</code> simulator
 
 At the first glance, the trace log is a bit of frustrating, so it worth a little while to explain it.
 
-At the very begining, is the entry point of <code>multiply</code> function.
+At the very begining, is the entry point of `multiply` function.
 
 Each line follows the format as below:
 
@@ -190,29 +190,29 @@ Each line follows the format as below:
 [timestamp] [TR] [B/E] module.op(value_type...)
 ```
 
-For example, the second line <code>\[timestamp] \[TR] \[B]   hal.mul(Value\<2x2xSFXP,s=2,1>, Value\<2x2xSFXP,s=2,1>)</code> means: - this is a tracing log indicated by <code>\[TR]</code> - the function begins/ends <code>\[B/E]</code> - the module is <code>hal</code> - the operator is <code>mul</code> - the two args are both <code>Value\<2x2xSFXP,s=2,1></code>
+For example, the second line `[timestamp] [TR] [B]   hal.mul(Value<2x2xSFXP,s=2,1>, Value<2x2xSFXP,s=2,1>)` means: - this is a tracing log indicated by `[TR]` - the function begins/ends `[B/E]` - the module is `hal` - the operator is `mul` - the two args are both `Value<2x2xSFXP,s=2,1>`
 
-Note, <code>hlo</code> is short for <code>High Level Operations</code>, <code>hal</code> is short for <code>Hardware Abstraction Layer</code>, <code>mpc</code> is short for <code>Multi-Party Computation</code>.
+Note, `hlo` is short for `High Level Operations`, `hal` is short for `Hardware Abstraction Layer`, `mpc` is short for `Multi-Party Computation`.
 
-The <code>Value\<2x2xSFXP,s=2,1></code> means it’s a <strong>S</strong>ecret <strong>F</strong>i<strong>X</strong>ed <strong>P</strong>ointed tensor with shape(<strong>2x2</strong>) and strides(<strong>2,1</strong>).
+The `Value<2x2xSFXP,s=2,1>` means it’s a <strong>S</strong>ecret <strong>F</strong>i<strong>X</strong>ed <strong>P</strong>ointed tensor with shape(<strong>2x2</strong>) and strides(<strong>2,1</strong>).
 
-1. the runtime dispatches the function according parameters datatype (in this case <em>fxp</em>), then calls the corresponding fixed point handle function <code>hal.f\_mul</code>, the prefix <code>f\_</code> means its for fixed point.
-2. the runtime dispatches <code>hal.f\_mul</code> to the untyped version <code>hal.\_mul</code> which operates on <code>rings</code>.
-3. the runtime dispatches <code>hal.\_mul</code> according to the <em>visibility</em> type, since both parameters are <strong>secret</strong>, so <code>hal.\_mul\_ss</code> is called, the postfix <code>\_ss</code> indicates that it operates on two secrets.
+1. the runtime dispatches the function according parameters datatype (in this case <em>fxp</em>), then calls the corresponding fixed point handle function `hal.f_mul`, the prefix `f_` means its for fixed point.
+2. the runtime dispatches `hal.f_mul` to the untyped version `hal._mul` which operates on `rings`.
+3. the runtime dispatches `hal._mul` according to the <em>visibility</em> type, since both parameters are <strong>secret</strong>, so `hal._mul_ss` is called, the postfix `_ss` indicates that it operates on two secrets.
 
-Then the function <code>hal.\_mul\_ss</code> is dispatched to the MPC layer, the signature becomes more complicated.
+Then the function `hal._mul_ss` is dispatched to the MPC layer, the signature becomes more complicated.
 
 ```none
 mpc.mul_ss(ArrayRef<4xaby3.AShr<FM64>>,ArrayRef<4xaby3.AShr<FM64>>)
 ```
 
-The signature of this operation is the same as above, <code>mpc.mul\_ss</code> indicates the module is <code>mpc</code> and the operation is <code>mul\_ss</code>.
+The signature of this operation is the same as above, `mpc.mul_ss` indicates the module is `mpc` and the operation is `mul_ss`.
 
-The type <code>ArrayRef\<4xaby3.AShr\<FM64>></code> has two notable differences: 1. unlike hal ops, mpc ops operates on 1D-array instead of tensor, which makes it a more standard SIMD instruction. 2. the type <code>aby3.AShr\<FM64></code> is protocol-dependent, in this case, it’s an <em>ABY3</em> arithmetic share in FM64.
+The type `ArrayRef<4xaby3.AShr<FM64>>` has two notable differences: 1. unlike hal ops, mpc ops operates on 1D-array instead of tensor, which makes it a more standard SIMD instruction. 2. the type `aby3.AShr<FM64>` is protocol-dependent, in this case, it’s an <em>ABY3</em> arithmetic share in FM64.
 
-Finally, it’s dispatched to <code>mpc.mul\_aa</code>, the postfix <code>\_aa</code> indicates both parameters are arithmetic shares, then the ABY3 share addition protocol is performed.
+Finally, it’s dispatched to `mpc.mul_aa`, the postfix `_aa` indicates both parameters are arithmetic shares, then the ABY3 share addition protocol is performed.
 
-But <code>f\_mul</code> could not be done with ring multiplication only, we have to <code>truncate</code> the result to make the fixed point legal, in the following lines, <code>hal.\_trunc</code> is called and finally dispatched to <code>mpc.trunc\_a</code> protocol.
+But `f_mul` could not be done with ring multiplication only, we have to `truncate` the result to make the fixed point legal, in the following lines, `hal._trunc` is called and finally dispatched to `mpc.trunc_a` protocol.
 
 The above example is pretty straight forward, now let’s make it harder.
 
@@ -239,7 +239,7 @@ Surprise, it’s really a lot of ops!
 
 Yes, that’s why MPC is still relatively slow and why SPU wants to optimize it \:P
 
-The <code>reciprocal</code> is still a relative simple operator, you can try more complicated op like <code>convolution</code>.
+The `reciprocal` is still a relative simple operator, you can try more complicated op like `convolution`.
 
 :target{#Misc}
 
@@ -247,7 +247,7 @@ The <code>reciprocal</code> is still a relative simple operator, you can try mor
 
 Simulation could be used to inspect other parts of SPU, i.e. the <em>fixed point arithmetic</em> accuracy.
 
-As the above example indicates, non-linear functions like <code>reciprocal</code> and <code>exp</code> are approximated with some numeric methods, so the result is not as accurate as floating point arithmetic.
+As the above example indicates, non-linear functions like `reciprocal` and `exp` are approximated with some numeric methods, so the result is not as accurate as floating point arithmetic.
 
 For example.
 
@@ -291,6 +291,6 @@ For example.
   </Notebook.FancyOutput>
 </Notebook.Cell>
 
-As we can see, the SPU version of <code>exp</code> (blue line) diverges with the standard version when input is larger.
+As we can see, the SPU version of `exp` (blue line) diverges with the standard version when input is larger.
 
 Finally, SPU, as a secure computation, behaves very differently from CPU, both in accuracy and cost model, when you are not sure about how it works, simulate on it!

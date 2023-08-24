@@ -98,7 +98,7 @@ We <strong>highly recommend</strong> the reader to read [spu-quickstart](quick_s
 
 [LR](https://en.wikipedia.org/wiki/Logistic_regression)(Logistic Regression) is a widely used linear model especially in financial industry. So in this tutorial, as an example, we will implement LR with a modified SGD, called [policy-sgd](../development/policy_sgd_insight.mdx), which can accelerate the speeds of training in most scenery.
 
-Here, we just list some important equations used in policy-sgd: - LR compute gradient with(<code>n</code> is batch\_size):
+Here, we just list some important equations used in policy-sgd: - LR compute gradient with(`n` is batch\_size):
 
 <Math>
   $$
@@ -108,7 +108,7 @@ Here, we just list some important equations used in policy-sgd: - LR compute gra
   $$
 </Math>
 
-- Policy-sgd compute dk in first epoch with(<code>p</code> is number of features):
+- Policy-sgd compute dk in first epoch with(`p` is number of features):
 
 <Math>
   $$
@@ -118,7 +118,7 @@ Here, we just list some important equations used in policy-sgd: - LR compute gra
   $$
 </Math>
 
-- Then, update weights with(<code>i</code> means i-th epoch, <code>k</code> means k-th iter):
+- Then, update weights with(`i` means i-th epoch, `k` means k-th iter):
 
 <Math>
   $$
@@ -128,7 +128,7 @@ Here, we just list some important equations used in policy-sgd: - LR compute gra
   $$
 </Math>
 
-In this part, we first forget the MPC setting(data split, protocol…) and implement the algorithm in plaintext. Secretflow recommends user to do this with [Jax](https://jax.readthedocs.io/en/latest/), which <code>jax.numpy</code> provides a familiar NumPy-style API for ease of adoption. If you are familiar with Numpy, you can go through [this blog](https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html) and gets some caveats and then write jax-code just like numpy-code.
+In this part, we first forget the MPC setting(data split, protocol…) and implement the algorithm in plaintext. Secretflow recommends user to do this with [Jax](https://jax.readthedocs.io/en/latest/), which `jax.numpy` provides a familiar NumPy-style API for ease of adoption. If you are familiar with Numpy, you can go through [this blog](https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html) and gets some caveats and then write jax-code just like numpy-code.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -202,7 +202,7 @@ policy-sgd needs scale learning rate in first epoch.
 
 Then, we give a brief implementation of LR with policy-sgd, and have similar interface(but less) with sklearn.
 
-<strong>Note</strong>: for simplicity, we will always fit intercept in LR model and omit regularization and other techniques. For full version of SSLR, can refer to <code>SSRegression</code> in secretflow.
+<strong>Note</strong>: for simplicity, we will always fit intercept in LR model and omit regularization and other techniques. For full version of SSLR, can refer to `SSRegression` in secretflow.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
@@ -401,13 +401,13 @@ Things seem go well, try to predict the dataset and compute auc.
 
 ## Part 2: Run algorithm with simulator
 
-Normally, you can just do something like [LR with spu](https://www.secretflow.org.cn/docs/secretflow/en/tutorial/lr_with_spu.html) to run your program within a secure context: move you dataset to PYU or SPU, run program with SPU you declare and reveal some information you need(<code>reveal</code> is a <strong>very dangerous</strong> op, and you should use it very carefully in real application).
+Normally, you can just do something like [LR with spu](https://www.secretflow.org.cn/docs/secretflow/en/tutorial/lr_with_spu.html) to run your program within a secure context: move you dataset to PYU or SPU, run program with SPU you declare and reveal some information you need(`reveal` is a <strong>very dangerous</strong> op, and you should use it very carefully in real application).
 
 However, we will see later that you may come across large <strong>metric gap</strong>(like auc in LR) between plaintext and secret. It will be a better choice that developer can run MPC program simpler with high flexibility to adjust hyper-parameters like the size of ring, fxp or underlying MPC protocol etc.
 
 So in this part, we will show how to use simulator to run our algorithm just like running normal MPC program, and do minimum experiments to focus and verify the pitfall of the program. To use simulator but not running program with SPU Device directly has two advantages:
 
-1. <strong>Fewer Code</strong>: No need to deal with tons of <code>DeviceObject</code> and move data from PYU between SPU.
+1. <strong>Fewer Code</strong>: No need to deal with tons of `DeviceObject` and move data from PYU between SPU.
 2. <strong>Quicker Experiment</strong>: No ray cluster connected, run experiments end-to-end.
 
 <Notebook.Cell>
@@ -546,7 +546,7 @@ We will give some analysis and try to fix it first from application perspective 
 Before we dive into this question, we can first summarize the differences of policy-sgd between naive-sgd are:
 
 1. Using approximation function to compute sigmoid(default is t1).
-2. The scale of learning rate, which contains the computation of dk as defined in <code>compute\_dk\_func</code>.
+2. The scale of learning rate, which contains the computation of dk as defined in `compute_dk_func`.
 
 Doing some simple math, we can notice that t1 approximation will force the pred to 0 when inner product is less than -2 and to 1 when inner product is large than 2. So when we compute gradient with:
 
@@ -558,7 +558,7 @@ Doing some simple math, we can notice that t1 approximation will force the pred 
   $$
 </Math>
 
-If coincidentally, we can get all elements of grad very near to 0(may have little error in MPC), then the <code>dk</code> computed in first epoch becomes very large, and may result in the failure of training. We can verify this by simply enlarge the <code>batch\_size</code> to 64 which can decrease the probability of all-zero problem.
+If coincidentally, we can get all elements of grad very near to 0(may have little error in MPC), then the `dk` computed in first epoch becomes very large, and may result in the failure of training. We can verify this by simply enlarge the `batch_size` to 64 which can decrease the probability of all-zero problem.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[17]:" stderr={false} type="input">
@@ -591,9 +591,9 @@ If coincidentally, we can get all elements of grad very near to 0(may have littl
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Restricting large batch\_size is not an appropriate way, the key is to make the scale factor smaller, we can also fix the question by enlarging the <code>eps</code>, e.g. change <code>eps</code> from 1e-6 to 1e-2.
+Restricting large batch\_size is not an appropriate way, the key is to make the scale factor smaller, we can also fix the question by enlarging the `eps`, e.g. change `eps` from 1e-6 to 1e-2.
 
-<strong>Note</strong>: <code>eps</code> in policy-sgd indeed has two affects, one is to prevent the zero-division error, the other is to restrict the maximum scale factor in warm-start phase(first epoch).
+<strong>Note</strong>: `eps` in policy-sgd indeed has two affects, one is to prevent the zero-division error, the other is to restrict the maximum scale factor in warm-start phase(first epoch).
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[19]:" stderr={false} type="input">
@@ -659,8 +659,8 @@ The above analyses are based on t1 sigmoid, which leads to 0 in grad. So we can 
 
 So, if we just consider it on app layer, we can get three rules for fixing:
 
-1. enlarge <code>batch\_size</code>.
-2. enlarge <code>eps</code>.
+1. enlarge `batch_size`.
+2. enlarge `eps`.
 3. use non-truncate sigmoid approximation(e.g. sr approximation).
 
 :target{#MPC-Perspective}
@@ -672,10 +672,10 @@ In this part, we concentrate more on why huge error occurs. To achieve this goal
 Before diving into the problem deeper, we highly recommend the reader to read:
 
 1. [spu\_inside](https://www.secretflow.org.cn/docs/spu/en/getting_started/tutorials/spu_inside.html#Tracing): gives some introductions how spu works inside for float-point operations.
-2. [pitfall](https://www.secretflow.org.cn/docs/spu/en/reference/fxp.html): spu implements math function(like <code>reciprocal</code>, <code>log</code> and so on) with approximation algorithm, so some precision issue will occur when inputs fall into some intervals. We list some known issue about this.
+2. [pitfall](https://www.secretflow.org.cn/docs/spu/en/reference/fxp.html): spu implements math function(like `reciprocal`, `log` and so on) with approximation algorithm, so some precision issue will occur when inputs fall into some intervals. We list some known issue about this.
 3. [protocols](https://www.secretflow.org.cn/docs/spu/en/reference/mpc_status.html): list all protocols spu implements now. Generally speaking, for 2pc, it’s safe to use cheetah, while for 3pc, ABY3 is the only choice.
 
-First define a function just like <code>fit\_and\_predict</code> to get dk\_arr.
+First define a function just like `fit_and_predict` to get dk\_arr.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[21]:" stderr={false} type="input">
@@ -710,7 +710,7 @@ First define a function just like <code>fit\_and\_predict</code> to get dk\_arr.
 
 Recap:
 
-1. [cheetah](https://eprint.iacr.org/2022/207) is a fast 2pc semi-honest protocol which uses FHE to accelerate the computation. But it will have 0-2 bits error when do <code>mul</code> or <code>dot</code>.
+1. [cheetah](https://eprint.iacr.org/2022/207) is a fast 2pc semi-honest protocol which uses FHE to accelerate the computation. But it will have 0-2 bits error when do `mul` or `dot`.
 2. If 64-bits ring, about 18 bitwidth fixed-point number will be used. So the minimum positive float spu can represent is <InlineMath>$\frac{1}{2^{18}}$</InlineMath>.
 
 We first check the output of dk\_arr and try to find the caveat.
@@ -814,7 +814,7 @@ However, if we use a bigger ring, then everything is ok.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-From the above outputs, we can guess if input is near <InlineMath>$\frac{1}{2^{18}}$</InlineMath> and use cheetah protocol, when doing <code>square</code> and <code>sum</code>, the bit error may be significant and not negligible(<code>mul</code> and <code>dot</code> have 0-2 bit errors).
+From the above outputs, we can guess if input is near <InlineMath>$\frac{1}{2^{18}}$</InlineMath> and use cheetah protocol, when doing `square` and `sum`, the bit error may be significant and not negligible(`mul` and `dot` have 0-2 bit errors).
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[80]:" stderr={false} type="input">
@@ -877,15 +877,15 @@ From the above outputs, we can guess if input is near <InlineMath>$\frac{1}{2^{1
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-So if <code>eps=1e-6</code>, the two norm of grad may be a negative number when each element of grad is near to <InlineMath>$\frac{1}{2^{18}}$</InlineMath>, then we get a very small negative dk.
+So if `eps=1e-6`, the two norm of grad may be a negative number when each element of grad is near to <InlineMath>$\frac{1}{2^{18}}$</InlineMath>, then we get a very small negative dk.
 
 <LineBlock>
   This explains the claims we get from app layer:
 
-  1\. Enlarging <code>batch\_size</code>: the probability of all elements of grad is zero becomes small.
+  1\. Enlarging `batch_size`: the probability of all elements of grad is zero becomes small.
 </LineBlock>
 
-2. Enlarging <code>eps</code>: force the denominator to be positive number.
+2. Enlarging `eps`: force the denominator to be positive number.
 
 :target{#3PC:-ABY3-Protocol}
 
@@ -987,12 +987,12 @@ Indeed, there are some other interesting things in SSLR. Here, due to length lim
 
 #### Rsqrt v.s. Norm
 
-We can recall that the <code>compute\_dk\_func</code> function defined in Part 1 contains a <code>method</code> arg, and we just ignore this arg before. Indeed, we can tell simulator to print more information like [spu\_inside](https://www.secretflow.org.cn/docs/spu/en/getting_started/tutorials/spu_inside.html#Tracing) do: enable <strong>hlo</strong>(High Level Operations) trace and profile on. Then we can figure out which op has been invoked and its time cost.
+We can recall that the `compute_dk_func` function defined in Part 1 contains a `method` arg, and we just ignore this arg before. Indeed, we can tell simulator to print more information like [spu\_inside](https://www.secretflow.org.cn/docs/spu/en/getting_started/tutorials/spu_inside.html#Tracing) do: enable <strong>hlo</strong>(High Level Operations) trace and profile on. Then we can figure out which op has been invoked and its time cost.
 
-Here, we list some advantages of using <code>jax.lax.rsqrt</code> rather than <code>jnp.linalg.norm</code>:
+Here, we list some advantages of using `jax.lax.rsqrt` rather than `jnp.linalg.norm`:
 
 1. Fewer bytes and few send actions: which leads to smaller running time(See the following comments and notes for details).
-2. More stable when given same <code>eps</code>: if we regard <code>f(x)</code> as <code>compute\_dk\_func</code> with <code>method=norm</code>, and <code>g(x)</code> with <code>method=rsqrt</code>, then the users can do simulation yourself, and find <code>f(x)</code> has higher relative error than <code>g(x)</code>.
+2. More stable when given same `eps`: if we regard `f(x)` as `compute_dk_func` with `method=norm`, and `g(x)` with `method=rsqrt`, then the users can do simulation yourself, and find `f(x)` has higher relative error than `g(x)`.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[47]:" stderr={false} type="input">
@@ -1177,9 +1177,9 @@ But when you use t1 approximation for sigmoid, then you may come across <InlineM
 
 ## Part 3: Run elaborated emulations
 
-> Emulations is an <strong>experimental</strong> feature for now, and is under rapid development, so we do not package the code of sml into spu. Users can try this feature from <strong>source code</strong> and run with bazel .Till now, we only have support for LAN setting(<code>MULTIPROCESS</code> mode). <code>Docker</code> mode, which runs program like under WAN setting, will be posted in future version.
+> Emulations is an <strong>experimental</strong> feature for now, and is under rapid development, so we do not package the code of sml into spu. Users can try this feature from <strong>source code</strong> and run with bazel .Till now, we only have support for LAN setting(`MULTIPROCESS` mode). `Docker` mode, which runs program like under WAN setting, will be posted in future version.
 
-Finally, we talk about how to do emulations. Comparing to simulator, emulator runs with a simple scheduler like Secretflow does, and offers some facility(e.g. generate mock data) to make benchmark simpler. So spu provides an <code>Emulator</code> class and gives an easy-to-use interface.
+Finally, we talk about how to do emulations. Comparing to simulator, emulator runs with a simple scheduler like Secretflow does, and offers some facility(e.g. generate mock data) to make benchmark simpler. So spu provides an `Emulator` class and gives an easy-to-use interface.
 
 Usually, the emulation will be done with larger dataset, so we won’t run directly in this tutorial notebook. Instead, we will show a big picture on how to design and run emulations for MPC application step by step.
 
@@ -1220,11 +1220,11 @@ Just like what we do in secretflow, we should first define a python function, wh
 
 ### Design experiments
 
-Taking <code>SSLRSGDClassifier</code> as an example, we mainly want to argue that policy-sgd is better than naive-sgd in MPC setting, so we can design the following experiments:
+Taking `SSLRSGDClassifier` as an example, we mainly want to argue that policy-sgd is better than naive-sgd in MPC setting, so we can design the following experiments:
 
-1. Find best <code>dk\_method</code> and <code>eps</code> for policy-sgd: for all datasets, compare the accuracy and efficiency.
-2. Compare the accuracy and efficiency when switching <code>sig\_type</code> for both policy-sgd and naive-sgd.
-3. To compare policy-sgd and naive-sgd, we fix <code>epochs</code> and test the influence of <code>learning\_rate</code> and <code>batch\_size</code>.
+1. Find best `dk_method` and `eps` for policy-sgd: for all datasets, compare the accuracy and efficiency.
+2. Compare the accuracy and efficiency when switching `sig_type` for both policy-sgd and naive-sgd.
+3. To compare policy-sgd and naive-sgd, we fix `epochs` and test the influence of `learning_rate` and `batch_size`.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
@@ -1249,9 +1249,9 @@ Taking <code>SSLRSGDClassifier</code> as an example, we mainly want to argue tha
 
 ### Define running config
 
-After designing all the experiments, we can prepare our running config. Currently, we only support <code>MULTIPROCESS</code> mode, which uses multiprocess to emulate multi-party and just like running in LAN(<code>DOCKER</code> mode which can set <code>bandwidth</code> and <code>latency</code> to simulate the different WAN settings will be supported in future version).
+After designing all the experiments, we can prepare our running config. Currently, we only support `MULTIPROCESS` mode, which uses multiprocess to emulate multi-party and just like running in LAN(`DOCKER` mode which can set `bandwidth` and `latency` to simulate the different WAN settings will be supported in future version).
 
-For now, our goal is to compare the accuracy/efficiency diff when switching hyper-param, running program in LAN can be a good choice. Besides, in order to simulate diverse node deployment ways, users can flexibly configure the number of nodes and device situations yourself. You can get some examples of config in <code>examples/python/conf/</code>.
+For now, our goal is to compare the accuracy/efficiency diff when switching hyper-param, running program in LAN can be a good choice. Besides, in order to simulate diverse node deployment ways, users can flexibly configure the number of nodes and device situations yourself. You can get some examples of config in `examples/python/conf/`.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">

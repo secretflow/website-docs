@@ -1,10 +1,10 @@
 :target{#pphlo-pad-pphlo-padop}
 
-# <code>pphlo.pad</code> (pphlo::PadOp)
+# `pphlo.pad` (pphlo::PadOp)
 
 <em>Pad operator</em>
 
-Pads the edges of <code>operand</code> with the <code>padding\_value</code> and according to
+Pads the edges of `operand` with the `padding_value` and according to
 the passed configuration.
 
 See [https://www.tensorflow.org/xla/operation\_semantics#pad](https://www.tensorflow.org/xla/operation_semantics#pad).
@@ -39,7 +39,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>edge\_padding\_low</code>
+        `edge_padding_low`
       </td>
 
       <td>
@@ -53,7 +53,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>edge\_padding\_high</code>
+        `edge_padding_high`
       </td>
 
       <td>
@@ -67,7 +67,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>interior\_padding</code>
+        `interior_padding`
       </td>
 
       <td>
@@ -101,7 +101,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -111,7 +111,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>padding\_value</code>
+        `padding_value`
       </td>
 
       <td>
@@ -153,11 +153,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-abs-pphlo-absop}
 
-# <code>pphlo.abs</code> (pphlo::AbsOp)
+# `pphlo.abs` (pphlo::AbsOp)
 
 <em>Absolute value operator</em>
 
-Returns <code>abs(operand)</code> element-wise.
+Returns `abs(operand)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -188,7 +188,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -230,11 +230,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-add-pphlo-addop}
 
-# <code>pphlo.add</code> (pphlo::AddOp)
+# `pphlo.add` (pphlo::AddOp)
 
 <em>Addition operator</em>
 
-Returns <code>lhs + rhs</code> element-wise.
+Returns `lhs + rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -265,7 +265,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -275,7 +275,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -317,11 +317,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-and-pphlo-andop}
 
-# <code>pphlo.and</code> (pphlo::AndOp)
+# `pphlo.and` (pphlo::AndOp)
 
 <em>Logical and</em>
 
-Returns <code>logical\_and(lhs, rhs)</code> element-wise.
+Returns `logical_and(lhs, rhs)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -352,7 +352,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -362,7 +362,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -404,7 +404,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-argmax-pphlo-argmaxop}
 
-# <code>pphlo.argmax</code> (pphlo::ArgMaxOp)
+# `pphlo.argmax` (pphlo::ArgMaxOp)
 
 <em>ArgMax operator</em>
 
@@ -440,7 +440,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>window\_dimensions</code>
+        `window_dimensions`
       </td>
 
       <td>
@@ -454,7 +454,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>window\_strides</code>
+        `window_strides`
       </td>
 
       <td>
@@ -468,7 +468,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>base\_dilations</code>
+        `base_dilations`
       </td>
 
       <td>
@@ -482,7 +482,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>window\_dilations</code>
+        `window_dilations`
       </td>
 
       <td>
@@ -496,7 +496,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>padding</code>
+        `padding`
       </td>
 
       <td>
@@ -510,7 +510,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>onehot\_index</code>
+        `onehot_index`
       </td>
 
       <td>
@@ -544,7 +544,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>input</code>
+        `input`
       </td>
 
       <td>
@@ -596,7 +596,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-bitcast-convert-pphlo-bitcastconvertop}
 
-# <code>pphlo.bitcast\_convert</code> (pphlo::BitcastConvertOp)
+# `pphlo.bitcast_convert` (pphlo::BitcastConvertOp)
 
 <em>BitcastConvert operator</em>
 
@@ -634,7 +634,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -676,21 +676,21 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-broadcast-pphlo-broadcastop}
 
-# <code>pphlo.broadcast</code> (pphlo::BroadcastOp)
+# `pphlo.broadcast` (pphlo::BroadcastOp)
 
 <em>Broadcast a tensor into the given shape by adding dimensions.</em>
 
-Broadcasts the <code>operand</code> tensor to a higher rank. This is not the limited
+Broadcasts the `operand` tensor to a higher rank. This is not the limited
 form of broadcasting exposed as the XLA client broadcast op, but rather the
 more powerful “InDim” broadcasting, which is closer to the HLO broadcast op
 and exposed in the XLA client BroadcastInDim method.
 
-<code>broadcast\_dimensions</code> maps the operand dimension number to the target shape
+`broadcast_dimensions` maps the operand dimension number to the target shape
 dimension number. It must have the same size as the rank of the operand. The
 mapped dimensions must either be the same size or the dimension being
 broadcast from must be size 1 (degenerate broadcasting).
 
-For a scalar (0D tensor) operand, <code>broadcast\_dimensions</code> must be empty. The
+For a scalar (0D tensor) operand, `broadcast_dimensions` must be empty. The
 The scalar value will be broadcast to every element in the target shape.
 
 See [https://www.tensorflow.org/xla/broadcasting](https://www.tensorflow.org/xla/broadcasting).
@@ -725,7 +725,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>broadcast\_dimensions</code>
+        `broadcast_dimensions`
       </td>
 
       <td>
@@ -759,7 +759,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -801,12 +801,12 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-case-pphlo-caseop}
 
-# <code>pphlo.case</code> (pphlo::CaseOp)
+# `pphlo.case` (pphlo::CaseOp)
 
 <em>Switch-Case operator</em>
 
-Returns the result of executing <code>branches\[index]</code>. If <code>index</code> is \< 0 or >=
-N, then <code>branches\[N-1]</code> is executed as the default branch.
+Returns the result of executing `branches[index]`. If `index` is \< 0 or >=
+N, then `branches[N-1]` is executed as the default branch.
 
 The type of the returned values of each branch must be the same and equal
 to the types of the values returned by the operation.
@@ -836,7 +836,7 @@ Traits: RecursiveMemoryEffects, SingleBlockImplicitTerminator<returnop />
   <tbody>
     <tr>
       <td>
-        <code>index</code>
+        `index`
       </td>
 
       <td>
@@ -878,11 +878,11 @@ Traits: RecursiveMemoryEffects, SingleBlockImplicitTerminator<returnop />
 
 :target{#pphlo-ceil-pphlo-ceilop}
 
-# <code>pphlo.ceil</code> (pphlo::CeilOp)
+# `pphlo.ceil` (pphlo::CeilOp)
 
 <em>Ceil operator</em>
 
-Returns <code>Ceil(operand)</code> element-wise.
+Returns `Ceil(operand)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -913,7 +913,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -955,7 +955,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-clamp-pphlo-clampop}
 
-# <code>pphlo.clamp</code> (pphlo::ClampOp)
+# `pphlo.clamp` (pphlo::ClampOp)
 
 <em>Clamp operator</em>
 
@@ -993,7 +993,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>min</code>
+        `min`
       </td>
 
       <td>
@@ -1003,7 +1003,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -1013,7 +1013,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>max</code>
+        `max`
       </td>
 
       <td>
@@ -1055,7 +1055,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-concatenate-pphlo-concatenateop}
 
-# <code>pphlo.concatenate</code> (pphlo::ConcatenateOp)
+# `pphlo.concatenate` (pphlo::ConcatenateOp)
 
 <em>Concatenate op</em>
 
@@ -1093,7 +1093,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>dimension</code>
+        `dimension`
       </td>
 
       <td>
@@ -1127,7 +1127,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>val</code>
+        `val`
       </td>
 
       <td>
@@ -1169,7 +1169,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-constant-pphlo-constantop}
 
-# <code>pphlo.constant</code> (pphlo::ConstantOp)
+# `pphlo.constant` (pphlo::ConstantOp)
 
 <em>Constant operator</em>
 
@@ -1204,7 +1204,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>value</code>
+        `value`
       </td>
 
       <td>
@@ -1238,7 +1238,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>output</code>
+        `output`
       </td>
 
       <td>
@@ -1250,7 +1250,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-convert-pphlo-convertop}
 
-# <code>pphlo.convert</code> (pphlo::ConvertOp)
+# `pphlo.convert` (pphlo::ConvertOp)
 
 <em>Convert operator</em>
 
@@ -1286,7 +1286,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -1328,7 +1328,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-convolution-pphlo-convolutionop}
 
-# <code>pphlo.convolution</code> (pphlo::ConvolutionOp)
+# `pphlo.convolution` (pphlo::ConvolutionOp)
 
 <em>Convolution operator</em>
 
@@ -1375,7 +1375,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>window\_strides</code>
+        `window_strides`
       </td>
 
       <td>
@@ -1389,7 +1389,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>dimension\_numbers</code>
+        `dimension_numbers`
       </td>
 
       <td>
@@ -1403,7 +1403,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>feature\_group\_count</code>
+        `feature_group_count`
       </td>
 
       <td>
@@ -1417,7 +1417,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>batch\_group\_count</code>
+        `batch_group_count`
       </td>
 
       <td>
@@ -1451,7 +1451,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -1461,7 +1461,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -1503,7 +1503,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-custom-call-pphlo-customcallop}
 
-# <code>pphlo.custom\_call</code> (pphlo::CustomCallOp)
+# `pphlo.custom_call` (pphlo::CustomCallOp)
 
 <em>CustomCall operation</em>
 
@@ -1514,8 +1514,8 @@ operation ::= `pphlo.custom_call` custom<CustomCallTarget>($call_target_name) `(
               attr-dict `:` functional-type(operands, results)
 ```
 
-Encapsulates an implementation-defined operation <code>call\_target\_name</code> that
-takes <code>inputs</code> and <code>called\_computations</code> and produces <code>results</code>.
+Encapsulates an implementation-defined operation `call_target_name` that
+takes `inputs` and `called_computations` and produces `results`.
 
 See:
 [https://github.com/openxla/stablehlo/blob/main/docs/spec.md#custom\_call](https://github.com/openxla/stablehlo/blob/main/docs/spec.md#custom_call)
@@ -1555,7 +1555,7 @@ Interfaces: MemoryEffectOpInterface
   <tbody>
     <tr>
       <td>
-        <code>call\_target\_name</code>
+        `call_target_name`
       </td>
 
       <td>
@@ -1569,7 +1569,7 @@ Interfaces: MemoryEffectOpInterface
 
     <tr>
       <td>
-        <code>has\_side\_effect</code>
+        `has_side_effect`
       </td>
 
       <td>
@@ -1603,7 +1603,7 @@ Interfaces: MemoryEffectOpInterface
   <tbody>
     <tr>
       <td>
-        <code>inputs</code>
+        `inputs`
       </td>
 
       <td>
@@ -1645,7 +1645,7 @@ Interfaces: MemoryEffectOpInterface
 
 :target{#pphlo-dbg-print-pphlo-dbgprintop}
 
-# <code>pphlo.dbg\_print</code> (pphlo::DbgPrintOp)
+# `pphlo.dbg_print` (pphlo::DbgPrintOp)
 
 :target{#id34}
 
@@ -1667,7 +1667,7 @@ Interfaces: MemoryEffectOpInterface
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -1679,11 +1679,11 @@ Interfaces: MemoryEffectOpInterface
 
 :target{#pphlo-divide-pphlo-divop}
 
-# <code>pphlo.divide</code> (pphlo::DivOp)
+# `pphlo.divide` (pphlo::DivOp)
 
 <em>Division operator</em>
 
-Returns <code>lhs / rhs</code> element-wise.
+Returns `lhs / rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -1714,7 +1714,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -1724,7 +1724,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -1766,7 +1766,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-dot-general-pphlo-dotgeneralop}
 
-# <code>pphlo.dot\_general</code> (pphlo::DotGeneralOp)
+# `pphlo.dot_general` (pphlo::DotGeneralOp)
 
 <em>General Dot operator</em>
 
@@ -1805,7 +1805,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>dot\_dimension\_numbers</code>
+        `dot_dimension_numbers`
       </td>
 
       <td>
@@ -1839,7 +1839,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -1849,7 +1849,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -1891,7 +1891,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-dot-pphlo-dotop}
 
-# <code>pphlo.dot</code> (pphlo::DotOp)
+# `pphlo.dot` (pphlo::DotOp)
 
 <em>Dot operator</em>
 
@@ -1926,7 +1926,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -1936,7 +1936,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -1978,7 +1978,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-dynamic-slice-pphlo-dynamicsliceop}
 
-# <code>pphlo.dynamic-slice</code> (pphlo::DynamicSliceOp)
+# `pphlo.dynamic-slice` (pphlo::DynamicSliceOp)
 
 <em>Dynamic Slice operator</em>
 
@@ -2016,7 +2016,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>slice\_sizes</code>
+        `slice_sizes`
       </td>
 
       <td>
@@ -2050,7 +2050,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -2060,7 +2060,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>start\_indices</code>
+        `start_indices`
       </td>
 
       <td>
@@ -2090,7 +2090,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>result</code>
+        `result`
       </td>
 
       <td>
@@ -2102,7 +2102,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-dynamic-update-slice-pphlo-dynamicupdatesliceop}
 
-# <code>pphlo.dynamic-update-slice</code> (pphlo::DynamicUpdateSliceOp)
+# `pphlo.dynamic-update-slice` (pphlo::DynamicUpdateSliceOp)
 
 <em>Dynamic Update Slice operator</em>
 
@@ -2137,7 +2137,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -2147,7 +2147,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>update</code>
+        `update`
       </td>
 
       <td>
@@ -2157,7 +2157,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>start\_indices</code>
+        `start_indices`
       </td>
 
       <td>
@@ -2187,7 +2187,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>result</code>
+        `result`
       </td>
 
       <td>
@@ -2199,7 +2199,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-epsilon-pphlo-epsilonop}
 
-# <code>pphlo.epsilon</code> (pphlo::EpsilonOp)
+# `pphlo.epsilon` (pphlo::EpsilonOp)
 
 <em>Epsilon operator</em>
 
@@ -2230,7 +2230,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>output</code>
+        `output`
       </td>
 
       <td>
@@ -2242,11 +2242,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-equal-pphlo-equalop}
 
-# <code>pphlo.equal</code> (pphlo::EqualOp)
+# `pphlo.equal` (pphlo::EqualOp)
 
 <em>Equal comparison operator</em>
 
-Returns <code>lhs</code> == <code>rhs</code> element-wise.
+Returns `lhs` == `rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_comparison\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_comparison_operations).
@@ -2277,7 +2277,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -2287,7 +2287,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -2329,11 +2329,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-exponential-pphlo-expop}
 
-# <code>pphlo.exponential</code> (pphlo::ExpOp)
+# `pphlo.exponential` (pphlo::ExpOp)
 
 <em>Exponential operator</em>
 
-Returns <code>e ^ (operand)</code> element-wise.
+Returns `e ^ (operand)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -2364,7 +2364,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -2406,11 +2406,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-exponential-minus-one-pphlo-expm1op}
 
-# <code>pphlo.exponential\_minus\_one</code> (pphlo::Expm1Op)
+# `pphlo.exponential_minus_one` (pphlo::Expm1Op)
 
 <em>Exponential minus one operator</em>
 
-Returns <code>e^(operand) - 1</code> element-wise.
+Returns `e^(operand) - 1` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -2441,7 +2441,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -2483,11 +2483,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-floor-pphlo-floorop}
 
-# <code>pphlo.floor</code> (pphlo::FloorOp)
+# `pphlo.floor` (pphlo::FloorOp)
 
 <em>Floor operator</em>
 
-Returns <code>Floor(operand)</code> element-wise.
+Returns `Floor(operand)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -2518,7 +2518,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -2560,7 +2560,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-free-pphlo-freeop}
 
-# <code>pphlo.free</code> (pphlo::FreeOp)
+# `pphlo.free` (pphlo::FreeOp)
 
 :target{#id56}
 
@@ -2582,7 +2582,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -2594,12 +2594,12 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-gather-pphlo-gatherop}
 
-# <code>pphlo.gather</code> (pphlo::GatherOp)
+# `pphlo.gather` (pphlo::GatherOp)
 
 <em>Gather operator</em>
 
-Stitches together several slices of <code>operand</code> from offsets specified in
-<code>start\_indices</code> (each slice at a potentially different runtime offset).
+Stitches together several slices of `operand` from offsets specified in
+`start_indices` (each slice at a potentially different runtime offset).
 
 See [https://www.tensorflow.org/xla/operation\_semantics#gather](https://www.tensorflow.org/xla/operation_semantics#gather).
 
@@ -2633,7 +2633,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>dimension\_numbers</code>
+        `dimension_numbers`
       </td>
 
       <td>
@@ -2647,7 +2647,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>slice\_sizes</code>
+        `slice_sizes`
       </td>
 
       <td>
@@ -2661,7 +2661,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>indices\_are\_sorted</code>
+        `indices_are_sorted`
       </td>
 
       <td>
@@ -2695,7 +2695,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -2705,7 +2705,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>start\_indices</code>
+        `start_indices`
       </td>
 
       <td>
@@ -2747,11 +2747,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-greater-equal-pphlo-greaterequalop}
 
-# <code>pphlo.greater\_equal</code> (pphlo::GreaterEqualOp)
+# `pphlo.greater_equal` (pphlo::GreaterEqualOp)
 
 <em>Greater\_equal comparison operator</em>
 
-Returns <code>lhs</code> >= <code>rhs</code> element-wise.
+Returns `lhs` >= `rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_comparison\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_comparison_operations).
@@ -2782,7 +2782,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -2792,7 +2792,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -2834,11 +2834,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-greater-pphlo-greaterop}
 
-# <code>pphlo.greater</code> (pphlo::GreaterOp)
+# `pphlo.greater` (pphlo::GreaterOp)
 
 <em>Greater comparison operator</em>
 
-elementwise <code>lhs</code> > <code>rhs</code>.
+elementwise `lhs` > `rhs`.
 Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
 
 Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
@@ -2865,7 +2865,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -2875,7 +2875,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -2917,7 +2917,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-if-pphlo-ifop}
 
-# <code>pphlo.if</code> (pphlo::IfOp)
+# `pphlo.if` (pphlo::IfOp)
 
 <em>If operator</em>
 
@@ -2948,7 +2948,7 @@ Traits: RecursiveMemoryEffects, SingleBlockImplicitTerminator<returnop />
   <tbody>
     <tr>
       <td>
-        <code>condition</code>
+        `condition`
       </td>
 
       <td>
@@ -2990,7 +2990,7 @@ Traits: RecursiveMemoryEffects, SingleBlockImplicitTerminator<returnop />
 
 :target{#pphlo-iota-pphlo-iotaop}
 
-# <code>pphlo.iota</code> (pphlo::IotaOp)
+# `pphlo.iota` (pphlo::IotaOp)
 
 <em>Iota operator</em>
 
@@ -3028,7 +3028,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>iota\_dimension</code>
+        `iota_dimension`
       </td>
 
       <td>
@@ -3062,7 +3062,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>output</code>
+        `output`
       </td>
 
       <td>
@@ -3074,11 +3074,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-less-equal-pphlo-lessequalop}
 
-# <code>pphlo.less\_equal</code> (pphlo::LessEqualOp)
+# `pphlo.less_equal` (pphlo::LessEqualOp)
 
 <em>Less\_equal comparison operator</em>
 
-elementwise <code>lhs</code> \<= <code>rhs</code>.
+elementwise `lhs` \<= `rhs`.
 Traits: AlwaysSpeculatableImplTrait, Elementwise, SameOperandsAndResultShape
 
 Interfaces: ConditionallySpeculatable, NoMemoryEffect (MemoryEffectOpInterface)
@@ -3105,7 +3105,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -3115,7 +3115,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -3157,11 +3157,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-less-pphlo-lessop}
 
-# <code>pphlo.less</code> (pphlo::LessOp)
+# `pphlo.less` (pphlo::LessOp)
 
 <em>Less comparison operator</em>
 
-Returns <code>lhs</code> \< <code>rhs</code> element-wise.
+Returns `lhs` \< `rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_comparison\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_comparison_operations).
@@ -3192,7 +3192,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -3202,7 +3202,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -3244,11 +3244,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-log-plus-one-pphlo-log1pop}
 
-# <code>pphlo.log\_plus\_one</code> (pphlo::Log1pOp)
+# `pphlo.log_plus_one` (pphlo::Log1pOp)
 
 <em>Log1p operator</em>
 
-Returns <code>log(operand + 1)</code> element-wise.
+Returns `log(operand + 1)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -3279,7 +3279,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -3321,11 +3321,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-log-pphlo-logop}
 
-# <code>pphlo.log</code> (pphlo::LogOp)
+# `pphlo.log` (pphlo::LogOp)
 
 <em>Log operator</em>
 
-Returns <code>log(operand)</code> element-wise.
+Returns `log(operand)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -3356,7 +3356,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -3398,11 +3398,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-logistic-pphlo-logisticop}
 
-# <code>pphlo.logistic</code> (pphlo::LogisticOp)
+# `pphlo.logistic` (pphlo::LogisticOp)
 
 <em>Reciprocal operator</em>
 
-Returns <code>logistic(operand)</code> element-wise.
+Returns `logistic(operand)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -3433,7 +3433,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -3475,11 +3475,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-maximum-pphlo-maxop}
 
-# <code>pphlo.maximum</code> (pphlo::MaxOp)
+# `pphlo.maximum` (pphlo::MaxOp)
 
 <em>Maximum operator</em>
 
-Returns <code>max(lhs, rhs)</code> element-wise.
+Returns `max(lhs, rhs)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -3510,7 +3510,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -3520,7 +3520,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -3562,13 +3562,13 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-maxpool-scatter-pphlo-maxpoolscatterop}
 
-# <code>pphlo.maxpool\_scatter</code> (pphlo::MaxPoolScatterOp)
+# `pphlo.maxpool_scatter` (pphlo::MaxPoolScatterOp)
 
 <em>MaxPool Scatter operator</em>
 
-Generates a result which is the value of the input array <code>operand</code>,
-with several slices (at indices specified by <code>scatter\_indices</code>)
-updated with the values in <code>updates</code> using <code>update\_computation</code>.
+Generates a result which is the value of the input array `operand`,
+with several slices (at indices specified by `scatter_indices`)
+updated with the values in `updates` using `update_computation`.
 
 See [https://www.tensorflow.org/xla/operation\_semantics#scatter](https://www.tensorflow.org/xla/operation_semantics#scatter).
 
@@ -3602,7 +3602,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>window\_dimensions</code>
+        `window_dimensions`
       </td>
 
       <td>
@@ -3616,7 +3616,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>window\_strides</code>
+        `window_strides`
       </td>
 
       <td>
@@ -3630,7 +3630,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>padding</code>
+        `padding`
       </td>
 
       <td>
@@ -3664,7 +3664,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>scatter\_indices</code>
+        `scatter_indices`
       </td>
 
       <td>
@@ -3674,7 +3674,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>update</code>
+        `update`
       </td>
 
       <td>
@@ -3716,11 +3716,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-minimum-pphlo-minop}
 
-# <code>pphlo.minimum</code> (pphlo::MinOp)
+# `pphlo.minimum` (pphlo::MinOp)
 
 <em>Minimum operator</em>
 
-Returns <code>min(lhs, rhs)</code> element-wise.
+Returns `min(lhs, rhs)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -3751,7 +3751,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -3761,7 +3761,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -3803,11 +3803,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-multiply-pphlo-mulop}
 
-# <code>pphlo.multiply</code> (pphlo::MulOp)
+# `pphlo.multiply` (pphlo::MulOp)
 
 <em>Multiplication operator</em>
 
-Returns <code>lhs \* rhs</code> element-wise.
+Returns `lhs * rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -3838,7 +3838,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -3848,7 +3848,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -3890,11 +3890,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-negate-pphlo-negop}
 
-# <code>pphlo.negate</code> (pphlo::NegOp)
+# `pphlo.negate` (pphlo::NegOp)
 
 <em>Negation operator</em>
 
-Returns <code>- operand</code> element -
+Returns `- operand` element -
 wise.
 
 See
@@ -3926,7 +3926,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -3968,11 +3968,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-not-equal-pphlo-notequalop}
 
-# <code>pphlo.not\_equal</code> (pphlo::NotEqualOp)
+# `pphlo.not_equal` (pphlo::NotEqualOp)
 
 <em>Not-equal comparison operator</em>
 
-Returns <code>lhs</code> != <code>rhs</code> element-wise.
+Returns `lhs` != `rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_comparison\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_comparison_operations).
@@ -4003,7 +4003,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -4013,7 +4013,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -4055,11 +4055,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-not-pphlo-notop}
 
-# <code>pphlo.not</code> (pphlo::NotOp)
+# `pphlo.not` (pphlo::NotOp)
 
 <em>Not operator</em>
 
-Returns <code>!operand</code> element-wise.
+Returns `!operand` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -4090,7 +4090,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -4132,11 +4132,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-or-pphlo-orop}
 
-# <code>pphlo.or</code> (pphlo::OrOp)
+# `pphlo.or` (pphlo::OrOp)
 
 <em>Logical or</em>
 
-Returns <code>logical\_or(lhs, rhs)</code> element-wise.
+Returns `logical_or(lhs, rhs)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -4167,7 +4167,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -4177,7 +4177,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -4219,11 +4219,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-power-pphlo-powop}
 
-# <code>pphlo.power</code> (pphlo::PowOp)
+# `pphlo.power` (pphlo::PowOp)
 
 <em>Power operator</em>
 
-Returns <code>lhs ^ rhs</code> element-wise.
+Returns `lhs ^ rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -4254,7 +4254,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -4264,7 +4264,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -4306,7 +4306,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-prefer-a-pphlo-preferaop}
 
-# <code>pphlo.prefer\_a</code> (pphlo::PreferAOp)
+# `pphlo.prefer_a` (pphlo::PreferAOp)
 
 <em>Prefer AShare operator</em>
 
@@ -4338,7 +4338,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -4380,11 +4380,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-reciprocal-pphlo-reciprocalop}
 
-# <code>pphlo.reciprocal</code> (pphlo::ReciprocalOp)
+# `pphlo.reciprocal` (pphlo::ReciprocalOp)
 
 <em>Reciprocal operator</em>
 
-Returns <code>1.0 / operand</code> element-wise.
+Returns `1.0 / operand` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -4415,7 +4415,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -4457,7 +4457,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-reduce-pphlo-reduceop}
 
-# <code>pphlo.reduce</code> (pphlo::ReduceOp)
+# `pphlo.reduce` (pphlo::ReduceOp)
 
 <em>Reduce operator</em>
 
@@ -4492,7 +4492,7 @@ Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerm
   <tbody>
     <tr>
       <td>
-        <code>dimensions</code>
+        `dimensions`
       </td>
 
       <td>
@@ -4526,7 +4526,7 @@ Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerm
   <tbody>
     <tr>
       <td>
-        <code>inputs</code>
+        `inputs`
       </td>
 
       <td>
@@ -4536,7 +4536,7 @@ Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerm
 
     <tr>
       <td>
-        <code>init\_values</code>
+        `init_values`
       </td>
 
       <td>
@@ -4578,7 +4578,7 @@ Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerm
 
 :target{#pphlo-reduce-window-pphlo-reducewindowop}
 
-# <code>pphlo.reduce\_window</code> (pphlo::ReduceWindowOp)
+# `pphlo.reduce_window` (pphlo::ReduceWindowOp)
 
 <em>ReduceWindow operator</em>
 
@@ -4613,7 +4613,7 @@ Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerm
   <tbody>
     <tr>
       <td>
-        <code>window\_dimensions</code>
+        `window_dimensions`
       </td>
 
       <td>
@@ -4627,7 +4627,7 @@ Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerm
 
     <tr>
       <td>
-        <code>window\_strides</code>
+        `window_strides`
       </td>
 
       <td>
@@ -4641,7 +4641,7 @@ Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerm
 
     <tr>
       <td>
-        <code>base\_dilations</code>
+        `base_dilations`
       </td>
 
       <td>
@@ -4655,7 +4655,7 @@ Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerm
 
     <tr>
       <td>
-        <code>window\_dilations</code>
+        `window_dilations`
       </td>
 
       <td>
@@ -4669,7 +4669,7 @@ Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerm
 
     <tr>
       <td>
-        <code>padding</code>
+        `padding`
       </td>
 
       <td>
@@ -4703,7 +4703,7 @@ Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerm
   <tbody>
     <tr>
       <td>
-        <code>inputs</code>
+        `inputs`
       </td>
 
       <td>
@@ -4713,7 +4713,7 @@ Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerm
 
     <tr>
       <td>
-        <code>init\_values</code>
+        `init_values`
       </td>
 
       <td>
@@ -4755,11 +4755,11 @@ Traits: RecursiveMemoryEffects, SameVariadicOperandSize, SingleBlockImplicitTerm
 
 :target{#pphlo-remainder-pphlo-remop}
 
-# <code>pphlo.remainder</code> (pphlo::RemOp)
+# `pphlo.remainder` (pphlo::RemOp)
 
 <em>Remainder operator</em>
 
-Returns <code>lhs % rhs</code> element-wise.
+Returns `lhs % rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -4790,7 +4790,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -4800,7 +4800,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -4842,11 +4842,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-reshape-pphlo-reshapeop}
 
-# <code>pphlo.reshape</code> (pphlo::ReshapeOp)
+# `pphlo.reshape` (pphlo::ReshapeOp)
 
 <em>Reshape operator</em>
 
-Reshapes the dimensions of <code>operand</code> into a new configuration.
+Reshapes the dimensions of `operand` into a new configuration.
 
 See [https://www.tensorflow.org/xla/operation\_semantics#reshape](https://www.tensorflow.org/xla/operation_semantics#reshape).
 
@@ -4876,7 +4876,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -4918,10 +4918,10 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-return-pphlo-returnop}
 
-# <code>pphlo.return</code> (pphlo::ReturnOp)
+# `pphlo.return` (pphlo::ReturnOp)
 
 \_
-The <code>pphlo.return</code> operation terminates a region and returns values.
+The `pphlo.return` operation terminates a region and returns values.
 \_
 
 Traits: AlwaysSpeculatableImplTrait, Terminator
@@ -4950,7 +4950,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>results</code>
+        `results`
       </td>
 
       <td>
@@ -4962,12 +4962,12 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-reverse-pphlo-reverseop}
 
-# <code>pphlo.reverse</code> (pphlo::ReverseOp)
+# `pphlo.reverse` (pphlo::ReverseOp)
 
 <em>Reverse operator</em>
 
-Reverses the specified dimensions of <code>operand</code> according to the given
-<code>dimensions</code>.
+Reverses the specified dimensions of `operand` according to the given
+`dimensions`.
 
 See [https://www.tensorflow.org/xla/operation\_semantics#rev\_reverse](https://www.tensorflow.org/xla/operation_semantics#rev_reverse).
 
@@ -5001,7 +5001,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>dimensions</code>
+        `dimensions`
       </td>
 
       <td>
@@ -5035,7 +5035,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -5077,12 +5077,12 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-rng-pphlo-rngop}
 
-# <code>pphlo.rng</code> (pphlo::RngOp)
+# `pphlo.rng` (pphlo::RngOp)
 
 <em>RNG with uniform distribution.</em>
 
 Constructs an output of a given shape with random numbers generated
-following the uniform distribution over the interval <code>\[a,b)</code>. The parameters
+following the uniform distribution over the interval `[a,b)`. The parameters
 and output element type have to be an integral type or a
 fixed point type, and the types have to be consistent.
 
@@ -5110,7 +5110,7 @@ Traits: SameOperandsAndResultElementType
   <tbody>
     <tr>
       <td>
-        <code>a</code>
+        `a`
       </td>
 
       <td>
@@ -5120,7 +5120,7 @@ Traits: SameOperandsAndResultElementType
 
     <tr>
       <td>
-        <code>b</code>
+        `b`
       </td>
 
       <td>
@@ -5162,11 +5162,11 @@ Traits: SameOperandsAndResultElementType
 
 :target{#pphlo-round-nearest-afz-pphlo-roundop}
 
-# <code>pphlo.round\_nearest\_afz</code> (pphlo::RoundOp)
+# `pphlo.round_nearest_afz` (pphlo::RoundOp)
 
 <em>Round operator, ties away from zero</em>
 
-Returns <code>Round(operand)</code> element-wise, rounding to nearest integer with
+Returns `Round(operand)` element-wise, rounding to nearest integer with
 half-way cases rounding away from zero.
 
 See
@@ -5198,7 +5198,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -5240,11 +5240,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-rsqrt-pphlo-rsqrtop}
 
-# <code>pphlo.rsqrt</code> (pphlo::RsqrtOp)
+# `pphlo.rsqrt` (pphlo::RsqrtOp)
 
 <em>Reciprocal of square-root operator</em>
 
-Returns <code>rsqrt(operand)</code> element-wise.
+Returns `rsqrt(operand)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -5275,7 +5275,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -5317,16 +5317,16 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-select-and-scatter-pphlo-selectandscatterop}
 
-# <code>pphlo.select\_and\_scatter</code> (pphlo::SelectAndScatterOp)
+# `pphlo.select_and_scatter` (pphlo::SelectAndScatterOp)
 
 <em>SelectAndScatter operator</em>
 
-Runs a windowed selection <code>select</code> function over <code>operand</code> with shape
-<code>window\_dimensions</code> and stride <code>window\_strides</code>. This will produce an amount
-of selected locations whose shape matches <code>source</code>. These are then scattered
-to the output which is initialized with <code>init\_value</code>.
+Runs a windowed selection `select` function over `operand` with shape
+`window_dimensions` and stride `window_strides`. This will produce an amount
+of selected locations whose shape matches `source`. These are then scattered
+to the output which is initialized with `init_value`.
 Multiple scattered elements which land in the same output location are
-combined using the <code>scatter</code> function.
+combined using the `scatter` function.
 
 See [https://www.tensorflow.org/xla/operation\_semantics#selectandscatter](https://www.tensorflow.org/xla/operation_semantics#selectandscatter).
 
@@ -5356,7 +5356,7 @@ Traits: RecursiveMemoryEffects
   <tbody>
     <tr>
       <td>
-        <code>window\_dimensions</code>
+        `window_dimensions`
       </td>
 
       <td>
@@ -5370,7 +5370,7 @@ Traits: RecursiveMemoryEffects
 
     <tr>
       <td>
-        <code>window\_strides</code>
+        `window_strides`
       </td>
 
       <td>
@@ -5384,7 +5384,7 @@ Traits: RecursiveMemoryEffects
 
     <tr>
       <td>
-        <code>padding</code>
+        `padding`
       </td>
 
       <td>
@@ -5418,7 +5418,7 @@ Traits: RecursiveMemoryEffects
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -5428,7 +5428,7 @@ Traits: RecursiveMemoryEffects
 
     <tr>
       <td>
-        <code>source</code>
+        `source`
       </td>
 
       <td>
@@ -5438,7 +5438,7 @@ Traits: RecursiveMemoryEffects
 
     <tr>
       <td>
-        <code>init\_value</code>
+        `init_value`
       </td>
 
       <td>
@@ -5480,13 +5480,13 @@ Traits: RecursiveMemoryEffects
 
 :target{#pphlo-select-pphlo-selectop}
 
-# <code>pphlo.select</code> (pphlo::SelectOp)
+# `pphlo.select` (pphlo::SelectOp)
 
 <em>Select operator</em>
 
-Constructs an output tensor from the elements of <code>on\_true</code> and <code>on\_false</code>
-based on the values of <code>pred</code>. All three operands must be of the same shape
-with the exception of <code>pred</code>, which may also be a scalar in which case it is
+Constructs an output tensor from the elements of `on_true` and `on_false`
+based on the values of `pred`. All three operands must be of the same shape
+with the exception of `pred`, which may also be a scalar in which case it is
 broadcasted.
 
 See [https://www.tensorflow.org/xla/operation\_semantics#select](https://www.tensorflow.org/xla/operation_semantics#select).
@@ -5517,7 +5517,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>pred</code>
+        `pred`
       </td>
 
       <td>
@@ -5527,7 +5527,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>on\_true</code>
+        `on_true`
       </td>
 
       <td>
@@ -5537,7 +5537,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>on\_false</code>
+        `on_false`
       </td>
 
       <td>
@@ -5579,11 +5579,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-shift-left-pphlo-shiftleftop}
 
-# <code>pphlo.shift\_left</code> (pphlo::ShiftLeftOp)
+# `pphlo.shift_left` (pphlo::ShiftLeftOp)
 
 <em>Shift Left operator</em>
 
-Returns <code>lhs \<\< rhs</code> element-wise.
+Returns `lhs << rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -5614,7 +5614,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -5624,7 +5624,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -5666,11 +5666,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-shift-right-arithmetic-pphlo-shiftrightarithmeticop}
 
-# <code>pphlo.shift\_right\_arithmetic</code> (pphlo::ShiftRightArithmeticOp)
+# `pphlo.shift_right_arithmetic` (pphlo::ShiftRightArithmeticOp)
 
 <em>Shift right arithmetic operator</em>
 
-Returns arithmetic <code>lhs >> rhs</code> element-wise.
+Returns arithmetic `lhs >> rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -5701,7 +5701,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -5711,7 +5711,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -5753,11 +5753,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-shift-right-logical-pphlo-shiftrightlogicalop}
 
-# <code>pphlo.shift\_right\_logical</code> (pphlo::ShiftRightLogicalOp)
+# `pphlo.shift_right_logical` (pphlo::ShiftRightLogicalOp)
 
 <em>Shift right logical operator</em>
 
-Returns logical <code>lhs >> rhs</code> element-wise.
+Returns logical `lhs >> rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -5788,7 +5788,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -5798,7 +5798,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -5840,11 +5840,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-sign-pphlo-signop}
 
-# <code>pphlo.sign</code> (pphlo::SignOp)
+# `pphlo.sign` (pphlo::SignOp)
 
 <em>Sign operator</em>
 
-Returns <code>sign(operand)</code> element-wise, where
+Returns `sign(operand)` element-wise, where
 
 ```default
 sign(x) = -1  : x < 0
@@ -5881,7 +5881,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -5923,7 +5923,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-slice-pphlo-sliceop}
 
-# <code>pphlo.slice</code> (pphlo::SliceOp)
+# `pphlo.slice` (pphlo::SliceOp)
 
 The dynamic shape version of SliceOp. Extracts a sub-array from the input
 array according to start\_indices, limit\_indices and strides. Expect
@@ -5962,7 +5962,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>start\_indices</code>
+        `start_indices`
       </td>
 
       <td>
@@ -5976,7 +5976,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>limit\_indices</code>
+        `limit_indices`
       </td>
 
       <td>
@@ -5990,7 +5990,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>strides</code>
+        `strides`
       </td>
 
       <td>
@@ -6024,7 +6024,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -6066,12 +6066,12 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-sort-pphlo-sortop}
 
-# <code>pphlo.sort</code> (pphlo::SortOp)
+# `pphlo.sort` (pphlo::SortOp)
 
 <em>Sort operator</em>
 
-Sorts the given <code>operands</code> at the given <code>dimension</code> with the given
-<code>comparator</code>.
+Sorts the given `operands` at the given `dimension` with the given
+`comparator`.
 
 See [https://www.tensorflow.org/xla/operation\_semantics#sort](https://www.tensorflow.org/xla/operation_semantics#sort).
 
@@ -6101,7 +6101,7 @@ Traits: RecursiveMemoryEffects, SameOperandsAndResultShape
   <tbody>
     <tr>
       <td>
-        <code>dimension</code>
+        `dimension`
       </td>
 
       <td>
@@ -6115,7 +6115,7 @@ Traits: RecursiveMemoryEffects, SameOperandsAndResultShape
 
     <tr>
       <td>
-        <code>is\_stable</code>
+        `is_stable`
       </td>
 
       <td>
@@ -6149,7 +6149,7 @@ Traits: RecursiveMemoryEffects, SameOperandsAndResultShape
   <tbody>
     <tr>
       <td>
-        <code>operands</code>
+        `operands`
       </td>
 
       <td>
@@ -6191,11 +6191,11 @@ Traits: RecursiveMemoryEffects, SameOperandsAndResultShape
 
 :target{#pphlo-sqrt-pphlo-sqrtop}
 
-# <code>pphlo.sqrt</code> (pphlo::SqrtOp)
+# `pphlo.sqrt` (pphlo::SqrtOp)
 
 <em>Square-root operator</em>
 
-Returns <code>sqrt(operand)</code> element-wise.
+Returns `sqrt(operand)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -6226,7 +6226,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -6268,11 +6268,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-subtract-pphlo-subtractop}
 
-# <code>pphlo.subtract</code> (pphlo::SubtractOp)
+# `pphlo.subtract` (pphlo::SubtractOp)
 
 <em>Subtraction operator</em>
 
-Returns <code>lhs - rhs</code> element-wise.
+Returns `lhs - rhs` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -6303,7 +6303,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -6313,7 +6313,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
@@ -6355,11 +6355,11 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-tanh-pphlo-tanhop}
 
-# <code>pphlo.tanh</code> (pphlo::TanhOp)
+# `pphlo.tanh` (pphlo::TanhOp)
 
 <em>Tanh operator</em>
 
-Returns <code>tanh(operand)</code> element-wise.
+Returns `tanh(operand)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_unary\_functions](https://www.tensorflow.org/xla/operation_semantics#element-wise_unary_functions).
@@ -6390,7 +6390,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -6432,13 +6432,13 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-transpose-pphlo-transposeop}
 
-# <code>pphlo.transpose</code> (pphlo::TransposeOp)
+# `pphlo.transpose` (pphlo::TransposeOp)
 
 <em>Transpose operator</em>
 
-Permutes the dimensions of <code>operand</code> according to the given <code>permutation</code>.
+Permutes the dimensions of `operand` according to the given `permutation`.
 
-<code>res\_dimensions\[i] = operand\_dimensions\[permutation\[i]]</code>
+`res_dimensions[i] = operand_dimensions[permutation[i]]`
 
 See [https://www.tensorflow.org/xla/operation\_semantics#transpose](https://www.tensorflow.org/xla/operation_semantics#transpose).
 
@@ -6472,7 +6472,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>permutation</code>
+        `permutation`
       </td>
 
       <td>
@@ -6506,7 +6506,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>operand</code>
+        `operand`
       </td>
 
       <td>
@@ -6548,7 +6548,7 @@ Effects: MemoryEffects::Effect\{}
 
 :target{#pphlo-while-pphlo-whileop}
 
-# <code>pphlo.while</code> (pphlo::WhileOp)
+# `pphlo.while` (pphlo::WhileOp)
 
 <em>While operator</em>
 
@@ -6579,7 +6579,7 @@ Traits: PPHLO\_PairwiseSameOperandAndResultType, RecursiveMemoryEffects, SingleB
   <tbody>
     <tr>
       <td>
-        <code>args</code>
+        `args`
       </td>
 
       <td>
@@ -6621,11 +6621,11 @@ Traits: PPHLO\_PairwiseSameOperandAndResultType, RecursiveMemoryEffects, SingleB
 
 :target{#pphlo-xor-pphlo-xorop}
 
-# <code>pphlo.xor</code> (pphlo::XorOp)
+# `pphlo.xor` (pphlo::XorOp)
 
 <em>Logical xor</em>
 
-Returns <code>logical\_xor(lhs, rhs)</code> element-wise.
+Returns `logical_xor(lhs, rhs)` element-wise.
 
 See
 [https://www.tensorflow.org/xla/operation\_semantics#element-wise\_binary\_arithmetic\_operations](https://www.tensorflow.org/xla/operation_semantics#element-wise_binary_arithmetic_operations).
@@ -6656,7 +6656,7 @@ Effects: MemoryEffects::Effect\{}
   <tbody>
     <tr>
       <td>
-        <code>lhs</code>
+        `lhs`
       </td>
 
       <td>
@@ -6666,7 +6666,7 @@ Effects: MemoryEffects::Effect\{}
 
     <tr>
       <td>
-        <code>rhs</code>
+        `rhs`
       </td>
 
       <td>
