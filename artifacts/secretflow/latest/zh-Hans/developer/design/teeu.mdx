@@ -118,11 +118,11 @@ Alice 和 Bob 各自持有一对公私密钥，AuthManager 以及 TEEU 的安全
 
 3.1. TEEU 随机生成临时公私钥（pk\_tmp, sk\_tmp），这对公私钥作为后续与 AuthManager 通信的临时密钥。
 
-3.2. TEEU 生成远程认证报告 <code>ra\_report</code>, 其中用户自定义字段 <code>ra\_report.user\_data</code> 设置为 SHA256(pk\_tmp || SHA256(foo) || id\_x || id\_y)。
+3.2. TEEU 生成远程认证报告 `ra_report`, 其中用户自定义字段 `ra_report.user_data` 设置为 SHA256(pk\_tmp || SHA256(foo) || id\_x || id\_y)。
 
-3.3. TEEU 将 <code>ra\_report</code>，随机生成的公钥 <code>pk\_tmp</code>，待执行的函数哈希 <code>SHA256(foo)</code> 以及加密数据 x，y 的 ID 发送给 AuthManager，用于请求 x，y 的解密密钥。
+3.3. TEEU 将 `ra_report`，随机生成的公钥 `pk_tmp`，待执行的函数哈希 `SHA256(foo)` 以及加密数据 x，y 的 ID 发送给 AuthManager，用于请求 x，y 的解密密钥。
 
-3.4 AuthManager 会验证 report 以及待执行函数的哈希值是否满足 x, y 的授权信息（验证流程见 <code>AuthVerify</code>)
+3.4 AuthManager 会验证 report 以及待执行函数的哈希值是否满足 x, y 的授权信息（验证流程见 `AuthVerify`)
 
 > AuthVerify<br /> (1) 根据 id\_x, 查询到以下信息 k\_x, sig\_x, auth\_x, sig\_auth\_x, pk\_a。<br /> (2) 使用 sk\_auth 解密 k\_x 得到 dk\_x.<br /> (3) 使用 pk\_a 验证签名, SigVerify(pk\_a, sig\_x, id\_x || dk\_x).<br /> (4) 使用 pk\_a 验证签名, SigVerify(pk\_a, sig\_auth\_x, auth\_x), 这一步和第（3）步结合起来可以说明授权信息是由 Alice 生成的，而不是伪造的，因为只有 Alice 才知道 dk\_x。<br /> (5) 验证 foo 是否在 auth\_x 内.<br /> (6) 验证 ra\_report 并确认 ra\_report.mr\_enclave 是否在 auth\_x 内。<br /> (7) 对 id\_y 重复 (1)-(6)的操作。
 
@@ -243,7 +243,7 @@ print(sf.reveal(avg_val))
 
 3. 第12-13行Alice和Bob分别生成了一个随机numpy array，这里的随机生成分别发生在Alice和Bob本地。
 
-4. 第15\~16行Alice和Bob分别把通过<code>to</code>方法把各自的numpy array发送给teeu，允许对其执行average方法。这一步做了以下事情：
+4. 第15\~16行Alice和Bob分别把通过`to`方法把各自的numpy array发送给teeu，允许对其执行average方法。这一步做了以下事情：
 
    1. 数据加密
 
@@ -304,9 +304,9 @@ PYTHONPATH=$PWD/image/opt/secretflow/lib/python3.8/site-packages/ pip install --
 
 提醒：
 
-- /root/occlum\_instance/images是occlum实际运行时的顶级根目录，您的自定义脚本建议放在 /root/occlum\_instance/images/root/下面，实际运行（执行occlum run命令）时，脚本的路径必须填写为<code>occlum run /bin/python /root/your\_script.py</code>
-- 新的 python 程序可能会占用更多的内存，如果您遇到内存不足等报错，可以尝试扩大内存配置，配置文件为/root/occlum\_instance/Occlum.json，通常您只需要把<code>user\_space\_size</code>调整一个更大的值。
-- 每次修改了脚本或者配置文件的内容，都必须先执行 <code>occlum build -f</code> 才能确保生效，请一定注意
+- /root/occlum\_instance/images是occlum实际运行时的顶级根目录，您的自定义脚本建议放在 /root/occlum\_instance/images/root/下面，实际运行（执行occlum run命令）时，脚本的路径必须填写为`occlum run /bin/python /root/your_script.py`
+- 新的 python 程序可能会占用更多的内存，如果您遇到内存不足等报错，可以尝试扩大内存配置，配置文件为/root/occlum\_instance/Occlum.json，通常您只需要把`user_space_size`调整一个更大的值。
+- 每次修改了脚本或者配置文件的内容，都必须先执行 `occlum build -f` 才能确保生效，请一定注意
 
 :target{#roadmap}
 

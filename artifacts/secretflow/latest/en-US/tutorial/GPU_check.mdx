@@ -99,7 +99,7 @@
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
     ```python
     for i in range(gpu_num):
-        print('GPU {}.: {}'.format(i,torch.cuda.get_device_name(i)))
+        print('GPU {}.: {}'.format(i, torch.cuda.get_device_name(i)))
     ```
   </Notebook.CodeArea>
 
@@ -320,6 +320,7 @@
   <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
     ```python
     from jax.lib import xla_bridge
+
     print(xla_bridge.get_backend().platform)
     ```
   </Notebook.CodeArea>
@@ -457,8 +458,8 @@ The demo code is from [https://www.secretflow.org.cn/docs/secretflow/en/tutorial
     %matplotlib inline
 
     # Load the data
-    x1, _ = breast_cancer(party_id=1,train=True)
-    x2, y = breast_cancer(party_id=2,train=True)
+    x1, _ = breast_cancer(party_id=1, train=True)
+    x2, y = breast_cancer(party_id=2, train=True)
 
     # Hyperparameter
     W = jnp.zeros((30,))
@@ -471,7 +472,7 @@ The demo code is from [https://www.secretflow.org.cn/docs/secretflow/en/tutorial
 
     # Validate the model
     X_test, y_test = breast_cancer(train=False)
-    auc=validate_model(W,b, X_test, y_test)
+    auc = validate_model(W, b, X_test, y_test)
     print(f'auc={auc}')
     ```
   </Notebook.CodeArea>

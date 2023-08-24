@@ -124,11 +124,11 @@ The process is similar to <strong>[x.to](http://x.to)(teeu)</strong> (2.1-2.3)
 
 3.1. TEEU randomly generates a temporary public-private key (pk\_tmp, sk\_tmp), which is used as a temporary key for subsequent communication with AuthManager.
 
-3.2. TEEU generates a remote attestation report <code>ra\_report</code>, the user-defined field <code>ra\_report.user\_data</code> in the report is set to SHA256(pk\_tmp || SHA256(foo) || id\_x || id\_y).
+3.2. TEEU generates a remote attestation report `ra_report`, the user-defined field `ra_report.user_data` in the report is set to SHA256(pk\_tmp || SHA256(foo) || id\_x || id\_y).
 
-3.3. TEEU sends the report <code>ra\_report</code>, the randomly generated public key <code>pk\_tmp</code>, the hash of the function to be executed <code>SHA256(foo)</code>, and the ID of encrypted data x, y (<code>id\_x</code>, <code>id\_y</code>) to AuthManager to request the decryption key of x, y.
+3.3. TEEU sends the report `ra_report`, the randomly generated public key `pk_tmp`, the hash of the function to be executed `SHA256(foo)`, and the ID of encrypted data x, y (`id_x`, `id_y`) to AuthManager to request the decryption key of x, y.
 
-3.4. AuthManager will verify whether the report and the hash  of the function to be executed satisfy the authorization information of x, y (see <code>AuthVerify</code> for the verification process).
+3.4. AuthManager will verify whether the report and the hash  of the function to be executed satisfy the authorization information of x, y (see `AuthVerify` for the verification process).
 
 > AuthVerify<br />
 > (1) According to id\_x, the following information k\_x, sig\_x, auth\_x, sig\_auth\_x, pk\_a are found.<br />
@@ -258,7 +258,7 @@ print(sf.reveal(avg_val))
 
 3. Lines 12-13 Alice and Bob respectively generate a random numpy array, where the random generation occurs locally in Alice and Bob respectively.
 
-4. In lines 15-16, Alice and Bob respectively send their respective numpy arrays to teeu through the <code>to</code> method, allowing them to execute the average method. This step does the following:
+4. In lines 15-16, Alice and Bob respectively send their respective numpy arrays to teeu through the `to` method, allowing them to execute the average method. This step does the following:
 
    1. Data encryption
 
@@ -319,8 +319,8 @@ You need to do occlum build, get new mr\_enclave, and run your script. For detai
 
 Hint:
 
-- /root/occlum\_instance/images is the top-level root directory when occlum is actually running. Your custom script is recommended to be placed under /root/occlum\_instance/images/root/. When actually running (executing the occlum run command), the path of the script must be Fill in as <code>occlum run /bin/python /root/your\_script.py</code>
-- The new python program may take up more memory. If you encounter errors such as insufficient memory, you can try to expand the memory configuration. The configuration file is /root/occlum\_instance/Occlum.json. Usually you only need to adjust <code>user\_space\_size</code> by one greater value.
+- /root/occlum\_instance/images is the top-level root directory when occlum is actually running. Your custom script is recommended to be placed under /root/occlum\_instance/images/root/. When actually running (executing the occlum run command), the path of the script must be Fill in as `occlum run /bin/python /root/your_script.py`
+- The new python program may take up more memory. If you encounter errors such as insufficient memory, you can try to expand the memory configuration. The configuration file is /root/occlum\_instance/Occlum.json. Usually you only need to adjust `user_space_size` by one greater value.
 - Every time you modify the content of the script or configuration file, you must first execute occlum build -f to ensure it takes effect, please pay attention.
 
 :target{#roadmap}

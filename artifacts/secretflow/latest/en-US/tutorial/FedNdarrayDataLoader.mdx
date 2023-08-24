@@ -7,7 +7,7 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
 <LineBlock>
   This tutorial will demonstrate how to load Numpy data in a multi-party secure environment using SecretFlow.
 
-  SecretFlow supports multiple formats, including <code>.npy</code> and <code>.npz</code>, and its interface is designed to be compatible with <code>numpy</code>
+  SecretFlow supports multiple formats, including `.npy` and `.npz`, and its interface is designed to be compatible with `numpy`
 </LineBlock>
 
 :target{#Environment-Configuration}
@@ -34,7 +34,7 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
     # In case you have a running secretflow runtime already.
     sf.shutdown()
     sf.init(['alice', 'bob', 'charlie'], address="local", log_to_driver=True)
-    alice, bob ,charlie = sf.PYU('alice'), sf.PYU('bob') , sf.PYU('charlie')
+    alice, bob, charlie = sf.PYU('alice'), sf.PYU('bob'), sf.PYU('charlie')
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -43,9 +43,9 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
 
 ## Interface Introduction
 
-In SecretFlow, we provide an interface similar to <code>numpy.load</code> called <code>secretflow\.load.ndarray.load</code> to load <code>ndarray</code> data from multiple parties and convert it into a federated representation.
+In SecretFlow, we provide an interface similar to `numpy.load` called `secretflow.load.ndarray.load` to load `ndarray` data from multiple parties and convert it into a federated representation.
 
-Using secretflow\.data.load, you can read numpy files from multiple parties and create a <code>FedNdarray</code> object.
+Using secretflow\.data.load, you can read numpy files from multiple parties and create a `FedNdarray` object.
 
 Interface Introduction：[secretflow.data.load](https://www.secretflow.org.cn/docs/secretflow/en/source/secretflow.data.html#secretflow.data.ndarray.load)
 
@@ -68,6 +68,7 @@ Interface Introduction：[secretflow.data.load](https://www.secretflow.org.cn/do
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
     ```python
     import numpy as np
+
     all_data = np.load("./mnist.npz")
     ```
   </Notebook.CodeArea>
@@ -96,8 +97,20 @@ Saving separately as npz format file.
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
     ```python
-    np.savez("./alice_mnist.npz",train_x = alice_train_x, test_x = alice_test_x, train_y=alice_train_y, test_y = alice_test_y)
-    np.savez("./bob_mnist.npz",train_x = bob_train_x, test_x = bob_test_x, train_y=bob_train_y, test_y = bob_test_y)
+    np.savez(
+        "./alice_mnist.npz",
+        train_x=alice_train_x,
+        test_x=alice_test_x,
+        train_y=alice_train_y,
+        test_y=alice_test_y,
+    )
+    np.savez(
+        "./bob_mnist.npz",
+        train_x=bob_train_x,
+        test_x=bob_test_x,
+        train_y=bob_train_y,
+        test_y=bob_test_y,
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -107,8 +120,8 @@ Saving tarin\_x from Alice and Bob as npy format for convenient future reading.
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
     ```python
-    np.save("./alice_mnist_train_x.npy",alice_train_x)
-    np.save("./bob_mnist_train_x.npy",bob_train_x)
+    np.save("./alice_mnist_train_x.npy", alice_train_x)
+    np.save("./bob_mnist_train_x.npy", bob_train_x)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -138,7 +151,7 @@ Saving tarin\_x from Alice and Bob as npy format for convenient future reading.
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
     ```python
-    fed_npz = load({alice:alice_path, bob:bob_path},allow_pickle=True)
+    fed_npz = load({alice: alice_path, bob: bob_path}, allow_pickle=True)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -191,7 +204,7 @@ Loading npy is very simple. Directly call the load interface, and the results wi
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
     ```python
-    fed_ndarray = load({alice:alice_path, bob:bob_path},allow_pickle=True)
+    fed_ndarray = load({alice: alice_path, bob: bob_path}, allow_pickle=True)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -252,7 +265,7 @@ After downloading and extracting the dataset, the root directory of the dataset 
     ```python
     import os, glob
     import numpy as np
-    import cv2 #The dependencies need to be installed manually, pip install opencv-python
+    import cv2  # The dependencies need to be installed manually, pip install opencv-python
 
     root = path_to_flower_dataset
     classes = ['daisy', 'dandelion', 'roses', 'sunflowers', 'tulips']
@@ -278,18 +291,20 @@ After downloading and extracting the dataset, the root directory of the dataset 
     print(images.shape)
     print(labels.shape)
 
-    #Distribute images and labels to two nodes, allocating 50% of the data to each node.
-    per=0.5
-    alice_images=images[:int(per*images.shape[0]),:,:,:]
-    alice_label=labels[:int(per*images.shape[0])]
-    bob_images=images[int(per*images.shape[0]):,:,:,:]
-    bob_label=labels[int(per*images.shape[0]):]
-    print(f"alice images shape = {alice_images.shape}, alice labels shape = {alice_label.shape}")
+    # Distribute images and labels to two nodes, allocating 50% of the data to each node.
+    per = 0.5
+    alice_images = images[: int(per * images.shape[0]), :, :, :]
+    alice_label = labels[: int(per * images.shape[0])]
+    bob_images = images[int(per * images.shape[0]) :, :, :, :]
+    bob_label = labels[int(per * images.shape[0]) :]
+    print(
+        f"alice images shape = {alice_images.shape}, alice labels shape = {alice_label.shape}"
+    )
     print(f"bob images shape = {bob_images.shape}, bob labels shape = {bob_label.shape}")
 
     # Save the data as npz files separately, and then send them to the two machines.
-    np.savez("flower_alice.npz",image=alice_images,label=alice_label)
-    np.savez("flower_bob.npz",image=bob_images,label=bob_label)
+    np.savez("flower_alice.npz", image=alice_images, label=alice_label)
+    np.savez("flower_bob.npz", image=bob_images, label=bob_label)
     ```
   </Notebook.CodeArea>
 
@@ -305,7 +320,9 @@ Once you have obtained the required NPZ files, use the previously mentioned load
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
     ```python
-    fed_flower_npz = load({alice:"./flower_alice.npz",bob:"./flower_bob.npz"},allow_pickle=True)
+    fed_flower_npz = load(
+        {alice: "./flower_alice.npz", bob: "./flower_bob.npz"}, allow_pickle=True
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>

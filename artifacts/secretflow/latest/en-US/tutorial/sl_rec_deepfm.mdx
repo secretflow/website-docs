@@ -152,7 +152,7 @@ DeepFM公式推导
 <LineBlock>
   其中原始的V\_vector的维度是batchsize<em>Na</em>k， Bob的维度是batchsize<em>Nb</em>k
 
-  经过推导之后实际传输的数据： - (1) 的维度是<code>batchsize\*1</code>,不会泄露v矩阵的信息 - (2) 的维度是batchsize\*K，对于特征维度的信息已经消去，只保留了FM vector dimension上的和信息（通常dim=4）
+  经过推导之后实际传输的数据： - (1) 的维度是`batchsize*1`,不会泄露v矩阵的信息 - (2) 的维度是batchsize\*K，对于特征维度的信息已经消去，只保留了FM vector dimension上的和信息（通常dim=4）
 </LineBlock>
 
 ![deepfm\_path](../_assets/deepfm_plan.jpg):target{#隐语封装}
@@ -162,7 +162,7 @@ DeepFM公式推导
 <LineBlock>
   我们在SecretFlow中的application提供了对于各种应用的封装。
 
-  关于DeepFM的封装在secretflow/ml/nn/applications/sl\_deep\_fm.py，提供了<code>DeepFMBase</code>和<code>DeepFMFuse</code>两个模块。
+  关于DeepFM的封装在secretflow/ml/nn/applications/sl\_deep\_fm.py，提供了`DeepFMBase`和`DeepFMFuse`两个模块。
 
   <strong>DeepFMBase</strong>
 </LineBlock>
@@ -209,7 +209,7 @@ class DeepFMfuse(tf.keras.Model):
     # In case you have a running secretflow runtime already.
     sf.shutdown()
     sf.init(['alice', 'bob', 'charlie'], address="local", log_to_driver=False)
-    alice, bob ,charlie = sf.PYU('alice'), sf.PYU('bob') , sf.PYU('charlie')
+    alice, bob, charlie = sf.PYU('alice'), sf.PYU('bob'), sf.PYU('charlie')
     ```
   </Notebook.CodeArea>
 
@@ -271,17 +271,11 @@ DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
     ```python
-    fed_csv = {
-        alice: "alice_ml1m.csv",
-        bob: "bob_ml1m.csv"
-    }
-    csv_writer_container = {
-        alice: open(fed_csv[alice], "w"),
-        bob: open(fed_csv[bob], "w")
-    }
+    fed_csv = {alice: "alice_ml1m.csv", bob: "bob_ml1m.csv"}
+    csv_writer_container = {alice: open(fed_csv[alice], "w"), bob: open(fed_csv[bob], "w")}
     part_columns = {
-        alice:["UserID", "Gender", "Age", "Occupation", "Zip-code"],
-        bob:["MovieID", "Rating", "Title", "Genres", "Timestamp"]
+        alice: ["UserID", "Gender", "Age", "Occupation", "Zip-code"],
+        bob: ["MovieID", "Rating", "Title", "Genres", "Timestamp"],
     }
     ```
   </Notebook.CodeArea>
@@ -302,17 +296,14 @@ DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
     f = open("ml-1m/ratings.dat", "r", encoding="unicode_escape")
 
     users_data = load_data(
-            "./ml-1m/users.dat",
-            columns=["UserID", "Gender", "Age", "Occupation", "Zip-code"],
-        )
-    movies_data = load_data(
-            "./ml-1m/movies.dat", columns=["MovieID", "Title", "Genres"]
-        )
+        "./ml-1m/users.dat",
+        columns=["UserID", "Gender", "Age", "Occupation", "Zip-code"],
+    )
+    movies_data = load_data("./ml-1m/movies.dat", columns=["MovieID", "Title", "Genres"])
     ratings_columns = ["UserID", "MovieID", "Rating", "Timestamp"]
 
-    rating_data = load_data(
-            "./ml-1m/ratings.dat", columns = ratings_columns
-    )
+    rating_data = load_data("./ml-1m/ratings.dat", columns=ratings_columns)
+
 
     def _parse_example(feature, columns, index):
         if "Title" in feature.keys():
@@ -324,6 +315,7 @@ DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
         for c in columns:
             values.append(feature[c])
         return ",".join(values)
+
 
     index = 0
     num_sample = 1000
@@ -348,7 +340,7 @@ DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
 
 ### 到此为止我们已经完成了数据的处理和拆分
 
-产出了 <code>alice: alice\_ml1m.c™sv bob: bob\_ml1m.csv</code>™
+产出了 `alice: alice_ml1m.c™sv bob: bob_ml1m.csv`™
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
@@ -404,6 +396,7 @@ DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
 
         return dataset_builder
 
+
     # bob
     def create_dataset_builder_bob(
         batch_size=128,
@@ -439,16 +432,17 @@ DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
 
         return dataset_builder
 
+
     data_builder_dict = {
-            alice: create_dataset_builder_alice(
-                batch_size=128,
-                repeat_count=5,
-            ),
-            bob: create_dataset_builder_bob(
-                batch_size=128,
-                repeat_count=5,
-            ),
-        }
+        alice: create_dataset_builder_alice(
+            batch_size=128,
+            repeat_count=5,
+        ),
+        bob: create_dataset_builder_bob(
+            batch_size=128,
+            repeat_count=5,
+        ),
+    }
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -466,6 +460,7 @@ DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
     ```python
     from secretflow.ml.nn.applications.sl_deep_fm import DeepFMbase, DeepFMfuse
     from secretflow.ml.nn import SLModel
+
     NUM_USERS = 6040
     NUM_MOVIES = 3952
     GENDER_VOCAB = ["F", "M"]
@@ -502,7 +497,6 @@ DeepFMBase有4个参数： - dnn\_units\_size: 这个参数需要提供一个lis
     ```python
     # 定义alice的basenet
     def create_base_model_alice():
-
         # Create model
         def create_model():
             import tensorflow as tf
@@ -639,10 +633,7 @@ DeepFMBase有4个参数： - dnn\_units\_size: 这个参数需要提供一个lis
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
     ```python
-    base_model_dict = {
-        alice: create_base_model_alice(),
-        bob: create_base_model_bob()
-    }
+    base_model_dict = {alice: create_base_model_alice(), bob: create_base_model_bob()}
     model_fuse = create_fuse_model()
     ```
   </Notebook.CodeArea>
@@ -658,10 +649,8 @@ DeepFMBase有4个参数： - dnn\_units\_size: 这个参数需要提供一个lis
     from secretflow.data.vertical import read_csv as v_read_csv
 
     vdf = v_read_csv(
-        {alice:"alice_ml1m.csv",
-         bob:"bob_ml1m.csv"},
-        keys="ID",
-        drop_keys="ID")
+        {alice: "alice_ml1m.csv", bob: "bob_ml1m.csv"}, keys="ID", drop_keys="ID"
+    )
     label = vdf["Rating"]
 
     data = vdf.drop(columns=["Rating", "Timestamp", "Title", "Zip-code"])
@@ -669,10 +658,10 @@ DeepFMBase有4个参数： - dnn\_units\_size: 这个参数需要提供一个lis
     data["MovieID"] = data["MovieID"].astype("string")
 
     sl_model = SLModel(
-                base_model_dict=base_model_dict,
-                device_y=bob,
-                model_fuse=model_fuse,
-            )
+        base_model_dict=base_model_dict,
+        device_y=bob,
+        model_fuse=model_fuse,
+    )
     history = sl_model.fit(
         data,
         label,

@@ -7,7 +7,7 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
 <LineBlock>
   本教程将展示如何在 SecretFlow 的多方安全环境中加载 Numpy 数据。
 
-  SecretFlow 支持 <code>npy</code>, <code>npz</code>  等多种格式，接口封装和 <code>numpy</code> 保持一致。
+  SecretFlow 支持 `npy`, `npz`  等多种格式，接口封装和 `numpy` 保持一致。
 </LineBlock>
 
 :target{#环境设置}
@@ -34,7 +34,7 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
     # In case you have a running secretflow runtime already.
     sf.shutdown()
     sf.init(['alice', 'bob', 'charlie'], address="local", log_to_driver=True)
-    alice, bob ,charlie = sf.PYU('alice'), sf.PYU('bob') , sf.PYU('charlie')
+    alice, bob, charlie = sf.PYU('alice'), sf.PYU('bob'), sf.PYU('charlie')
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -43,9 +43,9 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
 
 ## 接口介绍
 
-我们在 SecretFlow 中提供了类似于 <code>numpy.load</code> 的接口 <code>secretflow\.data.ndarray.load</code>  来将各方数据的 <code>ndarray</code> 读取成为一个联邦概念的数据。
+我们在 SecretFlow 中提供了类似于 `numpy.load` 的接口 `secretflow.data.ndarray.load`  来将各方数据的 `ndarray` 读取成为一个联邦概念的数据。
 
-通过 secretflow\.data.load 可以读取多方的 Numpy 文件，构成一个 <code>FedNdarray</code> 。
+通过 secretflow\.data.load 可以读取多方的 Numpy 文件，构成一个 `FedNdarray` 。
 
 接口介绍：[secretflow.data.load](https://www.secretflow.org.cn/docs/secretflow/en/source/secretflow.data.html#secretflow.data.ndarray.load)
 
@@ -68,6 +68,7 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
     ```python
     import numpy as np
+
     all_data = np.load("./mnist.npz")
     ```
   </Notebook.CodeArea>
@@ -96,8 +97,20 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
     ```python
-    np.savez("./alice_mnist.npz",train_x = alice_train_x, test_x = alice_test_x, train_y=alice_train_y, test_y = alice_test_y)
-    np.savez("./bob_mnist.npz",train_x = bob_train_x, test_x = bob_test_x, train_y=bob_train_y, test_y = bob_test_y)
+    np.savez(
+        "./alice_mnist.npz",
+        train_x=alice_train_x,
+        test_x=alice_test_x,
+        train_y=alice_train_y,
+        test_y=alice_test_y,
+    )
+    np.savez(
+        "./bob_mnist.npz",
+        train_x=bob_train_x,
+        test_x=bob_test_x,
+        train_y=bob_train_y,
+        test_y=bob_test_y,
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -107,8 +120,8 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
     ```python
-    np.save("./alice_mnist_train_x.npy",alice_train_x)
-    np.save("./bob_mnist_train_x.npy",bob_train_x)
+    np.save("./alice_mnist_train_x.npy", alice_train_x)
+    np.save("./bob_mnist_train_x.npy", bob_train_x)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -138,7 +151,7 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
     ```python
-    fed_npz = load({alice:alice_path, bob:bob_path},allow_pickle=True)
+    fed_npz = load({alice: alice_path, bob: bob_path}, allow_pickle=True)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -191,7 +204,7 @@ FedNpz 的每一个 value 是 FedNdarray。
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
     ```python
-    fed_ndarray = load({alice:alice_path, bob:bob_path},allow_pickle=True)
+    fed_ndarray = load({alice: alice_path, bob: bob_path}, allow_pickle=True)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -252,7 +265,7 @@ After downloading and extracting the dataset, the root directory of the dataset 
     ```python
     import os, glob
     import numpy as np
-    import cv2 #The dependencies need to be installed manually, pip install opencv-python
+    import cv2  # The dependencies need to be installed manually, pip install opencv-python
 
     root = path_to_flower_dataset
     classes = ['daisy', 'dandelion', 'roses', 'sunflowers', 'tulips']
@@ -278,18 +291,20 @@ After downloading and extracting the dataset, the root directory of the dataset 
     print(images.shape)
     print(labels.shape)
 
-    #Distribute images and labels to two nodes, allocating 50% of the data to each node.
-    per=0.5
-    alice_images=images[:int(per*images.shape[0]),:,:,:]
-    alice_label=labels[:int(per*images.shape[0])]
-    bob_images=images[int(per*images.shape[0]):,:,:,:]
-    bob_label=labels[int(per*images.shape[0]):]
-    print(f"alice images shape = {alice_images.shape}, alice labels shape = {alice_label.shape}")
+    # Distribute images and labels to two nodes, allocating 50% of the data to each node.
+    per = 0.5
+    alice_images = images[: int(per * images.shape[0]), :, :, :]
+    alice_label = labels[: int(per * images.shape[0])]
+    bob_images = images[int(per * images.shape[0]) :, :, :, :]
+    bob_label = labels[int(per * images.shape[0]) :]
+    print(
+        f"alice images shape = {alice_images.shape}, alice labels shape = {alice_label.shape}"
+    )
     print(f"bob images shape = {bob_images.shape}, bob labels shape = {bob_label.shape}")
 
     # Save the data as npz files separately, and then send them to the two machines.
-    np.savez("flower_alice.npz",image=alice_images,label=alice_label)
-    np.savez("flower_bob.npz",image=bob_images,label=bob_label)
+    np.savez("flower_alice.npz", image=alice_images, label=alice_label)
+    np.savez("flower_bob.npz", image=bob_images, label=bob_label)
     ```
   </Notebook.CodeArea>
 
@@ -305,7 +320,9 @@ After downloading and extracting the dataset, the root directory of the dataset 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
     ```python
-    fed_flower_npz = load({alice:"./flower_alice.npz",bob:"./flower_bob.npz"},allow_pickle=True)
+    fed_flower_npz = load(
+        {alice: "./flower_alice.npz", bob: "./flower_bob.npz"}, allow_pickle=True
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>

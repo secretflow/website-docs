@@ -32,7 +32,7 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
     # In case you have a running secretflow runtime already.
     sf.shutdown()
     sf.init(['alice', 'bob', 'charlie'], address="local", log_to_driver=False)
-    alice, bob ,charlie = sf.PYU('alice'), sf.PYU('bob') , sf.PYU('charlie')
+    alice, bob, charlie = sf.PYU('alice'), sf.PYU('bob'), sf.PYU('charlie')
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -138,7 +138,9 @@ Download link\:http\://download.tensorflow\.org/example\_images/flower\_photos.t
             transforms.ToTensor(),
         ]
     )
-    flower_dataset = datasets.ImageFolder(path_to_flower_dataset, transform=flower_transform)
+    flower_dataset = datasets.ImageFolder(
+        path_to_flower_dataset, transform=flower_transform
+    )
     dataset_size = len(flower_dataset)
     # Define sampler
 
@@ -152,12 +154,8 @@ Download link\:http\://download.tensorflow\.org/example\_images/flower\_photos.t
     valid_sampler = SubsetRandomSampler(val_indices)
 
     # Define databuilder
-    train_loader = DataLoader(
-        flower_dataset, batch_size=batch_size, sampler=train_sampler
-    )
-    valid_loader = DataLoader(
-        flower_dataset, batch_size=batch_size, sampler=valid_sampler
-    )
+    train_loader = DataLoader(flower_dataset, batch_size=batch_size, sampler=train_sampler)
+    valid_loader = DataLoader(flower_dataset, batch_size=batch_size, sampler=valid_sampler)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -165,7 +163,7 @@ Download link\:http\://download.tensorflow\.org/example\_images/flower\_photos.t
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
     ```python
-    x,y = next(iter(train_loader))
+    x, y = next(iter(train_loader))
     print(f"x.shape = {x.shape}")
     print(f"y.shape = {y.shape}")
     ```
@@ -184,65 +182,64 @@ Download link\:http\://download.tensorflow\.org/example\_images/flower\_photos.t
 
 我们开发好的DataBuilder在运行是需要分发到各个执行机器上去执行，为了序列化，我们需要把他们进行wrap。
 
-It is essential to consider the following points: - FLModel requires that the input to DataBuilder must include the stage parameter (stage=”train”). - FLModel requires that the passed DataBuilder must return two results, namely, <code>data\_set</code> and <code>steps\_per\_epoch</code>.
+It is essential to consider the following points: - FLModel requires that the input to DataBuilder must include the stage parameter (stage=”train”). - FLModel requires that the passed DataBuilder must return two results, namely, `data_set` and `steps_per_epoch`.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
     ```python
     def create_dataset_builder(
-            batch_size=32,
-            train_split=0.8,
-            shuffle=True,
-            random_seed=1234,
-        ):
-            def dataset_builder(x, stage="train"):
-                """
-                """
-                import math
+        batch_size=32,
+        train_split=0.8,
+        shuffle=True,
+        random_seed=1234,
+    ):
+        def dataset_builder(x, stage="train"):
+            """ """
+            import math
 
-                import numpy as np
-                from torch.utils.data import DataLoader
-                from torch.utils.data.sampler import SubsetRandomSampler
-                from torchvision import datasets, transforms
+            import numpy as np
+            from torch.utils.data import DataLoader
+            from torch.utils.data.sampler import SubsetRandomSampler
+            from torchvision import datasets, transforms
 
-                # Define dataset
-                flower_transform = transforms.Compose(
-                    [
-                        transforms.Resize((180, 180)),
-                        transforms.ToTensor(),
-                    ]
-                )
-                flower_dataset = datasets.ImageFolder(x, transform=flower_transform)
-                dataset_size = len(flower_dataset)
-                # Define sampler
+            # Define dataset
+            flower_transform = transforms.Compose(
+                [
+                    transforms.Resize((180, 180)),
+                    transforms.ToTensor(),
+                ]
+            )
+            flower_dataset = datasets.ImageFolder(x, transform=flower_transform)
+            dataset_size = len(flower_dataset)
+            # Define sampler
 
-                indices = list(range(dataset_size))
-                if shuffle:
-                    np.random.seed(random_seed)
-                    np.random.shuffle(indices)
-                split = int(np.floor(train_split * dataset_size))
-                train_indices, val_indices = indices[:split], indices[split:]
-                train_sampler = SubsetRandomSampler(train_indices)
-                valid_sampler = SubsetRandomSampler(val_indices)
+            indices = list(range(dataset_size))
+            if shuffle:
+                np.random.seed(random_seed)
+                np.random.shuffle(indices)
+            split = int(np.floor(train_split * dataset_size))
+            train_indices, val_indices = indices[:split], indices[split:]
+            train_sampler = SubsetRandomSampler(train_indices)
+            valid_sampler = SubsetRandomSampler(val_indices)
 
-                # Define databuilder
-                train_loader = DataLoader(
-                    flower_dataset, batch_size=batch_size, sampler=train_sampler
-                )
-                valid_loader = DataLoader(
-                    flower_dataset, batch_size=batch_size, sampler=valid_sampler
-                )
+            # Define databuilder
+            train_loader = DataLoader(
+                flower_dataset, batch_size=batch_size, sampler=train_sampler
+            )
+            valid_loader = DataLoader(
+                flower_dataset, batch_size=batch_size, sampler=valid_sampler
+            )
 
-                # Return
-                if stage == "train":
-                    train_step_per_epoch = math.ceil(split / batch_size)
+            # Return
+            if stage == "train":
+                train_step_per_epoch = math.ceil(split / batch_size)
 
-                    return train_loader, train_step_per_epoch
-                elif stage == "eval":
-                    eval_step_per_epoch = math.ceil((dataset_size - split) / batch_size)
-                    return valid_loader, eval_step_per_epoch
+                return train_loader, train_step_per_epoch
+            elif stage == "eval":
+                eval_step_per_epoch = math.ceil((dataset_size - split) / batch_size)
+                return valid_loader, eval_step_per_epoch
 
-            return dataset_builder
+        return dataset_builder
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -254,7 +251,7 @@ It is essential to consider the following points: - FLModel requires that the in
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
     ```python
-    #prepare dataset dict
+    # prepare dataset dict
     data_builder_dict = {
         alice: create_dataset_builder(
             batch_size=32,
@@ -287,6 +284,7 @@ It is essential to consider the following points: - FLModel requires that the in
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
     ```python
     from secretflow.ml.nn.utils import BaseModule
+
 
     class ConvRGBNet(BaseModule):
         def __init__(self, *args, **kwargs) -> None:
@@ -329,7 +327,7 @@ It is essential to consider the following points: - FLModel requires that the in
   <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
     ```python
     device_list = [alice, bob]
-    aggregator = SecureAggregator(charlie,[alice,bob])
+    aggregator = SecureAggregator(charlie, [alice, bob])
     # prepare model
     num_classes = 5
 
@@ -375,10 +373,10 @@ data = {
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
     ```python
-    data={
-            alice: path_to_flower_dataset,
-            bob: path_to_flower_dataset,
-        }
+    data = {
+        alice: path_to_flower_dataset,
+        bob: path_to_flower_dataset,
+    }
     history = fed_model.fit(
         data,
         None,
@@ -389,7 +387,7 @@ data = {
         sampler_method="batch",
         random_seed=1234,
         dp_spent_step_freq=1,
-        dataset_builder=data_builder_dict
+        dataset_builder=data_builder_dict,
     )
     ```
   </Notebook.CodeArea>

@@ -12,7 +12,7 @@ In SecretFlow, SPU device supports three PSI protocol:
 - [KKRT](https://eprint.iacr.org/2016/799.pdf)：semi-host, based on cuckoo hashing and OT extension, suitable for large datasets.
 - [BC22PCG](https://eprint.iacr.org/2022/334): semi-host, psi from pseudorandom correlation generators.
 
-Before we start, we need to initialize the environment. The following three nodes <code>alice</code>, <code>bob</code>, and <code>carol</code> are created on a single machine to simulate multiple participants.
+Before we start, we need to initialize the environment. The following three nodes `alice`, `bob`, and `carol` are created on a single machine to simulate multiple participants.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
@@ -123,7 +123,7 @@ In the actual scenario, the sample data is provided by each participant, and the
 - The intersection field can be single or multiple.
 - The intersection field must be unique. If there is a duplicate, it needs to be deduplicated in advance.
 
-For example, The following is the data provided by alice for PSI intersection, the intersection field is <code>uid</code> and <code>month</code>，we can see that \[1, ‘Jan’] is duplicated.
+For example, The following is the data provided by alice for PSI intersection, the intersection field is `uid` and `month`，we can see that \[1, ‘Jan’] is duplicated.
 
 ```none
 alice.csv
@@ -146,7 +146,7 @@ uid   month   c0
 1     Feb     7.4
 ```
 
-We randomly sample the iris data three times to simulate the data provided by <code>alice</code>, <code>bob</code>, and <code>carol</code>, and the three data are in an unaligned state.
+We randomly sample the iris data three times to simulate the data provided by `alice`, `bob`, and `carol`, and the three data are in an unaligned state.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
@@ -185,7 +185,7 @@ We virtualize three logical devices on the physical device:
 
 ### Single-column PSI
 
-Next, we use <code>uid</code> to intersect the two data, SPU provide <code>psi\_csv</code> which take the csv file as input and generate the csv file after the intersection. The default protocol is KKRT.
+Next, we use `uid` to intersect the two data, SPU provide `psi_csv` which take the csv file as input and generate the csv file after the intersection. The default protocol is KKRT.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
@@ -197,7 +197,7 @@ Next, we use <code>uid</code> to intersect the two data, SPU provide <code>psi\_
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-To check the correctness of the results, we use [pandas.DataFrame.join](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.join.html) to inner join da and db. It can be seen that the two data have been aligned according to <code>uid</code> and sorted according to their lexicographical order.
+To check the correctness of the results, we use [pandas.DataFrame.join](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.join.html) to inner join da and db. It can be seen that the two data have been aligned according to `uid` and sorted according to their lexicographical order.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
@@ -286,7 +286,7 @@ To check the correctness of the results, we use [pandas.DataFrame.join](https://
 
 ### Multi-columns PSI
 
-We can also use multiple fields to intersect, the following demonstrates the use of <code>uid</code> and <code>month</code> to intersect two data. In terms of implementation, multiple fields are concatenated into a string, so please ensure that there is no duplication of the multi-column composite primary key.
+We can also use multiple fields to intersect, the following demonstrates the use of `uid` and `month` to intersect two data. In terms of implementation, multiple fields are concatenated into a string, so please ensure that there is no duplication of the multi-column composite primary key.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
@@ -296,12 +296,18 @@ We can also use multiple fields to intersect, the following demonstrates the use
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Similarly, we use pandas.DataFrame.join to verify the correctness of the result, we can see that the two data have been aligned according to <code>uid</code> and <code>month</code>, and sorted according to their lexicographical order.
+Similarly, we use pandas.DataFrame.join to verify the correctness of the result, we can see that the two data have been aligned according to `uid` and `month`, and sorted according to their lexicographical order.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
     ```python
-    df = da.join(db.set_index(['uid', 'month']), on=['uid', 'month'], how='inner', rsuffix='_bob', sort=True)
+    df = da.join(
+        db.set_index(['uid', 'month']),
+        on=['uid', 'month'],
+        how='inner',
+        rsuffix='_bob',
+        sort=True,
+    )
     expected = df[da.columns].astype({'uid': 'int64'}).reset_index(drop=True)
 
     da_psi = pd.read_csv('.data/alice_psi.csv')
@@ -317,7 +323,7 @@ Similarly, we use pandas.DataFrame.join to verify the correctness of the result,
 
 ## Three parties PSI
 
-Next, we add a third-party <code>carol</code>, and create a PYU device for it, as well as an SPU device built by the third party.
+Next, we add a third-party `carol`, and create a PYU device for it, as well as an SPU device built by the third party.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
@@ -328,14 +334,20 @@ Next, we add a third-party <code>carol</code>, and create a PYU device for it, a
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Then, use <code>uid</code> and <code>month</code> as the composite primary key to perform a three-way negotiation. It should be noted that the three-way negotiation only supports the ECDH protocol for the time being.
+Then, use `uid` and `month` as the composite primary key to perform a three-way negotiation. It should be noted that the three-way negotiation only supports the ECDH protocol for the time being.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
     ```python
     input_path = {alice: '.data/alice.csv', bob: '.data/bob.csv', carol: '.data/carol.csv'}
-    output_path = {alice: '.data/alice_psi.csv', bob: '.data/bob_psi.csv', carol: '.data/carol_psi.csv'}
-    spu_3pc.psi_csv(['uid', 'month'], input_path, output_path, 'alice', protocol='ECDH_PSI_3PC')
+    output_path = {
+        alice: '.data/alice_psi.csv',
+        bob: '.data/bob_psi.csv',
+        carol: '.data/carol_psi.csv',
+    }
+    spu_3pc.psi_csv(
+        ['uid', 'month'], input_path, output_path, 'alice', protocol='ECDH_PSI_3PC'
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -347,7 +359,8 @@ Similarly, we use pandas.DataFrame.join to verify the correctness of the result.
     ```python
     keys = ['uid', 'month']
     df = da.join(db.set_index(keys), on=keys, how='inner', rsuffix='_bob', sort=True).join(
-        dc.set_index(keys), on=keys, how='inner', rsuffix='_carol', sort=True)
+        dc.set_index(keys), on=keys, how='inner', rsuffix='_carol', sort=True
+    )
     expected = df[da.columns].astype({'uid': 'int64'}).reset_index(drop=True)
 
     da_psi = pd.read_csv('.data/alice_psi.csv')

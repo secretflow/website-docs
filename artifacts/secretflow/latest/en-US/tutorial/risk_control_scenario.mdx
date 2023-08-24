@@ -1648,7 +1648,7 @@ VIF指标的计算需要利用alice和bob两边的数据，因此相关的计算
 
 样本稳定指数是衡量样本变化所产生的偏移量的一种重要指标，通常用来衡量样本的稳定程度，比如样本在两个月份之间的变化是否稳定。通常变量的PSI值在0.1以下表示变化不太显著，在0.1到0.25之间表示有比较显著的变化，大于0.25表示变量变化比较剧烈，需要特殊关注。
 
-接下来以<code>balance</code>为例子，确认两次抽样的样本分布是否接近。
+接下来以`balance`为例子，确认两次抽样的样本分布是否接近。
 
 > 根据业务需求，PSI分析也可以在数据分析或者特征预处理的时候进行。
 
@@ -1854,9 +1854,9 @@ XGBoost模型的预测基于SPU Device，双方的原始数据将会被保护。
 
 隐语中对二分类的评估有集成的支持。
 
-<code>BiClassificationEval</code> 将计算 <code>AUC</code>, <code>KS</code>, <code>F1 Score</code>, <code>Lift</code>, <code>K-S</code>, <code>Gain</code>, <code>Precision</code>, <code>Recall</code> 等统计数值， 并提供（基于prediction score的）等频和等距分箱的统计报告和总报告。
+`BiClassificationEval` 将计算 `AUC`, `KS`, `F1 Score`, `Lift`, `K-S`, `Gain`, `Precision`, `Recall` 等统计数值， 并提供（基于prediction score的）等频和等距分箱的统计报告和总报告。
 
-不同分桶中评估模型的预测的<code>threshold</code>不同。总报告中依赖<code>threshold</code>的统计取的是各个分桶的最佳值。
+不同分桶中评估模型的预测的`threshold`不同。总报告中依赖`threshold`的统计取的是各个分桶的最佳值。
 
 详情可以参考API文档。
 
@@ -1926,14 +1926,16 @@ XGBoost模型的预测基于SPU Device，双方的原始数据将会被保护。
 
 ### 预测偏差
 
-结果由<code>abs(mean(Acutal) - mean(Prediction))</code>计算获得, 值越小越好。
+结果由`abs(mean(Acutal) - mean(Prediction))`计算获得, 值越小越好。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[31]:" stderr={false} type="input">
     ```python
     from secretflow.stats import prediction_bias_eval
 
-    prediction_bias = prediction_bias_eval(test_y, lr_y_hat, bucket_num=4, absolute=True, bucket_method='equal_width')
+    prediction_bias = prediction_bias_eval(
+        test_y, lr_y_hat, bucket_num=4, absolute=True, bucket_method='equal_width'
+    )
 
     sf.reveal(prediction_bias)
     ```
@@ -1949,7 +1951,9 @@ XGBoost模型的预测基于SPU Device，双方的原始数据将会被保护。
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[32]:" stderr={false} type="input">
     ```python
-    xgb_pva_score = prediction_bias_eval(test_y, xgb_y_hat, bucket_num=4, absolute=True, bucket_method='equal_width')
+    xgb_pva_score = prediction_bias_eval(
+        test_y, xgb_y_hat, bucket_num=4, absolute=True, bucket_method='equal_width'
+    )
 
     sf.reveal(xgb_pva_score)
     ```
@@ -1994,9 +1998,9 @@ XGBoost模型的预测基于SPU Device，双方的原始数据将会被保护。
 
 > 严格来说，评分卡转化是对预测结果的后续处理，并不属于模型评估。
 
-我们将 <code>y = 1</code> 的概率设为<code>p</code>， <code>odds = p / (1 - p)</code>, 评分卡设定的分值刻度可以通过将分值表示为比率对数的线性表达式来定义，即可表示为下式：
+我们将 `y = 1` 的概率设为`p`， `odds = p / (1 - p)`, 评分卡设定的分值刻度可以通过将分值表示为比率对数的线性表达式来定义，即可表示为下式：
 
-<code>Score = A - B log(odds)</code>， A 和 B 是可以设定的常数。隐语中提供了评分卡转换功能，详情可以参考API文档。
+`Score = A - B log(odds)`， A 和 B 是可以设定的常数。隐语中提供了评分卡转换功能，详情可以参考API文档。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[34]:" stderr={false} type="input">

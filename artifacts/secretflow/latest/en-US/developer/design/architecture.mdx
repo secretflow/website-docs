@@ -245,10 +245,10 @@ The following table is a list of devices currently supported by SecretFlow:
 Logic devices are programmable which users can customize computing logic, and each device provides a protocol-independent programming interface to the user.
 On one device, users can define anything from simple matrix operations, to full deep model training, and even arbitrary execution logic, depending on the computing ability provided by the device.
 
-For the plaintext device PYU, its front-end is python, and users can schedule any python function to execute on it through <code>@device</code>. These functions are serialized, transported, deserialized by <code>cloudpickle</code> and executed by the target device’s python interpreter.
+For the plaintext device PYU, its front-end is python, and users can schedule any python function to execute on it through `@device`. These functions are serialized, transported, deserialized by `cloudpickle` and executed by the target device’s python interpreter.
 
 For ciphertext devices SPU, HEU, TEE, their front end can be any framework that supports [XLA](https://www.tensorflow.org/xla/architecture), such as JAX, TensorFlow, PyTorch.
-Similarly, users can also dispatch functions based on these front-end to a specified device for execution through <code>@device</code>.
+Similarly, users can also dispatch functions based on these front-end to a specified device for execution through `@device`.
 
 > Currently, we recommend that you use JAX as the front end. And before using JAX, we strongly recommend that you must read the following documents.
 >
@@ -274,7 +274,7 @@ The user-defined function is first converted into XLA HLO Computation, and XLA p
 The back-end device further performs code optimization and analysis, and generates the final executable code. Executable code or interpreted by the device’s virtual machine (SPU, HEU)
 , or directly executed by hardware (TEE). Using XLA HLO as IR allows us to reuse XLA front-end and device-independent code optimizations, while making the back-end implementation more concise and clean.
 
-For the ciphertext device HEU, it only supports a limited set of calculations, so a set of predefined operators such as <code>\_\_add\_\_</code>, <code>\_\_mul\_\_</code>, etc. are provided, and users cannot customize programming through <code>@device</code>.
+For the ciphertext device HEU, it only supports a limited set of calculations, so a set of predefined operators such as `__add__`, `__mul__`, etc. are provided, and users cannot customize programming through `@device`.
 
 ```python
 x, y = HEUObject(), PYUObject()
@@ -293,7 +293,7 @@ The user performs programming on the logical device and constructs a logical com
 segment of functions or operators on the device, and the edges represent the flow of device objects.
 The logical computation graph is further divided into subgraphs by the device, and the edge between the
 two subgraphs represents the flow of objects across the device. At this time, protocol conversion is required.
-<code>DeviceObject.to</code> is used to convert to the target device object. Any new device should provide the corresponding conversion function and insert it into the object conversion table.
+`DeviceObject.to` is used to convert to the target device object. Any new device should provide the corresponding conversion function and insert it into the object conversion table.
 
 The following table is the translation table for each logical device object:
 

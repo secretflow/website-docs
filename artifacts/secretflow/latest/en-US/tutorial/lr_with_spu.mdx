@@ -27,7 +27,7 @@ While, first, let’s just forget MPC settings and just write a Logistic Regress
 
 ### Load the Dataset
 
-We are going to split the whole dataset into train and test subsets after normalization with <code>breast\_cancer</code>. \* if <code>train</code> is <code>True</code>, returns train subsets. In order to simulate training with vertical dataset splitting, the <code>party\_id</code> is provided. \* else, returns test subsets.
+We are going to split the whole dataset into train and test subsets after normalization with `breast_cancer`. \* if `train` is `True`, returns train subsets. In order to simulate training with vertical dataset splitting, the `party_id` is provided. \* else, returns test subsets.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
@@ -107,7 +107,7 @@ Second, let’s define a single train step with SGD optimizer. Just to remind yo
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Last, let’s build everything together as a <code>fit</code> method which returns the model and losses of each epoch.
+Last, let’s build everything together as a `fit` method which returns the model and losses of each epoch.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -151,8 +151,8 @@ Let’s put everything we have together and train a LR model!
     %matplotlib inline
 
     # Load the data
-    x1, _ = breast_cancer(party_id=1,train=True)
-    x2, y = breast_cancer(party_id=2,train=True)
+    x1, _ = breast_cancer(party_id=1, train=True)
+    x2, y = breast_cancer(party_id=2, train=True)
 
     # Hyperparameter
     W = jnp.zeros((30,))
@@ -165,7 +165,7 @@ Let’s put everything we have together and train a LR model!
 
     # Validate the model
     X_test, y_test = breast_cancer(train=False)
-    auc=validate_model(W,b, X_test, y_test)
+    auc = validate_model(W, b, X_test, y_test)
     print(f'auc={auc}')
     ```
   </Notebook.CodeArea>
@@ -291,9 +291,9 @@ Now we are ready to train a LR model with SPU. After training, losses and model 
 
 ### Reveal the result
 
-In order to check the trained model, we need to convert SPUObject(secret) to Python object(plaintext). SecretFlow provide <code>sf.reveal</code> to convert any DeviceObject to Python object.
+In order to check the trained model, we need to convert SPUObject(secret) to Python object(plaintext). SecretFlow provide `sf.reveal` to convert any DeviceObject to Python object.
 
-> Be care with <code>sf.reveal</code>，since it may result in secret leak。
+> Be care with `sf.reveal`，since it may result in secret leak。
 
 Finally, let’s validate the model with AUC.
 

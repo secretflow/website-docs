@@ -812,7 +812,7 @@ Descibes public storage info for a collection of Device Objects.
       </td>
 
       <td>
-        Supported: <code>spu | pyu</code>
+        Supported: `spu | pyu`
       </td>
     </tr>
 
@@ -1098,7 +1098,7 @@ Describe the application related to data.
       </td>
 
       <td>
-        The application name. Supported: <code>secretflow</code>
+        The application name. Supported: `secretflow`
       </td>
     </tr>
 
@@ -1124,9 +1124,9 @@ Describe the application related to data.
 
 The schema of a table.
 
-- A col must be one of <code>id | feature | label</code>. By default, it should be a
+- A col must be one of `id | feature | label`. By default, it should be a
   feature.
-- All names must match the regexp <code>\[A-Za-z0-9.]\[A-Za-z0-9\_>./]\*</code>.
+- All names must match the regexp `[A-Za-z0-9.][A-Za-z0-9_>./]*`.
 - All data type must be one of
 
 + int8
@@ -1509,7 +1509,7 @@ Describe an attribute.
       </td>
 
       <td>
-        Indicates the ancestors of a node, e.g. <code>\[name\_a, name\_b, name\_c]</code> means the path prefixes of current Attribute is <code>name\_a/name\_b/name\_c/</code>. Only <code>^\[a-zA-Z0-9\_.-]\*\$</code> is allowed. <code>input</code> and <code>output</code> are reserved.
+        Indicates the ancestors of a node, e.g. `[name_a, name_b, name_c]` means the path prefixes of current Attribute is `name_a/name_b/name_c/`. Only `^[a-zA-Z0-9_.-]*$` is allowed. `input` and `output` are reserved.
       </td>
     </tr>
 
@@ -1523,7 +1523,7 @@ Describe an attribute.
       </td>
 
       <td>
-        Must be unique in the same level just like Linux file systems. Only <code>^\[a-zA-Z0-9\_.-]\*\$</code> is allowed. <code>input</code> and <code>output</code> are reserved.
+        Must be unique in the same level just like Linux file systems. Only `^[a-zA-Z0-9_.-]*$` is allowed. `input` and `output` are reserved.
       </td>
     </tr>
 
@@ -1590,7 +1590,7 @@ Describe an attribute.
 #### AttributeDef.AtomicAttrDesc
 
 Extras for an atomic attribute.
-Including: <code>AT\_FLOAT | AT\_INT | AT\_STRING | AT\_BOOL | AT\_FLOATS | AT\_INTS | AT\_STRINGS | AT\_BOOLS</code>.
+Including: `AT_FLOAT | AT_INT | AT_STRING | AT_BOOL | AT_FLOATS | AT_INTS | AT_STRINGS | AT_BOOLS`.
 
 <table>
   <thead>
@@ -1620,7 +1620,7 @@ Including: <code>AT\_FLOAT | AT\_INT | AT\_STRING | AT\_BOOL | AT\_FLOATS | AT\_
       </td>
 
       <td>
-        Only valid when type is <code>AT\_FLOATS | AT\_INTS | AT\_STRINGS | AT\_BOOLS</code>.
+        Only valid when type is `AT_FLOATS | AT_INTS | AT_STRINGS | AT_BOOLS`.
       </td>
     </tr>
 
@@ -1634,7 +1634,7 @@ Including: <code>AT\_FLOAT | AT\_INT | AT\_STRING | AT\_BOOL | AT\_FLOATS | AT\_
       </td>
 
       <td>
-        Only valid when type is <code>AT\_FLOATS | AT\_INTS | AT\_STRINGS | AT\_BOOLS</code>.
+        Only valid when type is `AT_FLOATS | AT_INTS | AT_STRINGS | AT_BOOLS`.
       </td>
     </tr>
 
@@ -1676,7 +1676,7 @@ Including: <code>AT\_FLOAT | AT\_INT | AT\_STRING | AT\_BOOL | AT\_FLOATS | AT\_
       </td>
 
       <td>
-        Only valid when type is <code>AT\_FLOAT | AT\_INT | AT\_STRING | AT\_FLOATS | AT\_INTS | AT\_STRINGS</code>. Please use list fields of AtomicParameter, i.e. <code>ss</code>, <code>i64s</code>, <code>fs</code>. If the attribute is a list, allowed\_values is applied to each element.
+        Only valid when type is `AT_FLOAT | AT_INT | AT_STRING | AT_FLOATS | AT_INTS | AT_STRINGS`. Please use list fields of AtomicParameter, i.e. `ss`, `i64s`, `fs`. If the attribute is a list, allowed\_values is applied to each element.
       </td>
     </tr>
 
@@ -1690,7 +1690,7 @@ Including: <code>AT\_FLOAT | AT\_INT | AT\_STRING | AT\_BOOL | AT\_FLOATS | AT\_
       </td>
 
       <td>
-        Only valid when type is <code>AT\_FLOAT | AT\_INT | AT\_FLOATS | AT\_INTS </code>. If the attribute is a list, lower\_bound is applied to each element.
+        Only valid when type is `AT_FLOAT | AT_INT | AT_FLOATS | AT_INTS `. If the attribute is a list, lower\_bound is applied to each element.
       </td>
     </tr>
 
@@ -1732,7 +1732,7 @@ Including: <code>AT\_FLOAT | AT\_INT | AT\_STRING | AT\_BOOL | AT\_FLOATS | AT\_
       </td>
 
       <td>
-        Only valid when type is <code>AT\_FLOAT | AT\_INT | AT\_FLOATS | AT\_INTS </code>. If the attribute is a list, upper\_bound is applied to each element.
+        Only valid when type is `AT_FLOAT | AT_INT | AT_FLOATS | AT_INTS `. If the attribute is a list, upper\_bound is applied to each element.
       </td>
     </tr>
 
@@ -2088,7 +2088,7 @@ Define an input/output for component.
       </td>
 
       <td>
-        Only valid for tables. The attribute path for a TableAttrDef is <code>\{input|output}/\{IoDef name}/\{TableAttrDef name}</code>.
+        Only valid for tables. The attribute path for a TableAttrDef is `{input|output}/{IoDef name}/{TableAttrDef name}`.
       </td>
     </tr>
   </tbody>
@@ -2520,7 +2520,7 @@ NodeEvalParam contains all the information to evaluate a component.
       </td>
 
       <td>
-        The path of attributes. The attribute path for a TableAttrDef is <code>\{input|output}/\{IoDef name}/\{TableAttrDef name}</code>.
+        The path of attributes. The attribute path for a TableAttrDef is `{input|output}/{IoDef name}/{TableAttrDef name}`.
       </td>
     </tr>
 

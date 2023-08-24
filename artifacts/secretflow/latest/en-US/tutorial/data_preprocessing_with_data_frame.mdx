@@ -55,7 +55,7 @@ Here we use [iris](https://scikit-learn.org/stable/modules/generated/sklearn.dat
     data.iloc[100, 1] = None
 
     # Restore target to its original name.
-    data['target'] = data['target'].map({0: 'setosa', 1: 'versicolor', 2: 'virginica' })
+    data['target'] = data['target'].map({0: 'setosa', 1: 'versicolor', 2: 'virginica'})
     data
     ```
   </Notebook.CodeArea>
@@ -225,9 +225,9 @@ DataFrame provides the fillna method, which can fill in missing values in the sa
 
 #### Scaling features to a range
 
-Secretflow provides <code>MinMaxScaler</code> for scaling features to lie between a given minimum and maximum value. The input and output of MinMaxScaler are both <code>DataFrame</code>.
+Secretflow provides `MinMaxScaler` for scaling features to lie between a given minimum and maximum value. The input and output of MinMaxScaler are both `DataFrame`.
 
-Here is an exmaple to scale <code>sepal length (cm)</code> to the \[0, 1] range.
+Here is an exmaple to scale `sepal length (cm)` to the \[0, 1] range.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
@@ -254,9 +254,9 @@ Here is an exmaple to scale <code>sepal length (cm)</code> to the \[0, 1] range.
 
 #### Variance scaling
 
-Secretflow provides <code>StandardScaler</code> for variance scaling. The input and output of StandardScaler are both DataFrames.
+Secretflow provides `StandardScaler` for variance scaling. The input and output of StandardScaler are both DataFrames.
 
-Here is an exmaple to scale <code>sepal length (cm)</code> to unit variance.
+Here is an exmaple to scale `sepal length (cm)` to unit variance.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
@@ -287,7 +287,7 @@ Here is an exmaple to scale <code>sepal length (cm)</code> to unit variance.
 
 #### OneHot encoding
 
-Secretflow provides <code>OneHotEncoder</code> for OneHot encoding. The input and output of OneHotEncoder are <code>DataFrame</code>.
+Secretflow provides `OneHotEncoder` for OneHot encoding. The input and output of OneHotEncoder are `DataFrame`.
 
 Here is an example to encode target with onehot.
 
@@ -316,7 +316,7 @@ Here is an example to encode target with onehot.
 
 #### Label encoding
 
-secretflow provides <code>LabelEncoder</code> for encoding target labels with value between 0 and n\_classes-1. The input and output of LabelEncoder are <code>DataFrame</code>.
+secretflow provides `LabelEncoder` for encoding target labels with value between 0 and n\_classes-1. The input and output of LabelEncoder are `DataFrame`.
 
 Here is an example to encode target to \[0, n\_classes-1].
 
@@ -345,9 +345,9 @@ Here is an example to encode target to \[0, n\_classes-1].
 
 ### Discretization
 
-SecretFlow provides <code>KBinsDiscretizer</code> for partitioning continuous features into discrete values. The input and output of KBinsDiscretizer are both <code>DataFrame</code>.
+SecretFlow provides `KBinsDiscretizer` for partitioning continuous features into discrete values. The input and output of KBinsDiscretizer are both `DataFrame`.
 
-Here is an example to partition <code>petal length (cm)</code> to 5 bins.
+Here is an example to partition `petal length (cm)` to 5 bins.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
@@ -373,7 +373,7 @@ Here is an example to partition <code>petal length (cm)</code> to 5 bins.
 
 #### WOE encoding
 
-secretflow provides <code>VertWoeBinning</code> to bin the features into buckets by quantile or chimerge method, and calculate the woe value and iv value in each bucket. And <code>VertWOESubstitution</code> can substitute the features with the woe value.
+secretflow provides `VertWoeBinning` to bin the features into buckets by quantile or chimerge method, and calculate the woe value and iv value in each bucket. And `VertWOESubstitution` can substitute the features with the woe value.
 
 Here is an example to encode features to woe.
 
@@ -386,6 +386,7 @@ Here is an example to encode features to woe.
     # Only support binary classification label dataset for now.
     # use linear dataset as example
     from secretflow.utils.simulation.datasets import load_linear
+
     vdf = load_linear(parts={alice: (1, 4), bob: (18, 22)})
     print(f"orig ds in alice:\n {sf.reveal(vdf.partitions[alice].data)}")
     print(f"orig ds in bob:\n {sf.reveal(vdf.partitions[bob].data)}")

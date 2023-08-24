@@ -45,15 +45,15 @@
 ## Here, let us first introduce some concepts
 
 <LineBlock>
-  BaseModule: 类似于 <code>torch.nn.module</code>
+  BaseModule: 类似于 `torch.nn.module`
 
-  TorchModel: 一个包装类包括 <code>loss\_fn</code>,<code>optim\_fn</code>,
+  TorchModel: 一个包装类包括 `loss_fn`,`optim_fn`,
 
   metric\_wrapper: metrics包装器
 
   optim\_wrapper： optim\_fn包装器
 
-  FLModel：联合模型，使用 <code>backend</code> 指定哪个bachend将被使用，使用 <code>strategy</code> 来指定将使用哪个联合策略
+  FLModel：联合模型，使用 `backend` 指定哪个bachend将被使用，使用 `strategy` 来指定将使用哪个联合策略
 </LineBlock>
 
 <Notebook.Cell>
@@ -71,7 +71,7 @@
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-当我们定义模型时，我们只需要继承 <code>BaseModule</code> 来代替 <code>nn.Module</code> 的，其他与pytorch一致。
+当我们定义模型时，我们只需要继承 `BaseModule` 来代替 `nn.Module` 的，其他与pytorch一致。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -126,7 +126,7 @@
     ```python
     device_list = [alice, bob]
     server = charlie
-    aggregator = SecureAggregator(server,[alice,bob])
+    aggregator = SecureAggregator(server, [alice, bob])
 
     # spcify params
     fl_model = FLModel(
@@ -134,8 +134,8 @@
         device_list=device_list,
         model=model_def,
         aggregator=aggregator,
-        strategy='fed_avg_w', # fl strategy
-        backend="torch", # backend support ['tensorflow', 'torch']
+        strategy='fed_avg_w',  # fl strategy
+        backend="torch",  # backend support ['tensorflow', 'torch']
     )
     ```
   </Notebook.CodeArea>
@@ -145,13 +145,13 @@
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
     ```python
     history = fl_model.fit(
-                train_data,
-                train_label,
-                validation_data=(test_data, test_label),
-                epochs=20,
-                batch_size=32,
-                aggregate_freq=1,
-            )
+        train_data,
+        train_label,
+        validation_data=(test_data, test_label),
+        epochs=20,
+        batch_size=32,
+        aggregate_freq=1,
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>

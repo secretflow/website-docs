@@ -4,7 +4,7 @@
 
 可信执行环境(Trusted Execution Environment，TEE) 是一种基于硬件的隐私保护技术。它保证了执行代码的真实性，运行时状态(如 CPU 寄存器、内存和敏感 I/O)的完整性，以及存储在内存中的代码、数据和运行时状态的机密性。此外，还应能够向第三方提供远程认证，以证明其可靠性。
 
-TEEU(<code>TEE</code> processing <code>U</code>nit)是 SecretFlow 中的 TEE 设备，通过 TEEU，用户可以方便的把数据放在TEE内进行计算，并且达到保护数据完整和安全的目的。作为 SecretFlow 设备层的一员，TEEU丰富了隐语的设备层能力，并且给明密文混合计算带来了更多组合和可能。举一些例子，比如可以把水平联邦模型权重聚合放置到TEEU内进行从而保护梯度聚合过程的安全，亦或者使用 TEEU 来快速生成 SPDZ 协议的离线因子来进行MPC的加速。更多可能性等待您的探索。
+TEEU(`TEE` processing `U`nit)是 SecretFlow 中的 TEE 设备，通过 TEEU，用户可以方便的把数据放在TEE内进行计算，并且达到保护数据完整和安全的目的。作为 SecretFlow 设备层的一员，TEEU丰富了隐语的设备层能力，并且给明密文混合计算带来了更多组合和可能。举一些例子，比如可以把水平联邦模型权重聚合放置到TEEU内进行从而保护梯度聚合过程的安全，亦或者使用 TEEU 来快速生成 SPDZ 协议的离线因子来进行MPC的加速。更多可能性等待您的探索。
 
 目前隐语提供了仿真和非仿真两种使用 TEEU 的模式，建议您从仿真模式开始，有助于您快速成功上手。
 
@@ -52,7 +52,7 @@ docker run -it --net host secretflow/authmanager-ubuntu-sim-release:latest
 
 3. （可选）配置 TLS
 
-AuthManager 默认启用 TLS，如果您只是为了本机仿真，可以关闭TLS功能，具体方法为编辑 config.yaml 文件，将 <code>enable\_tls</code> 设置为 false。
+AuthManager 默认启用 TLS，如果您只是为了本机仿真，可以关闭TLS功能，具体方法为编辑 config.yaml 文件，将 `enable_tls` 设置为 false。
 
 4. 启动服务
 
@@ -130,11 +130,11 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 在安全聚合代码的前面加上SecretFlow初始化相关代码，得到下列的代码。首先您需要对代码中的配置项进行修改。
 
 - 代码中假设 Alice 通信地址为 192.168.0.10:20001，请您根据实际情况修改
-- 您需要填写填充正确的 <code>auth\_manager\_config</code>
-  - <code>host</code>为 AuthManager 的服务监听地址
-  - <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
+- 您需要填写填充正确的 `auth_manager_config`
+  - `host`为 AuthManager 的服务监听地址
+  - `ca_cert`为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
 
-假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Alice 的机器上执行 <code>python demo.py</code>。
+假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Alice 的机器上执行 `python demo.py`。
 
 ```python
 import secretflow as sf
@@ -222,11 +222,11 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 与 Alice 类似，在安全聚合代码的前面加上 SecretFlow 初始化相关代码，得到下列的代码
 
 - 代码中假设 Bob 通信地址为 192.168.0.20:20001，请您根据实际情况修改
-- 您需要填写填充正确的 <code>auth\_manager\_config</code>
-- <code>host</code>为 AuthManager 的服务监听地址
-- <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
+- 您需要填写填充正确的 `auth_manager_config`
+- `host`为 AuthManager 的服务监听地址
+- `ca_cert`为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
 
-假设我们把代码保存为 [demo.py](http://demo.py)，然后在Bob的机器上执行 <code>python demo.py</code>。
+假设我们把代码保存为 [demo.py](http://demo.py)，然后在Bob的机器上执行 `python demo.py`。
 
 ```python
 import secretflow as sf
@@ -310,10 +310,10 @@ docker run -it --network host secretflow/secretflow-teeu:latest
 同理，在安全聚合代码的前面加上 SecretFlow 初始化相关代码，得到下列的代码。与前面有所区别，Carol 的代码需要在 TEE 中运行，因此需要进行一些额外的步骤。首先您需要对代码中的配置项进行修改。
 
 1. 代码中假设 Carol 通信地址为 192.168.0.30:20001，请您根据实际情况修改
-2. 您需要填写填充正确的 <code>auth\_manager\_config</code>
+2. 您需要填写填充正确的 `auth_manager_config`
 
-- <code>host</code>为 AuthManager 的服务监听地址
-- <code>ca\_cert</code> 为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
+- `host`为 AuthManager 的服务监听地址
+- `ca_cert` 为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
 
 修改完毕后，请把该文件保存至 /root/occlum\_instance/image/root/demo.py
 
@@ -449,7 +449,7 @@ docker run -it --net host -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provi
 
 3. 修改 PCCS 配置
 
-<code>/etc/sgx\_default\_qcnl.conf</code> 中 PCCS\_URL 配置为 PCCS 的实际部署服务地址。
+`/etc/sgx_default_qcnl.conf` 中 PCCS\_URL 配置为 PCCS 的实际部署服务地址。
 
 ```properties
 # PCCS server address
@@ -479,7 +479,7 @@ USE_SECURE_CERT=FALSE
 #RETRY_DELAY=10
 ```
 
-修改<code>occlum\_release/image/etc/kubetee/unified\_attestation.json</code>中 ua\_dcap\_pccs\_url 配置为实际的PCCS服务地址
+修改`occlum_release/image/etc/kubetee/unified_attestation.json`中 ua\_dcap\_pccs\_url 配置为实际的PCCS服务地址
 
 ```json
 {
@@ -519,7 +519,7 @@ occlum build -f --sign-key private_key.pem
 occlum run /bin/auth-manager --config_path /host/config.yaml
 ```
 
-默认端口为 8835，如果端口冲突了，则可以添加 <code>--port</code> 参数指定端口号。
+默认端口为 8835，如果端口冲突了，则可以添加 `--port` 参数指定端口号。
 
 ```shell
 occlum run /bin/auth-manager --config_path /host/config.yaml
@@ -587,7 +587,7 @@ docker run -it --network host --privileged -v /dev/sgx_enclave:/dev/sgx/enclave 
 
 进入容器后，默认所在位置为 /root/occlum\_instance。
 
-2. 修改配置文件 <code>/root/occlum\_instance/image/etc/kubetee/unified\_attestation.json</code> 。这个是 [jinzhao-attest](https://github.com/jinzhao-dev/jinzhao-attest) 需要的配置文件，对多种 TEE 的远程认证流程进行了封装，模板如下，将 <code>ua\_dcap\_pccs\_url</code>中的域名替换为部署的 PCCS 地址。
+2. 修改配置文件 `/root/occlum_instance/image/etc/kubetee/unified_attestation.json` 。这个是 [jinzhao-attest](https://github.com/jinzhao-dev/jinzhao-attest) 需要的配置文件，对多种 TEE 的远程认证流程进行了封装，模板如下，将 `ua_dcap_pccs_url`中的域名替换为部署的 PCCS 地址。
 
 ```json
 {
@@ -619,7 +619,7 @@ docker run -it --network host --privileged -v /dev/sgx_enclave:/dev/sgx/enclave 
 }
 ```
 
-接下来修改<code>/etc/sgx\_default\_qcnl.conf</code>，将<code>PCCS\_URL</code>中的域名替换为前面部署的 PCCS 地址，并且设置 <code>USE\_SECURE\_CERT=FALSE</code> 。
+接下来修改`/etc/sgx_default_qcnl.conf`，将`PCCS_URL`中的域名替换为前面部署的 PCCS 地址，并且设置 `USE_SECURE_CERT=FALSE` 。
 
 ```json
 # PCCS server address
@@ -651,10 +651,10 @@ USE_SECURE_CERT=FALSE
 首先您需要对代码中的配置项进行修改。
 
 - 代码中假设 Carol 通信地址为 192.168.0.30:20001，请您根据实际情况修改
-- 您需要填写填充正确的 <code>auth\_manager\_config</code>
-  - <code>host</code>为 AuthManager 的服务监听地址
-  - <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。（推荐启用 TLS）
-  - <code>mrenclave</code>为 AuthManager 模块的 mrenclave，在部署 AuthManager 的步骤中您应该已经获得了该值。
+- 您需要填写填充正确的 `auth_manager_config`
+  - `host`为 AuthManager 的服务监听地址
+  - `ca_cert`为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。（推荐启用 TLS）
+  - `mrenclave`为 AuthManager 模块的 mrenclave，在部署 AuthManager 的步骤中您应该已经获得了该值。
 
 请把修改的文件保存为 /root/occlum\_instance/image/root/demo.py。
 
@@ -786,13 +786,13 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 在安全聚合代码的前面加上 SecretFlow 初始化相关代码，得到下列的代码。您需要对代码进行配置：
 
 - 代码中假设 Alice 通信地址为 192.168.0.10:20001，请您根据实际情况修改
-- 您需要填写填充正确的 <code>auth\_manager\_config</code>
-  - <code>host</code>为 AuthManager 的服务监听地址
-  - <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。（推荐启用 TLS）
-  - <code>mrenclave</code>为 AuthManager 模块的 MRENCLAVE，在部署 AuthManager 的步骤中您应该已经获得了该值。
-- 使用前面获得的 TEEU 的 MRENCLAVE，填充正确的值: <code>teeu = TEEU('carol', mr\_enclave='mr\_enclave of TEEU')</code>
+- 您需要填写填充正确的 `auth_manager_config`
+  - `host`为 AuthManager 的服务监听地址
+  - `ca_cert`为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。（推荐启用 TLS）
+  - `mrenclave`为 AuthManager 模块的 MRENCLAVE，在部署 AuthManager 的步骤中您应该已经获得了该值。
+- 使用前面获得的 TEEU 的 MRENCLAVE，填充正确的值: `teeu = TEEU('carol', mr_enclave='mr_enclave of TEEU')`
 
-配置完成后，假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Alice 的机器上执行 <code>python demo.py</code>。
+配置完成后，假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Alice 的机器上执行 `python demo.py`。
 
 ```python
 import secretflow as sf
@@ -878,13 +878,13 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 和 Alice 类似，在安全聚合代码的前面加上 SecretFlow 初始化相关代码，得到下列的代码。您需要对代码进行配置：
 
 - 代码中假设 Bob 通信地址为 192.168.0.20:20001，请您根据实际情况修改
-- 您需要填写填充正确的 <code>auth\_manager\_config</code>
-  - <code>host</code>为 AuthManager 的服务监听地址
-  - <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。（推荐启用 TLS）
-  - <code>mrenclave</code>为 AuthManager 模块的 MRENCLAVE，在部署 AuthManager 的步骤中您应该已经获得了该值。
-- 使用前面获得的 TEEU 的 MRENCLAVE，填充正确的值: <code>teeu = TEEU('carol', mr\_enclave='mr\_enclave of TEEU')</code>
+- 您需要填写填充正确的 `auth_manager_config`
+  - `host`为 AuthManager 的服务监听地址
+  - `ca_cert`为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。（推荐启用 TLS）
+  - `mrenclave`为 AuthManager 模块的 MRENCLAVE，在部署 AuthManager 的步骤中您应该已经获得了该值。
+- 使用前面获得的 TEEU 的 MRENCLAVE，填充正确的值: `teeu = TEEU('carol', mr_enclave='mr_enclave of TEEU')`
 
-配置完成后，假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Bob 的机器上执行 <code>python demo.py</code>。
+配置完成后，假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Bob 的机器上执行 `python demo.py`。
 
 ```python
 import secretflow as sf
@@ -952,8 +952,8 @@ np.testing.assert_equal(avg_val, average([a, b]) )
 1. 配置远程认证。
 
 - 部署 DCAS
-- 配置 <code>/etc/sgx\_default\_qcnl.conf</code>
-- 配置 <code>image/etc/kubetee/unified\_attestation.json</code>
+- 配置 `/etc/sgx_default_qcnl.conf`
+- 配置 `image/etc/kubetee/unified_attestation.json`
 
 2. 启动AuthManager和SecretFlow TEE镜像时，需要挂载SGX相关设备。
 
@@ -963,11 +963,11 @@ docker run -it --network host --privileged -v /dev/sgx_enclave:/dev/sgx/enclave 
 
 3. 获取并填充AuthManager和TEEU的度量值（mrenclave）。
 
-- 在 <code>sf.init()</code> 的 <code>auth\_manager\_config</code> 参数里填充AuthManager的mrenclave。
-- 构建TEEU实例时填充mrenclave: <code>teeu = sf.TEEU(..., mr\_enclave='MRENCLAVE\_OF\_TEEU')</code> 。
+- 在 `sf.init()` 的 `auth_manager_config` 参数里填充AuthManager的mrenclave。
+- 构建TEEU实例时填充mrenclave: `teeu = sf.TEEU(..., mr_enclave='MRENCLAVE_OF_TEEU')` 。
 
-4. 在 <code>sf.init()</code> 时设置 <code>tee\_simulation=False</code> 。
-5. Build occlum时不要带参数 <code>--sgx-mode sim</code> 。
+4. 在 `sf.init()` 时设置 `tee_simulation=False` 。
+5. Build occlum时不要带参数 `--sgx-mode sim` 。
 
 :target{#more-examples}
 

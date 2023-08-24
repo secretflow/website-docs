@@ -47,7 +47,7 @@ The data from [kaggle](https://www.kaggle.com/janiobachmann/bank-marketing-datas
 
 Let’s start by looking at what our bank’s marketing data look like?
 
-The original data is divided into Bank Alice and Bank Bob, which stores in Alice and Bob respectively. Here, CSV is the original data that has only been separated without pre-processing, we will use <code>secretflow preprocess</code> for FedData preprocess.
+The original data is divided into Bank Alice and Bank Bob, which stores in Alice and Bob respectively. Here, CSV is the original data that has only been separated without pre-processing, we will use `secretflow preprocess` for FedData preprocess.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
@@ -57,6 +57,7 @@ The original data is divided into Bank Alice and Bank Bob, which stores in Alice
 
     import secretflow as sf
     import matplotlib.pyplot as plt
+
     sf.init(['alice', 'bob'], address='local')
     alice, bob = sf.PYU('alice'), sf.PYU('bob')
     ```
@@ -158,8 +159,22 @@ Bob is an old bank, they have the user’s account balance, house, loan, and rec
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
     ```python
-    bob_data = df[["default", "balance", "housing", "loan", "contact",
-                 "day","month","duration","campaign","pdays","previous","poutcome"]]
+    bob_data = df[
+        [
+            "default",
+            "balance",
+            "housing",
+            "loan",
+            "contact",
+            "day",
+            "month",
+            "duration",
+            "campaign",
+            "pdays",
+            "previous",
+            "poutcome",
+        ]
+    ]
     bob_data
     ```
   </Notebook.CodeArea>
@@ -236,7 +251,7 @@ Bob is an old bank, they have the user’s account balance, house, loan, and rec
 <LineBlock>
   Create 2 entities in the Secretflow environment \[Alice, Bob]
 
-  Where ‘Alice’ and ‘Bob’ are two <code>PYU</code>.
+  Where ‘Alice’ and ‘Bob’ are two `PYU`.
 
   Once you’ve constructed the two objects, you can happily start Splitting Learning.
 </LineBlock>
@@ -260,18 +275,18 @@ Bob is an old bank, they have the user’s account balance, house, loan, and rec
 
 <strong>Build Federated Table</strong>
 
-Federated table is a virtual concept that cross multiple parties, We define <code>VDataFrame</code> for vertical setting .
+Federated table is a virtual concept that cross multiple parties, We define `VDataFrame` for vertical setting .
 
 1. The data of all parties in a federated table is stored locally and is not allowed to go out of the domain.
 2. No one has access to data store except the party that owns the data.
-3. Any operation performed on the federated table is scheduled by the driver to each worker, and the execution instructions are delivered layer by layer until the Python runtime of the specific worker. The framework ensures that only the worker with <code>worker.device</code> equal to the <code>Object.device</code> can operate on the data.
+3. Any operation performed on the federated table is scheduled by the driver to each worker, and the execution instructions are delivered layer by layer until the Python runtime of the specific worker. The framework ensures that only the worker with `worker.device` equal to the `Object.device` can operate on the data.
 4. Federated tables are designed for managing and manipulating multi-party data from a central perspective.
-5. Interfaces to <code>Federated Tables</code> are aligned to <code>pandas.DataFrame</code> to reduce the cost of multi-party data operations.
-6. The SecretFlow framework provides Plain\&Ciphertext hybrid programming capabilities. Vertical federated tables are built using <code>SPU</code>, and <code>MPC-PSI</code> is used to safely get intersection and align data from all parties.
+5. Interfaces to `Federated Tables` are aligned to `pandas.DataFrame` to reduce the cost of multi-party data operations.
+6. The SecretFlow framework provides Plain\&Ciphertext hybrid programming capabilities. Vertical federated tables are built using `SPU`, and `MPC-PSI` is used to safely get intersection and align data from all parties.
 
 ![vdataframe.png](../_assets/vdataframe.png)
 
-VDataFrame provides <code>read\_csv</code> interface similar to pandas, the difference is that <code>secretflow\.read\_csv</code> receives a dictionary that defines the path of data for both parties. We can use <code>secretflow\.vertical.read\_csv</code> to build the <code>VDataFrame</code>.
+VDataFrame provides `read_csv` interface similar to pandas, the difference is that `secretflow.read_csv` receives a dictionary that defines the path of data for both parties. We can use `secretflow.vertical.read_csv` to build the `VDataFrame`.
 
 ```none
 read_csv(file_dict,delimiter,ppu,keys,drop_key)
@@ -304,11 +319,11 @@ Create spu object
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-<code>data</code> is a vertically federated table. It only has the <code>Schema</code> of all the data globally.
+`data` is a vertically federated table. It only has the `Schema` of all the data globally.
 
-Let’s examine the data management of <code>VDF</code> more closely.
+Let’s examine the data management of `VDF` more closely.
 
-As shown in the example, the <code>age</code> field belongs to <code>Alice</code>, so the corresponding column can be obtained from <code>Alice</code>’s partition. However, if <code>Bob</code> tries to obtain the <code>age</code> field, a <code>KeyError</code> error will be reported.
+As shown in the example, the `age` field belongs to `Alice`, so the corresponding column can be obtained from `Alice`’s partition. However, if `Bob` tries to obtain the `age` field, a `KeyError` error will be reported.
 
 We have a concept called Partition, which is a defined data fragment. Each partition has its own device to which it belongs, and only the device to which it belongs can operate on its data.
 
@@ -336,7 +351,7 @@ We have a concept called Partition, which is a defined data fragment. Each parti
 </Notebook.Cell>
 
 <LineBlock>
-  Next, we perform data preprocessing on the <code>VDataFrame</code>.
+  Next, we perform data preprocessing on the `VDataFrame`.
 
   We use LabelEncoder and MinMaxScaler as examples. These two preprocessing functions have corresponding concepts in SkLearn, and their usage methods are similar to those in <strong>sklearn</strong>.
 </LineBlock>
@@ -400,14 +415,19 @@ Next we divide the data set into train-set and test-set.
   <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
     ```python
     from secretflow.data.split import train_test_split
+
     random_state = 1234
-    train_data,test_data = train_test_split(data, train_size=0.8, random_state=random_state)
-    train_label,test_label = train_test_split(label, train_size=0.8, random_state=random_state)
+    train_data, test_data = train_test_split(
+        data, train_size=0.8, random_state=random_state
+    )
+    train_label, test_label = train_test_split(
+        label, train_size=0.8, random_state=random_state
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-<strong>Summary:</strong> At this stage, we have finished defining <code>federated tables</code>, performing <code>data preprocessing</code>, and partitioning the <code>training set</code> and <code>test set</code>. The secretFlow framework defines a set of operations to be built on the federated table (which is the logical counterpart of <code>pandas.DataFrame</code>). The secretflow framework defines a set of operations to be built on the federated table (its logical counterpart is <code>sklearn</code>) Refer to our documentation and API introduction to learn
+<strong>Summary:</strong> At this stage, we have finished defining `federated tables`, performing `data preprocessing`, and partitioning the `training set` and `test set`. The secretFlow framework defines a set of operations to be built on the federated table (which is the logical counterpart of `pandas.DataFrame`). The secretflow framework defines a set of operations to be built on the federated table (its logical counterpart is `sklearn`) Refer to our documentation and API introduction to learn
 more about other features.
 
 :target{#Introduce-Model}
@@ -437,25 +457,29 @@ Split learning is to break up a model so that one part is executed locally on th
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
     ```python
-    def create_base_model(input_dim, output_dim,  name='base_model'):
+    def create_base_model(input_dim, output_dim, name='base_model'):
         # Create model
         def create_model():
             from tensorflow import keras
             from tensorflow.keras import layers
             import tensorflow as tf
+
             model = keras.Sequential(
                 [
                     keras.Input(shape=input_dim),
-                    layers.Dense(100,activation ="relu" ),
+                    layers.Dense(100, activation="relu"),
                     layers.Dense(output_dim, activation="relu"),
                 ]
             )
             # Compile model
             model.summary()
-            model.compile(loss='binary_crossentropy',
-                          optimizer='adam',
-                          metrics=["accuracy",tf.keras.metrics.AUC()])
+            model.compile(
+                loss='binary_crossentropy',
+                optimizer='adam',
+                metrics=["accuracy", tf.keras.metrics.AUC()],
+            )
             return model
+
         return create_model
     ```
   </Notebook.CodeArea>
@@ -496,7 +520,7 @@ We use create\_base\_model to create their base models for ‘Alice’ and ‘Bo
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Next we define the side with the label, or the server-side model – fuse\_model In the definition of fuse\_model, we need to correctly define <code>loss</code>, <code>optimizer</code>, and <code>metrics</code>. This is compatible with all configurations of your existing Keras model.
+Next we define the side with the label, or the server-side model – fuse\_model In the definition of fuse\_model, we need to correctly define `loss`, `optimizer`, and `metrics`. This is compatible with all configurations of your existing Keras model.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[17]:" stderr={false} type="input">
@@ -506,10 +530,15 @@ Next we define the side with the label, or the server-side model – fuse\_model
             from tensorflow import keras
             from tensorflow.keras import layers
             import tensorflow as tf
+
             # input
             input_layers = []
             for i in range(party_nums):
-                input_layers.append(keras.Input(input_dim,))
+                input_layers.append(
+                    keras.Input(
+                        input_dim,
+                    )
+                )
 
             merged_layer = layers.concatenate(input_layers)
             fuse_layer = layers.Dense(64, activation='relu')(merged_layer)
@@ -518,10 +547,13 @@ Next we define the side with the label, or the server-side model – fuse\_model
             model = keras.Model(inputs=input_layers, outputs=output)
             model.summary()
 
-            model.compile(loss='binary_crossentropy',
-                          optimizer='adam',
-                          metrics=["accuracy",tf.keras.metrics.AUC()])
+            model.compile(
+                loss='binary_crossentropy',
+                optimizer='adam',
+                metrics=["accuracy", tf.keras.metrics.AUC()],
+            )
             return model
+
         return create_model
     ```
   </Notebook.CodeArea>
@@ -530,8 +562,7 @@ Next we define the side with the label, or the server-side model – fuse\_model
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
     ```python
-    model_fuse = create_fuse_model(
-        input_dim=hidden_size, party_nums=2, output_dim=1)
+    model_fuse = create_fuse_model(input_dim=hidden_size, party_nums=2, output_dim=1)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -561,7 +592,7 @@ Next we define the side with the label, or the server-side model – fuse\_model
 ### Create Split Learning Model
 
 <LineBlock>
-  Secretflow provides the split learning model <code>SLModel</code>.
+  Secretflow provides the split learning model `SLModel`.
 
   To initial SLModel only need 3 parameters.
 </LineBlock>
@@ -579,10 +610,7 @@ base_model_dict:Dict[PYU,model_fn]
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[20]:" stderr={false} type="input">
     ```python
-    base_model_dict = {
-        alice: model_base_alice,
-        bob:   model_base_bob
-    }
+    base_model_dict = {alice: model_base_alice, bob: model_base_bob}
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -618,7 +646,8 @@ base_model_dict:Dict[PYU,model_fn]
         base_model_dict=base_model_dict,
         device_y=alice,
         model_fuse=model_fuse,
-        dp_strategy_dict=dp_strategy_dict,)
+        dp_strategy_dict=dp_strategy_dict,
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -626,7 +655,9 @@ base_model_dict:Dict[PYU,model_fn]
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[23]:" stderr={false} type="input">
     ```python
-    sf.reveal(test_data.partitions[alice].data), sf.reveal(test_label.partitions[alice].data)
+    sf.reveal(test_data.partitions[alice].data), sf.reveal(
+        test_label.partitions[alice].data
+    )
     ```
   </Notebook.CodeArea>
 
@@ -640,7 +671,9 @@ base_model_dict:Dict[PYU,model_fn]
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[24]:" stderr={false} type="input">
     ```python
-    sf.reveal(train_data.partitions[alice].data), sf.reveal(train_label.partitions[alice].data)
+    sf.reveal(train_data.partitions[alice].data), sf.reveal(
+        train_label.partitions[alice].data
+    )
     ```
   </Notebook.CodeArea>
 
@@ -654,15 +687,17 @@ base_model_dict:Dict[PYU,model_fn]
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[25]:" stderr={false} type="input">
     ```python
-    history = sl_model.fit(train_data,
-                 train_label,
-                 validation_data=(test_data,test_label),
-                 epochs=10,
-                 batch_size=train_batch_size,
-                 shuffle=True,
-                 verbose=1,
-                 validation_freq=1,
-                 dp_spent_step_freq=dp_spent_step_freq,)
+    history = sl_model.fit(
+        train_data,
+        train_label,
+        validation_data=(test_data, test_label),
+        epochs=10,
+        batch_size=train_batch_size,
+        shuffle=True,
+        verbose=1,
+        validation_freq=1,
+        dp_spent_step_freq=dp_spent_step_freq,
+    )
     ```
   </Notebook.CodeArea>
 
@@ -690,7 +725,7 @@ Let’s visualize the training process
     plt.title('Model loss')
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
-    plt.legend(['Train','Val'], loc='upper right')
+    plt.legend(['Train', 'Val'], loc='upper right')
     plt.show()
     ```
   </Notebook.CodeArea>
@@ -772,21 +807,24 @@ Let’s call the evaluation function
     import tensorflow as tf
     from sklearn.model_selection import train_test_split
 
-    def create_model():
 
+    def create_model():
         model = keras.Sequential(
             [
                 keras.Input(shape=4),
-                layers.Dense(100,activation ="relu" ),
+                layers.Dense(100, activation="relu"),
                 layers.Dense(64, activation='relu'),
                 layers.Dense(64, activation='relu'),
-                layers.Dense(1, activation='sigmoid')
+                layers.Dense(1, activation='sigmoid'),
             ]
         )
-        model.compile(loss='binary_crossentropy',
-                          optimizer='adam',
-                          metrics=["accuracy",tf.keras.metrics.AUC()])
+        model.compile(
+            loss='binary_crossentropy',
+            optimizer='adam',
+            metrics=["accuracy", tf.keras.metrics.AUC()],
+        )
         return model
+
 
     single_model = create_model()
     ```
@@ -809,7 +847,7 @@ Data process
     single_part_data['job'] = encoder.fit_transform(alice_data['job'])
     single_part_data['marital'] = encoder.fit_transform(alice_data['marital'])
     single_part_data['education'] = encoder.fit_transform(alice_data['education'])
-    single_part_data['y'] =  encoder.fit_transform(alice_data['y'])
+    single_part_data['y'] = encoder.fit_transform(alice_data['y'])
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -818,7 +856,7 @@ Data process
   <Notebook.CodeArea prompt="[32]:" stderr={false} type="input">
     ```python
     y = single_part_data['y']
-    alice_data = single_part_data.drop(columns=['y'],inplace=False)
+    alice_data = single_part_data.drop(columns=['y'], inplace=False)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -835,8 +873,10 @@ Data process
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[34]:" stderr={false} type="input">
     ```python
-    train_data,test_data = train_test_split(alice_data,train_size=0.8,random_state=random_state)
-    train_label,test_label = train_test_split(y,train_size=0.8,random_state=random_state)
+    train_data, test_data = train_test_split(
+        alice_data, train_size=0.8, random_state=random_state
+    )
+    train_label, test_label = train_test_split(y, train_size=0.8, random_state=random_state)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -858,7 +898,14 @@ Data process
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[36]:" stderr={false} type="input">
     ```python
-    single_model.fit(train_data,train_label,validation_data=(test_data,test_label),batch_size=128,epochs=10,shuffle=False)
+    single_model.fit(
+        train_data,
+        train_label,
+        validation_data=(test_data, test_label),
+        batch_size=128,
+        epochs=10,
+        shuffle=False,
+    )
     ```
   </Notebook.CodeArea>
 
