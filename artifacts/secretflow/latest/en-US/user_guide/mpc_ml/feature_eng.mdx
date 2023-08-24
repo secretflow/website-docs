@@ -101,7 +101,7 @@ Its value is between -1 and 1. <InlineMath>$r>0$</InlineMath> corresponds to a p
 
 ### SSVertPearsonR
 
-SecretFlow provides <code>SSVertPearsonR</code> for calculating Pearson product-moment correlation coefficient of Vertical DataFrame using secret sharing.
+SecretFlow provides `SSVertPearsonR` for calculating Pearson product-moment correlation coefficient of Vertical DataFrame using secret sharing.
 
 SSVertPearsonR will standardize input dataset first. After standardized, all features’ variance is 1 and the mean is 0, the calculation is simplified to:
 
@@ -142,7 +142,7 @@ multicollinearity.
 
 ### SSVertVIF
 
-SecretFlow provides <code>SSVertVIF</code> for calculating variance inflation factor of Vertical DataFrame using secret sharing.
+SecretFlow provides `SSVertVIF` for calculating variance inflation factor of Vertical DataFrame using secret sharing.
 
 The vif value of the j-th feature is:
 
@@ -338,7 +338,7 @@ Available:
 
 ### SSPValue
 
-SecretFlow provides <code>SSPValue</code> for calculating P-Value of hypothesis testing using secret sharing.
+SecretFlow provides `SSPValue` for calculating P-Value of hypothesis testing using secret sharing.
 
 For linear regression:
 
@@ -366,13 +366,13 @@ For logistic regression:
     model.fit(
         vdf,
         label_data,
-        3,      # epochs
-        0.3,    # Learning rate
-        64,     # batch_size
-        't1',   # sig_type
+        3,  # epochs
+        0.3,  # Learning rate
+        64,  # batch_size
+        't1',  # sig_type
         'logistic',  # reg_type
-        'l2',   # penalty
-        0.5,    # l2_norm
+        'l2',  # penalty
+        0.5,  # l2_norm
     )
     spu_model = model.save_model()
 

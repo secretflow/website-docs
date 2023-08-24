@@ -55,7 +55,7 @@
     data.iloc[100, 1] = None
 
     # Restore target to its original name.
-    data['target'] = data['target'].map({0: 'setosa', 1: 'versicolor', 2: 'virginica' })
+    data['target'] = data['target'].map({0: 'setosa', 1: 'versicolor', 2: 'virginica'})
     data
     ```
   </Notebook.CodeArea>
@@ -386,6 +386,7 @@ DataFrame提供了fillna方法，可以和pandas一样对缺失值进行填充�
     # Only support binary classification label dataset for now.
     # use linear dataset as example
     from secretflow.utils.simulation.datasets import load_linear
+
     vdf = load_linear(parts={alice: (1, 4), bob: (18, 22)})
     print(f"orig ds in alice:\n {sf.reveal(vdf.partitions[alice].data)}")
     print(f"orig ds in bob:\n {sf.reveal(vdf.partitions[bob].data)}")

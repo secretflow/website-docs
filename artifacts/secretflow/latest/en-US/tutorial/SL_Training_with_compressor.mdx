@@ -56,8 +56,12 @@ SecretFlow提供了Compressor对拆分学习中的数据进行压缩。同时也
     scaler = MinMaxScaler()
     data = scaler.fit_transform(data)
 
-    train_data,test_data = train_test_split(data, train_size=0.8, random_state=random_state)
-    train_label,test_label = train_test_split(label, train_size=0.8, random_state=random_state)
+    train_data, test_data = train_test_split(
+        data, train_size=0.8, random_state=random_state
+    )
+    train_label, test_label = train_test_split(
+        label, train_size=0.8, random_state=random_state
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -67,26 +71,31 @@ SecretFlow提供了Compressor对拆分学习中的数据进行压缩。同时也
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
     ```python
-    def create_base_model(input_dim, output_dim,  name='base_model'):
+    def create_base_model(input_dim, output_dim, name='base_model'):
         # Create model
         def create_model():
             from tensorflow import keras
             from tensorflow.keras import layers
             import tensorflow as tf
+
             model = keras.Sequential(
                 [
                     keras.Input(shape=input_dim),
-                    layers.Dense(100,activation ="relu" ),
+                    layers.Dense(100, activation="relu"),
                     layers.Dense(output_dim, activation="relu"),
                 ]
             )
             # Compile model
             model.summary()
-            model.compile(loss='binary_crossentropy',
-                          optimizer='adam',
-                          metrics=["accuracy",tf.keras.metrics.AUC()])
+            model.compile(
+                loss='binary_crossentropy',
+                optimizer='adam',
+                metrics=["accuracy", tf.keras.metrics.AUC()],
+            )
             return model
+
         return create_model
+
 
     # prepare model
     hidden_size = 64
@@ -94,15 +103,21 @@ SecretFlow提供了Compressor对拆分学习中的数据进行压缩。同时也
     model_base_alice = create_base_model(4, hidden_size)
     model_base_bob = create_base_model(12, hidden_size)
 
+
     def create_fuse_model(input_dim, output_dim, party_nums, name='fuse_model'):
         def create_model():
             from tensorflow import keras
             from tensorflow.keras import layers
             import tensorflow as tf
+
             # input
             input_layers = []
             for i in range(party_nums):
-                input_layers.append(keras.Input(input_dim,))
+                input_layers.append(
+                    keras.Input(
+                        input_dim,
+                    )
+                )
 
             merged_layer = layers.concatenate(input_layers)
             fuse_layer = layers.Dense(64, activation='relu')(merged_layer)
@@ -111,28 +126,28 @@ SecretFlow提供了Compressor对拆分学习中的数据进行压缩。同时也
             model = keras.Model(inputs=input_layers, outputs=output)
             model.summary()
 
-            model.compile(loss='binary_crossentropy',
-                          optimizer='adam',
-                          metrics=["accuracy",tf.keras.metrics.AUC()])
+            model.compile(
+                loss='binary_crossentropy',
+                optimizer='adam',
+                metrics=["accuracy", tf.keras.metrics.AUC()],
+            )
             return model
+
         return create_model
 
-    model_fuse = create_fuse_model(
-        input_dim=hidden_size, party_nums=2, output_dim=1)
 
-    base_model_dict = {
-        alice: model_base_alice,
-        bob:   model_base_bob
-    }
+    model_fuse = create_fuse_model(input_dim=hidden_size, party_nums=2, output_dim=1)
 
+    base_model_dict = {alice: model_base_alice, bob: model_base_bob}
 
 
     from secretflow.ml.nn import SLModel
+
     sl_model_origin = SLModel(
         base_model_dict=base_model_dict,
         device_y=alice,
         model_fuse=model_fuse,
-        )
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -158,8 +173,8 @@ SecretFlow提供了Compressor，里面实现了各种基础的通讯压缩算法
         base_model_dict=base_model_dict,
         device_y=alice,
         model_fuse=model_fuse,
-        compressor = qfp    #在这里传入实例化的compressor算法
-        )
+        compressor=qfp,  # 在这里传入实例化的compressor算法
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -171,16 +186,16 @@ SecretFlow提供了Compressor，里面实现了各种基础的通讯压缩算法
     ```python
     histories = []
     for sl_model in [sl_model_origin, sl_model_compress]:
-
-        history = sl_model.fit(train_data,
-                train_label,
-                validation_data=(test_data,test_label),
-                epochs=40,
-                batch_size=128,
-                shuffle=True,
-                verbose=1,
-                validation_freq=1,
-                )
+        history = sl_model.fit(
+            train_data,
+            train_label,
+            validation_data=(test_data, test_label),
+            epochs=40,
+            batch_size=128,
+            shuffle=True,
+            verbose=1,
+            validation_freq=1,
+        )
 
         histories.append(history)
     ```
@@ -223,7 +238,9 @@ SecretFlow提供了Compressor，里面实现了各种基础的通讯压缩算法
     plt.title('Model Area Under Curve')
     plt.ylabel('Area Under Curve')
     plt.xlabel('Epoch')
-    plt.legend(['origin', 'origin_val', 'fp8_compressed', 'fp8_compressed_val'], loc='lower right')
+    plt.legend(
+        ['origin', 'origin_val', 'fp8_compressed', 'fp8_compressed_val'], loc='lower right'
+    )
     plt.show()
     ```
   </Notebook.CodeArea>
@@ -253,11 +270,12 @@ K-means压缩论文是”Deep Compression: Compressing Deep Neural Networks with
     from secretflow.utils.compressor import QuantizedCompressor, QuantizedData
     import numpy as np
 
-    class QuantizedMyKmeans(QuantizedCompressor):
 
+    class QuantizedMyKmeans(QuantizedCompressor):
         def __init__(self, quant_bits: int = 8):
             super().__init__(quant_bits)
             from sklearn.cluster import KMeans
+
             self.km = KMeans(2**quant_bits, n_init=1, max_iter=50)
 
         def _compress_one(self, data: np.ndarray) -> QuantizedData:
@@ -292,17 +310,18 @@ K-means压缩论文是”Deep Compression: Compressing Deep Neural Networks with
         device_y=alice,
         model_fuse=model_fuse,
         compressor=qkm,
-        )
+    )
 
-    history_kmeans = sl_model_kmeans.fit(train_data,
-                train_label,
-                validation_data=(test_data,test_label),
-                epochs=40,
-                batch_size=128,
-                shuffle=True,
-                verbose=1,
-                validation_freq=1,
-                )
+    history_kmeans = sl_model_kmeans.fit(
+        train_data,
+        train_label,
+        validation_data=(test_data, test_label),
+        epochs=40,
+        batch_size=128,
+        shuffle=True,
+        verbose=1,
+        validation_freq=1,
+    )
     ```
   </Notebook.CodeArea>
 
@@ -328,7 +347,7 @@ K-means压缩论文是”Deep Compression: Compressing Deep Neural Networks with
     plt.title('Model Area Under Curve')
     plt.ylabel('Area Under Curve')
     plt.xlabel('Epoch')
-    plt.legend(['kmeans','kmeans_val'], loc='lower right')
+    plt.legend(['kmeans', 'kmeans_val'], loc='lower right')
     plt.show()
     ```
   </Notebook.CodeArea>
@@ -361,7 +380,12 @@ K-means压缩论文是”Deep Compression: Compressing Deep Neural Networks with
     net = models.resnet50(pretrained=True)
     net_params = [p.detach().numpy().flatten() for p in net.parameters()]
 
-    coms =[QuantizedZeroPoint(8), QuantizedFP(8, format='E4M3'), QuantizedFP(8, format='E5M2'), QuantizedKmeans(8, n_clusters=100)]
+    coms = [
+        QuantizedZeroPoint(8),
+        QuantizedFP(8, format='E4M3'),
+        QuantizedFP(8, format='E5M2'),
+        QuantizedKmeans(8, n_clusters=100),
+    ]
     losses = []
     durations = []
 
@@ -369,8 +393,8 @@ K-means压缩论文是”Deep Compression: Compressing Deep Neural Networks with
         start = time.time()
         c_params = c.compress(net_params)
         dc_params = c.decompress(c_params)
-        losses.append(sum([np.sum((a-b)**2) for a,b in zip(net_params, dc_params)]))
-        durations.append(time.time()-start)
+        losses.append(sum([np.sum((a - b) ** 2) for a, b in zip(net_params, dc_params)]))
+        durations.append(time.time() - start)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -379,8 +403,8 @@ K-means压缩论文是”Deep Compression: Compressing Deep Neural Networks with
   <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
     ```python
     plt.figure(figsize=(12.8, 4.8))
-    x=[1,2,3,4]
-    x_label=['Int8','Fp8-E4M3','Fp8-E5M2','Kmeans']
+    x = [1, 2, 3, 4]
+    x_label = ['Int8', 'Fp8-E4M3', 'Fp8-E5M2', 'Kmeans']
 
     plt.subplot(121)
     p1 = plt.bar(x, losses, color='deepskyblue')

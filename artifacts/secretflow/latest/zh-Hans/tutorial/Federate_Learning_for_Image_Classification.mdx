@@ -73,12 +73,14 @@ Alice 和 Bob 各自拥有一半的数据。
     from secretflow.data.ndarray import load
     from secretflow.utils.simulation.datasets import load_mnist
 
-    (x_train, y_train), (x_test, y_test) = load_mnist(parts=[alice, bob], normalized_x=True, categorical_y=True)
+    (x_train, y_train), (x_test, y_test) = load_mnist(
+        parts=[alice, bob], normalized_x=True, categorical_y=True
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-<code>x\_train</code>, <code>y\_train</code>, <code>x\_test</code>, <code>y\_test</code> are both <code>FedNdarray</code>. Let’s take a look at the data obtained from FedNdarray. FedNdarray is a virtual Ndarray built on a multi-party concept to protect data privacy. The underlying data is stored in each participant. The FedNdarray operation is actually performed by each participant on their own local data. The server or other clients do not touch the original data. For demonstration purposes, we will manually download the data to the driver.
+`x_train`, `y_train`, `x_test`, `y_test` are both `FedNdarray`. Let’s take a look at the data obtained from FedNdarray. FedNdarray is a virtual Ndarray built on a multi-party concept to protect data privacy. The underlying data is stored in each participant. The FedNdarray operation is actually performed by each participant on their own local data. The server or other clients do not touch the original data. For demonstration purposes, we will manually download the data to the driver.
 <strong>This data will be used later in the unilateral model comparison</strong>.
 
 <Notebook.Cell>
@@ -105,10 +107,10 @@ Let’s grab some samples from the data set, and just visually see, what does th
     j = 0
 
     for example in image[:40]:
-      plt.subplot(4, 10, j+1)
-      plt.imshow(example, cmap='gray', aspect='equal')
-      plt.axis('off')
-      j += 1
+        plt.subplot(4, 10, j + 1)
+        plt.imshow(example, cmap='gray', aspect='equal')
+        plt.axis('off')
+        j += 1
     ```
   </Notebook.CodeArea>
 
@@ -123,10 +125,10 @@ Let’s grab some samples from the data set, and just visually see, what does th
     figure = plt.figure(figsize=(20, 4))
     j = 0
     for example in image[:40]:
-      plt.subplot(4, 10, j+1)
-      plt.imshow(example, cmap='gray', aspect='equal')
-      plt.axis('off')
-      j += 1
+        plt.subplot(4, 10, j + 1)
+        plt.imshow(example, cmap='gray', aspect='equal')
+        plt.axis('off')
+        j += 1
     ```
   </Notebook.CodeArea>
 
@@ -148,6 +150,7 @@ Let’s grab some samples from the data set, and just visually see, what does th
         def create_model():
             from tensorflow import keras
             from tensorflow.keras import layers
+
             # Create model
             model = keras.Sequential(
                 [
@@ -162,9 +165,9 @@ Let’s grab some samples from the data set, and just visually see, what does th
                 ]
             )
             # Compile model
-            model.compile(loss='categorical_crossentropy',
-                          optimizer='adam',
-                          metrics=["accuracy"])
+            model.compile(
+                loss='categorical_crossentropy', optimizer='adam', metrics=["accuracy"]
+            )
             return model
 
         return create_model
@@ -225,12 +228,14 @@ Let’s grab some samples from the data set, and just visually see, what does th
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
     ```python
-    fed_model = FLModel(server=charlie,
-                        device_list=device_list,
-                        model=model,
-                        aggregator=secure_aggregator,
-                        strategy="fed_avg_w",
-                        backend = "tensorflow")
+    fed_model = FLModel(
+        server=charlie,
+        device_list=device_list,
+        model=model,
+        aggregator=secure_aggregator,
+        strategy="fed_avg_w",
+        backend="tensorflow",
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -240,13 +245,15 @@ Let’s grab some samples from the data set, and just visually see, what does th
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
     ```python
-    history = fed_model.fit(x_train,
-                            y_train,
-                            validation_data=(x_test, y_test),
-                            epochs=10,
-                            sampler_method="batch",
-                            batch_size=128,
-                            aggregate_freq=1)
+    history = fed_model.fit(
+        x_train,
+        y_train,
+        validation_data=(x_test, y_test),
+        epochs=10,
+        sampler_method="batch",
+        batch_size=128,
+        aggregate_freq=1,
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -321,8 +328,8 @@ Let’s grab some samples from the data set, and just visually see, what does th
     from tensorflow.keras import layers
     from sklearn.model_selection import train_test_split
 
-    def create_model():
 
+    def create_model():
         model = keras.Sequential(
             [
                 keras.Input(shape=input_shape),
@@ -336,10 +343,11 @@ Let’s grab some samples from the data set, and just visually see, what does th
             ]
         )
         # Compile model
-        model.compile(loss='categorical_crossentropy',
-                      optimizer='adam',
-                      metrics=["accuracy"])
+        model.compile(
+            loss='categorical_crossentropy', optimizer='adam', metrics=["accuracy"]
+        )
         return model
+
 
     single_model = create_model()
     ```
@@ -357,8 +365,9 @@ Let’s grab some samples from the data set, and just visually see, what does th
     alice_y = OneHotEncoder(sparse=False).fit_transform(alice_y.reshape(-1, 1))
 
     random_seed = 1234
-    alice_X_train, alice_X_test, alice_y_train, alice_y_test = train_test_split(alice_x,
-        alice_y, test_size=0.33, random_state=random_seed)
+    alice_X_train, alice_X_test, alice_y_train, alice_y_test = train_test_split(
+        alice_x, alice_y, test_size=0.33, random_state=random_seed
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -366,7 +375,13 @@ Let’s grab some samples from the data set, and just visually see, what does th
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[19]:" stderr={false} type="input">
     ```python
-    single_model.fit(alice_X_train, alice_y_train, validation_data=(alice_X_test, alice_y_test), batch_size=128, epochs=10)
+    single_model.fit(
+        alice_X_train,
+        alice_y_train,
+        validation_data=(alice_X_test, alice_y_test),
+        batch_size=128,
+        epochs=10,
+    )
     ```
   </Notebook.CodeArea>
 

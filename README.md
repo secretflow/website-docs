@@ -2,7 +2,7 @@
 
 ## What is this?
 
-This repository stores built artifacts SecretFlow's open-source project documentation.
+This repository stores built artifacts of SecretFlow's open-source project documentation.
 
 ## When should I use this?
 

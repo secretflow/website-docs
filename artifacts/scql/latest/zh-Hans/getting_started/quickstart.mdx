@@ -6,7 +6,7 @@
 
 ## 摘要
 
-使用 <code>docker-compose</code> 来部署一个独立的 SCQL，然后使用 scdbclient 来查询
+使用 `docker-compose` 来部署一个独立的 SCQL，然后使用 scdbclient 来查询
 
 :target{#prerequisites}
 
@@ -16,7 +16,7 @@
 
 ### 构建 scdbclient
 
-<code>scdbclient</code> 是 SCDBServer 的一个命令行客户端，我们将用它来向 SCDBServer 提交查询，并取回查询结果。
+`scdbclient` 是 SCDBServer 的一个命令行客户端，我们将用它来向 SCDBServer 提交查询，并取回查询结果。
 
 ```bash
 # build scdbclient from source
@@ -39,14 +39,14 @@ bash examples/docker-compose/register.sh
 ```
 
 <Container type="note">
-  register.sh 脚本会用随机的字符串替代 [examples/docker-compose/client/users.json](https://github.com/secretflow/scql/tree/main/examples/docker-compose/client/users.json) 中的 <code>\_\_ALICE\_TOKEN\_\_</code> 以及 [examples/docker-compose/scdb/conf/toy\_grm.json](https://github.com/secretflow/scql/tree/main/examples/docker-compose/scdb/conf/toy_grm.json) 中的 <code>\_\_BOB\_TOKEN\_\_</code>
+  register.sh 脚本会用随机的字符串替代 [examples/docker-compose/client/users.json](https://github.com/secretflow/scql/tree/main/examples/docker-compose/client/users.json) 中的 `__ALICE_TOKEN__` 以及 [examples/docker-compose/scdb/conf/toy\_grm.json](https://github.com/secretflow/scql/tree/main/examples/docker-compose/scdb/conf/toy_grm.json) 中的 `__BOB_TOKEN__`
 </Container>
 
 :target{#start-scql-service}
 
 ## 启动 SCQL 服务
 
-你可以通过 [docker-compose](https://github.com/secretflow/scql/tree/main/examples/docker-compose) 来启动 SCQL 服务 ，它将部署和启动服务，如下图所示，它包含一个 SCDBServer 和两个分别来自参与方 <code>alice</code> 、 <code>bob</code> 的 SCQLEngines 。
+你可以通过 [docker-compose](https://github.com/secretflow/scql/tree/main/examples/docker-compose) 来启动 SCQL 服务 ，它将部署和启动服务，如下图所示，它包含一个 SCDBServer 和两个分别来自参与方 `alice` 、 `bob` 的 SCQLEngines 。
 
 ![快速入门示例的 docker-compose 部署](../_assets/scql_quickstart_deploy.png)
 
@@ -64,7 +64,7 @@ bash examples/docker-compose/register.sh
 (cd examples/docker-compose && docker compose up -d)
 ```
 
-SCDBServer 监听 <code>http\://localhost:8080</code> ，你可以通过 scdbclient 向它发送查询。
+SCDBServer 监听 `http://localhost:8080` ，你可以通过 scdbclient 向它发送查询。
 
 <Container type="note">
   如果你遇到任何问题，请查看 [examples/docker-compose/README.md](https://github.com/secretflow/scql/tree/main/examples/docker-compose/README.md) 故障排除部分以获得帮助。

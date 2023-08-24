@@ -101,7 +101,7 @@ Secretflow 提供了多种工具来分析数据集，以提高机器学习结果
 
 ### SSVertPearsonR
 
-SecretFlow 的 <code>SSVertPearsonR</code> 模块可以用于探查垂直划分数据集的皮尔逊积矩相关系数，计算过程使用秘密分享协议保护。
+SecretFlow 的 `SSVertPearsonR` 模块可以用于探查垂直划分数据集的皮尔逊积矩相关系数，计算过程使用秘密分享协议保护。
 
 SSVertPearsonR will standardize input dataset first. After standardized, all features’ variance is 1 and the mean is 0, the calculation is simplified to:
 
@@ -141,7 +141,7 @@ SSVertPearsonR will standardize input dataset first. After standardized, all fea
 
 ### SSVertVIF
 
-SecretFlow 的 <code>SSVertVIF</code> 模块可以用于探查垂直划分数据集的方差扩大因子，计算过程使用秘密分享协议保护。
+SecretFlow 的 `SSVertVIF` 模块可以用于探查垂直划分数据集的方差扩大因子，计算过程使用秘密分享协议保护。
 
 第j个特征的vif值为：
 
@@ -337,7 +337,7 @@ Hessian矩阵表示为 <InlineMath>$H=X^T A X$</InlineMath>， A矩阵为：
 
 ### SSPValue
 
-SecretFlow 的 <code>SSPValue</code> 模块可以用于探查模型的P-Value，计算过程使用秘密分享协议保护。
+SecretFlow 的 `SSPValue` 模块可以用于探查模型的P-Value，计算过程使用秘密分享协议保护。
 
 线性回归模型：
 
@@ -365,13 +365,13 @@ SecretFlow 的 <code>SSPValue</code> 模块可以用于探查模型的P-Value，
     model.fit(
         vdf,
         label_data,
-        3,      # epochs
-        0.3,    # Learning rate
-        64,     # batch_size
-        't1',   # sig_type
+        3,  # epochs
+        0.3,  # Learning rate
+        64,  # batch_size
+        't1',  # sig_type
         'logistic',  # reg_type
-        'l2',   # penalty
-        0.5,    # l2_norm
+        'l2',  # penalty
+        0.5,  # l2_norm
     )
     spu_model = model.save_model()
 

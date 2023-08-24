@@ -12,7 +12,7 @@
 - [KKRT](https://eprint.iacr.org/2016/799.pdf)：半诚实模型, 基于布谷鸟哈希（Cuckoo Hashing）以及高效不经意传输扩展（OT Extension），适用于大数据集。
 - [BC22PCG](https://eprint.iacr.org/2022/334)：半诚实模型, 基于随机相关函数生成器。
 
-在开始之前，我们需要初始化环境。以下三个节点 <code>alice</code>， <code>bob</code> 和 <code>carol</code> 是在一台机器上创建的，以模拟多个参与者。
+在开始之前，我们需要初始化环境。以下三个节点 `alice`， `bob` 和 `carol` 是在一台机器上创建的，以模拟多个参与者。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
@@ -123,7 +123,7 @@
 - 交集字段可以为单个字段，也可以为多个字段，需存在于对应方数据集中。
 - 交集字段必须是唯一的。如果存在重复数据，需要在求交前进行去重处理。
 
-For example, The following is the data provided by alice for PSI intersection, the intersection field is <code>uid</code> and <code>month</code>，we can see that \[1, ‘Jan’] is duplicated.
+For example, The following is the data provided by alice for PSI intersection, the intersection field is `uid` and `month`，we can see that \[1, ‘Jan’] is duplicated.
 
 ```none
 alice.csv
@@ -146,7 +146,7 @@ uid   month   c0
 1     Feb     7.4
 ```
 
-我们对 iris 数据进行了 3 次随机采样，以模拟 <code>alice</code>、<code>bob</code> 和 <code>carol</code> 提供的数据，三个数据处于未对齐状态。
+我们对 iris 数据进行了 3 次随机采样，以模拟 `alice`、`bob` 和 `carol` 提供的数据，三个数据处于未对齐状态。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
@@ -185,7 +185,7 @@ uid   month   c0
 
 ### 单键隐私求交
 
-接下来，我们使用 <code>uid</code> 作为求交列来处理这两个数据，SPU提供 <code>psi\_csv</code> 函数， <code>psi\_csv</code> 将csv文件作为输入，并在求交后生成csv文件。默认协议为KKRT。
+接下来，我们使用 `uid` 作为求交列来处理这两个数据，SPU提供 `psi_csv` 函数， `psi_csv` 将csv文件作为输入，并在求交后生成csv文件。默认协议为KKRT。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
@@ -286,7 +286,7 @@ uid   month   c0
 
 ### 多键隐私求交
 
-我们还可以使用多个字段来求交，下面演示了如何使用 <code>uid</code> 和 <code>month</code> 来求交两个数据。在实现方面，多个字段被连接成一个字符串，因此请确保没有重复的多列复合键。
+我们还可以使用多个字段来求交，下面演示了如何使用 `uid` 和 `month` 来求交两个数据。在实现方面，多个字段被连接成一个字符串，因此请确保没有重复的多列复合键。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
@@ -296,12 +296,18 @@ uid   month   c0
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-类似地，我们使用 <code>panda.dataframe.join</code> 来验证结果的正确性，可以看到这两个数据已经根据 <code>uid</code> 和 <code>month</code> 对齐，并根据它们的字典序排序。
+类似地，我们使用 `panda.dataframe.join` 来验证结果的正确性，可以看到这两个数据已经根据 `uid` 和 `month` 对齐，并根据它们的字典序排序。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
     ```python
-    df = da.join(db.set_index(['uid', 'month']), on=['uid', 'month'], how='inner', rsuffix='_bob', sort=True)
+    df = da.join(
+        db.set_index(['uid', 'month']),
+        on=['uid', 'month'],
+        how='inner',
+        rsuffix='_bob',
+        sort=True,
+    )
     expected = df[da.columns].astype({'uid': 'int64'}).reset_index(drop=True)
 
     da_psi = pd.read_csv('.data/alice_psi.csv')
@@ -317,7 +323,7 @@ uid   month   c0
 
 ## 三方隐私求交
 
-接下来，我们添加第三方 <code>carol</code> ，并为其创建一个PYU设备，以及一个由三方构建的SPU设备。
+接下来，我们添加第三方 `carol` ，并为其创建一个PYU设备，以及一个由三方构建的SPU设备。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
@@ -328,26 +334,33 @@ uid   month   c0
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-然后使用 <code>uid</code> 和 <code>month</code> 作为求交键来执行三方求交。目前三方隐私求交暂时只支持ECDH协议。
+然后使用 `uid` 和 `month` 作为求交键来执行三方求交。目前三方隐私求交暂时只支持ECDH协议。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
     ```python
     input_path = {alice: '.data/alice.csv', bob: '.data/bob.csv', carol: '.data/carol.csv'}
-    output_path = {alice: '.data/alice_psi.csv', bob: '.data/bob_psi.csv', carol: '.data/carol_psi.csv'}
-    spu_3pc.psi_csv(['uid', 'month'], input_path, output_path, 'alice', protocol='ECDH_PSI_3PC')
+    output_path = {
+        alice: '.data/alice_psi.csv',
+        bob: '.data/bob_psi.csv',
+        carol: '.data/carol_psi.csv',
+    }
+    spu_3pc.psi_csv(
+        ['uid', 'month'], input_path, output_path, 'alice', protocol='ECDH_PSI_3PC'
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-最后我们同样使用 <code>panda.dataframe.join</code> 来验证结果的正确性。
+最后我们同样使用 `panda.dataframe.join` 来验证结果的正确性。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
     ```python
     keys = ['uid', 'month']
     df = da.join(db.set_index(keys), on=keys, how='inner', rsuffix='_bob', sort=True).join(
-        dc.set_index(keys), on=keys, how='inner', rsuffix='_carol', sort=True)
+        dc.set_index(keys), on=keys, how='inner', rsuffix='_carol', sort=True
+    )
     expected = df[da.columns].astype({'uid': 'int64'}).reset_index(drop=True)
 
     da_psi = pd.read_csv('.data/alice_psi.csv')

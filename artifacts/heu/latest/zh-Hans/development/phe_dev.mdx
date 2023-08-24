@@ -8,10 +8,10 @@ HEU 支持添加自定义 PHE 算法，添加新的 PHE 算法后，上层所有
 
 HEU 定义了一套 SPI (Service Provider Interface)，任何符合 SPI 定义的算法都可接入到 HEU 中，HEU 的算法分配器（dispatcher）是 O(1) 效率的，也就是算法分配的开销与底层算法种类无关，您可以放心向 HEU 添加多种算法而无需担心对 HEU 造成负担。
 
-下文以添加一种 Mock 算法为例，介绍如何在 HEU 中添加、实现一种新的 PHE 算法。新算法的代码文件请存放到 <code>heu/library/algorithms/</code> 路径下。
+下文以添加一种 Mock 算法为例，介绍如何在 HEU 中添加、实现一种新的 PHE 算法。新算法的代码文件请存放到 `heu/library/algorithms/` 路径下。
 
 <Container type="admonition" title={"\u4e00\u4e9b\u524d\u7f6e\u8bf4\u660e"}>
-  1. 开发一个新算法需要实现 <code>Plaintext</code>、<code>Ciphertext</code>、<code>PublicKey</code>、<code>SecretKey</code>、<code>KeyGenerator</code>、<code>Encryptor</code>、<code>Decryptor</code>、<code>Evaluator</code> 共 8 个 Class，请勿修改 Class name，所有 Class 都必须放置在 <code>heu::lib::algorithms::your\_algo</code> namespace 下，其中 <code>your\_algo</code> 使用实际的算法名称替换，否则将编译失败
+  1. 开发一个新算法需要实现 `Plaintext`、`Ciphertext`、`PublicKey`、`SecretKey`、`KeyGenerator`、`Encryptor`、`Decryptor`、`Evaluator` 共 8 个 Class，请勿修改 Class name，所有 Class 都必须放置在 `heu::lib::algorithms::your_algo` namespace 下，其中 `your_algo` 使用实际的算法名称替换，否则将编译失败
   2. SPI 只规定了这 8 个 Class 必须要实现的 public 方法，SPI 并没有限制您添加其它方法与字段，您可以根据算法需要自由添加。
 </Container>
 
@@ -27,7 +27,7 @@ HEU 定义了一套 SPI (Service Provider Interface)，任何符合 SPI 定义�
 
 ### 定义 Plaintext
 
-<code>Plaintext class</code> 的 SPI 接口如下：
+`Plaintext class` 的 SPI 接口如下：
 
 <figure id="id14">
   <figcaption>
@@ -119,7 +119,7 @@ HEU 定义了一套 SPI (Service Provider Interface)，任何符合 SPI 定义�
 
 Plaintext class 的接口比较多，这是因为 HEU 并没有绑定到任何大数库，所有明文计算都依赖 Plaintext 类接口完成，这些接口您需要一一实现。
 
-关于 SPI 接口中出现的 <code>ToBytes</code> 方法，此处有一些补充说明：
+关于 SPI 接口中出现的 `ToBytes` 方法，此处有一些补充说明：
 
 1. 该接口的功能与 [python int.to\_bytes](https://docs.python.org/3/library/stdtypes.html#int.to_bytes) 方法类似。
 2. 该接口与序列化接口的区别：序列化接口用于在不同 HEU 实例之间传递信息，因此序列化的 buffer 只需要 HEU 自己能解析即可，一般与 Bignumber 内存存储格式接近以最大化性能；ToBytes 接口用于在 HEU 与其它模块之间传递信息，因此 Buffer 格式必须公认，目前模块之间统一使用 numpy 的格式，numpy 底层调用 Python built-in type int 的 to\_bytes() 接口，因此本质上 Plaintext 需要实现一个 python int to\_bytes() 类似的接口，把 big number 转换成指定字节大小的大/小端存储，因为存在转换，ToBytes 性能一般比序列化低。另一个区别是 ToBytes 是单向的，只需要实现 Plaintext 到 bytes 转换，无需 bytes 到 Plaintext 转换。
@@ -168,7 +168,7 @@ Ciphertext 需要实现以下这些方法：
 
 下一步定义 Key 相关数据结构，其 SPI 如下：
 
-<code>PublicKey class</code>：
+`PublicKey class`：
 
 <figure id="id16">
   <figcaption>
@@ -198,7 +198,7 @@ Ciphertext 需要实现以下这些方法：
   ```
 </figure>
 
-<code>SecretKey class</code>：
+`SecretKey class`：
 
 <figure id="id17">
   <figcaption>
@@ -225,7 +225,7 @@ Ciphertext 需要实现以下这些方法：
   ```
 </figure>
 
-<code>KeyGenerator class</code>：
+`KeyGenerator class`：
 
 <figure id="id18">
   <figcaption>
@@ -254,7 +254,7 @@ Ciphertext 需要实现以下这些方法：
 
 ## 定义操纵单元
 
-基本数据结构和公私钥定义完成后，下一步就可以定义操纵单元，分别是 <code>Encryptor</code>、<code>Decryptor</code>、<code>Evaluator</code>。为了支持不同特性的算法，HEU 提供了两套截然不同的接口（SPI），分别是 Scalar SPI 和 Vectorized SPI。
+基本数据结构和公私钥定义完成后，下一步就可以定义操纵单元，分别是 `Encryptor`、`Decryptor`、`Evaluator`。为了支持不同特性的算法，HEU 提供了两套截然不同的接口（SPI），分别是 Scalar SPI 和 Vectorized SPI。
 
 - Scalar SPI：适合于大多数算法，一次调用只处理一个明文或密文。
 - Vectorized SPI：适合于使用硬件加速的算法，例如 GPU 等，此类硬件对算法并行度有要求，Vectorized SPI 实现了 SIMD 的调用模式，从而使得算法实现层面可以做并行优化。
@@ -264,7 +264,7 @@ Scalar SPI 和 Vectorized SPI 算法只需要实现其中一套即可，HEU O(1)
 <Container type="admonition" title={"HEU O(1) Dispatcher \u540c\u65f6\u9002\u914d\u4e24\u5957 SPI \u63a5\u53e3\u7684\u539f\u7406"}>
   为了更好地帮助算法开发者理解 SPI 接口切换的机制，此处介绍一下 HEU O(1) Dispatcher 检测接口是否实现的原理。
 
-  HEU O(1) Dispatcher 通过 <code>std::experimental::is\_detected</code> 工具检测某个类是否实现了某个方法，以下是原理示意：
+  HEU O(1) Dispatcher 通过 `std::experimental::is_detected` 工具检测某个类是否实现了某个方法，以下是原理示意：
 
   ```C++
   #include <experimental/type_traits>
@@ -289,7 +289,7 @@ Scalar SPI 和 Vectorized SPI 算法只需要实现其中一套即可，HEU O(1)
 
 Scalar SPI 需要实现以下接口。
 
-<code>Encryptor class</code>：
+`Encryptor class`：
 
 <figure id="id19">
   <figcaption>
@@ -317,9 +317,9 @@ Scalar SPI 需要实现以下接口。
   ```
 </figure>
 
-Encryptor 涉及一个比较特殊的 <code>EncryptWithAudit</code> 接口，这是因为某些机构对隐语有特殊要求，要求隐语所有的行为具备事后审计能力，即所有的计算过程可还原。对于 PHE 加密，此处需要把加密用到的随机数返回给上层以便落入日志。
+Encryptor 涉及一个比较特殊的 `EncryptWithAudit` 接口，这是因为某些机构对隐语有特殊要求，要求隐语所有的行为具备事后审计能力，即所有的计算过程可还原。对于 PHE 加密，此处需要把加密用到的随机数返回给上层以便落入日志。
 
-<code>EncryptWithAudit</code> 返回的 audit string 中至少要包含明文、密文以及加密所用的随机数三个信息，对于 string 的格式则没有要求，只要是程序可解析的即可，如果能做到 human readable 则更好，您可以通过以下方法查看实际的 audit string 样例：
+`EncryptWithAudit` 返回的 audit string 中至少要包含明文、密文以及加密所用的随机数三个信息，对于 string 的格式则没有要求，只要是程序可解析的即可，如果能做到 human readable 则更好，您可以通过以下方法查看实际的 audit string 样例：
 
 ```C++
 from heu import phe
@@ -328,7 +328,7 @@ kit = phe.setup(phe.SchemaType.ZPaillier, 2048)
 print(kit.encryptor().encrypt_with_audit(kit.plaintext(1)))
 ```
 
-<code>Decryptor class</code>：
+`Decryptor class`：
 
 <figure id="id20">
   <figcaption>
@@ -357,7 +357,7 @@ print(kit.encryptor().encrypt_with_audit(kit.plaintext(1)))
   ```
 </figure>
 
-<code>Evaluator class</code>：
+`Evaluator class`：
 
 <figure id="id21">
   <figcaption>
@@ -432,7 +432,7 @@ Vectorized SPI 传递列表用的是 Span\<T> 和 ConstSpan\<T> 两种类型，�
 - Span\<T> 表示一个只读数组，每个元素是指向 T 的指针
 - ConstSpan\<T> 表示一个只读数组，每个元素是指向 T 的常量指针
 
-<code>Encryptor class</code>：
+`Encryptor class`：
 
 <figure id="id22">
   <figcaption>
@@ -462,7 +462,7 @@ Vectorized SPI 传递列表用的是 Span\<T> 和 ConstSpan\<T> 两种类型，�
   ```
 </figure>
 
-<code>Decryptor class</code>：
+`Decryptor class`：
 
 <figure id="id23">
   <figcaption>
@@ -490,7 +490,7 @@ Vectorized SPI 传递列表用的是 Span\<T> 和 ConstSpan\<T> 两种类型，�
   ```
 </figure>
 
-<code>Evaluator class</code>：
+`Evaluator class`：
 
 <figure id="id24">
   <figcaption>
@@ -611,7 +611,7 @@ HEU Dispatcher 会在函数级别探测算法实现了哪些 SPI，因此在同�
 - [heu/library/phe/base/schema.h](https://github.com/secretflow/heu/blob/main/heu/library/phe/base/schema.h)
 - [heu/library/phe/base/schema.cc](https://github.com/secretflow/heu/blob/main/heu/library/phe/base/schema.cc)
 
-请依照文件中注释的引导注册您的算法，有 <code>\[SPI: Please register your algorithm here]</code> 标记的位置就是需要修改的地方，总共有5处，其中 <code>schema.h</code> 有4处需要修改，<code>schema.cc</code> 有1处需要修改。
+请依照文件中注释的引导注册您的算法，有 `[SPI: Please register your algorithm here]` 标记的位置就是需要修改的地方，总共有5处，其中 `schema.h` 有4处需要修改，`schema.cc` 有1处需要修改。
 
 :target{#id5}
 
@@ -623,19 +623,19 @@ HEU Dispatcher 会在函数级别探测算法实现了哪些 SPI，因此在同�
 
 条件编译的步骤为：
 
-1. 在算法的入口头文件中定义 <code>ENABLE\_YOUR\_ALGO</code> 宏，例如 [ipcl.h](https://github.com/secretflow/heu/blob/main/heu/library/algorithms/paillier_ipcl/ipcl.h)
-2. 在 schema.h/cc 注册算法时引用 <code>ENABLE\_YOUR\_ALGO</code> 宏，即不要写死 true，这一步也可以参考 IPCL 的做法
+1. 在算法的入口头文件中定义 `ENABLE_YOUR_ALGO` 宏，例如 [ipcl.h](https://github.com/secretflow/heu/blob/main/heu/library/algorithms/paillier_ipcl/ipcl.h)
+2. 在 schema.h/cc 注册算法时引用 `ENABLE_YOUR_ALGO` 宏，即不要写死 true，这一步也可以参考 IPCL 的做法
 
 :target{#id6}
 
 ## 测试和使用
 
-算法开发完毕后，您还需要编写一个编译脚本，HEU 使用的是 bazel 编译系统，您需要在算法同级目录 <code>heu/library/algorithms/your\_algo/</code> 下放置一个 <code>BUILD.bazel</code> 文件。
+算法开发完毕后，您还需要编写一个编译脚本，HEU 使用的是 bazel 编译系统，您需要在算法同级目录 `heu/library/algorithms/your_algo/` 下放置一个 `BUILD.bazel` 文件。
 
-- <code>BUILD.bazel</code> 文件的写法可以参考 [此处](https://github.com/secretflow/heu/blob/main/heu/library/algorithms/mock/BUILD.bazel)
+- `BUILD.bazel` 文件的写法可以参考 [此处](https://github.com/secretflow/heu/blob/main/heu/library/algorithms/mock/BUILD.bazel)
 - 更多 Bazel 教程可以参考 [Bazel 官方文档](bazel.build.mdx)
 
-Bazel 脚本编写完成后，请把您的算法作为依赖项加入到 <code>schema.h/cc</code> 对应的 <code>BUILD.bazel</code> 文件中。
+Bazel 脚本编写完成后，请把您的算法作为依赖项加入到 `schema.h/cc` 对应的 `BUILD.bazel` 文件中。
 
 您可以通过以下命令测试编译是否通过：
 
@@ -689,7 +689,7 @@ bazel run -c opt heu/library/benchmark:phe -- --schema=your_algo_name_or_alias
 bazel run -c opt heu/library/benchmark:np -- --schema=your_algo_name_or_alias
 ```
 
-如果不加 <code>--schema</code> 参数，则默认运行所有算法的性能测试，以便您与其它算法对比性能：
+如果不加 `--schema` 参数，则默认运行所有算法的性能测试，以便您与其它算法对比性能：
 
 ```shell
 bazel run -c opt heu/library/benchmark:phe

@@ -40,7 +40,7 @@ strategy reference: [strategy document](strategy.mdx)
 
 ## model definition
 
-The model definition in FLModel is basically the same as the plaintext. The user’s original plaintext code can be migrated to FLModel through <code>Ctrl+C</code>, <code>Ctrl+V</code> to become a federated model.
+The model definition in FLModel is basically the same as the plaintext. The user’s original plaintext code can be migrated to FLModel through `Ctrl+C`, `Ctrl+V` to become a federated model.
 eg:<br />tensorflow backend
 
 ```python
@@ -124,14 +124,14 @@ The fit interface is the training interface of FLModel, which supports FedHDataF
 ### Evaluate
 
 Evaluate is an offline evaluation interface.<br />Users can pass in the HDataFrame or FedNdarray to be evaluated by each party.
-The return value will be two objects <code>local metrics</code> and <code>global\_metrics</code>.
+The return value will be two objects `local metrics` and `global_metrics`.
 
 :target{#predict}
 
 ### Predict
 
 Predict is an offline prediction interface.<br />The user passes in the HDataFrame or FedNdarray to be predicted by all parties.
-The return value is a <code>Dict\<PYU,PYUObject></code>, where PYUObject is the prediction result stored on each party, and the plaintext can only be seen after the parties agree to be revealed
+The return value is a `Dict<PYU,PYUObject>`, where PYUObject is the prediction result stored on each party, and the plaintext can only be seen after the parties agree to be revealed
 
 :target{#load-model}
 

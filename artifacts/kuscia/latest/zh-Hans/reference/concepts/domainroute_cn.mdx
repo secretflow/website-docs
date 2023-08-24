@@ -40,12 +40,12 @@ spec:
 
 在示例中
 
-- <code>.metadata.name</code>：表示路由规则的名称。
-- <code>.metadata.namespace</code>：表示路由规则所在的命名空间，这里是 Master 的 Namespace。
-- <code>.spec.authenticationType</code>：表示节点到 Master 的身份认证方式，目前仅支持 MTLS 和 None（表示不校验）。
-- <code>.spec.source</code>：表示源节点的 Namespace，这里即 Lite 节点的 Namespace。
-- <code>.spec.destination</code>：表示目标节点的 Namespace，这里即 Master 的命名空间。
-- <code>.spec.requestHeadersToAdd</code>：表示 Master 侧的 Envoy 在转发源节点的请求时添加的 headers，示例中 key 为
+- `.metadata.name`：表示路由规则的名称。
+- `.metadata.namespace`：表示路由规则所在的命名空间，这里是 Master 的 Namespace。
+- `.spec.authenticationType`：表示节点到 Master 的身份认证方式，目前仅支持 MTLS 和 None（表示不校验）。
+- `.spec.source`：表示源节点的 Namespace，这里即 Lite 节点的 Namespace。
+- `.spec.destination`：表示目标节点的 Namespace，这里即 Master 的命名空间。
+- `.spec.requestHeadersToAdd`：表示 Master 侧的 Envoy 在转发源节点的请求时添加的 headers，示例中 key 为
   Authorization 的 header 是 Master 为 alice 分配访问 k3s 的令牌。
 
 你可以通过 kubectl 命令来创建、修改、查看、删除 DomainRoute。
@@ -80,20 +80,20 @@ spec:
 
 在示例中：
 
-- <code>.metadata.name</code>：表示路由规则的名称。
-- <code>.spec.authenticationType</code>：表示节点到 Master 的身份认证方式，支持 Token、MTLS、None（不认证）。
-- <code>.spec.source</code>：表示源节点的 Namespace。
-- <code>.spec.destination</code>：表示目标节点的 Namespace。
-- <code>.spec.endpoint</code>：表示目标节点的地址，具体字段包括：
-  - <code>host</code>：表示目标节点域名或 IP。
-  - <code>ports</code>：表示目标节点的端口，以及该端口的协议，协议类型为 HTTP或 GRPC协议，节点网关可在不同端口上分别支持http协议和GRPC协议。当前仅支持一个端口。
-    - <code>name</code>: 表示端口名称。
-    - <code>port</code>: 表示目标端口号。
-    - <code>protocol</code>: 表示端口协议，支持 HTTP 和 GRPC。
-    - <code>isTLS</code>：表示是否开启 HTTPS 或 GRPCS。
-- <code>.spec.mTLSConfig</code>：表示源节点作为客户端访问目标节点的 MTLS 配置，具体字段如下：
-  - <code>sourceClientCert</code>：表示源节点的客户端证书，value 值是经 BASE64 编码过的。
-  - <code>tlsCA</code>：表示校验服务端（目标节点）证书的 CA，value 值是经过 BASE64 编码过的。不配置则表示不校验服务端证书。
+- `.metadata.name`：表示路由规则的名称。
+- `.spec.authenticationType`：表示节点到 Master 的身份认证方式，支持 Token、MTLS、None（不认证）。
+- `.spec.source`：表示源节点的 Namespace。
+- `.spec.destination`：表示目标节点的 Namespace。
+- `.spec.endpoint`：表示目标节点的地址，具体字段包括：
+  - `host`：表示目标节点域名或 IP。
+  - `ports`：表示目标节点的端口，以及该端口的协议，协议类型为 HTTP或 GRPC协议，节点网关可在不同端口上分别支持http协议和GRPC协议。当前仅支持一个端口。
+    - `name`: 表示端口名称。
+    - `port`: 表示目标端口号。
+    - `protocol`: 表示端口协议，支持 HTTP 和 GRPC。
+    - `isTLS`：表示是否开启 HTTPS 或 GRPCS。
+- `.spec.mTLSConfig`：表示源节点作为客户端访问目标节点的 MTLS 配置，具体字段如下：
+  - `sourceClientCert`：表示源节点的客户端证书，value 值是经 BASE64 编码过的。
+  - `tlsCA`：表示校验服务端（目标节点）证书的 CA，value 值是经过 BASE64 编码过的。不配置则表示不校验服务端证书。
 
 通过 kubectl 命令来创建 ClusterDomainRoute：
 
@@ -135,12 +135,12 @@ spec:
 
 在示例中：
 
-- <code>.metadata.name</code>：表示路由规则的名称。
-- <code>.metadata.namespace</code>：表示路由规则所在的命名空间，这里是目标节点的 Namespace。
-- <code>.spec.authenticationType</code>：表示源节点到目标节点的身份认证方式，目前仅支持 MTLS 和 None（表示不校验）。
-- <code>.spec.source</code>：表示源节点的 Namespace，这里即 alice 的 Namespace。
-- <code>.spec.destination</code>：表示目标节点的 Namespace，这里即 bob 的 Namespace。
-- <code>.spec.requestHeadersToAdd</code>：表示 bob 侧的 Envoy 转发源节点请求时添加的 headers，示例中 key 为 Authorization 的 header 是 bob 为
+- `.metadata.name`：表示路由规则的名称。
+- `.metadata.namespace`：表示路由规则所在的命名空间，这里是目标节点的 Namespace。
+- `.spec.authenticationType`：表示源节点到目标节点的身份认证方式，目前仅支持 MTLS 和 None（表示不校验）。
+- `.spec.source`：表示源节点的 Namespace，这里即 alice 的 Namespace。
+- `.spec.destination`：表示目标节点的 Namespace，这里即 bob 的 Namespace。
+- `.spec.requestHeadersToAdd`：表示 bob 侧的 Envoy 转发源节点请求时添加的 headers，示例中 key 为 Authorization 的 header 是 bob 为
   alice 分配访问 K3s 的令牌，
   这个 header 仅在目标节点为调度方时有必要配置。
 
@@ -171,16 +171,16 @@ spec:
 
 在示例中：
 
-- <code>.metadata.name</code>：表示路由规则的名称。
-- <code>.metadata.namespace</code>：表示路由规则所在的命名空间，这里是源节点的 Namespace。
-- <code>.spec.authenticationType</code>：表示源节点到目标节点的身份认证方式，目前仅支持 MTLS 和 None（表示不校验）。
-- <code>.spec.source</code>：表示源节点的 Namespace，这里即 alice 的 Namespace。
-- <code>.spec.destination</code>：表示目标节点的 Namespace，这里即 bob 的 Namespace。
-- <code>.spec.endpoint</code>：表示目标节点表示目标节点的地址。
-- <code>.spec.mTLSConfig</code>：表示源节点作为客户端访问目标节点的 MTLS 配置，具体字段如下：
-  - <code>sourceClientCert</code>：表示源节点的客户端证书，value 值是经 BASE64 编码过的。
-  - <code>sourceClientPrivateKey</code>：表示源节点的私钥，value 值是经 BASE64 编码过的。
-  - <code>tlsCA</code>：表示校验服务端（目标节点）证书的 CA，value 值是经过 BASE64 编码过的。不配置则表示不校验服务端证书。
+- `.metadata.name`：表示路由规则的名称。
+- `.metadata.namespace`：表示路由规则所在的命名空间，这里是源节点的 Namespace。
+- `.spec.authenticationType`：表示源节点到目标节点的身份认证方式，目前仅支持 MTLS 和 None（表示不校验）。
+- `.spec.source`：表示源节点的 Namespace，这里即 alice 的 Namespace。
+- `.spec.destination`：表示目标节点的 Namespace，这里即 bob 的 Namespace。
+- `.spec.endpoint`：表示目标节点表示目标节点的地址。
+- `.spec.mTLSConfig`：表示源节点作为客户端访问目标节点的 MTLS 配置，具体字段如下：
+  - `sourceClientCert`：表示源节点的客户端证书，value 值是经 BASE64 编码过的。
+  - `sourceClientPrivateKey`：表示源节点的私钥，value 值是经 BASE64 编码过的。
+  - `tlsCA`：表示校验服务端（目标节点）证书的 CA，value 值是经过 BASE64 编码过的。不配置则表示不校验服务端证书。
 
 你可以通过 kubectl 命令来创建、修改、查看、删除 DomainRoute。
 
@@ -245,53 +245,53 @@ status:
       token: BASE64<token>
 ```
 
-DomainRoute <code>metadata</code> 的子字段详细介绍如下：
+DomainRoute `metadata` 的子字段详细介绍如下：
 
-- <code>name</code>：表示 DomainRoute 的名称。
-- <code>namespace</code>: 表示 DomainRoute 所属的命名空间，节点之间的通信需要在双方 Namespace 下分别设置 DomainRoute。
+- `name`：表示 DomainRoute 的名称。
+- `namespace`: 表示 DomainRoute 所属的命名空间，节点之间的通信需要在双方 Namespace 下分别设置 DomainRoute。
 
-DomainRoute <code>spec</code> 的子字段详细介绍如下：
+DomainRoute `spec` 的子字段详细介绍如下：
 
-- <code>authenticationType</code>：表示鉴权类型，支持<code>Token</code>、<code>MTLS</code>、<code>None</code>，其中 <code>Token</code> 类型仅支持在中心化组网模式下使用。
-- <code>source</code>：表示源节点的 Namespace。
-- <code>destination</code>：表示目标节点的 Namespace。
-- <code>interConnProtocol</code>：表示节点之间的互联互通协议，目前支持 <code>kuscia</code> 或 <code>bfia</code> 协议，默认为 <code>kuscia</code> 协议 。
-- <code>endpoint</code>：表示目标节点的访问地址。
-  - <code>host</code>：表示目标节点的访问域名或 IP。
-  - <code>ports</code>：表示目标节点的访问端口。
-    - <code>name</code>：表示端口名称。
-    - <code>port</code>：表示端口号。
-    - <code>protocol</code>：表示端口协议，支持<code>HTTP</code>或<code>GRPC</code>。
-    - <code>isTLS</code>：表示是否开启<code>HTTPS</code>或<code>GRPCS</code>。
-- <code>mTLSConfig</code>：表示 MTLS 配置，authenticationType 为<code>MTLS</code>时，源节点需配置 mTLSConfig。该配置项在目标节点不生效。
-  - <code>sourceClientCert</code>：表示 BASE64 编码格式的源节点的客户端证书。
-  - <code>sourceClientPrivateKey</code>：表示 BASE64 编码格式的源节点的客户端私钥。
-  - <code>tlsCA</code>：表示 BASE64 编码格式的目标节点的服务端 CA，为空则表示不校验服务端证书。
-- <code>tokenConfig</code>：表示 Token 配置，authenticationType 为<code>Token</code>或 bodyEncryption 非空时，源节点需配置 TokenConfig。该配置项在目标节点不生效。
-  - <code>rollingUpdatePeriod</code>：表示 Token 轮转周期，默认值为 0。
-  - <code>destinationPublicKey</code>：表示目标节点的公钥，该字段由 DomainRouteController 根据目标节点的 Cert 设置，无需用户填充。
-  - <code>sourcePublicKey</code>：表示源节点的公钥，该字段由 DomainRouteController 根据源节点的 Cert 设置，无需用户填充。
-  - <code>tokenGenMethod</code>：表示 Token 生成算法，支持<code>RSA-GEN</code>和<code>RAND-GEN</code>。
-- <code>transit</code>：表示配置中转路由，如 alice-bob 的通信链路是 alice-joke-bob（alice-joke 必须为直连）。若该配置不为空，endpoint 配置项将不生效。
-  - <code>domain</code>：表示中转节点的信息。
-  - <code>domainID</code>：表示中转节点的 ID。
-- <code>bodyEncryption</code>：表示 Body 加密配置项，通常在配置转发路由时开启 bodyEncryption。
-  - <code>algorithm</code>：表示加密算法，当前仅支持 AES 加密算法。
-- <code>requestHeadersToAdd</code>：表示 Envoy 在向集群内转发来自源节点的请求时，添加的 headers，该配置仅在目标节点生效。
+- `authenticationType`：表示鉴权类型，支持`Token`、`MTLS`、`None`，其中 `Token` 类型仅支持在中心化组网模式下使用。
+- `source`：表示源节点的 Namespace。
+- `destination`：表示目标节点的 Namespace。
+- `interConnProtocol`：表示节点之间的互联互通协议，目前支持 `kuscia` 或 `bfia` 协议，默认为 `kuscia` 协议 。
+- `endpoint`：表示目标节点的访问地址。
+  - `host`：表示目标节点的访问域名或 IP。
+  - `ports`：表示目标节点的访问端口。
+    - `name`：表示端口名称。
+    - `port`：表示端口号。
+    - `protocol`：表示端口协议，支持`HTTP`或`GRPC`。
+    - `isTLS`：表示是否开启`HTTPS`或`GRPCS`。
+- `mTLSConfig`：表示 MTLS 配置，authenticationType 为`MTLS`时，源节点需配置 mTLSConfig。该配置项在目标节点不生效。
+  - `sourceClientCert`：表示 BASE64 编码格式的源节点的客户端证书。
+  - `sourceClientPrivateKey`：表示 BASE64 编码格式的源节点的客户端私钥。
+  - `tlsCA`：表示 BASE64 编码格式的目标节点的服务端 CA，为空则表示不校验服务端证书。
+- `tokenConfig`：表示 Token 配置，authenticationType 为`Token`或 bodyEncryption 非空时，源节点需配置 TokenConfig。该配置项在目标节点不生效。
+  - `rollingUpdatePeriod`：表示 Token 轮转周期，默认值为 0。
+  - `destinationPublicKey`：表示目标节点的公钥，该字段由 DomainRouteController 根据目标节点的 Cert 设置，无需用户填充。
+  - `sourcePublicKey`：表示源节点的公钥，该字段由 DomainRouteController 根据源节点的 Cert 设置，无需用户填充。
+  - `tokenGenMethod`：表示 Token 生成算法，支持`RSA-GEN`和`RAND-GEN`。
+- `transit`：表示配置中转路由，如 alice-bob 的通信链路是 alice-joke-bob（alice-joke 必须为直连）。若该配置不为空，endpoint 配置项将不生效。
+  - `domain`：表示中转节点的信息。
+  - `domainID`：表示中转节点的 ID。
+- `bodyEncryption`：表示 Body 加密配置项，通常在配置转发路由时开启 bodyEncryption。
+  - `algorithm`：表示加密算法，当前仅支持 AES 加密算法。
+- `requestHeadersToAdd`：表示 Envoy 在向集群内转发来自源节点的请求时，添加的 headers，该配置仅在目标节点生效。
 
-DomainRoute <code>status</code> 的子字段详细介绍如下：
+DomainRoute `status` 的子字段详细介绍如下：
 
-- <code>tokenStatus</code>：表示 Token 认证方式下，源节点和目标节点协商的 Token 的信息。
-  - <code>revisionInitializer</code>：表示源节点中发起 Token 协商的实例。
-  - <code>revisionToken</code>：表示最新版本的 Token。
-    - <code>revision</code>：表示 Token 的版本。
-    - <code>revisionTime</code>：表示 Token 时间戳。
-    - <code>token</code>：表示 BASE64 编码格式的经过节点私钥加密的 Token。
-  - <code>tokens</code>：表示 Token 数组，若 TokenConfig.rollingUpdatePeriod 不为 0，则数组中最多包含最新两个版本的 Token。
-    - <code>tokens\[].effectiveInstances</code>：表示 <code>metadata.namespace</code> 标识的节点下，路由规则生效的实例。
-    - <code>tokens\[].revision</code>：表示 Token 的版本。
-    - <code>tokens\[].revisionTime</code>：表示 Token 时间戳。
-    - <code>tokens\[].token</code>：表示 BASE64 编码格式的经过节点公钥加密的 Token。
+- `tokenStatus`：表示 Token 认证方式下，源节点和目标节点协商的 Token 的信息。
+  - `revisionInitializer`：表示源节点中发起 Token 协商的实例。
+  - `revisionToken`：表示最新版本的 Token。
+    - `revision`：表示 Token 的版本。
+    - `revisionTime`：表示 Token 时间戳。
+    - `token`：表示 BASE64 编码格式的经过节点私钥加密的 Token。
+  - `tokens`：表示 Token 数组，若 TokenConfig.rollingUpdatePeriod 不为 0，则数组中最多包含最新两个版本的 Token。
+    - `tokens[].effectiveInstances`：表示 `metadata.namespace` 标识的节点下，路由规则生效的实例。
+    - `tokens[].revision`：表示 Token 的版本。
+    - `tokens[].revisionTime`：表示 Token 时间戳。
+    - `tokens[].token`：表示 BASE64 编码格式的经过节点公钥加密的 Token。
 
 :target{#clusterdomainroute-template}
 
@@ -364,55 +364,55 @@ status:
       token: BASE64<token>
 ```
 
-ClusterDomainRoute <code>metadata</code> 的子字段详细介绍如下：
+ClusterDomainRoute `metadata` 的子字段详细介绍如下：
 
-- <code>name</code>：表示 ClusterDomainRoute 的名称。
+- `name`：表示 ClusterDomainRoute 的名称。
 
-ClusterDomainRoute <code>spec</code> 的子字段详细介绍如下：
+ClusterDomainRoute `spec` 的子字段详细介绍如下：
 
-- <code>authenticationType</code>：表示鉴权类型，支持<code>Token</code>、<code>MTLS</code>、<code>None</code>，其中 <code>Token</code> 类型仅支持在中心化组网模式下使用。
-- <code>source</code>：表示源节点的 Namespace。
-- <code>destination</code>：表示目标节点的 Namespace。
-- <code>endpoint</code>：表示目标节点的访问地址。
-  - <code>host</code>：表示目标节点的访问域名或 IP。
-  - <code>ports</code>：表示目标节点的访问端口。
-    - <code>name</code>：表示端口名称。
-    - <code>port</code>：表示端口号。
-    - <code>protocol</code>：表示端口协议，支持<code>HTTP</code>或<code>GRPC</code>。
-    - <code>isTLS</code>：表示是否开启<code>HTTPS</code>或<code>GRPCS</code>。
-- <code>mTLSConfig</code>：表示 MTLS 配置，authenticationType 为<code>MTLS</code>时，源节点需配置 mTLSConfig。该配置项在目标节点不生效。
-  - <code>sourceClientCert</code>：表示 BASE64 编码格式的源节点的客户端证书。
-  - <code>sourceClientPrivateKey</code>：表示 BASE64 编码格式的源节点的客户端私钥。
-  - <code>tlsCA</code>：表示 BASE64 编码格式的目标节点的服务端 CA，为空则表示不校验服务端证书。
-- <code>tokenConfig</code>：表示 Token 配置，authenticationType 为<code>Token</code>或 bodyEncryption 非空时，源节点需配置 TokenConfig。该配置项在目标节点不生效。
-  - <code>rollingUpdatePeriod</code>：表示 Token 轮转周期，默认值为 0。
-  - <code>destinationPublicKey</code>：表示目标节点的公钥，该字段由 DomainRouteController 根据目标节点的 Cert 设置，无需用户填充。
-  - <code>sourcePublicKey</code>：表示源节点的公钥，该字段由 DomainRouteController 根据源节点的 Cert 设置，无需用户填充。
-  - <code>tokenGenMethod</code>：表示 Token 生成算法，支持<code>RSA-GEN</code>和<code>RAND-GEN</code>。
-- <code>transit</code>：表示配置中转路由，如 alice-bob 的通信链路是 alice-joke-bob（alice-joke 必须为直连）。若该配置不为空，endpoint 配置项将不生效。
-  - <code>domain</code>：表示中转节点的信息。
-  - <code>domainID</code>：表示中转节点的 ID。
-- <code>bodyEncryption</code>：表示 Body 加密配置项，通常在配置转发路由时开启 bodyEncryption。
-  - <code>algorithm</code>：表示加密算法，当前仅支持 AES 加密算法。
-- <code>requestHeadersToAdd</code>：表示 Envoy 在向集群内转发来自源节点的请求时，添加的 headers，该配置仅在目标节点生效。
+- `authenticationType`：表示鉴权类型，支持`Token`、`MTLS`、`None`，其中 `Token` 类型仅支持在中心化组网模式下使用。
+- `source`：表示源节点的 Namespace。
+- `destination`：表示目标节点的 Namespace。
+- `endpoint`：表示目标节点的访问地址。
+  - `host`：表示目标节点的访问域名或 IP。
+  - `ports`：表示目标节点的访问端口。
+    - `name`：表示端口名称。
+    - `port`：表示端口号。
+    - `protocol`：表示端口协议，支持`HTTP`或`GRPC`。
+    - `isTLS`：表示是否开启`HTTPS`或`GRPCS`。
+- `mTLSConfig`：表示 MTLS 配置，authenticationType 为`MTLS`时，源节点需配置 mTLSConfig。该配置项在目标节点不生效。
+  - `sourceClientCert`：表示 BASE64 编码格式的源节点的客户端证书。
+  - `sourceClientPrivateKey`：表示 BASE64 编码格式的源节点的客户端私钥。
+  - `tlsCA`：表示 BASE64 编码格式的目标节点的服务端 CA，为空则表示不校验服务端证书。
+- `tokenConfig`：表示 Token 配置，authenticationType 为`Token`或 bodyEncryption 非空时，源节点需配置 TokenConfig。该配置项在目标节点不生效。
+  - `rollingUpdatePeriod`：表示 Token 轮转周期，默认值为 0。
+  - `destinationPublicKey`：表示目标节点的公钥，该字段由 DomainRouteController 根据目标节点的 Cert 设置，无需用户填充。
+  - `sourcePublicKey`：表示源节点的公钥，该字段由 DomainRouteController 根据源节点的 Cert 设置，无需用户填充。
+  - `tokenGenMethod`：表示 Token 生成算法，支持`RSA-GEN`和`RAND-GEN`。
+- `transit`：表示配置中转路由，如 alice-bob 的通信链路是 alice-joke-bob（alice-joke 必须为直连）。若该配置不为空，endpoint 配置项将不生效。
+  - `domain`：表示中转节点的信息。
+  - `domainID`：表示中转节点的 ID。
+- `bodyEncryption`：表示 Body 加密配置项，通常在配置转发路由时开启 bodyEncryption。
+  - `algorithm`：表示加密算法，当前仅支持 AES 加密算法。
+- `requestHeadersToAdd`：表示 Envoy 在向集群内转发来自源节点的请求时，添加的 headers，该配置仅在目标节点生效。
 
-ClusterDomainRoute <code>status</code> 的子字段详细介绍如下：
+ClusterDomainRoute `status` 的子字段详细介绍如下：
 
-- <code>conditions</code>：表示 ClusterDomainRoute 处于该阶段时所包含的一些状况。
-  - <code>conditions\[].type</code>: 表示状况的名称。
-  - <code>conditions\[].status</code>: 表示该状况是否适用，可能的取值有<code>True</code>、<code>False</code>或<code>Unknown</code>。
-  - <code>conditions\[].reason</code>: 表示该状况的原因。
-  - <code>conditions\[].message</code>: 表示该状况的详细信息。
-  - <code>conditions\[].lastUpdateTime</code>: 表示状况更新的时间。
-  - <code>conditions\[].lastTransitionTime</code>: 表示转换为该状态的时间戳。
-- <code>tokenStatus</code>：表示 Token 认证方式下，源节点和目标节点协商的 Token 的信息。
-  - <code>revision</code>：表示 Token 的最新版本。
-  - <code>revisionTime</code>：表示 Token 时间戳。
-  - <code>sourceTokens</code>：表示源节点的 Token 数组，若 TokenConfig.rollingUpdatePeriod 不为 0，则数组中最多包含最新两个版本的 Token。
-    - <code>sourceTokens\[].revision</code>：表示 Token 的版本。
-    - <code>sourceTokens\[].revisionTime</code>：表示 Token 时间戳。
-    - <code>sourceTokens\[].token</code>：表示 BASE64 编码格式的经过节点私钥加密的 Token。
-  - <code>destinationTokens</code>：表示目标节点的 Token 数组，若 TokenConfig.rollingUpdatePeriod 不为 0，则数组中最多包含最新两个版本的 Token。
-    - <code>destinationTokens\[].revision</code>：表示 Token 的版本。
-    - <code>destinationTokens\[].revisionTime</code>：表示 Token 时间戳。
-    - <code>destinationTokens\[].token</code>：表示 BASE64 编码格式的经过节点公钥加密的 Token。
+- `conditions`：表示 ClusterDomainRoute 处于该阶段时所包含的一些状况。
+  - `conditions[].type`: 表示状况的名称。
+  - `conditions[].status`: 表示该状况是否适用，可能的取值有`True`、`False`或`Unknown`。
+  - `conditions[].reason`: 表示该状况的原因。
+  - `conditions[].message`: 表示该状况的详细信息。
+  - `conditions[].lastUpdateTime`: 表示状况更新的时间。
+  - `conditions[].lastTransitionTime`: 表示转换为该状态的时间戳。
+- `tokenStatus`：表示 Token 认证方式下，源节点和目标节点协商的 Token 的信息。
+  - `revision`：表示 Token 的最新版本。
+  - `revisionTime`：表示 Token 时间戳。
+  - `sourceTokens`：表示源节点的 Token 数组，若 TokenConfig.rollingUpdatePeriod 不为 0，则数组中最多包含最新两个版本的 Token。
+    - `sourceTokens[].revision`：表示 Token 的版本。
+    - `sourceTokens[].revisionTime`：表示 Token 时间戳。
+    - `sourceTokens[].token`：表示 BASE64 编码格式的经过节点私钥加密的 Token。
+  - `destinationTokens`：表示目标节点的 Token 数组，若 TokenConfig.rollingUpdatePeriod 不为 0，则数组中最多包含最新两个版本的 Token。
+    - `destinationTokens[].revision`：表示 Token 的版本。
+    - `destinationTokens[].revisionTime`：表示 Token 时间戳。
+    - `destinationTokens[].token`：表示 BASE64 编码格式的经过节点公钥加密的 Token。

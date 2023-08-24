@@ -10,9 +10,9 @@
 
 :target{#add}
 
-### <code>Add</code>
+### `Add`
 
-Out = Left <code>Add</code> Right
+Out = Left `Add` Right
 
 输入：
 
@@ -31,7 +31,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#broadcastto}
 
-### <code>BroadcastTo</code>
+### `BroadcastTo`
 
 将输入的 tensor <cite>In</cite> 广播转变为与 ShapeRefTensor 相同的 shape。例：
 
@@ -59,7 +59,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#concat}
 
-### <code>Concat</code>
+### `Concat`
 
 定义：给定一组 tensor (可变参数)，其中 tensor 的 shape 必须相同，(除了轴之外)，将它们沿着指定的轴拼接起来。例如：
 
@@ -82,7 +82,7 @@ Out = {1, 2, 2, 3, 4, 3, 4, 5, 6}
 
 <strong>默认属性值:</strong>
 
-1. <code>axis</code>: 0
+1. `axis`: 0
 
 TensorStatus(ShareType) Constraints：
 
@@ -90,7 +90,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#constant}
 
-### <code>Constant</code>
+### `Constant`
 
 定义：根据 Attributes 生成常量。例如：
 
@@ -115,7 +115,7 @@ Out = [{"a", "b", "c"}]
 
 <strong>默认属性值:</strong>
 
-1. <code>to\_status</code>: 0
+1. `to_status`: 0
 
 TensorStatus(ShareType) Constraints：
 
@@ -123,7 +123,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#copy}
 
-### <code>Copy</code>
+### `Copy`
 
 定义：将源 tensor 复制到新的目前 tensor 中。
 
@@ -146,9 +146,9 @@ TensorStatus(ShareType) Constraints：
 
 :target{#div}
 
-### <code>Div</code>
+### `Div`
 
-Out = Left <code>Div</code> Right
+Out = Left `Div` Right
 
 输入：
 
@@ -167,7 +167,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#dumpfile}
 
-### <code>DumpFile</code>
+### `DumpFile`
 
 定义：将输入的 tensor 存储到文件中。注意：此操作将更改会话中受影响的行。
 
@@ -190,9 +190,9 @@ TensorStatus(ShareType) Constraints：
 
 :target{#equal}
 
-### <code>Equal</code>
+### `Equal`
 
-Out = Left <code>Equal</code> Right
+Out = Left `Equal` Right
 
 输入：
 
@@ -211,7 +211,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#filter}
 
-### <code>Filter</code>
+### `Filter`
 
 给定一个boolean tensorsFilter (其 shape 为\[M])，以及一些 tensor In (可变参数，每个 tensor 的shape必须为\[M])。对于i在\[0, M-1]的范围内，仅当Filter\[i]为真时，保留In tensor 的元素，并输出过滤结果 tensor Out (可变参数)。例:
 
@@ -237,7 +237,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#filterbyindex}
 
-### <code>FilterByIndex</code>
+### `FilterByIndex`
 
 定义：按行索引筛选。例：
 
@@ -262,9 +262,9 @@ TensorStatus(ShareType) Constraints：
 
 :target{#greater}
 
-### <code>Greater</code>
+### `Greater`
 
-Out = Left <code>Greater</code> Right
+Out = Left `Greater` Right
 
 输入：
 
@@ -283,9 +283,9 @@ TensorStatus(ShareType) Constraints：
 
 :target{#greaterequal}
 
-### <code>GreaterEqual</code>
+### `GreaterEqual`
 
-Out = Left <code>GreaterEqual</code> Right
+Out = Left `GreaterEqual` Right
 
 输入：
 
@@ -304,7 +304,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#group}
 
-### <code>Group</code>
+### `Group`
 
 定义:为每个输入元素分配一个组id(从0开始)。定义：
 
@@ -329,7 +329,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#groupavg}
 
-### <code>GroupAvg</code>
+### `GroupAvg`
 
 定义：为每个组聚合 <cite>Data</cite>。例子:
 
@@ -356,7 +356,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#groupcount}
 
-### <code>GroupCount</code>
+### `GroupCount`
 
 定义：为每个组聚合 <cite>Data</cite>。例子:
 
@@ -383,7 +383,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#groupcountdistinct}
 
-### <code>GroupCountDistinct</code>
+### `GroupCountDistinct`
 
 定义：为每个组聚合 <cite>Data</cite>。例子:
 
@@ -410,7 +410,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#groupfirstof}
 
-### <code>GroupFirstOf</code>
+### `GroupFirstOf`
 
 定义：为每个组聚合 <cite>Data</cite>。例子:
 
@@ -437,7 +437,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#groupmax}
 
-### <code>GroupMax</code>
+### `GroupMax`
 
 定义：为每个组聚合 <cite>Data</cite>。例子:
 
@@ -464,7 +464,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#groupmin}
 
-### <code>GroupMin</code>
+### `GroupMin`
 
 定义：为每个组聚合 <cite>Data</cite>。例子:
 
@@ -491,7 +491,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#groupsum}
 
-### <code>GroupSum</code>
+### `GroupSum`
 
 定义：为每个组聚合 <cite>Data</cite>。例子:
 
@@ -518,7 +518,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#in}
 
-### <code>In</code>
+### `In`
 
 定义：给定一个名为 Left 的输入 tensor (其 shape 为 \[M]) 和另一个名为 Right 的 Tensor (其 shape 为 \[N])，检查 Left 的元素是否存在于右的元素中，并输出一名为 Out 的布尔类型的 tensor (其 shape 为 \[M])。左和右必须是相同的类型。例：
 
@@ -545,7 +545,7 @@ Out = {False, True, False, True}
 
 <strong>默认属性值:</strong>
 
-1. <code>algorithm</code>: 0
+1. `algorithm`: 0
 
 TensorStatus(ShareType) Constraints：
 
@@ -554,9 +554,9 @@ TensorStatus(ShareType) Constraints：
 
 :target{#intdiv}
 
-### <code>IntDiv</code>
+### `IntDiv`
 
-Out = Left <code>IntDiv</code> Right
+Out = Left `IntDiv` Right
 
 输入：
 
@@ -575,7 +575,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#join}
 
-### <code>Join</code>
+### `Join`
 
 定义：基于 EQ-Join 创建连接索引，返回原始输入中结果对应的行索引。例：
 
@@ -600,22 +600,22 @@ RightJoinIndex = {0,1,2,2} // shape:[K=4], rows after applied filter eq-join-lis
 <strong>属性：</strong>
 
 1. <cite>input\_party\_codes</cite>：输入所属的各方列表（\[PartyCodeLeft, PartyCodeRight]）。
-2. <code>join\_type</code>: Int64. 0: inner join;
+2. `join_type`: Int64. 0: inner join;
 
 <strong>默认属性值:</strong>
 
-1. <code>join\_type</code>: 0
+1. `join_type`: 0
 
 TensorStatus(ShareType) Constraints：
 
 1. <cite>T1</cite>: 私有
-2. <code>T2</code>: private
+2. `T2`: private
 
 :target{#less}
 
-### <code>Less</code>
+### `Less`
 
-Out = Left <code>Less</code> Right
+Out = Left `Less` Right
 
 输入：
 
@@ -634,9 +634,9 @@ TensorStatus(ShareType) Constraints：
 
 :target{#lessequal}
 
-### <code>LessEqual</code>
+### `LessEqual`
 
-Out = Left <code>LessEqual</code> Right
+Out = Left `LessEqual` Right
 
 输入：
 
@@ -655,9 +655,9 @@ TensorStatus(ShareType) Constraints：
 
 :target{#logicaland}
 
-### <code>LogicalAnd</code>
+### `LogicalAnd`
 
-Out = Left <code>LogicalAnd</code> Right
+Out = Left `LogicalAnd` Right
 
 输入：
 
@@ -676,9 +676,9 @@ TensorStatus(ShareType) Constraints：
 
 :target{#logicalor}
 
-### <code>LogicalOr</code>
+### `LogicalOr`
 
-Out = Left <code>LogicalOr</code> Right
+Out = Left `LogicalOr` Right
 
 输入：
 
@@ -697,7 +697,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#makeprivate}
 
-### <code>MakePrivate</code>
+### `MakePrivate`
 
 将 tensor 从共享或私有状态转换为公开状态。
 
@@ -715,12 +715,12 @@ TensorStatus(ShareType) Constraints：
 
 TensorStatus(ShareType) Constraints：
 
-1. <code>T1</code>: secret,public
-2. <code>T2</code>: private
+1. `T1`: secret,public
+2. `T2`: private
 
 :target{#makepublic}
 
-### <code>MakePublic</code>
+### `MakePublic`
 
 将 tensor 从私有状态转变为共享状态。
 
@@ -739,7 +739,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#makeshare}
 
-### <code>MakeShare</code>
+### `MakeShare`
 
 将 tensor 从私有状态转变为共享状态。
 
@@ -758,9 +758,9 @@ TensorStatus(ShareType) Constraints：
 
 :target{#minus}
 
-### <code>Minus</code>
+### `Minus`
 
-Out = Left <code>Minus</code> Right
+Out = Left `Minus` Right
 
 输入：
 
@@ -779,9 +779,9 @@ TensorStatus(ShareType) Constraints：
 
 :target{#mod}
 
-### <code>Mod</code>
+### `Mod`
 
-Out = Left <code>Mod</code> Right
+Out = Left `Mod` Right
 
 输入：
 
@@ -800,9 +800,9 @@ TensorStatus(ShareType) Constraints：
 
 :target{#mul}
 
-### <code>Mul</code>
+### `Mul`
 
-Out = Left <code>Mul</code> Right
+Out = Left `Mul` Right
 
 输入：
 
@@ -821,17 +821,17 @@ TensorStatus(ShareType) Constraints：
 
 :target{#not}
 
-### <code>Not</code>
+### `Not`
 
 Out = Not In
 
 输入：
 
-1. <code>In</code>(single, T): Input tensor.
+1. `In`(single, T): Input tensor.
 
 输出：
 
-1. <code>Out</code>(single, T): Output tensor.
+1. `Out`(single, T): Output tensor.
 
 TensorStatus(ShareType) Constraints：
 
@@ -839,9 +839,9 @@ TensorStatus(ShareType) Constraints：
 
 :target{#notequal}
 
-### <code>NotEqual</code>
+### `NotEqual`
 
-Out = Left <code>NotEqual</code> Right
+Out = Left `NotEqual` Right
 
 输入：
 
@@ -860,7 +860,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#obliviousgroupavg}
 
-### <code>ObliviousGroupAvg</code>
+### `ObliviousGroupAvg`
 
 定义: 根据 group mask 来对输入进行分组求和。
 
@@ -885,7 +885,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#obliviousgroupcount}
 
-### <code>ObliviousGroupCount</code>
+### `ObliviousGroupCount`
 
 定义: 根据 group mask 来对输入进行分组求和。
 
@@ -910,7 +910,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#obliviousgroupmark}
 
-### <code>ObliviousGroupMark</code>
+### `ObliviousGroupMark`
 
 定义：根据输入的 key 生成一个 group ，group 的计算规则为 Group\[i] = not\_eq(Key\[i+1], Key\[i])。例：
 
@@ -936,7 +936,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#obliviousgroupmax}
 
-### <code>ObliviousGroupMax</code>
+### `ObliviousGroupMax`
 
 定义: 根据 group mask 来对输入进行分组求和。
 
@@ -961,7 +961,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#obliviousgroupmin}
 
-### <code>ObliviousGroupMin</code>
+### `ObliviousGroupMin`
 
 定义: 根据 group mask 来对输入进行分组求和。
 
@@ -986,7 +986,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#obliviousgroupsum}
 
-### <code>ObliviousGroupSum</code>
+### `ObliviousGroupSum`
 
 定义: 根据 group mask 来对输入进行分组求和。
 
@@ -1011,7 +1011,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#publish}
 
-### <code>Publish</code>
+### `Publish`
 
 该算子披露 DAG 结果。
 
@@ -1029,7 +1029,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#reduceavg}
 
-### <code>ReduceAvg</code>
+### `ReduceAvg`
 
 定义：给定一个输入 tensor ，返回输入 tensor 元素的平均值。例：
 
@@ -1055,7 +1055,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#reducemax}
 
-### <code>ReduceMax</code>
+### `ReduceMax`
 
 定义：给定一个输入 tensor ，返回输入 tensor 元素的最大值。例：
 
@@ -1078,7 +1078,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#reducemin}
 
-### <code>ReduceMin</code>
+### `ReduceMin`
 
 定义：给定一个输入 tensor ，返回输入 tensor 元素的最小值。例：
 
@@ -1101,7 +1101,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#reducesum}
 
-### <code>ReduceSum</code>
+### `ReduceSum`
 
 定义：给定一个输入 tensor ，返回输入 tensor 元素的总和。例：
 
@@ -1124,7 +1124,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#runsql}
 
-### <code>RunSQL</code>
+### `RunSQL`
 
 运行 SQL 语句并返回私有状态下的 tensors 列表
 
@@ -1147,7 +1147,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#shape}
 
-### <code>Shape</code>
+### `Shape`
 
 定义：给定 tensor ，返回每个 tensor 的 shapes，Axis从 0 开始。如果设置了 Axis，则返回每个 shapes 的维度。如果未设置 Axis (默认为 -1)，则返回 shapes 。例
 
@@ -1170,7 +1170,7 @@ Out = { {2, 1}, {2, 1}, {3, 1} }
 
 <strong>默认属性值:</strong>
 
-1. <code>axis</code>: -1
+1. `axis`: -1
 
 TensorStatus(ShareType) Constraints：
 
@@ -1179,7 +1179,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#shuffle}
 
-### <code>Shuffle</code>
+### `Shuffle`
 
 定义：Shuffle <cite>In</cite>。例：
 
@@ -1202,7 +1202,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#sort}
 
-### <code>Sort</code>
+### `Sort`
 
 定义: 使用 <cite>Key</cite> 对输入内容进行排序。例：
 
@@ -1227,7 +1227,7 @@ Out = [{1, 2, 3, 4}, {2, 3, 1, 4}, {8, 7, 9, 6}]
 
 <strong>默认属性值:</strong>
 
-1. <code>reverse</code>: false
+1. `reverse`: false
 
 TensorStatus(ShareType) Constraints：
 
@@ -1235,7 +1235,7 @@ TensorStatus(ShareType) Constraints：
 
 :target{#unique}
 
-### <code>Unique</code>
+### `Unique`
 
 定义：Key tensor 的唯一性。例：
 

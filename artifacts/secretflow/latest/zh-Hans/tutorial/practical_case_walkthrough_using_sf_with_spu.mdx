@@ -4,9 +4,9 @@
 
 > This tutorial is only available in Chinese.
 
-推荐使用<code>conda</code>创建一个新环境 > conda create -n sf python=3.8
+推荐使用`conda`创建一个新环境 > conda create -n sf python=3.8
 
-直接使用<code>pip</code>安装secretflow > pip install -U secretflow
+直接使用`pip`安装secretflow > pip install -U secretflow
 
 基于secretflow：<strong>0.8.2b2</strong>版本
 
@@ -20,7 +20,7 @@ Vehicle Insurance Claim Fraud Detection
 
 该数据集来源于[kaggle](https://www.kaggle.com/datasets/shivamb/vehicle-claim-fraud-detection)，包含 - 车辆数据集-属性、模型、事故详细信息等 - 保单详细信息-保单类型、有效期等
 
-目标是检测索赔申请是否欺诈： 字段<code>FraudFound\_P</code> (0 or 1) 即为预测的target值，是一个典型的<strong>二分类场景</strong>。
+目标是检测索赔申请是否欺诈： 字段`FraudFound_P` (0 or 1) 即为预测的target值，是一个典型的<strong>二分类场景</strong>。
 
 :target{#实验目标}
 
@@ -36,7 +36,7 @@ Vehicle Insurance Claim Fraud Detection
 
 ### Ray集群启动（多机部署）
 
-考虑多机部署的情况，在启动secretflow之前需要先将ray集群启动。在header节点和worker节点上各自执行下述的指令。 > P.S. 启动集群之后，可以执行<code>ray status</code>看一下集群是否正确启动完成
+考虑多机部署的情况，在启动secretflow之前需要先将ray集群启动。在header节点和worker节点上各自执行下述的指令。 > P.S. 启动集群之后，可以执行`ray status`看一下集群是否正确启动完成
 
 <strong>Header节点</strong>
 
@@ -67,21 +67,19 @@ ray start --address="head_ip:head_port" --resources='{"bob": 20}'
 
 ### 单机部署
 
-我们在此使用单机部署的方式做一个样例展示。 通过调用<code>sf.init()</code>我们实例化了一个ray集群，有5个节点，也就对应了5个物理设备。
+我们在此使用单机部署的方式做一个样例展示。 通过调用`sf.init()`我们实例化了一个ray集群，有5个节点，也就对应了5个物理设备。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
     ```python
     import secretflow as sf
+
     # Check the version of your SecretFlow
     print('The version of SecretFlow: {}'.format(sf.__version__))
 
     sf.shutdown()
     # Standalone Mode
-    sf.init(
-        ['alice', 'bob', 'carol', 'davy', 'eric'],
-        address='local'
-    )
+    sf.init(['alice', 'bob', 'carol', 'davy', 'eric'], address='local')
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -153,13 +151,14 @@ ray start --address="head_ip:head_port" --resources='{"bob": 20}'
 
 ### Load Data (Mock)
 
-在定义好隐语中的逻辑设备概念之后，我们演示一下如何进行数据的读入。这里使用一个mock的data load方法<code>get\_data\_mock()</code>做一个演示。
+在定义好隐语中的逻辑设备概念之后，我们演示一下如何进行数据的读入。这里使用一个mock的data load方法`get_data_mock()`做一个演示。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
     ```python
     def get_data_mock():
         return 2
+
 
     x_plaintext = get_data_mock()
     print(f"x_plaintext: {x_plaintext}")
@@ -327,7 +326,7 @@ PYU->SPU 数据转换
 - bob持有中间的10个属性
 - carol持有剩下的所有属性以及标签值
 
-同时为了方便各方之间的样本做对齐，我们加了一个新的特征<code>UID</code>来标识数据样本。
+同时为了方便各方之间的样本做对齐，我们加了一个新的特征`UID`来标识数据样本。
 
 我们预先基于sklearn将全集数据拆分成训练集和测试集，方便后续进行模型训练效果的验证。
 
@@ -342,13 +341,15 @@ PYU->SPU 数据转换
     test_bob_path = "data/bob_test.csv"
     test_carol_path = "data/carol_test.csv"
 
+
     def load_dataset_full(data_path):
         df = pd.read_csv(data_path)
         df = df.drop([0])
-        df = df.loc[df['DayOfWeekClaimed']!='0']
+        df = df.loc[df['DayOfWeekClaimed'] != '0']
         y = df['FraudFound_P']
         X = df.drop(columns='FraudFound_P')
         return X, y
+
 
     def split_data():
         x, y = load_dataset_full(full_data_path)
@@ -373,6 +374,7 @@ PYU->SPU 数据转换
         test_alice_csv.to_csv(test_alice_path, index_label='UID')
         test_bob_csv.to_csv(test_bob_path, index_label='UID')
         test_carol_csv.to_csv(test_carol_path, index_label='UID')
+
 
     split_data()
     ```
@@ -537,8 +539,18 @@ PYU->SPU 数据转换
     ```python
     from secretflow.data.vertical import read_csv as v_read_csv
 
-    train_ds = v_read_csv({alice: train_alice_path, bob: train_bob_path, carol: train_carol_path}, keys='UID', drop_keys='UID', spu=my_spu)
-    test_ds = v_read_csv({alice: test_alice_path, bob: test_bob_path, carol: test_carol_path}, keys='UID', drop_keys='UID', spu=my_spu)
+    train_ds = v_read_csv(
+        {alice: train_alice_path, bob: train_bob_path, carol: train_carol_path},
+        keys='UID',
+        drop_keys='UID',
+        spu=my_spu,
+    )
+    test_ds = v_read_csv(
+        {alice: test_alice_path, bob: test_bob_path, carol: test_carol_path},
+        keys='UID',
+        drop_keys='UID',
+        spu=my_spu,
+    )
     print(train_ds)
     print(train_ds.columns)
     ```
@@ -591,7 +603,14 @@ PYU->SPU 数据转换
     ```python
     from secretflow.preprocessing import LabelEncoder
 
-    cols = ['AccidentArea', 'Sex', 'Fault', 'PoliceReportFiled', 'WitnessPresent', 'AgentType']
+    cols = [
+        'AccidentArea',
+        'Sex',
+        'Fault',
+        'PoliceReportFiled',
+        'WitnessPresent',
+        'AgentType',
+    ]
     for col in cols:
         print(f"Col name {col}: {df[col].unique()}")
 
@@ -773,6 +792,7 @@ PYU->SPU 数据转换
 
     from secretflow.data.vertical import VDataFrame
 
+
     def replace(df, col_maps):
         df = df.copy()
 
@@ -789,6 +809,7 @@ PYU->SPU 数据转换
         for col_map in col_maps:
             func_(df, col_map)
         return df
+
 
     col_maps = col_disc + col_ordering
 
@@ -842,7 +863,8 @@ PYU->SPU 数据转换
   <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
     ```python
     from secretflow.preprocessing import OneHotEncoder
-    onehot_cols = ['Make','MaritalStatus','PolicyType','VehicleCategory','BasePolicy']
+
+    onehot_cols = ['Make', 'MaritalStatus', 'PolicyType', 'VehicleCategory', 'BasePolicy']
 
     onehot_encoder = OneHotEncoder()
     onehot_encoder.fit(train_ds_v2[onehot_cols])
@@ -905,6 +927,8 @@ PYU->SPU 数据转换
     """
     Convert the VDataFrame object to SPUObject
     """
+
+
     def vdataframe_to_spu(vdf: VDataFrame):
         spu_partitions = []
         for device in [alice, bob, carol]:
@@ -982,9 +1006,11 @@ PYU->SPU 数据转换
         x = (x - jnp.min(x)) / (jnp.max(x) - jnp.min(x))
         return 1 / (1 + jnp.exp(-x))
 
+
     # Outputs probability of a label being true.
     def predict_lr(W, b, inputs):
         return sigmoid(jnp.dot(inputs, W) + b)
+
 
     # Training loss is the negative log-likelihood of the training examples.
     def loss_lr(W, b, inputs, targets):
@@ -992,11 +1018,13 @@ PYU->SPU 数据转换
         label_probs = preds * targets + (1 - preds) * (1 - targets)
         return -jnp.mean(jnp.log(label_probs))
 
+
     def train_step(W, b, X, y, learning_rate):
         loss_value, Wb_grad = jax.value_and_grad(loss_lr, (0, 1))(W, b, X, y)
         W -= learning_rate * Wb_grad[0]
         b -= learning_rate * Wb_grad[1]
         return loss_value, W, b
+
 
     def fit(W, b, X, y, epochs=1, learning_rate=1e-2, batch_size=128):
         losses = jnp.array([])
@@ -1005,10 +1033,8 @@ PYU->SPU 数据转换
         ys = jnp.array_split(y, len(y) / batch_size, axis=0)
 
         for _ in range(epochs):
-            for (batch_x, batch_y) in zip(xs, ys):
-                l, W, b = train_step(
-                    W, b, batch_x, batch_y, learning_rate=learning_rate
-                )
+            for batch_x, batch_y in zip(xs, ys):
+                l, W, b = train_step(W, b, batch_x, batch_y, learning_rate=learning_rate)
                 losses = jnp.append(losses, l)
         return losses, W, b
     ```
@@ -1022,6 +1048,7 @@ PYU->SPU 数据转换
     import sys
     import time
     import logging
+
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     logging.getLogger().setLevel(logging.INFO)
 
@@ -1094,6 +1121,7 @@ PYU->SPU 数据转换
   <Notebook.CodeArea prompt="[23]:" stderr={false} type="input">
     ```python
     import sys
+
     !{sys.executable} -m pip install flax==0.6.0 -q
     ```
   </Notebook.CodeArea>
@@ -1122,12 +1150,15 @@ PYU->SPU 数据转换
             x = nn.Dense(self.features[-1])(x)
             return x
 
+
     FEATURES = [1]
     flax_nn = MLP(FEATURES)
+
 
     def predict(params, x):
         from typing import Sequence
         import flax.linen as nn
+
         class MLP(nn.Module):
             features: Sequence[int]
 
@@ -1137,6 +1168,7 @@ PYU->SPU 数据转换
                     x = nn.relu(nn.Dense(feat)(x))
                 x = nn.Dense(self.features[-1])(x)
                 return x
+
         FEATURES = [1]
         flax_nn = MLP(FEATURES)
         return flax_nn.apply(params, x)
@@ -1153,12 +1185,13 @@ PYU->SPU 数据转换
         ys = jnp.array_split(y, len(y) / batch_size, axis=0)
 
         for _ in range(epochs):
-            for (batch_x, batch_y) in zip(xs, ys):
+            for batch_x, batch_y in zip(xs, ys):
                 _, grads = jax.value_and_grad(loss_func)(params, batch_x, batch_y)
                 params = jax.tree_util.tree_map(
                     lambda p, g: p - learning_rate * g, params, grads
                 )
         return params
+
 
     epochs = 1
     learning_rate = 1e-2
@@ -1180,8 +1213,15 @@ PYU->SPU 数据转换
     SPU-version secure computation
     """
     params_spu = sf.to(alice, init_params).to(my_spu)
-    params_spu = my_spu(train_auto_grad, static_argnames=['batch_size', 'epochs', 'learning_rate'])(
-        X_train_spu, y_train_spu, params_spu, batch_size=batch_size, epochs=epochs, learning_rate=learning_rate
+    params_spu = my_spu(
+        train_auto_grad, static_argnames=['batch_size', 'epochs', 'learning_rate']
+    )(
+        X_train_spu,
+        y_train_spu,
+        params_spu,
+        batch_size=batch_size,
+        epochs=epochs,
+        learning_rate=learning_rate,
     )
     y_pred_spu = my_spu(predict)(params_spu, X_test_spu)
     y_pred_ = sf.reveal(y_pred_spu)
@@ -1229,7 +1269,7 @@ PYU->SPU 数据转换
     model = xgb.train(params, X_train, y_train)
     print(f"train time: {time.time() - start}")
 
-    start =time.time()
+    start = time.time()
     spu_yhat = model.predict(X_test)
     print(f"predict time: {time.time() - start}")
 
@@ -1322,7 +1362,7 @@ PYU->SPU 数据转换
 
 ## The End
 
-显示地调用<code>sf.shutdown()</code>关闭实例化的集群。 > 注意：如果是在.py文件中运行代码，不需要显示地执行shutdown，在程序进程运行结束后会隐式地执行<code>shutdown</code>函数。
+显示地调用`sf.shutdown()`关闭实例化的集群。 > 注意：如果是在.py文件中运行代码，不需要显示地执行shutdown，在程序进程运行结束后会隐式地执行`shutdown`函数。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[27]:" stderr={false} type="input">

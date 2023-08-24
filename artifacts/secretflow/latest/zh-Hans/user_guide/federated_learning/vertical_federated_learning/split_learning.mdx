@@ -14,9 +14,9 @@
 
 Alice持有数据和基础模型。Bob只有数据、基础模型和fuse模型。
 
-1. Alice使用自己的数据和基础模型得到 <code>hidden0</code>，然后发送给Bob。
-2. Bob使用自己的数据和基础模型得到 <code>hidden1</code>。
-3. Agg Layer使用 <code>hidden\_0</code> 和 <code>hidden\_1</code> 作为输入，并输出聚合后的隐层。
+1. Alice使用自己的数据和基础模型得到 `hidden0`，然后发送给Bob。
+2. Bob使用自己的数据和基础模型得到 `hidden1`。
+3. Agg Layer使用 `hidden_0` 和 `hidden_1` 作为输入，并输出聚合后的隐层。
 4. Bob把聚合后的隐层作为fuse模型的输入，计算得到梯度。
 5. 梯度被拆分成两部分，分别返回给Alice和Bob。
 6. Alice和Bob使用各自收到的梯度更新基础模型。
@@ -25,7 +25,7 @@ Alice持有数据和基础模型。Bob只有数据、基础模型和fuse模型�
 
 ## 拆分学习模型
 
-隐语提供 [<code>SLModel</code>](../../../source/secretflow.ml.ml.nn.mdx#secretflow.ml.nn.SLModel "secretflow.ml.nn.SLModel")  用来定义拆分学习模型。您可以按照教程来学习如何使用。
+隐语提供 [`SLModel`](../../../source/secretflow.ml.ml.nn.mdx#secretflow.ml.nn.SLModel "secretflow.ml.nn.SLModel")  用来定义拆分学习模型。您可以按照教程来学习如何使用。
 
 :target{#tutorial}
 

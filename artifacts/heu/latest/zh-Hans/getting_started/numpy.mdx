@@ -2,10 +2,10 @@
 
 # 矩阵运算
 
-HEU 提供了矩阵化运算接口，其功能主要位于 <code>heu.numpy</code> 模块。
+HEU 提供了矩阵化运算接口，其功能主要位于 `heu.numpy` 模块。
 
 <Container type="tip">
-  <code>heu.numpy</code> 大部分接口都使用并行计算的方式实现，其性能比纯 Python 实现的矩阵运算库高得多
+  `heu.numpy` 大部分接口都使用并行计算的方式实现，其性能比纯 Python 实现的矩阵运算库高得多
 </Container>
 
 :target{#id2}
@@ -21,7 +21,7 @@ HEU 提供了矩阵化运算接口，其功能主要位于 <code>heu.numpy</code
   ```
 </Container>
 
-<code>heu.numpy</code> 环境初始化的方法与 <code>heu.phe</code> 类似：
+`heu.numpy` 环境初始化的方法与 `heu.phe` 类似：
 
 ```python3
 kit = hnp.setup(phe.SchemaType.ZPaillier, 2048)
@@ -30,7 +30,7 @@ decryptor = kit.decryptor()
 evaluator = kit.evaluator()
 ```
 
-另外，由于 <code>heu.numpy</code> 模块仅仅是 <code>heu.phe</code> 模块的装饰器，如果您已经有 phe kit 对象，则可以通过 phe kit 对象快速构造 hnp kit 对象，此时同态加密的密钥不会重新生成：
+另外，由于 `heu.numpy` 模块仅仅是 `heu.phe` 模块的装饰器，如果您已经有 phe kit 对象，则可以通过 phe kit 对象快速构造 hnp kit 对象，此时同态加密的密钥不会重新生成：
 
 ```python3
 phe_kit = phe.setup(phe.SchemaType.ZPaillier, 2048)
@@ -61,13 +61,13 @@ evaluator = skit.evaluator()
 
 环境准备好之后，下面介绍 heu.numpy 如何处理 Python 中的数据。矩阵在 Python 中有多种表示方式，例如嵌套的 List，嵌套的 Tuple 以及 numpy.ndarray，HEU 把所有 Python 中原始的数据类型称为 Cleartext（原文）。参考 [快速入门](quick_start.mdx)，而 HEU 内部仅有 hnp.PlaintextArray 和 hnp.CiphertextArray 两种类型，分别存储明文矩阵和密文矩阵，Python 中的原始数据类型需要先转换为 hnp.PlaintextArray 后才能被 hnp.numpy 模块进一步处理。
 
-本节介绍如何使用 <code>heu.numpy</code> 模块将数据在原文（cleartext）与明文（plaintext）之间做转换。
+本节介绍如何使用 `heu.numpy` 模块将数据在原文（cleartext）与明文（plaintext）之间做转换。
 
 :target{#id3}
 
 ### 输入
 
-与 <code>heu.phe</code> 一样，原文（cleartext）到明文（plaintext）之间的转换依赖编码器，<code>heu.numpy</code> 与 <code>heu.phe</code> 共用相同的编码器。同时，<code>heu.numpy</code> 模块提供了 <code>.array()</code> 接口用于识别并转换 Cleartext 矩阵。
+与 `heu.phe` 一样，原文（cleartext）到明文（plaintext）之间的转换依赖编码器，`heu.numpy` 与 `heu.phe` 共用相同的编码器。同时，`heu.numpy` 模块提供了 `.array()` 接口用于识别并转换 Cleartext 矩阵。
 
 ```python3
 # Init from nested lists
@@ -97,7 +97,7 @@ print(harr)
 <Container type="tip">
   <strong>phe.IntegerEncoder</strong>、<strong>phe.FloatEncoder</strong> 本质上就是把原始数据乘了一个 scale，如果我自己把原文乘上一个 scale 再转换成 hnp.PlaintextArray 行吗？
 
-  答案是可以，但性能会低一些。HEU 会尽可能地做并行化，而自己在 Python 端做 scale 的话一定是串行的。另外，受限于形式，<strong>hnp.array()</strong> 必须要指定一个 encoder，如果原文本来就是整数或者您已经做了 scale，您可以向 <strong>hnp.array()</strong> 传入一个 scale=1 的 encoder，或者直接使用默认的 <code>BigintEncoder</code>
+  答案是可以，但性能会低一些。HEU 会尽可能地做并行化，而自己在 Python 端做 scale 的话一定是串行的。另外，受限于形式，<strong>hnp.array()</strong> 必须要指定一个 encoder，如果原文本来就是整数或者您已经做了 scale，您可以向 <strong>hnp.array()</strong> 传入一个 scale=1 的 encoder，或者直接使用默认的 `BigintEncoder`
 
   ```python3
   # create an encoder with scale=1
@@ -145,7 +145,7 @@ print(nparr) # [1.1 2.1]
 print(type(nparr)) # <class 'numpy.ndarray'>
 ```
 
-与 <strong>hnp.array()</strong> 一样，如果 <strong>to\_numpy()</strong> 不指定编码器，则默认使用 <code>BigintEncoder</code>。
+与 <strong>hnp.array()</strong> 一样，如果 <strong>to\_numpy()</strong> 不指定编码器，则默认使用 `BigintEncoder`。
 
 :target{#id6}
 

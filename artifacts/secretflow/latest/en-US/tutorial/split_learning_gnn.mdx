@@ -36,10 +36,10 @@ Create two participant alice and bob.
 
 ### The cora dataset
 
-The [cora](https://linqs-data.soe.ucsc.edu/public/lbc/cora.tgz) dataset has two tap-separated files: <code>cora.cites</code> and <code>cora.content</code>.
+The [cora](https://linqs-data.soe.ucsc.edu/public/lbc/cora.tgz) dataset has two tap-separated files: `cora.cites` and `cora.content`.
 
-- The <code>cora.cites</code> includes the citation records with two columns: cited\_paper\_id (target) and citing\_paper\_id (source).
-- The <code>cora.content</code> includes the paper content records with 1,435 columns: paper\_id, subject, and 1,433 binary features.
+- The `cora.cites` includes the citation records with two columns: cited\_paper\_id (target) and citing\_paper\_id (source).
+- The `cora.content` includes the paper content records with 1,435 columns: paper\_id, subject, and 1,433 binary features.
 
 Let us use the partitioned cora dataset, which is already a built-in dataset of SecretFlow.
 
@@ -125,7 +125,10 @@ Let us split the dataset for split learning.
 
         nodes = nodes.toarray()
         features_split_pos = round(nodes.shape[1] / 2)
-        nodes_alice, nodes_bob = nodes[:, :features_split_pos], nodes[:, features_split_pos:]
+        nodes_alice, nodes_bob = (
+            nodes[:, :features_split_pos],
+            nodes[:, features_split_pos:],
+        )
         temp_dir = tempfile.mkdtemp()
         saved_files = [
             os.path.join(temp_dir, name)
@@ -151,6 +154,7 @@ Let us split the dataset for split learning.
         np.save(saved_files[7], idx_val)
         np.save(saved_files[8], idx_test)
         return saved_files
+
 
     saved_files = load_cora()
 
@@ -464,7 +468,10 @@ The node embeddings of all parties are then transfered to the party with labels 
     ```python
     from tensorflow.keras.models import Model
 
-    def create_base_model(input_shape, n_hidden, l2_reg, num_heads, dropout_rate, learning_rate):
+
+    def create_base_model(
+        input_shape, n_hidden, l2_reg, num_heads, dropout_rate, learning_rate
+    ):
         def base_model():
             feature_input = tf.keras.Input(shape=(input_shape[1],))
             graph_input = tf.keras.Input(shape=(input_shape[0],))
@@ -541,7 +548,10 @@ The fuse model concat the node embeddings from all parties as input. It works on
             model.summary()
             metrics = ['acc']
             optimizer = tf.keras.optimizers.get(
-                {'class_name': 'adam', 'config': {'learning_rate': learning_rate},}
+                {
+                    'class_name': 'adam',
+                    'config': {'learning_rate': learning_rate},
+                }
             )
             model.compile(
                 loss='categorical_crossentropy',
@@ -666,5 +676,5 @@ Examine the GNN model predictions
 
 In this tutorial, we demonstrate how to train graph neural network with split learning. This is a very basic implementation and there are some works we will explore in the future:
 
-- SGD on large graphs: in the example above, in each training step, we have to do <code>prepare</code>, <code>aggregate</code> and <code>update</code> on whole graph, which is extremely computation intensive. We should perform stochastic minibatch training to reduce computation and memory comsumption.
+- SGD on large graphs: in the example above, in each training step, we have to do `prepare`, `aggregate` and `update` on whole graph, which is extremely computation intensive. We should perform stochastic minibatch training to reduce computation and memory comsumption.
 - Partially aligned graphs: in the example above, parties must have same nodes set which may not be satisfied in real cases. We want to explore the case where all parties have common subset nodes.

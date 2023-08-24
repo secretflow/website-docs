@@ -8,10 +8,10 @@ HEU supports adding customization PHE algorithms. After adding a new PHE algorit
 
 HEU defines a set of Service Provider Interface (SPI), any algorithm which is conformed to the SPI definition can be connected to HEU. The algorithm complexity of HEU dispatcher is O(1), that is, the overhead of algorithm dispatching is independent of the type of underlying algorithms. You can easily add customization algorithms to HEU without worrying about burdening your HEU.
 
-The following is an example of adding a new “Mock” algorithm into HEU to show how to develop and add a new PHE algorithm in HEU. The new algorithm’s code files should be placed in <code>heu/library/algorithms/</code>.
+The following is an example of adding a new “Mock” algorithm into HEU to show how to develop and add a new PHE algorithm in HEU. The new algorithm’s code files should be placed in `heu/library/algorithms/`.
 
 <Container type="admonition" title={"Some caveats"}>
-  1. Developing a new algorithm requires implementing <code>Plaintext</code>, <code>Ciphertext</code>, <code>PublicKey</code>, <code>SecretKey</code>, <code>KeyGenerator</code>, <code>Encryptor</code>, <code>Decryptor</code> and \`\` Evaluator\`\`, a total of 8 classes. Please do not modify the class name, and all classes must be placed under <code>heu::lib::algorithms::your\_algo</code> namespace, where <code>your\_algo</code> should be replaced with the actual algorithm name, Otherwise it will fail to compile.
+  1. Developing a new algorithm requires implementing `Plaintext`, `Ciphertext`, `PublicKey`, `SecretKey`, `KeyGenerator`, `Encryptor`, `Decryptor` and \`\` Evaluator\`\`, a total of 8 classes. Please do not modify the class name, and all classes must be placed under `heu::lib::algorithms::your_algo` namespace, where `your_algo` should be replaced with the actual algorithm name, Otherwise it will fail to compile.
   2. SPI only specifies the public methods that must be implemented in these 8 classes. SPI does not restrict you from adding other methods and fields. You are free to add them according to the needs of your algorithm.
 </Container>
 
@@ -21,13 +21,13 @@ The following is an example of adding a new “Mock” algorithm into HEU to sho
 
 Generally speaking, the range space of PHE is relatively large, far beyond the range of C++ int128, so your algorithm needs to rely on a large integer arithmetic library. HEU SPI is not bound to any big integerarithmetic library, you can choose any suitable big integer library.
 
-The next step is to define <code>Plaintext</code> and <code>Ciphertext</code> data structure.
+The next step is to define `Plaintext` and `Ciphertext` data structure.
 
 :target{#plaintext}
 
 ### Define Plaintext
 
-The SPI of <code>Plaintext class</code> is shown as follows:
+The SPI of `Plaintext class` is shown as follows:
 
 <figure id="id14">
   <figcaption>
@@ -117,18 +117,18 @@ The SPI of <code>Plaintext class</code> is shown as follows:
   ```
 </figure>
 
-The <code>Plaintext class</code> has many public interfaces. This is because HEU is not bound to any large integer library, and all plaintext calculations rely on the Plaintext SPI. So you need to implement these interfaces one by one.
+The `Plaintext class` has many public interfaces. This is because HEU is not bound to any large integer library, and all plaintext calculations rely on the Plaintext SPI. So you need to implement these interfaces one by one.
 
-Here are some additional notes about the <code>ToBytes</code> method in SPI:
+Here are some additional notes about the `ToBytes` method in SPI:
 
-1. <code>ToBytes</code> functions similarly to the [python int.to\_bytes](https://docs.python.org/3/library/stdtypes.html#int.to_bytes) method.
-2. About the difference between <code>ToBytes()</code> and <code>Serialize()</code> method: The <code>Serialize()</code> method is used to transfer data between different HEU instances, so the serialized bytes only need to be parsed by HEU itself, which could be very close to the Bignumber’s memory storage layout to maximize performance; However, the <code>ToBytes()</code> method is used to transfer data between HEU and other devices, so the byte format must be publicly known. At present, devices use the numpy byte format uniformly. And numpy internally calls the to\_bytes() method of Python built-in type int, so essentially <code>Plaintext</code> needs to implement a method similar to python int’s to\_bytes() to convert a big number into big/little endian storage with a specified byte size. Because of the existence of conversion, the performance of <code>ToBytes()</code> is generally lower than <code>serialize()</code>. Another difference is that <code>ToBytes()</code> is unidirectional and only needs to implement plaintext to bytes conversion, no need to implement reverse conversion.
+1. `ToBytes` functions similarly to the [python int.to\_bytes](https://docs.python.org/3/library/stdtypes.html#int.to_bytes) method.
+2. About the difference between `ToBytes()` and `Serialize()` method: The `Serialize()` method is used to transfer data between different HEU instances, so the serialized bytes only need to be parsed by HEU itself, which could be very close to the Bignumber’s memory storage layout to maximize performance; However, the `ToBytes()` method is used to transfer data between HEU and other devices, so the byte format must be publicly known. At present, devices use the numpy byte format uniformly. And numpy internally calls the to\_bytes() method of Python built-in type int, so essentially `Plaintext` needs to implement a method similar to python int’s to\_bytes() to convert a big number into big/little endian storage with a specified byte size. Because of the existence of conversion, the performance of `ToBytes()` is generally lower than `serialize()`. Another difference is that `ToBytes()` is unidirectional and only needs to implement plaintext to bytes conversion, no need to implement reverse conversion.
 
 :target{#ciphertext}
 
 ### Define Ciphertext
 
-The SPI of <code>Ciphertext class</code> is shown as follows:
+The SPI of `Ciphertext class` is shown as follows:
 
 <figure id="id15">
   <figcaption>
@@ -168,7 +168,7 @@ The SPI of <code>Ciphertext class</code> is shown as follows:
 
 The next step is to define data structures related to Key, their SPIs are as follows:
 
-<code>PublicKey class</code>：
+`PublicKey class`：
 
 <figure id="id16">
   <figcaption>
@@ -198,7 +198,7 @@ The next step is to define data structures related to Key, their SPIs are as fol
   ```
 </figure>
 
-<code>SecretKey class</code>：
+`SecretKey class`：
 
 <figure id="id17">
   <figcaption>
@@ -225,7 +225,7 @@ The next step is to define data structures related to Key, their SPIs are as fol
   ```
 </figure>
 
-<code>KeyGenerator class</code>：
+`KeyGenerator class`：
 
 <figure id="id18">
   <figcaption>
@@ -254,7 +254,7 @@ The next step is to define data structures related to Key, their SPIs are as fol
 
 ## Define manipulators
 
-Once the basic data structure and public/private keys are defined, the next step is to define the manipulators, which are <code>Encryptor</code>, <code>Decryptor</code> and <code>Evaluator</code>. In order to support algorithms with different characteristics, HEU provides two distinct sets of SPIs, namely Scalar SPI and Vectorized SPI.
+Once the basic data structure and public/private keys are defined, the next step is to define the manipulators, which are `Encryptor`, `Decryptor` and `Evaluator`. In order to support algorithms with different characteristics, HEU provides two distinct sets of SPIs, namely Scalar SPI and Vectorized SPI.
 
 - Scalar SPI: Suitable for most algorithms, processing only one plaintext or ciphertext in one call.
 - Vectorized SPI: Suitable for hardware-accelerated algorithms, such as GPU, where parallelism is required. Vectorized SPI implements a SIMD calling pattern, which allows for parallel optimization at algorithm implementation level.
@@ -289,7 +289,7 @@ You only need to implement one of the Scalar SPI and Vectorized SPI sets, and th
 
 If you only implement Scalar SPI, you need to implement the following interface:
 
-<code>Encryptor class</code>：
+`Encryptor class`：
 
 <figure id="id19">
   <figcaption>
@@ -317,9 +317,9 @@ If you only implement Scalar SPI, you need to implement the following interface:
   ```
 </figure>
 
-Encryptor requires the implementation of a special <code>EncryptWithAudit</code> interface, because some institutions have special requirements, requiring all Secretflow behaviors to have post-audit capabilities, that is, all calculation processes can be restored. For PHE encryption, the random number used for encryption needs to be returned to caller for logging.
+Encryptor requires the implementation of a special `EncryptWithAudit` interface, because some institutions have special requirements, requiring all Secretflow behaviors to have post-audit capabilities, that is, all calculation processes can be restored. For PHE encryption, the random number used for encryption needs to be returned to caller for logging.
 
-The audit string returned by <code>EncryptWithAudit</code> must contain at least three pieces of information: the plaintext, the ciphertext, and the random number used for encryption. There is no requirement for the format of the string, as long as it is parsable by program. It is better if the generated string is human-readable. You can see actual audit string samples by:
+The audit string returned by `EncryptWithAudit` must contain at least three pieces of information: the plaintext, the ciphertext, and the random number used for encryption. There is no requirement for the format of the string, as long as it is parsable by program. It is better if the generated string is human-readable. You can see actual audit string samples by:
 
 ```C++
 from heu import phe
@@ -328,7 +328,7 @@ kit = phe.setup(phe.SchemaType.ZPaillier, 2048)
 print(kit.encryptor().encrypt_with_audit(kit.plaintext(1)))
 ```
 
-<code>Decryptor class</code>：
+`Decryptor class`：
 
 <figure id="id20">
   <figcaption>
@@ -357,7 +357,7 @@ print(kit.encryptor().encrypt_with_audit(kit.plaintext(1)))
   ```
 </figure>
 
-<code>Evaluator class</code>：
+`Evaluator class`：
 
 <figure id="id21">
   <figcaption>
@@ -427,12 +427,12 @@ In the case of Matmul calculation, the HEU O(1) dispatcher converts the matrices
 
 ![](../_assets/matrix_matmul.png)
 
-Vectorized SPI uses two types of <code>Span\<T></code> and <code>ConstSpan\<T></code> to pass parameters, among which:
+Vectorized SPI uses two types of `Span<T>` and `ConstSpan<T>` to pass parameters, among which:
 
-- <code>Span\<T></code> represents a read-only array, each element is a pointer of T.
-- <code>ConstSpan\<T></code> represents a read-only array, each element is a constant pointer of T.
+- `Span<T>` represents a read-only array, each element is a pointer of T.
+- `ConstSpan<T>` represents a read-only array, each element is a constant pointer of T.
 
-<code>Encryptor class</code>：
+`Encryptor class`：
 
 <figure id="id22">
   <figcaption>
@@ -462,7 +462,7 @@ Vectorized SPI uses two types of <code>Span\<T></code> and <code>ConstSpan\<T></
   ```
 </figure>
 
-<code>Decryptor class</code>：
+`Decryptor class`：
 
 <figure id="id23">
   <figcaption>
@@ -490,7 +490,7 @@ Vectorized SPI uses two types of <code>Span\<T></code> and <code>ConstSpan\<T></
   ```
 </figure>
 
-<code>Evaluator class</code>：
+`Evaluator class`：
 
 <figure id="id24">
   <figcaption>
@@ -560,7 +560,7 @@ Vectorized SPI uses two types of <code>Span\<T></code> and <code>ConstSpan\<T></
 
 ### Hybrid Scalar/Vectorized SPI
 
-The HEU O(1) Dispatcher probes which SPIs are implemented by algorithm at function level, so it’s fine to mix (or combine) both SPIs in a same class. For example, the <code>EncryptZero()</code> method in <code>Encryptor</code> class is only implemented as Scalar SPI. And <code>Encrypt()</code> method is implemented under both SPIs. In this case the HEU O(1) Dispatcher will choose the most appropriate SPI at function granularity.
+The HEU O(1) Dispatcher probes which SPIs are implemented by algorithm at function level, so it’s fine to mix (or combine) both SPIs in a same class. For example, the `EncryptZero()` method in `Encryptor` class is only implemented as Scalar SPI. And `Encrypt()` method is implemented under both SPIs. In this case the HEU O(1) Dispatcher will choose the most appropriate SPI at function granularity.
 
 <figure id="id25">
   <figcaption>
@@ -611,7 +611,7 @@ When the main body of algorithm is developed, the new algorithm needs to be regi
 - [heu/library/phe/base/schema.h](https://github.com/secretflow/heu/blob/main/heu/library/phe/base/schema.h)
 - [heu/library/phe/base/schema.cc](https://github.com/secretflow/heu/blob/main/heu/library/phe/base/schema.cc)
 
-Please follow the instructions in files to register your algorithm. The position marked with <code>\[SPI: Please register your algorithm here]</code> is the place that needs to be updated. There are 5 places in total, four in <code>schema.h</code>, and one in <code>schema.cc</code>.
+Please follow the instructions in files to register your algorithm. The position marked with `[SPI: Please register your algorithm here]` is the place that needs to be updated. There are 5 places in total, four in `schema.h`, and one in `schema.cc`.
 
 :target{#id5}
 
@@ -623,19 +623,19 @@ Conditional compilation allows your algorithm to be completely stripped off duri
 
 Steps of Conditional compilation:
 
-1. 在算法的入口头文件中定义 <code>ENABLE\_YOUR\_ALGO</code> 宏，例如 [ipcl.h](https://github.com/secretflow/heu/blob/main/heu/library/algorithms/paillier_ipcl/ipcl.h)
+1. 在算法的入口头文件中定义 `ENABLE_YOUR_ALGO` 宏，例如 [ipcl.h](https://github.com/secretflow/heu/blob/main/heu/library/algorithms/paillier_ipcl/ipcl.h)
 2. When registering the algorithm in schema.h/cc, reference the ENABLE\_YOUR\_ALGO macro, that is, do not hard-code true. This step can also refer to IPCL’s practice.
 
 :target{#id6}
 
 ## Test and use
 
-After the algorithm is developed, you also need to write a build script. HEU uses the bazel compilation system. You need to write a <code>BUILD.bazel</code> file in the same level directory of the algorithm, namely <code>heu/library/algorithms/your\_algo/</code>.
+After the algorithm is developed, you also need to write a build script. HEU uses the bazel compilation system. You need to write a `BUILD.bazel` file in the same level directory of the algorithm, namely `heu/library/algorithms/your_algo/`.
 
-- The syntax of <code>BUILD.bazel</code> can refer to [here](https://github.com/secretflow/heu/blob/main/heu/library/algorithms/mock/BUILD.bazel)
+- The syntax of `BUILD.bazel` can refer to [here](https://github.com/secretflow/heu/blob/main/heu/library/algorithms/mock/BUILD.bazel)
 - For more Bazel tutorials, please refer to [Bazel official documentation](bazel.build.mdx)
 
-After completing the Bazel script, please add your algorithm as a dependency to the corresponding <code>BUILD.bazel</code> file in <code>schema.h/cc</code>.
+After completing the Bazel script, please add your algorithm as a dependency to the corresponding `BUILD.bazel` file in `schema.h/cc`.
 
 You can test that the compilation works with the following command:
 
@@ -689,7 +689,7 @@ bazel run -c opt heu/library/benchmark:phe -- --schema=your_algo_name_or_alias
 bazel run -c opt heu/library/benchmark:np -- --schema=your_algo_name_or_alias
 ```
 
-If the <code>--schema</code> parameter is not added, all algorithms will be benchmarked by default, so that you can compare performance with other algorithms:
+If the `--schema` parameter is not added, all algorithms will be benchmarked by default, so that you can compare performance with other algorithms:
 
 ```shell
 bazel run -c opt heu/library/benchmark:phe

@@ -24,6 +24,7 @@
   <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
     ```python
     import sys
+
     !{sys.executable} -m pip install transformers[flax]
     ```
   </Notebook.CodeArea>
@@ -80,14 +81,12 @@
     ```python
     import jax.numpy as jnp
 
-    inputs_ids = tokenizer.encode(
-        'I enjoy walking with my cute dog', return_tensors='jax'
-    )
+    inputs_ids = tokenizer.encode('I enjoy walking with my cute dog', return_tensors='jax')
     outputs_ids = text_generation(inputs_ids, pretrained_model.params)
 
-    print('-'*65 + '\nRun on CPU:\n' + '-'*65)
+    print('-' * 65 + '\nRun on CPU:\n' + '-' * 65)
     print(tokenizer.decode(outputs_ids[0], skip_special_tokens=True))
-    print('-'*65)
+    print('-' * 65)
     ```
   </Notebook.CodeArea>
 
@@ -116,13 +115,15 @@
 
     alice, bob = sf.PYU('alice'), sf.PYU('bob')
     conf = sf.utils.testing.cluster_def(['alice', 'bob', 'carol'])
-    conf['runtime_config']['fxp_exp_mode']=1
-    conf['runtime_config']['experimental_disable_mmul_split']=True
+    conf['runtime_config']['fxp_exp_mode'] = 1
+    conf['runtime_config']['experimental_disable_mmul_split'] = True
     spu = sf.SPU(conf)
+
 
     def get_model_params():
         pretrained_model = FlaxGPT2LMHeadModel.from_pretrained("gpt2")
         return pretrained_model.params
+
 
     def get_token_ids():
         tokenizer = AutoTokenizer.from_pretrained("gpt2")
@@ -168,9 +169,9 @@ As you can see, it’s very easy to run GPT-2 inference on SPU. Now let’s reve
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
     ```python
     outputs_ids = sf.reveal(output_token_ids)
-    print('-'*65 + '\nRun on SPU:\n' + '-'*65)
+    print('-' * 65 + '\nRun on SPU:\n' + '-' * 65)
     print(tokenizer.decode(outputs_ids[0], skip_special_tokens=True))
-    print('-'*65)
+    print('-' * 65)
     ```
   </Notebook.CodeArea>
 

@@ -39,7 +39,7 @@ According to the different CPU/bandwidth of the running environment, you can cho
 
 ## SS-SGD
 
-The SS-SGD module [<code>SSRegression()</code>](../../source/secretflow.ml.linear.ml.linear.ss_sgd.mdx#secretflow.ml.linear.ss_sgd.model.SSRegression "secretflow.ml.linear.ss_sgd.model.SSRegression")
+The SS-SGD module [`SSRegression()`](../../source/secretflow.ml.linear.ml.linear.ss_sgd.mdx#secretflow.ml.linear.ss_sgd.model.SSRegression "secretflow.ml.linear.ss_sgd.model.SSRegression")
 provides both linear and logistic regression linear models
 for vertical split dataset setting by using secret sharing with mini
 batch SGD training solver.
@@ -64,7 +64,7 @@ with optional L2 regularization.
 A local cluster(Standalone Mode) needs to be initialized as the running environment for this example.
 See [Deployment](../../getting_started/deployment.html.mdx) and refer to the ‘Cluster Mode’.
 
-For more detail about parameter settings, see API [<code>SSRegression()</code>](../../source/secretflow.ml.linear.ml.linear.ss_sgd.mdx#secretflow.ml.linear.ss_sgd.model.SSRegression "secretflow.ml.linear.ss_sgd.model.SSRegression")
+For more detail about parameter settings, see API [`SSRegression()`](../../source/secretflow.ml.linear.ml.linear.ss_sgd.mdx#secretflow.ml.linear.ss_sgd.model.SSRegression "secretflow.ml.linear.ss_sgd.model.SSRegression")
 
 ```python
 import sys
@@ -209,7 +209,7 @@ so it is impossible to infer the information of the plaintext data through the i
 
 ## HESS-SGD
 
-The HESS-SGD module [<code>HESSLogisticRegression()</code>](../../source/secretflow.ml.linear.ml.linear.hess_sgd.mdx#secretflow.ml.linear.hess_sgd.model.HESSLogisticRegression "secretflow.ml.linear.hess_sgd.model.HESSLogisticRegression") implements provably
+The HESS-SGD module [`HESSLogisticRegression()`](../../source/secretflow.ml.linear.ml.linear.hess_sgd.mdx#secretflow.ml.linear.hess_sgd.model.HESSLogisticRegression "secretflow.ml.linear.hess_sgd.model.HESSLogisticRegression") implements provably
 secure linear regression using homomorphic encryption and Secret Sharing.
 
 The biggest difference from SS-SGD is that the gradient calculation which has the largest communication cost in SS-SGD
@@ -227,7 +227,7 @@ and some engineering optimizations are carried out.
 A local cluster(Standalone Mode) needs to be initialized as the running environment for this example.
 See [Deployment](../../getting_started/deployment.html.mdx) and refer to the ‘Cluster Mode’.
 
-For more details about API, see [<code>HESSLogisticRegression()</code>](../../source/secretflow.ml.linear.ml.linear.hess_sgd.mdx#secretflow.ml.linear.hess_sgd.model.HESSLogisticRegression "secretflow.ml.linear.hess_sgd.model.HESSLogisticRegression")
+For more details about API, see [`HESSLogisticRegression()`](../../source/secretflow.ml.linear.ml.linear.hess_sgd.mdx#secretflow.ml.linear.hess_sgd.model.HESSLogisticRegression "secretflow.ml.linear.hess_sgd.model.HESSLogisticRegression")
 
 ```python
 import sys

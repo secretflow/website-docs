@@ -4,7 +4,7 @@
 
 Trusted Execution Environment (TEE) is a hardware-based privacy preserving technology. It ensures the authenticity of executing code, the integrity of runtime state (such as CPU registers, memory, and sensitive I/O), and the confidentiality of code, data, and runtime state stored in memory. In addition, it should be possible to provide remote attestation to third parties to prove its reliability.
 
-TEEU (<code>TEE</code> processing <code>U</code>nit) is a TEE device in SecretFlow. Through TEEU, users can conveniently put data in TEE for calculation, and achieve the purpose of protecting data integrity and security.
+TEEU (`TEE` processing `U`nit) is a TEE device in SecretFlow. Through TEEU, users can conveniently put data in TEE for calculation, and achieve the purpose of protecting data integrity and security.
 As a member of the SecretFlow device layer, TEEU enriches the device layer capabilities of SecretFlow, and brings more combinations and possibilities to the mixed computing of plaintext and ciphertext. For example, the weight aggregation operation of the horizontal federation model can be placed in TEEU to protect the safety of the gradient aggregation process, or use TEEU to quickly generate the offline factors of the SPDZ protocol to accelerate MPC. More possibilities are waiting for your exploration.
 
 At present, SecretFlow provides two modes of using TEEU, simulation and non-simulation. It is recommended that you start with the simulation mode, which will help you get started quickly and successfully.
@@ -54,7 +54,7 @@ docker run -it --net host secretflow/authmanager-ubuntu-sim-release:latest
 
 3. (Optional) Configure TLS
 
-AuthManager enables TLS by default. If you only use it for local simulation, you can turn off TLS by set <code>enable\_tls</code> to <code>false</code> in <code>/root/occlum\_release/config.yaml</code>.
+AuthManager enables TLS by default. If you only use it for local simulation, you can turn off TLS by set `enable_tls` to `false` in `/root/occlum_release/config.yaml`.
 
 4. Start the service
 
@@ -62,7 +62,7 @@ AuthManager enables TLS by default. If you only use it for local simulation, you
 occlum run /bin/auth-manager --config_path /host/config.yaml
 ```
 
-The default port is 8835. Feel free to modify the <code>port</code> in config.yaml if port conflicts.
+The default port is 8835. Feel free to modify the `port` in config.yaml if port conflicts.
 
 :target{#example-teeu-secure-aggregation}
 
@@ -135,11 +135,11 @@ Add the SecretFlow initialization related code in front of the secure aggregatio
 First, you need to modify the configuration items in the code.
 
 - The code assumes that Alice’s communication address is 192.168.0.10:20001, please modify it according to the actual situation
-- You need to fill in the correct <code>auth\_manager\_config</code>
-  - <code>host</code> is the listening address of the AuthManager service
-  - <code>ca\_cert</code> is the CA certificate address of AuthManager, if AuthManager does not start with TLS, no configuration is required.
+- You need to fill in the correct `auth_manager_config`
+  - `host` is the listening address of the AuthManager service
+  - `ca_cert` is the CA certificate address of AuthManager, if AuthManager does not start with TLS, no configuration is required.
 
-Suppose we save the code as [demo.py](http://demo.py), and then execute <code>python demo.py</code> on Alice’s machine.
+Suppose we save the code as [demo.py](http://demo.py), and then execute `python demo.py` on Alice’s machine.
 
 ```python
 import secretflow as sf
@@ -228,11 +228,11 @@ Similar to Alice, add the SecretFlow initialization code in front of the secure 
 First, you need to modify the configuration items in the code.
 
 - The code assumes that Bob’s communication address is 192.168.0.20:20001, please modify it according to the actual situation
-- You need to fill in the correct <code>auth\_manager\_config</code>
-- <code>host</code> is the listening address of the AuthManager service
-- <code>ca\_cert</code> is the CA certificate address of AuthManager, if AuthManager does not start tls, no configuration is required.
+- You need to fill in the correct `auth_manager_config`
+- `host` is the listening address of the AuthManager service
+- `ca_cert` is the CA certificate address of AuthManager, if AuthManager does not start tls, no configuration is required.
 
-Suppose we save the code as [demo.py](http://demo.py), and then execute <code>python demo.py</code> on Bob’s machine.
+Suppose we save the code as [demo.py](http://demo.py), and then execute `python demo.py` on Bob’s machine.
 
 ```python
 import secretflow as sf
@@ -317,12 +317,12 @@ Similarly, add the SecretFlow initialization code in front of the secure aggrega
 First, you need to modify the configuration items in the code.
 
 1. In the code, it is assumed that Carol’s communication address is 192.168.0.30:20001, please modify it according to the actual situation
-2. You need to fill in the correct <code>auth\_manager\_config</code>
+2. You need to fill in the correct `auth_manager_config`
 
-- <code>host</code> is the listen address of AuthManager
-- <code>ca\_cert</code> is the CA certificate path of AuthManager, if AuthManager does not enable TLS, no configuration is required.
+- `host` is the listen address of AuthManager
+- `ca_cert` is the CA certificate path of AuthManager, if AuthManager does not enable TLS, no configuration is required.
 
-After modification, please save the file to <code>/root/occlum\_instance/image/root/demo.py</code>.
+After modification, please save the file to `/root/occlum_instance/image/root/demo.py`.
 
 ```python
 # Generate tls cert and key at first.
@@ -457,7 +457,7 @@ docker run -it --net host -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provi
 
 3. Modify pccs configuration
 
-Config <code>PCCS\_URL</code> in <code>/etc/sgx\_default\_qcnl.conf</code> with the actual deployment PCCS service address and set <code>USE\_SECURE\_CERT=FALSE</code>.
+Config `PCCS_URL` in `/etc/sgx_default_qcnl.conf` with the actual deployment PCCS service address and set `USE_SECURE_CERT=FALSE`.
 
 ```properties
 # PCCS server address
@@ -487,7 +487,7 @@ USE_SECURE_CERT=FALSE
 #RETRY_DELAY=10
 ```
 
-Modify <code>ua\_dcap\_pccs\_url</code> configuration in <code>/root/occlum\_release/image/etc/kubetee/unified\_attestation.json</code> to the actual PCCS service address
+Modify `ua_dcap_pccs_url` configuration in `/root/occlum_release/image/etc/kubetee/unified_attestation.json` to the actual PCCS service address
 
 ```json
 {
@@ -528,7 +528,7 @@ occlum build -f --sign-key private_key.pem
 occlum run /bin/auth-manager --config_path /host/config.yaml
 ```
 
-The default port is 8835. If the port conflicts, you can add the <code>--port</code> parameter to specify the port number.
+The default port is 8835. If the port conflicts, you can add the `--port` parameter to specify the port number.
 
 ```shell
 occlum run /bin/auth-manager --config_path /host/config.yaml
@@ -599,7 +599,7 @@ docker run -it --network host --privileged -v /dev/sgx_enclave:/dev/sgx/enclave 
 After entering the container, the default location is /root/occlum\_instance.
 
 2. Modify the configuration file
-   The configuration file is located at <code>/root/occlum\_instance/image/etc/kubetee/unified\_attestation.json</code> and is required by [jinzhao-attest](https://github.com/jinzhao-dev/jinzhao-attest). This file encapsulates the remote attestation process of various TEEs. The template is as follows, and replace the <code>ua\_dcap\_pccs\_url</code> with the deployed PCCS address.
+   The configuration file is located at `/root/occlum_instance/image/etc/kubetee/unified_attestation.json` and is required by [jinzhao-attest](https://github.com/jinzhao-dev/jinzhao-attest). This file encapsulates the remote attestation process of various TEEs. The template is as follows, and replace the `ua_dcap_pccs_url` with the deployed PCCS address.
 
 ```json
 {
@@ -631,7 +631,7 @@ After entering the container, the default location is /root/occlum\_instance.
 }
 ```
 
-After that, modify <code>/etc/sgx\_default\_qcnl.conf</code>, replace <code>PCCS\_URL</code> with the previously deployed PCCS address, and set <code>USE\_SECURE\_CERT=FALSE</code>.
+After that, modify `/etc/sgx_default_qcnl.conf`, replace `PCCS_URL` with the previously deployed PCCS address, and set `USE_SECURE_CERT=FALSE`.
 
 ```json
 # PCCS server address
@@ -663,10 +663,10 @@ Add the SecretFlow initialization related code in front of the secure aggregatio
 First, you need to modify the configuration items in the code.
 
 - In the code, it is assumed that the communication address of Carol is 192.168.0.30:20001, please modify it according to the actual situation
-- You need to fill in the correct <code>auth\_manager\_config</code>
-  - <code>host</code> is the listening address of the AuthManager service
-  - <code>ca\_cert</code> is the CA certificate address of AuthManager, if AuthManager does not start tls, no configuration is required. (It is recommended to enable tls)
-  - <code>mrenclave</code> is the mrenclave of the AuthManager module, you should have obtained this value in the step of deploying AuthManager.
+- You need to fill in the correct `auth_manager_config`
+  - `host` is the listening address of the AuthManager service
+  - `ca_cert` is the CA certificate address of AuthManager, if AuthManager does not start tls, no configuration is required. (It is recommended to enable tls)
+  - `mrenclave` is the mrenclave of the AuthManager module, you should have obtained this value in the step of deploying AuthManager.
 
 Please save the modified file as /root/occlum\_instance/image/root/demo.py.
 
@@ -799,13 +799,13 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 Add the SecretFlow initialization related code in front of the secure aggregation code to get the following code. You need to configure the code:
 
 - The code assumes that Alice’s communication address is 192.168.0.10:20001, please modify it according to the actual situation
-- You need to fill in the correct <code>auth\_manager\_config</code>
-  - <code>host</code> is the listening address of the AuthManager service
-  - <code>ca\_cert</code> is the CA certificate address of AuthManager, if AuthManager does not start tls, no configuration is required. (It is recommended to enable tls)
-  - <code>mrenclave</code> is the MRENCLAVE of the AuthManager module, you should have obtained this value in the step of deploying AuthManager.
-- Use the MRENCLAVE of TEEU obtained earlier, fill in the correct value: <code>teeu = TEEU('carol', mr\_enclave='mr\_enclave of TEEU')</code>
+- You need to fill in the correct `auth_manager_config`
+  - `host` is the listening address of the AuthManager service
+  - `ca_cert` is the CA certificate address of AuthManager, if AuthManager does not start tls, no configuration is required. (It is recommended to enable tls)
+  - `mrenclave` is the MRENCLAVE of the AuthManager module, you should have obtained this value in the step of deploying AuthManager.
+- Use the MRENCLAVE of TEEU obtained earlier, fill in the correct value: `teeu = TEEU('carol', mr_enclave='mr_enclave of TEEU')`
 
-After the configuration is complete, suppose we save the code as [demo.py](http://demo.py), and then execute <code>python demo.py</code> on Alice’s machine.
+After the configuration is complete, suppose we save the code as [demo.py](http://demo.py), and then execute `python demo.py` on Alice’s machine.
 
 ```python
 import secretflow as sf
@@ -891,13 +891,13 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 Similar to Alice, add the SecretFlow initialization code in front of the secure aggregation code to get the following code. You need to configure the code:
 
 - In the code, it is assumed that Bob’s communication address is 192.168.0.20:20001, please modify it according to the actual situation
-- You need to fill in the correct <code>auth\_manager\_config</code>
-  - <code>host</code> is the listening address of the AuthManager service
-  - <code>ca\_cert</code> is the CA certificate address of AuthManager, if AuthManager does not start tls, no configuration is required. (It is recommended to enable tls)
-  - <code>mrenclave</code> is the MRENCLAVE of the AuthManager module, you should have obtained this value in the step of deploying AuthManager.
-- Use the MRENCLAVE of TEEU obtained earlier, fill in the correct value: <code>teeu = TEEU('carol', mr\_enclave='mr\_enclave of TEEU')</code>
+- You need to fill in the correct `auth_manager_config`
+  - `host` is the listening address of the AuthManager service
+  - `ca_cert` is the CA certificate address of AuthManager, if AuthManager does not start tls, no configuration is required. (It is recommended to enable tls)
+  - `mrenclave` is the MRENCLAVE of the AuthManager module, you should have obtained this value in the step of deploying AuthManager.
+- Use the MRENCLAVE of TEEU obtained earlier, fill in the correct value: `teeu = TEEU('carol', mr_enclave='mr_enclave of TEEU')`
 
-After the configuration is complete, suppose we save the code as [demo.py](http://demo.py), and then execute <code>python demo.py</code> on Bob’s machine.
+After the configuration is complete, suppose we save the code as [demo.py](http://demo.py), and then execute `python demo.py` on Bob’s machine.
 
 ```python
 import secretflow as sf
@@ -965,8 +965,8 @@ This chapter demonstrates how to use TEEU on a real SGX 2.0 machine. The main di
 1. Configure remote attestation.
 
 - Deploy DCAS
-- Configure <code>/etc/sgx\_default\_qcnl.conf</code>
-- Configure <code>image/etc/kubetee/unified\_attestation.json</code>
+- Configure `/etc/sgx_default_qcnl.conf`
+- Configure `image/etc/kubetee/unified_attestation.json`
 
 2. To start the AuthManager and SecretFlow TEE images, it is necessary to mount the SGX-related devices. E.g.,
 
@@ -976,11 +976,11 @@ docker run -it --network host --privileged -v /dev/sgx_enclave:/dev/sgx/enclave 
 
 3. Obtain and fill in the measurement values (MRENCLAVE) of AuthManager and TEEU.
 
-- Fill in the mrenclave of AuthManager in <code>auth\_manager\_config</code> of <code>sf.init()</code>.
-- Fill in the MRENCLAVE of TEEU when constructing its instance by <code>teeu = sf.TEEU(..., mr\_enclave='MRENCLAVE\_OF\_TEEU')</code> .
+- Fill in the mrenclave of AuthManager in `auth_manager_config` of `sf.init()`.
+- Fill in the MRENCLAVE of TEEU when constructing its instance by `teeu = sf.TEEU(..., mr_enclave='MRENCLAVE_OF_TEEU')` .
 
-4. Set <code>tee\_simulation=False</code> in <code>sf.init()</code>.
-5. Build occlum without arg <code>--sgx-mode sim</code>.
+4. Set `tee_simulation=False` in `sf.init()`.
+5. Build occlum without arg `--sgx-mode sim`.
 
 :target{#more-examples}
 

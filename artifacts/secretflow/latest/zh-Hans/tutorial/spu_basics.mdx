@@ -52,7 +52,7 @@ SecretFlow Parties是在SecretFlow的基本节点，我们将会创建4个party 
 
 After that, let’s create an SPU device with [ABY3](https://eprint.iacr.org/2018/403.pdf) protocol.
 
-<code>sf.utils.testing.cluster\_def</code> 是一个helper通过寻找未占用的端口来创建一个设置。
+`sf.utils.testing.cluster_def` 是一个helper通过寻找未占用的端口来创建一个设置。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
@@ -120,13 +120,13 @@ PYU Object可以转化到 SPU Object被SPU节点来共享秘密。
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
     ```python
-    spu_io = sf.device.SPUIO(spu_device.conf,spu_device.world_size)
+    spu_io = sf.device.SPUIO(spu_device.conf, spu_device.world_size)
 
     bank_account = [{'id': 12345, 'deposit': 1000.25}, {'id': 12345, 'deposit': 100000.25}]
 
     import spu
 
-    meta, io_info, *shares = spu_io.make_shares(bank_account,spu.Visibility.VIS_SECRET)
+    meta, io_info, *shares = spu_io.make_shares(bank_account, spu.Visibility.VIS_SECRET)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
