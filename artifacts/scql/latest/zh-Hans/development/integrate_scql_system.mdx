@@ -27,9 +27,9 @@
 
 对于 SQL 查询，SCDB 支持服务如下：
 
-- Submit：异步 API，用于提交 SQL 查询并返回，服务器监听 <code>$\{SCDBHost}/public/submit\_query</code>
-- Fetch：异步 API，尝试获取 SQL 查询的结果，服务器监听 <code>$\{SCDBHost}/public/fetch\_result</code>
-- SubmitAndGet：同步 API，提交查询并等待获取查询结果，服务器监听 <code>$\{SCDBHost}/public/submit\_and\_get</code>
+- Submit：异步 API，用于提交 SQL 查询并返回，服务器监听 `${SCDBHost}/public/submit_query`
+- Fetch：异步 API，尝试获取 SQL 查询的结果，服务器监听 `${SCDBHost}/public/fetch_result`
+- SubmitAndGet：同步 API，提交查询并等待获取查询结果，服务器监听 `${SCDBHost}/public/submit_and_get`
 
 请参考 [SCQL API](scql_api.mdx) 了解详情。
 
@@ -46,9 +46,9 @@
 
 SCQL 使用 rpc API 与全局资源管理器（GRM）通信：
 
-- <code>/GetTableMeta</code> ：获取表的元数据，全局资源管理器服务器（GRM server）应监听 <code>$\{GRMServerHost}/GetTableMeta</code>
-- <code>/GetEngines</code> ：获取特定 SCQLEngines（参与者）的端点，全局资源管理器服务器（GRM server）应监听 <code>$\{GRMServerHost}/GetEngines</code>
-- <code>/VerifyTableOwnership</code> ：检查用户是否拥有表的所有权，全局资源管理器服务器（GRM server）应监听 <code>$\{GRMServerHost}/VerifyTableOwnership</code>
+- `/GetTableMeta` ：获取表的元数据，全局资源管理器服务器（GRM server）应监听 `${GRMServerHost}/GetTableMeta`
+- `/GetEngines` ：获取特定 SCQLEngines（参与者）的端点，全局资源管理器服务器（GRM server）应监听 `${GRMServerHost}/GetEngines`
+- `/VerifyTableOwnership` ：检查用户是否拥有表的所有权，全局资源管理器服务器（GRM server）应监听 `${GRMServerHost}/VerifyTableOwnership`
 
 请参考 [全局资源管理器 (GRM)](../reference/grm.mdx) 了解详情。
 

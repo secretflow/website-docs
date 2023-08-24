@@ -59,37 +59,37 @@
 - <DefinitionList>
     <dl>
       <dt>
-        <DefinitionList.Term><span><code>bank\_1</code></span></DefinitionList.Term>
+        <DefinitionList.Term><span>`bank_1`</span></DefinitionList.Term>
       </dt>
 
       <dd>
-        参与方 Bank1 在其本地数据库 <code>DB1</code> 中有张表 <code>bank\_1</code>，该数据表有两列分别是 <code>customer\_id</code> 和 <code>deposit</code>。
+        参与方 Bank1 在其本地数据库 `DB1` 中有张表 `bank_1`，该数据表有两列分别是 `customer_id` 和 `deposit`。
       </dd>
     </dl>
   </DefinitionList>
 - <DefinitionList>
     <dl>
       <dt>
-        <DefinitionList.Term><span><code>bank\_2</code></span></DefinitionList.Term>
+        <DefinitionList.Term><span>`bank_2`</span></DefinitionList.Term>
       </dt>
 
       <dd>
-        参与方 Bank2 在其本地数据库 <code>DB2</code> 中有张表 <code>bank\_2</code>，该数据表有两列分别是 <code>customer\_id</code> 和 <code>loan</code>。
+        参与方 Bank2 在其本地数据库 `DB2` 中有张表 `bank_2`，该数据表有两列分别是 `customer_id` 和 `loan`。
       </dd>
     </dl>
   </DefinitionList>
 
 <Container type="note">
-  表的元数据，例如表的所有者和表的结构，需要在 GRM 中注册，以便 SCDB 可以获取表结构并解析表引用。例如，SCDB 会将 <code>table\_1</code> 解析为参与方 Bank1 中的 <code>DB1.bank\_1</code>。
+  表的元数据，例如表的所有者和表的结构，需要在 GRM 中注册，以便 SCDB 可以获取表结构并解析表引用。例如，SCDB 会将 `table_1` 解析为参与方 Bank1 中的 `DB1.bank_1`。
 </Container>
 
 :target{#column-control-list-ccl}
 
 ### 列控制列表（CCL）
 
-CCL 格式: <code>\<src\_column, dest\_party, constraint></code>
+CCL 格式: `<src_column, dest_party, constraint>`
 
-它表示 <code>src\_column</code> 可以被 <code>dest\_party</code> 在满足 <code>constraint</code> 的条件下访问。
+它表示 `src_column` 可以被 `dest_party` 在满足 `constraint` 的条件下访问。
 
 为了使查询 Q 通过 CCL 验证，数据所有者应该授予以下 CCL。
 
@@ -100,10 +100,10 @@ CCL 格式: <code>\<src\_column, dest\_party, constraint></code>
       </dt>
 
       <dd>
-        - <code>\<bank\_1.customer\_id, Bank1, PLAINTEXT></code>
-        - <code>\<bank\_1.deposit, Bank1, PLAINTEXT></code>
-        - <code>\<bank\_1.customer\_id, Bank2, PLAINTEXT\_AFTER\_JOIN></code>
-        - <code>\<bank\_1.deposit, Bank2, PLAINTEXT\_AFTER\_AGGREGATE></code>
+        - `<bank_1.customer_id, Bank1, PLAINTEXT>`
+        - `<bank_1.deposit, Bank1, PLAINTEXT>`
+        - `<bank_1.customer_id, Bank2, PLAINTEXT_AFTER_JOIN>`
+        - `<bank_1.deposit, Bank2, PLAINTEXT_AFTER_AGGREGATE>`
       </dd>
     </dl>
   </DefinitionList>
@@ -114,10 +114,10 @@ CCL 格式: <code>\<src\_column, dest\_party, constraint></code>
       </dt>
 
       <dd>
-        - <code>\<bank\_2.customer\_id, Bank2, PLAINTEXT></code>
-        - <code>\<bank\_2.loan, Bank2, PLAINTEXT></code>
-        - <code>\<bank\_2.customer\_id, Bank1, PLAINTEXT\_AFTER\_JOIN></code>
-        - <code>\<bank\_2.loan, Bank1, PLAINTEXT\_AFTER\_AGGREGATE></code>
+        - `<bank_2.customer_id, Bank2, PLAINTEXT>`
+        - `<bank_2.loan, Bank2, PLAINTEXT>`
+        - `<bank_2.customer_id, Bank1, PLAINTEXT_AFTER_JOIN>`
+        - `<bank_2.loan, Bank1, PLAINTEXT_AFTER_AGGREGATE>`
       </dd>
     </dl>
   </DefinitionList>

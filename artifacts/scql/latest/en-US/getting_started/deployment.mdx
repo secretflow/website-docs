@@ -10,7 +10,7 @@ Before start this doc, we assume that the reader has some experience using the d
 
 ## Deployment Diagram
 
-The deployment diagram of the SCQL system that we plan to deploy is shown as the following figure, it involves a total of three party, including a trusted third-party and two data owner parties named <code>Alice</code> and <code>Bob</code>. We use three machines to simulate different parties.
+The deployment diagram of the SCQL system that we plan to deploy is shown as the following figure, it involves a total of three party, including a trusted third-party and two data owner parties named `Alice` and `Bob`. We use three machines to simulate different parties.
 
 ![](../_assets/deployment.png)
 
@@ -52,7 +52,7 @@ wget raw.githubusercontent.com/secretflow/scql/main/examples/docker-compose/mysq
 
 ### 1.3 Set Engine Config
 
-Create a file called <code>gflags.conf</code> in your workspace and paste the following code in:
+Create a file called `gflags.conf` in your workspace and paste the following code in:
 
 ```bash
 --listen_port=8080
@@ -68,16 +68,16 @@ Create a file called <code>gflags.conf</code> in your workspace and paste the fo
 See [Engine configuration options](../development/scql_config_manual.mdx#engine-config-options) for more config information
 
 <Container type="note">
-  The <code>connection\_str</code> specified in <code>embed\_router\_conf</code> is utilized to connect database named alice as set in [1.2 Set Dataset](#set-dataset), For Bob it should be set to connect database named bob.
+  The `connection_str` specified in `embed_router_conf` is utilized to connect database named alice as set in [1.2 Set Dataset](#set-dataset), For Bob it should be set to connect database named bob.
 
-  <code>\_\_ALICE\_CREDENTIAL\_\_</code> is used to authenticate SCDB, you need replace it with your own credential, same with Bob. In our example, we have simply set it as <code>credential\_alice</code> for Alice, and <code>credential\_bob</code> for Bob.
+  `__ALICE_CREDENTIAL__` is used to authenticate SCDB, you need replace it with your own credential, same with Bob. In our example, we have simply set it as `credential_alice` for Alice, and `credential_bob` for Bob.
 </Container>
 
 :target{#create-docker-compose-file}
 
 ### 1.4 Create docker-compose file
 
-Create a file called <code>docker-compose.yaml</code> in your workspace and paste the following code in:
+Create a file called `docker-compose.yaml` in your workspace and paste the following code in:
 
 ```yaml
 version: "3.8"
@@ -116,9 +116,9 @@ services:
 ```
 
 <Container type="note">
-  <code>\_\_ALICE\_PORT\_\_</code>  is the published port on the host machine which is used for engine service to listen on, you need to replace it with an accessible port number. In this case, we have designated it as <code>8080</code>
+  `__ALICE_PORT__`  is the published port on the host machine which is used for engine service to listen on, you need to replace it with an accessible port number. In this case, we have designated it as `8080`
 
-  Container <em>mysql</em> is init by <code>alice\_init.sql</code> as set in [1.2 Set Dataset](#set-dataset) , it should be <code>bob\_init.sql</code> for Bob. If you use your own database service, container <em>mysql</em> can be deleted
+  Container <em>mysql</em> is init by `alice_init.sql` as set in [1.2 Set Dataset](#set-dataset) , it should be `bob_init.sql` for Bob. If you use your own database service, container <em>mysql</em> can be deleted
 </Container>
 
 :target{#start-engine-service}
@@ -153,7 +153,7 @@ $ docker logs -f engine_engine_1
 [info] [main.cc:main:297] Started engine rpc server success, listen on: 0.0.0.0:8080
 ```
 
-SCQLEngine is listening on <code>8080</code>.
+SCQLEngine is listening on `8080`.
 
 :target{#step-2-deploy-scdb}
 
@@ -176,7 +176,7 @@ cd scdb
 
 We use toygrm instead of stdgrm for demo, which means the GRM services is simulated by reading local JSON files, it’s not recommend in production environments. See [Global Resource Manager](../reference/grm.mdx#grm) for more information about GRM
 
-Create a json file named <code>toy\_grm.json</code> in your workspace, which should look like as follows:
+Create a json file named `toy_grm.json` in your workspace, which should look like as follows:
 
 ```json
 {
@@ -233,20 +233,20 @@ Create a json file named <code>toy\_grm.json</code> in your workspace, which sho
 ```
 
 <Container type="note">
-  <code>\_\_ALICE\_TOKEN\_\_</code> and <code>\_\_BOB\_TOKEN\_\_</code> is a string token used to authenticate the user, you should replace them with your own token information. Here it’s set as <code>token\_alice</code> and <code>token\_bob</code>.
+  `__ALICE_TOKEN__` and `__BOB_TOKEN__` is a string token used to authenticate the user, you should replace them with your own token information. Here it’s set as `token_alice` and `token_bob`.
 
-  <code>\_\_ENGINE\_ALICE\_HOST\_\_</code> and <code>\_\_ENGINE\_BOB\_HOST\_\_</code> represent the IP addresses of Alice and Bob, you should replace these placeholders with your own IP address information.
+  `__ENGINE_ALICE_HOST__` and `__ENGINE_BOB_HOST__` represent the IP addresses of Alice and Bob, you should replace these placeholders with your own IP address information.
 
-  <code>\_\_ALICE\_PORT\_\_</code> and <code>\_\_BOB\_PORT\_\_</code> represent the listening ports of engine services and should match the published port specified in [1.4 Create docker-compose file](#create-docker-compose-file). In this case it should be 8080.
+  `__ALICE_PORT__` and `__BOB_PORT__` represent the listening ports of engine services and should match the published port specified in [1.4 Create docker-compose file](#create-docker-compose-file). In this case it should be 8080.
 
-  <code>\_\_ALICE\_CREDENTIAL\_\_</code> and <code>\_\_BOB\_CREDENTIAL\_\_</code> are used to identify SCDB when send request to engine, it should match the <code>engine\_credential</code> specified in [1.3 Set Engine Config](#set-engine-config).  In this case it should be <code>credential\_alice</code> and <code>credential\_bob</code>.
+  `__ALICE_CREDENTIAL__` and `__BOB_CREDENTIAL__` are used to identify SCDB when send request to engine, it should match the `engine_credential` specified in [1.3 Set Engine Config](#set-engine-config).  In this case it should be `credential_alice` and `credential_bob`.
 </Container>
 
 :target{#set-scdb-config}
 
 ### 2.3 Set SCDB Config
 
-Create a file called <code>config.yml</code> in your workspace and paste the following code in:
+Create a file called `config.yml` in your workspace and paste the following code in:
 
 ```yaml
 scdb_host: scdb:8080
@@ -279,14 +279,14 @@ engine:
 See [SCDB configuration options](../development/scql_config_manual.mdx#scdb-config-options) for more config information
 
 <Container type="note">
-  <code>conn\_str</code> is utilized to connect database named scdb which will be deployed in next step, if you prefer, you can also use your own database service.
+  `conn_str` is utilized to connect database named scdb which will be deployed in next step, if you prefer, you can also use your own database service.
 </Container>
 
 :target{#id2}
 
 ### 2.4 Create docker-compose file
 
-Create a file called <code>docker-compose.yaml</code> in your workspace and paste the following code in:
+Create a file called `docker-compose.yaml` in your workspace and paste the following code in:
 
 ```yaml
 version: "3.8"
@@ -325,7 +325,7 @@ services:
 ```
 
 <Container type="note">
-  <code>\_\_SCDB\_PORT\_\_</code> is the published port on the host machine which is used for scdb service to listen on, you need to replace it with an accessible port number. Here, it’s set as 8080
+  `__SCDB_PORT__` is the published port on the host machine which is used for scdb service to listen on, you need to replace it with an accessible port number. Here, it’s set as 8080
 </Container>
 
 :target{#start-scdb-service}
@@ -360,7 +360,7 @@ $ docker logs -f scdb_scdb_1
 INFO main.go:122 Starting to serve request with http...
 ```
 
-SCDB is listening on <code>8080</code>, waiting for connection
+SCDB is listening on `8080`, waiting for connection
 
 :target{#step-3-scql-test}
 
@@ -392,7 +392,7 @@ go build -o scdbclient cmd/scdbclient/main.go
 
 ### 3.2 Set Client Config
 
-Create a json file named as <code>users.json</code> as follows:
+Create a json file named as `users.json` as follows:
 
 ```json
 {
@@ -415,11 +415,11 @@ Create a json file named as <code>users.json</code> as follows:
 ```
 
 <Container type="note">
-  The <code>root</code> user is the admin user of SCDB which is init when scdb container set up, <code>alice</code> and <code>bob</code> are the user belong to party Alice and Bob,
+  The `root` user is the admin user of SCDB which is init when scdb container set up, `alice` and `bob` are the user belong to party Alice and Bob,
 
-  The user information for <code>alice</code> and <code>bob</code> should be same with the user information you will create.
+  The user information for `alice` and `bob` should be same with the user information you will create.
 
-  <code>\_\_ALICE\_TOKEN\_\_</code> and <code>\_\_BOB\_TOKEN\_\_</code> is correspond to the token information set in [2.2 Set ToyGRM](#set-toygrm). In this case, it should be set as <code>token\_alice</code> and <code>token\_bob</code>.
+  `__ALICE_TOKEN__` and `__BOB_TOKEN__` is correspond to the token information set in [2.2 Set ToyGRM](#set-toygrm). In this case, it should be set as `token_alice` and `token_bob`.
 </Container>
 
 :target{#submit-query}
@@ -447,5 +447,5 @@ root> show databases;
 ```
 
 <Container type="note">
-  <code>\_\_SCDB\_URL\_\_</code> is the url (eg\:http\://127.0.0.1:8080) where scdb service is listen on, you need to replace it with scdb service url.
+  `__SCDB_URL__` is the url (eg\:http\://127.0.0.1:8080) where scdb service is listen on, you need to replace it with scdb service url.
 </Container>

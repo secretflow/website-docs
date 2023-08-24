@@ -59,37 +59,37 @@ Let’s have a look at the schema of tables involved in the above query Q.
 - <DefinitionList>
     <dl>
       <dt>
-        <DefinitionList.Term><span><code>bank\_1</code></span></DefinitionList.Term>
+        <DefinitionList.Term><span>`bank_1`</span></DefinitionList.Term>
       </dt>
 
       <dd>
-        Party Bank1 owns the table <code>bank\_1</code> in its local database <code>DB1</code>, which has two columns <code>customer\_id</code> and <code>deposit</code>.
+        Party Bank1 owns the table `bank_1` in its local database `DB1`, which has two columns `customer_id` and `deposit`.
       </dd>
     </dl>
   </DefinitionList>
 - <DefinitionList>
     <dl>
       <dt>
-        <DefinitionList.Term><span><code>bank\_2</code></span></DefinitionList.Term>
+        <DefinitionList.Term><span>`bank_2`</span></DefinitionList.Term>
       </dt>
 
       <dd>
-        Party Bank2 owns the table <code>bank\_2</code> in its local database <code>DB2</code>, which has two columns <code>customer\_id</code> and <code>loan</code>.
+        Party Bank2 owns the table `bank_2` in its local database `DB2`, which has two columns `customer_id` and `loan`.
       </dd>
     </dl>
   </DefinitionList>
 
 <Container type="note">
-  The table metadata, such as the table owner and table schema, needs to be registered in GRM, so that SCDB could retrieve the table schema and resolve the table reference. For example, SCDB would resolve <code>table\_1</code> into <code>DB1.bank\_1</code> in party Bank1.
+  The table metadata, such as the table owner and table schema, needs to be registered in GRM, so that SCDB could retrieve the table schema and resolve the table reference. For example, SCDB would resolve `table_1` into `DB1.bank_1` in party Bank1.
 </Container>
 
 :target{#column-control-list-ccl}
 
 ### Column Control List (CCL)
 
-CCL Form: <code>\<src\_column, dest\_party, constraint></code>
+CCL Form: `<src_column, dest_party, constraint>`
 
-It means <code>src\_column</code> is accessible to <code>dest\_party</code> with the <code>constraint</code>.
+It means `src_column` is accessible to `dest_party` with the `constraint`.
 
 To make the query Q pass the CCL validation, data owner should grant the following CCL.
 
@@ -100,10 +100,10 @@ To make the query Q pass the CCL validation, data owner should grant the followi
       </dt>
 
       <dd>
-        - <code>\<bank\_1.customer\_id, Bank1, PLAINTEXT></code>
-        - <code>\<bank\_1.deposit, Bank1, PLAINTEXT></code>
-        - <code>\<bank\_1.customer\_id, Bank2, PLAINTEXT\_AFTER\_JOIN></code>
-        - <code>\<bank\_1.deposit, Bank2, PLAINTEXT\_AFTER\_AGGREGATE></code>
+        - `<bank_1.customer_id, Bank1, PLAINTEXT>`
+        - `<bank_1.deposit, Bank1, PLAINTEXT>`
+        - `<bank_1.customer_id, Bank2, PLAINTEXT_AFTER_JOIN>`
+        - `<bank_1.deposit, Bank2, PLAINTEXT_AFTER_AGGREGATE>`
       </dd>
     </dl>
   </DefinitionList>
@@ -114,10 +114,10 @@ To make the query Q pass the CCL validation, data owner should grant the followi
       </dt>
 
       <dd>
-        - <code>\<bank\_2.customer\_id, Bank2, PLAINTEXT></code>
-        - <code>\<bank\_2.loan, Bank2, PLAINTEXT></code>
-        - <code>\<bank\_2.customer\_id, Bank1, PLAINTEXT\_AFTER\_JOIN></code>
-        - <code>\<bank\_2.loan, Bank1, PLAINTEXT\_AFTER\_AGGREGATE></code>
+        - `<bank_2.customer_id, Bank2, PLAINTEXT>`
+        - `<bank_2.loan, Bank2, PLAINTEXT>`
+        - `<bank_2.customer_id, Bank1, PLAINTEXT_AFTER_JOIN>`
+        - `<bank_2.loan, Bank1, PLAINTEXT_AFTER_AGGREGATE>`
       </dd>
     </dl>
   </DefinitionList>

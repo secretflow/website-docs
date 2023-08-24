@@ -6,7 +6,7 @@
 
 ## TL;DR
 
-Use <code>docker-compose</code> to deploy a standalone SCQL, then use scdbclient to query
+Use `docker-compose` to deploy a standalone SCQL, then use scdbclient to query
 
 :target{#prerequisites}
 
@@ -16,7 +16,7 @@ Use <code>docker-compose</code> to deploy a standalone SCQL, then use scdbclient
 
 ### Build scdbclient
 
-<code>scdbclient</code> is a command-line client for SCDBServer, we would use it to submit queries to SCDBServer and fetch the query results back.
+`scdbclient` is a command-line client for SCDBServer, we would use it to submit queries to SCDBServer and fetch the query results back.
 
 ```bash
 # build scdbclient from source
@@ -39,14 +39,14 @@ bash examples/docker-compose/register.sh
 ```
 
 <Container type="note">
-  The register.sh script will generate random tokens and replace the <code>\_\_ALICE\_TOKEN\_\_</code> and <code>\_\_BOB\_TOKEN\_\_</code> placeholders in [examples/docker-compose/client/users.json](https://github.com/secretflow/scql/tree/main/examples/docker-compose/client/users.json) and [examples/docker-compose/scdb/conf/toy\_grm.json](https://github.com/secretflow/scql/tree/main/examples/docker-compose/scdb/conf/toy_grm.json) respectively. If your scdbclient and docker compose containers are running on different machines, please make sure to manually replace these tokens to ensure scdbclient get right tokens.
+  The register.sh script will generate random tokens and replace the `__ALICE_TOKEN__` and `__BOB_TOKEN__` placeholders in [examples/docker-compose/client/users.json](https://github.com/secretflow/scql/tree/main/examples/docker-compose/client/users.json) and [examples/docker-compose/scdb/conf/toy\_grm.json](https://github.com/secretflow/scql/tree/main/examples/docker-compose/scdb/conf/toy_grm.json) respectively. If your scdbclient and docker compose containers are running on different machines, please make sure to manually replace these tokens to ensure scdbclient get right tokens.
 </Container>
 
 :target{#start-scql-service}
 
 ## Start SCQL Service
 
-You could start SCQL service via [docker-compose](https://github.com/secretflow/scql/tree/main/examples/docker-compose), it would deploy and start services as shown in the following figure, it contains a SCDBServer and two SCQLEngines from party <code>alice</code>, <code>bob</code>.
+You could start SCQL service via [docker-compose](https://github.com/secretflow/scql/tree/main/examples/docker-compose), it would deploy and start services as shown in the following figure, it contains a SCDBServer and two SCQLEngines from party `alice`, `bob`.
 
 ![docker-compose deployment for quickstart example](../_assets/scql_quickstart_deploy.png)
 
@@ -64,7 +64,7 @@ You could start SCQL service via [docker-compose](https://github.com/secretflow/
 (cd examples/docker-compose && docker compose up -d)
 ```
 
-SCDBServer is listening on <code>http\://localhost:8080</code>, you could send queries to it via scdbclient.
+SCDBServer is listening on `http://localhost:8080`, you could send queries to it via scdbclient.
 
 <Container type="note">
   Please checkout [examples/docker-compose/README.md](https://github.com/secretflow/scql/tree/main/examples/docker-compose/README.md) troubleshooting section for help if you encounter any problems.
