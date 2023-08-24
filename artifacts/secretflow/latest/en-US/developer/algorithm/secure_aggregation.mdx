@@ -69,7 +69,7 @@ Create parties alice and bob.
 
 ## Aggregate operation
 
-SecretFlow provides a variety of <code>Aggregator</code> for users to choose from, each <code>Aggregator</code> provides the function of sum/average.
+SecretFlow provides a variety of `Aggregator` for users to choose from, each `Aggregator` provides the function of sum/average.
 
 :target{#SPU-based-security-aggregation}
 
@@ -133,7 +133,7 @@ SecretFlow provides a variety of <code>Aggregator</code> for users to choose fro
 
 ### Masking with One-Time Pads
 
-<code>Masking with One-Time Pads</code> negotiates a secret for every two participants, then uses the secret to hide its input <InlineMath>$x$</InlineMath>, and each participant outputs.
+`Masking with One-Time Pads` negotiates a secret for every two participants, then uses the secret to hide its input <InlineMath>$x$</InlineMath>, and each participant outputs.
 
 <Math>
   $$
@@ -171,7 +171,7 @@ the secrets are cancelled out after aggregation and then we can get the correct 
 >   $$
 > </Math>
 
-Note that <code>Masking with One-Time Pads</code> is based on semi-honest assumptions and does not support client dropping. For more information, please refer to [Practical Secure Aggregation for Privacy-Preserving Machine Learning](https://eprint.iacr.org/2017/281.pdf)
+Note that `Masking with One-Time Pads` is based on semi-honest assumptions and does not support client dropping. For more information, please refer to [Practical Secure Aggregation for Privacy-Preserving Machine Learning](https://eprint.iacr.org/2017/281.pdf)
 
 > <strong>Warning:</strong> The SecureAggregator uses [numpy.random.PCG64](https://numpy.org/doc/stable/reference/random/bit_generators/pcg64.html#numpy.random.PCG64). There are many discussions of whether PCG is a CSPRNG (e.g. [https://crypto.stackexchange.com/questions/77101/is-the-pcg-prng-a-csprng-or-why-not](https://crypto.stackexchange.com/questions/77101/is-the-pcg-prng-a-csprng-or-why-not)), we prefer a conservative strategy unless a further security analysis came up. Therefore we recommend users to use a standardized CSPRNG in industrial scenarios.
 
@@ -180,7 +180,9 @@ Note that <code>Masking with One-Time Pads</code> is based on semi-honest assump
     ```python
     # Create a secure aggregator instance with alice and bob,
     # where alice is responsible for performing aggregate computing operations.
-    secure_aggr = sf.security.aggregation.SecureAggregator(device=alice, participants=[alice, bob])
+    secure_aggr = sf.security.aggregation.SecureAggregator(
+        device=alice, participants=[alice, bob]
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>

@@ -4,13 +4,13 @@
 
 > The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
 
-This tutorial demonstrates how to do <code>Logistic Regression</code> with mix partitioned data.
+This tutorial demonstrates how to do `Logistic Regression` with mix partitioned data.
 
 The following is an example of mix partitioning data.
 
 ![dataframe.png](../_assets/mix_data.png)
 
-Secretflow supports <code>Logistic Regression</code> with mix data. The algorithm combines <code>H</code>omomorphic <code>E</code>ncryption and secure aggregation for better security, for more details please refer to [Federated Logistic Regression](../developer/algorithm/mix_lr.mdx)
+Secretflow supports `Logistic Regression` with mix data. The algorithm combines `H`omomorphic `E`ncryption and secure aggregation for better security, for more details please refer to [Federated Logistic Regression](../developer/algorithm/mix_lr.mdx)
 
 :target{#Initialization}
 
@@ -217,7 +217,7 @@ Alice holds all label and all 1\~10 features, bob holds all 11\~20 fetures, caro
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Now create <code>MixDataFrame</code> x and y for further usage. <code>MixDataFrame</code> is a list of <code>HDataFrame</code> or <code>VDataFrame</code>
+Now create `MixDataFrame` x and y for further usage. `MixDataFrame` is a list of `HDataFrame` or `VDataFrame`
 
 > you can read secretflow’s [DataFrame](../user_guide/preprocessing/DataFrame.mdx) for more details.
 
@@ -248,7 +248,7 @@ Now create <code>MixDataFrame</code> x and y for further usage. <code>MixDataFra
 
 ## Training
 
-Construct <code>HEU</code> and <code>SecureAggregator</code> for further training.
+Construct `HEU` and `SecureAggregator` for further training.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
@@ -287,6 +287,7 @@ Fit the model.
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
     ```python
     import logging
+
     logging.root.setLevel(level=logging.INFO)
 
     from secretflow.ml.linear import FlLogisticRegressionMix

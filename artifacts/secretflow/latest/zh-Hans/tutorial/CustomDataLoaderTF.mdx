@@ -30,7 +30,7 @@
     # In case you have a running secretflow runtime already.
     sf.shutdown()
     sf.init(['alice', 'bob', 'charlie'], address="local", log_to_driver=False)
-    alice, bob ,charlie = sf.PYU('alice'), sf.PYU('bob') , sf.PYU('charlie')
+    alice, bob, charlie = sf.PYU('alice'), sf.PYU('bob'), sf.PYU('charlie')
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -39,16 +39,16 @@
 
 ## 接口介绍
 
-我们在SecretFlow的<code>FLModel</code>中支持了自定义DataBuilder的读取方式，可以方便用户根据需求更灵活的处理数据输入。下面我们以一个例子来展示下，如何使用自定义DataBuilder来进行联邦模型训练。
+我们在SecretFlow的`FLModel`中支持了自定义DataBuilder的读取方式，可以方便用户根据需求更灵活的处理数据输入。下面我们以一个例子来展示下，如何使用自定义DataBuilder来进行联邦模型训练。
 
 使用DataBuilder的步骤：
 
 1. 使用单机版本引擎（tensorflow，pytorch）进行开发，得到Dataset的Builder函数。
-2. Wrap the Builder functions of each party to get <code>create\_dataset\_builder</code> function. <em>Note: The dataset\_builder needs to pass in the stage parameter.</em>
+2. Wrap the Builder functions of each party to get `create_dataset_builder` function. <em>Note: The dataset\_builder needs to pass in the stage parameter.</em>
 3. Build the data\_builder\_dict \[PYU, dataset\_builder].
-4. Pass the obtained data\_builder\_dict to the <code>dataset\_builder</code> of the <code>fit</code> function. At the same time, the x parameter position is passed into the required input in dataset\_builder (eg: the input passed in this example is the actual image path used).
+4. Pass the obtained data\_builder\_dict to the `dataset_builder` of the `fit` function. At the same time, the x parameter position is passed into the required input in dataset\_builder (eg: the input passed in this example is the actual image path used).
 
-Using DataBuilder in FLModel requires a pre-defined <code>data\_builder\_dict</code>. Need to be able to return <code>tf.dataset</code> and <code>steps\_per\_epoch</code>. And the steps\_per\_epoch returned by all parties must be consistent.
+Using DataBuilder in FLModel requires a pre-defined `data_builder_dict`. Need to be able to return `tf.dataset` and `steps_per_epoch`. And the steps\_per\_epoch returned by all parties must be consistent.
 
 ```python
 data_builder_dict =
@@ -105,7 +105,7 @@ Flower数据集介绍：flower数据集是一个包含了5种花卉（雏菊、�
 
 ## 1. 使用单机引擎开发DataBuilder
 
-我们在开发DataBuilder的时候可以自由的按照单机开发的逻辑即可。目的是构建一个<code>tf.dataset</code>对象即可
+我们在开发DataBuilder的时候可以自由的按照单机开发的逻辑即可。目的是构建一个`tf.dataset`对象即可
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -147,7 +147,7 @@ Flower数据集介绍：flower数据集是一个包含了5种花卉（雏菊、�
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
     ```python
-    print(type(train_set),type(test_set))
+    print(type(train_set), type(test_set))
     ```
   </Notebook.CodeArea>
 
@@ -161,7 +161,7 @@ Flower数据集介绍：flower数据集是一个包含了5种花卉（雏菊、�
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
     ```python
-    x,y = next(iter(train_set))
+    x, y = next(iter(train_set))
     print(f"x.shape = {x.shape}")
     print(f"y.shape = {y.shape}")
     ```
@@ -184,8 +184,8 @@ The DataBuilder we developed needs to be distributed to each execution machine f
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
     ```python
     def create_dataset_builder(
-            batch_size=32,
-        ):
+        batch_size=32,
+    ):
         def dataset_builder(folder_path, stage="train"):
             import math
 
@@ -203,15 +203,11 @@ The DataBuilder we developed needs to be distributed to each execution machine f
             )
             if stage == "train":
                 train_dataset = data_set[0]
-                train_step_per_epoch = math.ceil(
-                    len(data_set[0].file_paths) / batch_size
-                )
+                train_step_per_epoch = math.ceil(len(data_set[0].file_paths) / batch_size)
                 return train_dataset, train_step_per_epoch
             elif stage == "eval":
                 eval_dataset = data_set[1]
-                eval_step_per_epoch = math.ceil(
-                    len(data_set[1].file_paths) / batch_size
-                )
+                eval_step_per_epoch = math.ceil(len(data_set[1].file_paths) / batch_size)
                 return eval_dataset, eval_step_per_epoch
 
         return dataset_builder
@@ -223,7 +219,7 @@ The DataBuilder we developed needs to be distributed to each execution machine f
 
 ## 3. Build dataset\_builder\_dict
 
-在水平场景，我们各方处理数据的逻辑是一样的，所以只需要一个wrap后的DataBuilder构造方法即可。接下来我们构建<code>dataset\_builder\_dict</code>
+在水平场景，我们各方处理数据的逻辑是一样的，所以只需要一个wrap后的DataBuilder构造方法即可。接下来我们构建`dataset_builder_dict`
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
@@ -252,6 +248,7 @@ The DataBuilder we developed needs to be distributed to each execution machine f
     def create_conv_flower_model(input_shape, num_classes, name='model'):
         def create_model():
             from tensorflow import keras
+
             # Create model
 
             model = keras.Sequential(
@@ -295,7 +292,7 @@ The DataBuilder we developed needs to be distributed to each execution machine f
   <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
     ```python
     device_list = [alice, bob]
-    aggregator = SecureAggregator(charlie,[alice,bob])
+    aggregator = SecureAggregator(charlie, [alice, bob])
 
     # prepare model
     num_classes = 5
@@ -317,7 +314,7 @@ The DataBuilder we developed needs to be distributed to each execution machine f
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-我们构造好的dataset builder的输入是图像数据集的路径，所以这里需要将输入的数据设置为一个<code>Dict</code>
+我们构造好的dataset builder的输入是图像数据集的路径，所以这里需要将输入的数据设置为一个`Dict`
 
 ```python
 data = {
@@ -329,10 +326,10 @@ data = {
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
     ```python
-    data={
-            alice: path_to_flower_dataset,
-            bob: path_to_flower_dataset,
-        }
+    data = {
+        alice: path_to_flower_dataset,
+        bob: path_to_flower_dataset,
+    }
     history = fed_model.fit(
         data,
         None,

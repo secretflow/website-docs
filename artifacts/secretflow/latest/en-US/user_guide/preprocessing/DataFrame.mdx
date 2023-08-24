@@ -213,9 +213,11 @@ Here, as a simple show case, we choose secure aggregation and spu comparison. Yo
 
     spu = sf.SPU(sf.utils.testing.cluster_def(parties=['alice', 'bob', 'carol']))
     comp = SPUComparator(spu)
-    hdf = h_read_csv({alice: h_alice_path, bob: h_bob_path, carol: h_carol_path},
-                     aggregator=aggr,
-                     comparator=comp)
+    hdf = h_read_csv(
+        {alice: h_alice_path, bob: h_bob_path, carol: h_carol_path},
+        aggregator=aggr,
+        comparator=comp,
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>

@@ -46,9 +46,9 @@ Let’s first load a sample dataset.
   <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
     ```python
     parts = {
-            bob: (1, 11),
-            alice: (11, 22),
-        }
+        bob: (1, 11),
+        alice: (11, 22),
+    }
     vdf = load_linear(parts=parts)
     ```
   </Notebook.CodeArea>
@@ -109,7 +109,7 @@ Sometimes we may need the iv values. Releasing bin ivs will potentially leak lab
 
 We will demonstrate how to share the feature ivs.
 
-Recall that the woe\_rules is a dictionary <code>\{PYU: PYUObject}</code>, where each <code>PYUObject</code> itself is a dictionary of the following type:
+Recall that the woe\_rules is a dictionary `{PYU: PYUObject}`, where each `PYUObject` itself is a dictionary of the following type:
 
 ```none
 {
@@ -149,10 +149,16 @@ Recall that the woe\_rules is a dictionary <code>\{PYU: PYUObject}</code>, where
     # alice is label holder
     dict_pyu_object = woe_rules[alice]
 
+
     def extract_name_and_feature_iv(list_of_feature_iv_info):
         return [(d["name"], d["feature_iv"]) for d in list_of_feature_iv_info]
 
-    feature_ivs = alice(lambda dict_pyu_object: extract_name_and_feature_iv(dict_pyu_object["feature_iv_info"]))(dict_pyu_object)
+
+    feature_ivs = alice(
+        lambda dict_pyu_object: extract_name_and_feature_iv(
+            dict_pyu_object["feature_iv_info"]
+        )
+    )(dict_pyu_object)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>

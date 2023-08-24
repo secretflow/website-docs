@@ -45,15 +45,15 @@ If you want to learn more about federated learning, datasets, etc., you can move
 ## Here, let us first introduce some concepts
 
 <LineBlock>
-  BaseModule: Similar to the <code>torch.nn.module</code>.
+  BaseModule: Similar to the `torch.nn.module`.
 
-  TorchModel: A wrap class include <code>loss\_fn</code>,<code>optim\_fn</code>,<code>model\_def</code>,<code>metrics</code>.
+  TorchModel: A wrap class include `loss_fn`,`optim_fn`,`model_def`,`metrics`.
 
   metric\_wrapper: Wrap metrics to workers.
 
   optim\_wrapper: Wrap optim\_fn to workers.
 
-  FLModel: Federated model, use <code>backend</code> to specify which bachend will be use, use <code>strategy</code> to spcify which federated strategy will be use.
+  FLModel: Federated model, use `backend` to specify which bachend will be use, use `strategy` to spcify which federated strategy will be use.
 </LineBlock>
 
 <Notebook.Cell>
@@ -71,7 +71,7 @@ If you want to learn more about federated learning, datasets, etc., you can move
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-When we define the model, we only need to inherit <code>BaseModule</code> instead of <code>nn.Module</code>, and the others are consistent with pytorch.
+When we define the model, we only need to inherit `BaseModule` instead of `nn.Module`, and the others are consistent with pytorch.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -126,7 +126,7 @@ We can continue to use the loss function and optimizer defined in pytorch, the o
     ```python
     device_list = [alice, bob]
     server = charlie
-    aggregator = SecureAggregator(server,[alice,bob])
+    aggregator = SecureAggregator(server, [alice, bob])
 
     # spcify params
     fl_model = FLModel(
@@ -134,8 +134,8 @@ We can continue to use the loss function and optimizer defined in pytorch, the o
         device_list=device_list,
         model=model_def,
         aggregator=aggregator,
-        strategy='fed_avg_w', # fl strategy
-        backend="torch", # backend support ['tensorflow', 'torch']
+        strategy='fed_avg_w',  # fl strategy
+        backend="torch",  # backend support ['tensorflow', 'torch']
     )
     ```
   </Notebook.CodeArea>
@@ -145,13 +145,13 @@ We can continue to use the loss function and optimizer defined in pytorch, the o
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
     ```python
     history = fl_model.fit(
-                train_data,
-                train_label,
-                validation_data=(test_data, test_label),
-                epochs=20,
-                batch_size=32,
-                aggregate_freq=1,
-            )
+        train_data,
+        train_label,
+        validation_data=(test_data, test_label),
+        epochs=20,
+        batch_size=32,
+        aggregate_freq=1,
+    )
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>

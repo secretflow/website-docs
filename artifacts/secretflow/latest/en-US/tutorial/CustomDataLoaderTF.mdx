@@ -30,7 +30,7 @@ In this tutorial, we will show you how to load data and train model using the cu
     # In case you have a running secretflow runtime already.
     sf.shutdown()
     sf.init(['alice', 'bob', 'charlie'], address="local", log_to_driver=False)
-    alice, bob ,charlie = sf.PYU('alice'), sf.PYU('bob') , sf.PYU('charlie')
+    alice, bob, charlie = sf.PYU('alice'), sf.PYU('bob'), sf.PYU('charlie')
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -39,16 +39,16 @@ In this tutorial, we will show you how to load data and train model using the cu
 
 ## Interface Introduction
 
-We support custom DataBuilder reads in SecretFlow’s <code>FLModel</code> to make it easier for users to handle data inputs more flexibly according to their needs. Let’s use an example to demonstrate how to use the custom DataBuilder for federated model training.
+We support custom DataBuilder reads in SecretFlow’s `FLModel` to make it easier for users to handle data inputs more flexibly according to their needs. Let’s use an example to demonstrate how to use the custom DataBuilder for federated model training.
 
 Steps to use DataBuilder:
 
 1. Use the single-machine version engine (TensorFlow, PyTorch) to develop and get the Builder function of the Dataset.
-2. Wrap the Builder functions of each party to get <code>create\_dataset\_builder</code> function. <em>Note: The dataset\_builder needs to pass in the stage parameter.</em>
+2. Wrap the Builder functions of each party to get `create_dataset_builder` function. <em>Note: The dataset\_builder needs to pass in the stage parameter.</em>
 3. Build the data\_builder\_dict \[PYU, dataset\_builder].
-4. Pass the obtained data\_builder\_dict to the <code>dataset\_builder</code> of the <code>fit</code> function. At the same time, the x parameter position is passed into the required input in dataset\_builder (eg: the input passed in this example is the actual image path used).
+4. Pass the obtained data\_builder\_dict to the `dataset_builder` of the `fit` function. At the same time, the x parameter position is passed into the required input in dataset\_builder (eg: the input passed in this example is the actual image path used).
 
-Using DataBuilder in FLModel requires a pre-defined <code>data\_builder\_dict</code>. Need to be able to return <code>tf.dataset</code> and <code>steps\_per\_epoch</code>. And the steps\_per\_epoch returned by all parties must be consistent.
+Using DataBuilder in FLModel requires a pre-defined `data_builder_dict`. Need to be able to return `tf.dataset` and `steps_per_epoch`. And the steps\_per\_epoch returned by all parties must be consistent.
 
 ```python
 data_builder_dict =
@@ -106,7 +106,7 @@ Next let’s start building a custom DataBuilder
 
 ## 1. Develop DataBuilder with single-machine version engine
 
-When we develop DataBuilder, we are free to follow the logic of single-machine development. The purpose is to build a <code>tf.dataset</code> object.
+When we develop DataBuilder, we are free to follow the logic of single-machine development. The purpose is to build a `tf.dataset` object.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -148,7 +148,7 @@ When we develop DataBuilder, we are free to follow the logic of single-machine d
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
     ```python
-    print(type(train_set),type(test_set))
+    print(type(train_set), type(test_set))
     ```
   </Notebook.CodeArea>
 
@@ -162,7 +162,7 @@ When we develop DataBuilder, we are free to follow the logic of single-machine d
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
     ```python
-    x,y = next(iter(train_set))
+    x, y = next(iter(train_set))
     print(f"x.shape = {x.shape}")
     print(f"y.shape = {y.shape}")
     ```
@@ -185,8 +185,8 @@ The DataBuilder we developed needs to be distributed to each execution machine f
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
     ```python
     def create_dataset_builder(
-            batch_size=32,
-        ):
+        batch_size=32,
+    ):
         def dataset_builder(folder_path, stage="train"):
             import math
 
@@ -204,15 +204,11 @@ The DataBuilder we developed needs to be distributed to each execution machine f
             )
             if stage == "train":
                 train_dataset = data_set[0]
-                train_step_per_epoch = math.ceil(
-                    len(data_set[0].file_paths) / batch_size
-                )
+                train_step_per_epoch = math.ceil(len(data_set[0].file_paths) / batch_size)
                 return train_dataset, train_step_per_epoch
             elif stage == "eval":
                 eval_dataset = data_set[1]
-                eval_step_per_epoch = math.ceil(
-                    len(data_set[1].file_paths) / batch_size
-                )
+                eval_step_per_epoch = math.ceil(len(data_set[1].file_paths) / batch_size)
                 return eval_dataset, eval_step_per_epoch
 
         return dataset_builder
@@ -224,7 +220,7 @@ The DataBuilder we developed needs to be distributed to each execution machine f
 
 ## 3. Build dataset\_builder\_dict
 
-In the horizontal scenario, the logic for all parties to process data is the same, so we only need a wrapped DataBuilder construction method. Next we build the <code>dataset\_builder\_dict</code>
+In the horizontal scenario, the logic for all parties to process data is the same, so we only need a wrapped DataBuilder construction method. Next we build the `dataset_builder_dict`
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
@@ -253,6 +249,7 @@ Next we define the model and use the custom data constructed above for training
     def create_conv_flower_model(input_shape, num_classes, name='model'):
         def create_model():
             from tensorflow import keras
+
             # Create model
 
             model = keras.Sequential(
@@ -296,7 +293,7 @@ Next we define the model and use the custom data constructed above for training
   <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
     ```python
     device_list = [alice, bob]
-    aggregator = SecureAggregator(charlie,[alice,bob])
+    aggregator = SecureAggregator(charlie, [alice, bob])
 
     # prepare model
     num_classes = 5
@@ -318,7 +315,7 @@ Next we define the model and use the custom data constructed above for training
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-The input of our constructed dataset builder is the path of the image dataset, so we need to set the input data as a <code>Dict</code> here.
+The input of our constructed dataset builder is the path of the image dataset, so we need to set the input data as a `Dict` here.
 
 ```python
 data = {
@@ -330,10 +327,10 @@ data = {
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
     ```python
-    data={
-            alice: path_to_flower_dataset,
-            bob: path_to_flower_dataset,
-        }
+    data = {
+        alice: path_to_flower_dataset,
+        bob: path_to_flower_dataset,
+    }
     history = fed_model.fit(
         data,
         None,

@@ -8,7 +8,7 @@ Before reading this article, it is strongly recommended to read [TEEU Getting St
 
 ---
 
-TEEU (<code>TEE</code> processing <code>U</code>nit) is a TEE device in SecretFlow. Through TEEU, users can conveniently put data in TEE for calculation, and achieve the purpose of protecting data integrity and security.
+TEEU (`TEE` processing `U`nit) is a TEE device in SecretFlow. Through TEEU, users can conveniently put data in TEE for calculation, and achieve the purpose of protecting data integrity and security.
 
 This article will demonstrate how to run XGBoost in TEEU for model training.
 
@@ -57,7 +57,7 @@ docker run -it --net host secretflow/authmanager-release-sim-ubuntu:latest
 
 3. (Optional) Configure TLS
 
-AuthManager enables TLS by default. If you only use it for local simulation, you can turn off TLS by set <code>enable\_tls</code> to <code>false</code> in <code>/root/occlum\_release/config.yaml</code>.
+AuthManager enables TLS by default. If you only use it for local simulation, you can turn off TLS by set `enable_tls` to `false` in `/root/occlum_release/config.yaml`.
 
 4. Start the service
 
@@ -66,7 +66,7 @@ cd occlum_release
 occlum run /bin/auth-manager --config_path /host/config.yaml
 ```
 
-The default port is 8835. Feel free to modify the <code>port</code> in config.yaml if port conflicts.
+The default port is 8835. Feel free to modify the `port` in config.yaml if port conflicts.
 
 :target{#example-xgboost-in-teeu}
 
@@ -184,11 +184,11 @@ Add the SecretFlow initialization related code in front of the code to get the f
 First, you need to modify the configuration items in the code.
 
 - The code assumes that Alice’s communication address is 192.168.0.10:20001, please modify it according to the actual situation
-- You need to fill in the correct <code>auth\_manager\_config</code>
-  - <code>host</code> is the listening address of the AuthManager service
-  - <code>ca\_cert</code> is the CA certificate address of AuthManager, if AuthManager does not start with TLS, no configuration is required.
+- You need to fill in the correct `auth_manager_config`
+  - `host` is the listening address of the AuthManager service
+  - `ca_cert` is the CA certificate address of AuthManager, if AuthManager does not start with TLS, no configuration is required.
 
-Suppose we save the code as [demo.py](http://demo.py), and then execute <code>python demo.py</code> on Alice’s machine.
+Suppose we save the code as [demo.py](http://demo.py), and then execute `python demo.py` on Alice’s machine.
 
 ```python
 import secretflow as sf
@@ -320,11 +320,11 @@ Similar to Alice, add the SecretFlow initialization code in front of the code to
 First, you need to modify the configuration items in the code.
 
 - The code assumes that Bob’s communication address is 192.168.0.20:20001, please modify it according to the actual situation
-- You need to fill in the correct <code>auth\_manager\_config</code>
-- <code>host</code> is the listening address of the AuthManager service
-- <code>ca\_cert</code> is the CA certificate address of AuthManager, if AuthManager does not start tls, no configuration is required.
+- You need to fill in the correct `auth_manager_config`
+- `host` is the listening address of the AuthManager service
+- `ca_cert` is the CA certificate address of AuthManager, if AuthManager does not start tls, no configuration is required.
 
-Suppose we save the code as [demo.py](http://demo.py), and then execute <code>python demo.py</code> on Bob’s machine.
+Suppose we save the code as [demo.py](http://demo.py), and then execute `python demo.py` on Bob’s machine.
 
 ```python
 import secretflow as sf
@@ -443,12 +443,12 @@ Similarly, add the SecretFlow initialization code in front of the code to get th
 First, you need to modify the configuration items in the code.
 
 1. In the code, it is assumed that Carol’s communication address is 192.168.0.30:20001, please modify it according to the actual situation
-2. You need to fill in the correct <code>auth\_manager\_config</code>
+2. You need to fill in the correct `auth_manager_config`
 
-- <code>host</code> is the listen address of AuthManager
-- <code>ca\_cert</code> is the CA certificate path of AuthManager, if AuthManager does not enable TLS, no configuration is required.
+- `host` is the listen address of AuthManager
+- `ca_cert` is the CA certificate path of AuthManager, if AuthManager does not enable TLS, no configuration is required.
 
-After modification, please save the file to <code>/root/occlum\_instance/image/root/demo.py</code>.
+After modification, please save the file to `/root/occlum_instance/image/root/demo.py`.
 
 ```python
 # Generate tls cert and key at first.
@@ -566,7 +566,7 @@ occlum build --sgx-mode sim --sign-key private_key.pem
 occlum run /bin/python3.8 /root/demo.py
 ```
 
-You can check model file at <code>/root/occlum\_instance/model.json</code> when finished.
+You can check model file at `/root/occlum_instance/model.json` when finished.
 
 :target{#non-simulation-mode}
 

@@ -125,7 +125,10 @@
 
         nodes = nodes.toarray()
         features_split_pos = round(nodes.shape[1] / 2)
-        nodes_alice, nodes_bob = nodes[:, :features_split_pos], nodes[:, features_split_pos:]
+        nodes_alice, nodes_bob = (
+            nodes[:, :features_split_pos],
+            nodes[:, features_split_pos:],
+        )
         temp_dir = tempfile.mkdtemp()
         saved_files = [
             os.path.join(temp_dir, name)
@@ -151,6 +154,7 @@
         np.save(saved_files[7], idx_val)
         np.save(saved_files[8], idx_test)
         return saved_files
+
 
     saved_files = load_cora()
 
@@ -464,7 +468,10 @@ Fuse模型会在持有label的一方使用，其工作原理如下： 1. 使用�
     ```python
     from tensorflow.keras.models import Model
 
-    def create_base_model(input_shape, n_hidden, l2_reg, num_heads, dropout_rate, learning_rate):
+
+    def create_base_model(
+        input_shape, n_hidden, l2_reg, num_heads, dropout_rate, learning_rate
+    ):
         def base_model():
             feature_input = tf.keras.Input(shape=(input_shape[1],))
             graph_input = tf.keras.Input(shape=(input_shape[0],))
@@ -541,7 +548,10 @@ Fuse模型把所有参与方的embedding拼接在一起，该模型仅在持有�
             model.summary()
             metrics = ['acc']
             optimizer = tf.keras.optimizers.get(
-                {'class_name': 'adam', 'config': {'learning_rate': learning_rate},}
+                {
+                    'class_name': 'adam',
+                    'config': {'learning_rate': learning_rate},
+                }
             )
             model.compile(
                 loss='categorical_crossentropy',

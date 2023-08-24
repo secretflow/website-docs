@@ -271,17 +271,20 @@ Let’s check whether <strong>area\_of\_simple\_polygon</strong> is jittable.
     # Cited from JAX documentation.
     # While loop conditioned on x and n.
 
+
     def g(x, n):
-      i = 0
-      while i < n:
-        i += 1
-      return x + i
+        i = 0
+        while i < n:
+            i += 1
+        return x + i
+
 
     g_jit = jax.jit(g)
 
     import traceback
+
     try:
-      g_jit(10, 20)  # Should raise an error.
+        g_jit(10, 20)  # Should raise an error.
     except Exception:
         traceback.print_exc()
     ```
@@ -294,10 +297,11 @@ Let’s check whether <strong>area\_of\_simple\_polygon</strong> is jittable.
   <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
     ```python
     def g_with_lax_control_flow(x, n):
-      def body_fun(i):
-        i += 1
-        return i
-      return x + jax.lax.while_loop(lambda i: i < n, body_fun, 0)
+        def body_fun(i):
+            i += 1
+            return i
+
+        return x + jax.lax.while_loop(lambda i: i < n, body_fun, 0)
 
 
     g_with_lax_control_flow_jit = jax.jit(g_with_lax_control_flow)
@@ -387,7 +391,7 @@ If you hope to get a quick try, I would like to introduce <strong>spu.sim\_jax</
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
     ```python
-    spu_area_of_simple_polygon_fn=sim_jax(sim, area_of_simple_polygon)
+    spu_area_of_simple_polygon_fn = sim_jax(sim, area_of_simple_polygon)
 
     spu_area_of_simple_polygon_fn(vertices)
     ```
@@ -437,8 +441,8 @@ If you hope to get a quick try, I would like to introduce <strong>spu.sim\_jax</
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
     ```python
-    p1 = sf.to(alice,np.array([0, 0]))
-    p2 = sf.to(bob,np.array([3, 4]))
+    p1 = sf.to(alice, np.array([0, 0]))
+    p2 = sf.to(bob, np.array([3, 4]))
 
     distance = spu(euclidean_distance)(p1, p2)
 

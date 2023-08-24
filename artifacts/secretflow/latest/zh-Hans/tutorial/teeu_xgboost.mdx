@@ -8,7 +8,7 @@
 
 ---
 
-TEEU(<code>TEE</code> processing <code>U</code>nit)是 SecretFlow 中的 TEE 设备，通过 TEEU，用户可以方便的把数据放在TEE内进行计算，并且达到保护数据完整和安全的目的
+TEEU(`TEE` processing `U`nit)是 SecretFlow 中的 TEE 设备，通过 TEEU，用户可以方便的把数据放在TEE内进行计算，并且达到保护数据完整和安全的目的
 
 本文将演示如何在TEEU中使用XGBoost训练模型。
 
@@ -56,7 +56,7 @@ docker run -it --net host secretflow/authmanager-release-sim-ubuntu:latest
 
 3. （可选）配置 TLS
 
-AuthManager 默认启用 TLS，如果您只是为了本机仿真，可以关闭TLS功能，具体方法为编辑 config.yaml 文件，将 <code>enable\_tls</code> 设置为 false。
+AuthManager 默认启用 TLS，如果您只是为了本机仿真，可以关闭TLS功能，具体方法为编辑 config.yaml 文件，将 `enable_tls` 设置为 false。
 
 4. 启动服务
 
@@ -182,11 +182,11 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 在代码的前面加上SecretFlow初始化相关代码，得到下列的代码。首先您需要对代码中的配置项进行修改。
 
 - 代码中假设 Alice 通信地址为 192.168.0.10:20001，请您根据实际情况修改
-- 您需要填写填充正确的 <code>auth\_manager\_config</code>
-  - <code>host</code>为 AuthManager 的服务监听地址
-  - <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
+- 您需要填写填充正确的 `auth_manager_config`
+  - `host`为 AuthManager 的服务监听地址
+  - `ca_cert`为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
 
-假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Alice 的机器上执行 <code>python demo.py</code>。
+假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Alice 的机器上执行 `python demo.py`。
 
 ```python
 import secretflow as sf
@@ -317,11 +317,11 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 与 Alice 类似，在代码前面加上 SecretFlow 初始化相关代码，得到下列的代码
 
 - 代码中假设 Bob 通信地址为 192.168.0.20:20001，请您根据实际情况修改
-- 您需要填写填充正确的 <code>auth\_manager\_config</code>
-- <code>host</code>为 AuthManager 的服务监听地址
-- <code>ca\_cert</code>为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
+- 您需要填写填充正确的 `auth_manager_config`
+- `host`为 AuthManager 的服务监听地址
+- `ca_cert`为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
 
-假设我们把代码保存为 [demo.py](http://demo.py)，然后在Bob的机器上执行 <code>python demo.py</code>。
+假设我们把代码保存为 [demo.py](http://demo.py)，然后在Bob的机器上执行 `python demo.py`。
 
 ```python
 import secretflow as sf
@@ -439,10 +439,10 @@ docker run -it --network host secretflow/secretflow-teeu:latest
 类似地，在代码前面加上 SecretFlow 初始化相关代码，得到下列的代码。但是与前面有所区别，因为Carol是在TEE中运行，因此需要一些额外的步骤。首先，你需要修改代码中的配置项。
 
 1. 代码中假设 Carol 通信地址为 192.168.0.30:20001，请您根据实际情况修改
-2. 您需要填写填充正确的 <code>auth\_manager\_config</code>
+2. 您需要填写填充正确的 `auth_manager_config`
 
-- <code>host</code>为 AuthManager 的服务监听地址
-- <code>ca\_cert</code> 为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
+- `host`为 AuthManager 的服务监听地址
+- `ca_cert` 为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
 
 修改完毕后，请把该文件保存至 /root/occlum\_instance/image/root/demo.py
 
@@ -562,7 +562,7 @@ occlum build --sgx-mode sim --sign-key private_key.pem
 occlum run /bin/python3.8 /root/demo.py
 ```
 
-当运行结束后，您可以在 <code>/root/occlum\_instance/model.json</code> 查阅模型文件。
+当运行结束后，您可以在 `/root/occlum_instance/model.json` 查阅模型文件。
 
 :target{#non-simulation-mode}
 

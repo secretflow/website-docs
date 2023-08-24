@@ -27,7 +27,7 @@ While, first, let’s just forget MPC settings and just write a Logistic Regress
 
 ### 加载数据集
 
-我们将在使用“breast\_cancer”标准化后将整个数据集拆分为训练和测试子集。 如果 <code>train</code> 是 <code>True</code>，返回训练子集，另外，为了模拟垂直数据集拆分的训练，还需要提供“party\_id”参数。 否则，返回测试子集。
+我们将在使用“breast\_cancer”标准化后将整个数据集拆分为训练和测试子集。 如果 `train` 是 `True`，返回训练子集，另外，为了模拟垂直数据集拆分的训练，还需要提供“party\_id”参数。 否则，返回测试子集。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
@@ -107,7 +107,7 @@ Second, let’s define a single train step with SGD optimizer. Just to remind yo
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Last, let’s build everything together as a <code>fit</code> method which returns the model and losses of each epoch.
+Last, let’s build everything together as a `fit` method which returns the model and losses of each epoch.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -151,8 +151,8 @@ Let’s put everything we have together and train a LR model!
     %matplotlib inline
 
     # Load the data
-    x1, _ = breast_cancer(party_id=1,train=True)
-    x2, y = breast_cancer(party_id=2,train=True)
+    x1, _ = breast_cancer(party_id=1, train=True)
+    x2, y = breast_cancer(party_id=2, train=True)
 
     # Hyperparameter
     W = jnp.zeros((30,))
@@ -165,7 +165,7 @@ Let’s put everything we have together and train a LR model!
 
     # Validate the model
     X_test, y_test = breast_cancer(train=False)
-    auc=validate_model(W,b, X_test, y_test)
+    auc = validate_model(W, b, X_test, y_test)
     print(f'auc={auc}')
     ```
   </Notebook.CodeArea>
@@ -291,9 +291,9 @@ Let’s put everything we have together and train a LR model!
 
 ### 揭示结果
 
-为了检查训练的模型，我们需要将 SPUObject(secret) 转换为 Python object(明文)。 SecretFlow 提供 <code>sf.reveal</code> 将任何 DeviceObject 转换为 Python object。
+为了检查训练的模型，我们需要将 SPUObject(secret) 转换为 Python object(明文)。 SecretFlow 提供 `sf.reveal` 将任何 DeviceObject 转换为 Python object。
 
-> 请小心使用 <code>sf.reveal</code>，因为它可能导致秘密泄露。
+> 请小心使用 `sf.reveal`，因为它可能导致秘密泄露。
 
 Finally, let’s validate the model with AUC.
 

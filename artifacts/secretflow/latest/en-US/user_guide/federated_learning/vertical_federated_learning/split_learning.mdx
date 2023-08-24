@@ -16,18 +16,18 @@ A typical example of split learning:
 Alice holds its own data and base model.
 Bob holds its own data, base model and fuse model.
 
-1. Alice uses its data to get <code>hidden0</code> through its base model and send it to Bob.
-2. Bob gets <code>hidden1</code> with its data through its base model.
-3. <code>hidden\_0</code> and <code>hidden\_1</code> are input to the <code>Agg Layer</code> for aggregation, and the aggregated hidden\_merge is the output.
+1. Alice uses its data to get `hidden0` through its base model and send it to Bob.
+2. Bob gets `hidden1` with its data through its base model.
+3. `hidden_0` and `hidden_1` are input to the `Agg Layer` for aggregation, and the aggregated hidden\_merge is the output.
 4. Bob input hidden\_merge to model\_fuse, get the gradient with label and send it back.
-5. The gradient is split into two parts g\_0, g\_1 through <code>AggLayer</code>, which are sent to Alice and Bob respectively.
+5. The gradient is split into two parts g\_0, g\_1 through `AggLayer`, which are sent to Alice and Bob respectively.
 6. Then Alice and Bob update their local base net with g\_0 or g\_1.
 
 :target{#split-learning-model}
 
 ## Split Learning Model
 
-SecretFlow provides [<code>SLModel</code>](../../../source/secretflow.ml.ml.nn.mdx#secretflow.ml.nn.SLModel "secretflow.ml.nn.SLModel") to define a split learning model.
+SecretFlow provides [`SLModel`](../../../source/secretflow.ml.ml.nn.mdx#secretflow.ml.nn.SLModel "secretflow.ml.nn.SLModel") to define a split learning model.
 You can check the tutorial to have a try.
 
 :target{#tutorial}

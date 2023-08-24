@@ -52,7 +52,7 @@ Based on four parties, we will set up three devices:
 
 After that, let’s create an SPU device with [ABY3](https://eprint.iacr.org/2018/403.pdf) protocol.
 
-<code>sf.utils.testing.cluster\_def</code> is a helper method to create a config by finding unused ports.
+`sf.utils.testing.cluster_def` is a helper method to create a config by finding unused ports.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
@@ -120,13 +120,13 @@ Each SPUObject has two fields:
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
     ```python
-    spu_io = sf.device.SPUIO(spu_device.conf,spu_device.world_size)
+    spu_io = sf.device.SPUIO(spu_device.conf, spu_device.world_size)
 
     bank_account = [{'id': 12345, 'deposit': 1000.25}, {'id': 12345, 'deposit': 100000.25}]
 
     import spu
 
-    meta, io_info, *shares = spu_io.make_shares(bank_account,spu.Visibility.VIS_SECRET)
+    meta, io_info, *shares = spu_io.make_shares(bank_account, spu.Visibility.VIS_SECRET)
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
