@@ -2,10 +2,10 @@
 
 # Matrix Operations
 
-HEU provides a set of matrix operation interfaces, whose functions are mainly located in the <code>heu.numpy</code> module.
+HEU provides a set of matrix operation interfaces, whose functions are mainly located in the `heu.numpy` module.
 
 <Container type="tip">
-  Most of the functions of <code>heu.numpy</code> are implemented in parallel way, and their performances are usually much higher than matrix library implemented by pure Python.
+  Most of the functions of `heu.numpy` are implemented in parallel way, and their performances are usually much higher than matrix library implemented by pure Python.
 </Container>
 
 :target{#id2}
@@ -21,7 +21,7 @@ HEU provides a set of matrix operation interfaces, whose functions are mainly lo
   ```
 </Container>
 
-The method of initializing <code>heu.numpy</code>’s environment is similar to that of <code>heu.phe</code>:
+The method of initializing `heu.numpy`’s environment is similar to that of `heu.phe`:
 
 ```python3
 kit = hnp.setup(phe.SchemaType.ZPaillier, 2048)
@@ -30,7 +30,7 @@ decryptor = kit.decryptor()
 evaluator = kit.evaluator()
 ```
 
-In addition, since the <code>heu.numpy</code> module is just a decorator of the <code>heu.phe</code> module, if you already have a phe kit object, you can quickly construct a hnp kit object from the phe kit object. Please note that the homomorphic encryption key pair will not be regenerated in this way:
+In addition, since the `heu.numpy` module is just a decorator of the `heu.phe` module, if you already have a phe kit object, you can quickly construct a hnp kit object from the phe kit object. Please note that the homomorphic encryption key pair will not be regenerated in this way:
 
 ```python3
 phe_kit = phe.setup(phe.SchemaType.ZPaillier, 2048)
@@ -59,15 +59,15 @@ evaluator = skit.evaluator()
 
 ## I/O
 
-Now that the environment is ready, here’s how <code>heu.numpy</code> module handles Python data. Matrices have various representations in Python, such as nested lists, nested tuples, and numpy.ndarray. HEU calls all these primitive data ‘Cleartext’, see [Quick Start](quick_start.mdx) for details. However, there are only two types of <strong>hnp.PlaintextArray</strong> and <strong>hnp.CiphertextArray</strong> in HEU, which store plaintext matrix and ciphertext matrix respectively. That is to say, the original Python data need to be converted to hnp.PlaintextArray before it can be processed by <code>hnp.numpy</code> module.
+Now that the environment is ready, here’s how `heu.numpy` module handles Python data. Matrices have various representations in Python, such as nested lists, nested tuples, and numpy.ndarray. HEU calls all these primitive data ‘Cleartext’, see [Quick Start](quick_start.mdx) for details. However, there are only two types of <strong>hnp.PlaintextArray</strong> and <strong>hnp.CiphertextArray</strong> in HEU, which store plaintext matrix and ciphertext matrix respectively. That is to say, the original Python data need to be converted to hnp.PlaintextArray before it can be processed by `hnp.numpy` module.
 
-This section describes how to use the <code>heu.numpy</code> module to convert data between cleartext and plaintext.
+This section describes how to use the `heu.numpy` module to convert data between cleartext and plaintext.
 
 :target{#id3}
 
 ### Infeed
 
-Like the <code>heu.phe</code> module, the conversion from cleartext to plaintext depends on encoder, please note that <code>heu.numpy</code> shares the same encoders as <code>heu.phe</code> . And the <code>heu.numpy</code> module provides a <code>.array()</code> interface for identifying and transforming cleartext matrices.
+Like the `heu.phe` module, the conversion from cleartext to plaintext depends on encoder, please note that `heu.numpy` shares the same encoders as `heu.phe` . And the `heu.numpy` module provides a `.array()` interface for identifying and transforming cleartext matrices.
 
 ```python3
 # Init from nested lists
@@ -97,7 +97,7 @@ print(harr)
 <Container type="tip">
   The <strong>phe.IntegerEncoder</strong> and <strong>phe.FloatEncoder</strong> are essentially multiplying cleartext by a scale. So can I multiply the cleartext a scale by myself and ignore the encoder?
 
-  The answer is yes, but the performance will be lower. HEU will do parallel encoding as much as possible, but if you do scale yourself on the Python side, it will always be serial. In addition, limited by the method signature, the <strong>hnp.array()</strong> interface always need an encoder, so if the cleartext is already integers or you have already done a scale, you can pass a scale=1 encoder to it, or just use the default <code>phe.BigintEncoder</code> encoder directly
+  The answer is yes, but the performance will be lower. HEU will do parallel encoding as much as possible, but if you do scale yourself on the Python side, it will always be serial. In addition, limited by the method signature, the <strong>hnp.array()</strong> interface always need an encoder, so if the cleartext is already integers or you have already done a scale, you can pass a scale=1 encoder to it, or just use the default `phe.BigintEncoder` encoder directly
 
   ```python3
   # create an encoder with scale=1
@@ -145,7 +145,7 @@ print(nparr) # [1.1 2.1]
 print(type(nparr)) # <class 'numpy.ndarray'>
 ```
 
-Like <strong>hnp.array()</strong>, if <strong>to\_numpy()</strong> does not feed an encoder, the <code>BigintEncoder</code> is used by default.
+Like <strong>hnp.array()</strong>, if <strong>to\_numpy()</strong> does not feed an encoder, the `BigintEncoder` is used by default.
 
 :target{#id6}
 
@@ -224,7 +224,7 @@ harr[1]
 harr[:]
 ```
 
-The slice key of <code>hnp array</code> supports scalar, sequence and slice types, where sequence is the collective name of list, tuple and other types. If the key is a scalar, the slice is dimensionally reduced on that dimension, and if the key is a sequence or a slice, the slice retains the dimension, for example:
+The slice key of `hnp array` supports scalar, sequence and slice types, where sequence is the collective name of list, tuple and other types. If the key is a scalar, the slice is dimensionally reduced on that dimension, and if the key is a sequence or a slice, the slice retains the dimension, for example:
 
 - harr\[sequence/slice, sequence/slice]: Slice is a matrix
 - harr\[sequence/slice, scalar] or harr\[scalar, sequence/slice]: Slice is a vector

@@ -102,20 +102,20 @@ decryptor.decrypt_raw(c1)  # output 8
 ```
 
 <Container type="note">
-  <code>encrypt\_raw</code> 和 <code>decrypt\_raw</code> 支持高精度，其精度与同态加密算法本身支持的值域范围相同，具体值域因算法而异，但一般都 <strong>远大于</strong> C++ int128 表达范围。
+  `encrypt_raw` 和 `decrypt_raw` 支持高精度，其精度与同态加密算法本身支持的值域范围相同，具体值域因算法而异，但一般都 <strong>远大于</strong> C++ int128 表达范围。
 </Container>
 
 :target{#id3}
 
 ## 编码
 
-当前 HEU 提供了五种 <code>Encoder</code>：
+当前 HEU 提供了五种 `Encoder`：
 
-- <code>phe.IntegerEncoder</code>: 编码 128bits 以内的整数
-- <code>phe.FloatEncoder</code>: 编码双精度浮点数
-- <code>phe.BigintEncoder</code>: 编码高精度整数，支持任意精度
-- <code>phe.BatchIntegerEncoder</code>: 将两个整数原文编码到一个明文中
-- <code>phe.BatchFloatEncoder</code>: 将两个浮点数原文编码到一个明文中
+- `phe.IntegerEncoder`: 编码 128bits 以内的整数
+- `phe.FloatEncoder`: 编码双精度浮点数
+- `phe.BigintEncoder`: 编码高精度整数，支持任意精度
+- `phe.BatchIntegerEncoder`: 将两个整数原文编码到一个明文中
+- `phe.BatchFloatEncoder`: 将两个浮点数原文编码到一个明文中
 
 创建 Encoder 的方法（以\`\`phe.IntegerEncoder\`\`为例）
 
@@ -143,14 +143,14 @@ encoder = kit.integer_encoder()
 
 ### IntegerEncoder 和 FloatEncoder
 
-<code>phe.IntegerEncoder</code> 和 <code>FloatEncoder</code> 原理类似，都是将原文乘上一个 scale 后转换成明文，因此 scale 大小决定了计算的精度。如果创建 <code>IntegerEncoder/FloatEncoder</code> 对象时不提供参数，则使用默认的 scale <code>1e6</code>
+`phe.IntegerEncoder` 和 `FloatEncoder` 原理类似，都是将原文乘上一个 scale 后转换成明文，因此 scale 大小决定了计算的精度。如果创建 `IntegerEncoder/FloatEncoder` 对象时不提供参数，则使用默认的 scale `1e6`
 
 <Container type="warning">
-  <code>phe.IntegerEncoder</code> 有数值大小上限，请确保编码后的明文小于 128 比特
+  `phe.IntegerEncoder` 有数值大小上限，请确保编码后的明文小于 128 比特
 </Container>
 
 <Container type="warning">
-  <code>phe.FloatEncoder</code> 有数值大小上限，请确保编码后的明文大小在双精度浮点数（double）表示范围内
+  `phe.FloatEncoder` 有数值大小上限，请确保编码后的明文大小在双精度浮点数（double）表示范围内
 </Container>
 
 ```python3
@@ -171,10 +171,10 @@ print(encoder.decode(pt))  # 3.5
 
 ### BigintEncoder
 
-<code>BigintEncoder</code> 类似于 <code>IntegerEncoder(scale=1)</code>，但不受精度限制，支持编码任意精度的整数，为了方便用户使用，BigintEncoder 是隐式的，如果用户没有指定 encoder，都默认使用该 encoder。
+`BigintEncoder` 类似于 `IntegerEncoder(scale=1)`，但不受精度限制，支持编码任意精度的整数，为了方便用户使用，BigintEncoder 是隐式的，如果用户没有指定 encoder，都默认使用该 encoder。
 
 <Container type="note">
-  <code>BigintEncoder</code> 编码 int128 原文性能非常高，但是超过 128bits 后性能会有显著降低
+  `BigintEncoder` 编码 int128 原文性能非常高，但是超过 128bits 后性能会有显著降低
 </Container>
 
 ```python3
@@ -195,7 +195,7 @@ BatchIntegerEncoder 和 BatchFloatEncoder 是上述 IntegerEncoder、FloatEncode
 ![](../_assets/batch_encoding.png)
 
 <Container type="warning">
-  <code>phe.BatchIntegerEncoder</code> 有数值大小上限，每个原文不大于 64 比特
+  `phe.BatchIntegerEncoder` 有数值大小上限，每个原文不大于 64 比特
 </Container>
 
 <Container type="caution">

@@ -415,7 +415,7 @@ FPaillier 中的 F 表示浮点数 <InlineMath>$\mathbb{F}$</InlineMath>，Paill
   FPaillier 的算法原理与 [Python-Paillier](https://github.com/data61/python-paillier) 库类似
 </Container>
 
-FPaillier 支持浮点数的原理是将输入数据表示成 int\_rep 形式：<code>scalar = int\_rep \* (BASE \*\* exponent)</code>
+FPaillier 支持浮点数的原理是将输入数据表示成 int\_rep 形式：`scalar = int_rep * (BASE ** exponent)`
 
 <figure id="id27">
   <figcaption>
@@ -439,7 +439,7 @@ Scalar 加密时只加密 int\_rep 的值，exponent 明文存储，请注意安
 
 <strong>同态运算</strong>
 
-先对齐 exponent，将 exponent 较大的数的 exponent 降低到较小的 exponent（new\_exp），即 <code>int\_rep =  int\_rep \* (base\*\*(exponent-new\_exp))</code>，再执行同态运算。
+先对齐 exponent，将 exponent 较大的数的 exponent 降低到较小的 exponent（new\_exp），即 `int_rep =  int_rep * (base**(exponent-new_exp))`，再执行同态运算。
 
 <Container type="tip">
   FPaillier 的浮点数运算接口并没有在 Python 层暴露，在 Python 端 FPaillier 提供的接口与 ZPaillier 一致。若要使用 FPaillier 浮点功能，必须通过 C++ 接口调用，详细参考 [FPaillier 单测](https://github.com/secretflow/heu/blob/main/heu/library/algorithms/paillier_float/paillier_test.cc)
