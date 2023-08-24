@@ -4,6 +4,6 @@ myst-parser
 nbsphinx
 sphinx_design
 sphinxcontrib-mermaid
-
 autodocsumm
 matplotlib
+secretflow-doctools

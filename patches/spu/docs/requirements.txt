@@ -4,5 +4,5 @@ myst-parser
 nbsphinx
 sphinx_design
 sphinxcontrib-mermaid
-
 spu==0.4.1b1
+secretflow-doctools

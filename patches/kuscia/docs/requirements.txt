@@ -4,3 +4,4 @@ myst-parser
 nbsphinx
 sphinx_design
 sphinxcontrib-mermaid
+secretflow-doctools

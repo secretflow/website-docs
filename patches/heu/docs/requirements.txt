@@ -5,3 +5,4 @@ nbsphinx
 sphinx_design
 sphinxcontrib-mermaid
 sf-heu
+secretflow-doctools
