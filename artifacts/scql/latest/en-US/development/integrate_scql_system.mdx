@@ -27,9 +27,9 @@ Specifically, the Client interact with SCDB through Query API,  while GRM intera
 
 For SQL query, SCDB support services:
 
-- Submit: async API, just submit SQL query and return, server listen on <code>$\{SCDBHost}/public/submit\_query</code>
-- Fetch: async API, try to get the result of a SQL query, server listen on <code>$\{SCDBHost}/public/fetch\_result</code>
-- SubmitAndGet: sync API, submit query and wait to get the query result, server listen on <code>$\{SCDBHost}/public/submit\_and\_get</code>
+- Submit: async API, just submit SQL query and return, server listen on `${SCDBHost}/public/submit_query`
+- Fetch: async API, try to get the result of a SQL query, server listen on `${SCDBHost}/public/fetch_result`
+- SubmitAndGet: sync API, submit query and wait to get the query result, server listen on `${SCDBHost}/public/submit_and_get`
 
 Please refer to [SCQL API](scql_api.mdx) for details.
 
@@ -46,9 +46,9 @@ In a word, the custom Client should construct HTTP request for user’s SQL, pos
 
 SCQL uses rpc API to communicate with GRM:
 
-- <code>/GetTableMeta</code>: fetch metadata of table, GRM server should listen on <code>$\{GRMServerHost}/GetTableMeta</code>
-- <code>/GetEngines</code>: get endpoints for specific SCQLEngines(parties), GRM server should listen on <code>$\{GRMServerHost}/GetEngines</code>
-- <code>/VerifyTableOwnership</code>: check whether user has ownership of table, GRM server should listen on <code>$\{GRMServerHost}/VerifyTableOwnership</code>
+- `/GetTableMeta`: fetch metadata of table, GRM server should listen on `${GRMServerHost}/GetTableMeta`
+- `/GetEngines`: get endpoints for specific SCQLEngines(parties), GRM server should listen on `${GRMServerHost}/GetEngines`
+- `/VerifyTableOwnership`: check whether user has ownership of table, GRM server should listen on `${GRMServerHost}/VerifyTableOwnership`
 
 Please refer to [Global Resource Manager](../reference/grm.mdx) for details.
 

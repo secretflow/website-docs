@@ -456,7 +456,7 @@ SCDB provides some security compromise options, which can be selectively enabled
 
 1. reveal\_group\_mark:
 
-> default disable, if enabled, SCDB will expose grouping information(size of each group) when calculating group-by-aggregation, thereby avoiding the overhead caused by pre-shuffle.  <code>risk</code>: group size will be leaked, which is equivalent to the result of count(\*)
+> default disable, if enabled, SCDB will expose grouping information(size of each group) when calculating group-by-aggregation, thereby avoiding the overhead caused by pre-shuffle.  `risk`: group size will be leaked, which is equivalent to the result of count(\*)
 
 A typical config of security\_compromise can be like:
 
@@ -529,7 +529,7 @@ storage:
 
 #### PassWord Check
 
-<code>password\_check</code> serves to validate password strength. For ALTER USER, CREATE USER statements, if it’s true, the password should be at least 16 characters which including a number, a lowercase letter, a uppercase letter and a special character.
+`password_check` serves to validate password strength. For ALTER USER, CREATE USER statements, if it’s true, the password should be at least 16 characters which including a number, a lowercase letter, a uppercase letter and a special character.
 
 :target{#config-for-grm}
 

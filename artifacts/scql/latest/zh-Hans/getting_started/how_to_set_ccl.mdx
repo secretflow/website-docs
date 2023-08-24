@@ -18,15 +18,15 @@ Grant CCL 语法，请参阅 [Grant/Revoke CCL](../reference/scql_manual.mdx#scq
 
 本小节将根据不同的查询场景示例给出 CCL 配置建议。
 
-下面以 Alice 和 Bob 的联合分析为例进行说明，参与方 Alice 拥有表 <code>t1</code>，该表包含字段 <code>id</code>，<code>credit\_rank</code>，<code>income</code>，<code>join\_date</code> 和 <code>age</code>。参与方 Bob 拥有表 <code>t2</code>，该表包含字段 <code>id</code>，<code>age</code>，<code>order\_amount</code>，<code>is\_active</code>，<code>admin\_date</code>，<code>out\_date</code>。
+下面以 Alice 和 Bob 的联合分析为例进行说明，参与方 Alice 拥有表 `t1`，该表包含字段 `id`，`credit_rank`，`income`，`join_date` 和 `age`。参与方 Bob 拥有表 `t2`，该表包含字段 `id`，`age`，`order_amount`，`is_active`，`admin_date`，`out_date`。
 
 如下所示，我们以三元组的形式展示 CCL 配置。
 
-<code>\<src\_column, dest\_party, constraint></code>
+`<src_column, dest_party, constraint>`
 
-这意味着 <code>dest\_party</code> 对 <code>src\_column</code> 的访问约束为 <code>constraint</code>。若参与方存在多列相同的 CCL，它将缩写为如下形式。
+这意味着 `dest_party` 对 `src_column` 的访问约束为 `constraint`。若参与方存在多列相同的 CCL，它将缩写为如下形式。
 
-<code>\<\[src\_column1,src\_column2,...], dest\_party, constraint></code>。
+`<[src_column1,src_column2,...], dest_party, constraint>`。
 
 :target{#get-intersection-case}
 
@@ -43,8 +43,8 @@ Grant CCL 语法，请参阅 [Grant/Revoke CCL](../reference/scql_manual.mdx#scq
     </dt>
 
     <dd>
-      - <code>\<id, Bob, PLAINTEXT\_AFTER\_JOIN></code>
-      - <code>\<id, Alice, PLAINTEXT></code>
+      - `<id, Bob, PLAINTEXT_AFTER_JOIN>`
+      - `<id, Alice, PLAINTEXT>`
     </dd>
 
     <dt>
@@ -52,8 +52,8 @@ Grant CCL 语法，请参阅 [Grant/Revoke CCL](../reference/scql_manual.mdx#scq
     </dt>
 
     <dd>
-      - <code>\<id, Alice, PLAINTEXT\_AFTER\_JOIN></code>
-      - <code>\<id, Bob, PLAINTEXT></code>
+      - `<id, Alice, PLAINTEXT_AFTER_JOIN>`
+      - `<id, Bob, PLAINTEXT>`
     </dd>
   </dl>
 </DefinitionList>
@@ -74,8 +74,8 @@ select t1.id from t1 join t2 on t1.id = t2.id;
     </dt>
 
     <dd>
-      - <code>\<id, Bob, PLAINTEXT\_AFTER\_COMPARE></code>
-      - <code>\<id, Alice, PLAINTEXT></code>
+      - `<id, Bob, PLAINTEXT_AFTER_COMPARE>`
+      - `<id, Alice, PLAINTEXT>`
     </dd>
 
     <dt>
@@ -83,8 +83,8 @@ select t1.id from t1 join t2 on t1.id = t2.id;
     </dt>
 
     <dd>
-      - <code>\<id, Alice, PLAINTEXT\_AFTER\_COMPARE></code>
-      - <code>\<id, Bob, PLAINTEXT></code>
+      - `<id, Alice, PLAINTEXT_AFTER_COMPARE>`
+      - `<id, Bob, PLAINTEXT>`
     </dd>
   </dl>
 </DefinitionList>
@@ -106,8 +106,8 @@ select id from t2 where t2.id in (select id from t1);
     </dt>
 
     <dd>
-      - <code>\<id, Bob, ENCRYPTED\_ONLY></code>
-      - <code>\<id, Alice, PLAINTEXT></code>
+      - `<id, Bob, ENCRYPTED_ONLY>`
+      - `<id, Alice, PLAINTEXT>`
     </dd>
 
     <dt>
@@ -115,8 +115,8 @@ select id from t2 where t2.id in (select id from t1);
     </dt>
 
     <dd>
-      - <code>\<id, Alice, PLAINTEXT\_AFTER\_COMPARE></code>
-      - <code>\<id, Bob, PLAINTEXT></code>
+      - `<id, Alice, PLAINTEXT_AFTER_COMPARE>`
+      - `<id, Bob, PLAINTEXT>`
     </dd>
   </dl>
 </DefinitionList>
@@ -141,10 +141,10 @@ select id from t1 where t1.id in (select id from t2);
     </dt>
 
     <dd>
-      - <code>\<id, Bob, PLAINTEXT\_AFTER\_JOIN></code>
-      - <code>\<\[id, age, income, credit\_rank], Alice, PLAINTEXT></code>
-      - <code>\<\[age, income], Bob, PLAINTEXT\_AFTER\_AGGREGATE></code>
-      - <code>\<credit\_rank, Bob, PLAINTEXT\_AFTER\_GROUP\_BY></code>
+      - `<id, Bob, PLAINTEXT_AFTER_JOIN>`
+      - `<[id, age, income, credit_rank], Alice, PLAINTEXT>`
+      - `<[age, income], Bob, PLAINTEXT_AFTER_AGGREGATE>`
+      - `<credit_rank, Bob, PLAINTEXT_AFTER_GROUP_BY>`
     </dd>
 
     <dt>
@@ -152,10 +152,10 @@ select id from t1 where t1.id in (select id from t2);
     </dt>
 
     <dd>
-      - <code>\<id, Alice, PLAINTEXT\_AFTER\_JOIN></code>
-      - <code>\<\[id, age, order\_amount, is\_active], Bob, PLAINTEXT></code>
-      - <code>\<\[age, order\_amount], Alice, PLAINTEXT\_AFTER\_AGGREGATE></code>
-      - <code>\<is\_active, Alice, PLAINTEXT\_AFTER\_GROUP\_BY></code>
+      - `<id, Alice, PLAINTEXT_AFTER_JOIN>`
+      - `<[id, age, order_amount, is_active], Bob, PLAINTEXT>`
+      - `<[age, order_amount], Alice, PLAINTEXT_AFTER_AGGREGATE>`
+      - `<is_active, Alice, PLAINTEXT_AFTER_GROUP_BY>`
     </dd>
   </dl>
 </DefinitionList>
@@ -168,7 +168,7 @@ select t1.credit_rank, t2.is_active, count(*), max(t2.age), min(t2.age), avg(t2.
 
 <strong>更严格的 CCL</strong>
 
-如果 Alice 不希望将 age/income 信息泄露给 Bob，那么 Alice 仅需将 group by key 的 CCL 约束设置为 <code>ENCRYPTED\_ONLY</code>。Bob 的 CCL 配置与先前配置保持一致，并按照如下设定修改 Alice 的 CCL 配置即可。
+如果 Alice 不希望将 age/income 信息泄露给 Bob，那么 Alice 仅需将 group by key 的 CCL 约束设置为 `ENCRYPTED_ONLY`。Bob 的 CCL 配置与先前配置保持一致，并按照如下设定修改 Alice 的 CCL 配置即可。
 
 <DefinitionList>
   <dl>
@@ -177,10 +177,10 @@ select t1.credit_rank, t2.is_active, count(*), max(t2.age), min(t2.age), avg(t2.
     </dt>
 
     <dd>
-      - <code>\<id, Bob, PLAINTEXT\_AFTER\_JOIN></code>
-      - <code>\<\[id, age, income, credit\_rank], Alice, PLAINTEXT></code>
-      - <code>\<\[age, income], Bob, ENCRYPTED\_ONLY></code>
-      - <code>\<credit\_rank, Bob, PLAINTEXT\_AFTER\_GROUP\_BY></code>
+      - `<id, Bob, PLAINTEXT_AFTER_JOIN>`
+      - `<[id, age, income, credit_rank], Alice, PLAINTEXT>`
+      - `<[age, income], Bob, ENCRYPTED_ONLY>`
+      - `<credit_rank, Bob, PLAINTEXT_AFTER_GROUP_BY>`
     </dd>
   </dl>
 </DefinitionList>
@@ -203,9 +203,9 @@ select t1.credit_rank, t2.is_active, count(*), max(t2.age), min(t2.age), avg(t2.
     </dt>
 
     <dd>
-      - <code>\<id, Bob, PLAINTEXT\_AFTER\_JOIN></code>
-      - <code>\<\[id, age, income], Alice, PLAINTEXT></code>
-      - <code>\<\[age, income], Bob, PLAINTEXT\_AFTER\_AGGREGATE></code>
+      - `<id, Bob, PLAINTEXT_AFTER_JOIN>`
+      - `<[id, age, income], Alice, PLAINTEXT>`
+      - `<[age, income], Bob, PLAINTEXT_AFTER_AGGREGATE>`
     </dd>
 
     <dt>
@@ -213,9 +213,9 @@ select t1.credit_rank, t2.is_active, count(*), max(t2.age), min(t2.age), avg(t2.
     </dt>
 
     <dd>
-      - <code>\<id, Alice, PLAINTEXT\_AFTER\_JOIN></code>
-      - <code>\<\[id, age, order\_amount], Bob, PLAINTEXT></code>
-      - <code>\<\[age, order\_amount], Alice, PLAINTEXT\_AFTER\_AGGREGATE></code>
+      - `<id, Alice, PLAINTEXT_AFTER_JOIN>`
+      - `<[id, age, order_amount], Bob, PLAINTEXT>`
+      - `<[age, order_amount], Alice, PLAINTEXT_AFTER_AGGREGATE>`
     </dd>
   </dl>
 </DefinitionList>
@@ -243,11 +243,11 @@ select count(*), max(t2.age), min(t2.age), avg(t2.order_amount), sum(t2.order_am
     </dt>
 
     <dd>
-      - <code>\<id, Bob, PLAINTEXT\_AFTER\_JOIN></code>
-      - <code>\<\[id, age, income, credit\_rank], Alice, PLAINTEXT></code>
-      - <code>\<age, Bob, PLAINTEXT\_AFTER\_COMPARE></code>
-      - <code>\<income, Bob, PLAINTEXT\_AFTER\_AGGREGATE></code>
-      - <code>\<credit\_rank, Bob, PLAINTEXT\_AFTER\_GROUP\_BY></code>
+      - `<id, Bob, PLAINTEXT_AFTER_JOIN>`
+      - `<[id, age, income, credit_rank], Alice, PLAINTEXT>`
+      - `<age, Bob, PLAINTEXT_AFTER_COMPARE>`
+      - `<income, Bob, PLAINTEXT_AFTER_AGGREGATE>`
+      - `<credit_rank, Bob, PLAINTEXT_AFTER_GROUP_BY>`
     </dd>
 
     <dt>
@@ -255,11 +255,11 @@ select count(*), max(t2.age), min(t2.age), avg(t2.order_amount), sum(t2.order_am
     </dt>
 
     <dd>
-      - <code>\<id, Alice, PLAINTEXT\_AFTER\_JOIN></code>
-      - <code>\<\[id, age, order\_amount, is\_active], Bob, PLAINTEXT></code>
-      - <code>\<age, Alice, PLAINTEXT\_AFTER\_COMPARE></code>
-      - <code>\<order\_amount, Alice, PLAINTEXT\_AFTER\_AGGREGATE></code>
-      - <code>\<is\_active, Alice, PLAINTEXT\_AFTER\_GROUP\_BY></code>
+      - `<id, Alice, PLAINTEXT_AFTER_JOIN>`
+      - `<[id, age, order_amount, is_active], Bob, PLAINTEXT>`
+      - `<age, Alice, PLAINTEXT_AFTER_COMPARE>`
+      - `<order_amount, Alice, PLAINTEXT_AFTER_AGGREGATE>`
+      - `<is_active, Alice, PLAINTEXT_AFTER_GROUP_BY>`
     </dd>
   </dl>
 </DefinitionList>
@@ -281,9 +281,9 @@ select count(*), sum(t2.order_amount) from t1 join t2 on t1.id = t2.id where t1.
     </dt>
 
     <dd>
-      - <code>\<id, Bob, PLAINTEXT\_AFTER\_JOIN></code>
-      - <code>\<\[id, income, join\_date], Alice, PLAINTEXT></code>
-      - <code>\<\[join\_date, income], Bob, PLAINTEXT\_AFTER\_COMPARE></code>
+      - `<id, Bob, PLAINTEXT_AFTER_JOIN>`
+      - `<[id, income, join_date], Alice, PLAINTEXT>`
+      - `<[join_date, income], Bob, PLAINTEXT_AFTER_COMPARE>`
     </dd>
 
     <dt>
@@ -291,10 +291,10 @@ select count(*), sum(t2.order_amount) from t1 join t2 on t1.id = t2.id where t1.
     </dt>
 
     <dd>
-      - <code>\<id, Alice, PLAINTEXT\_AFTER\_JOIN></code>
-      - <code>\<\[id, age, order\_amount, admin\_date, out\_date], Bob, PLAINTEXT></code>
-      - <code>\<\[age, admin\_date, out\_date], Alice, ENCRYPTED\_ONLY></code>
-      - <code>\<order\_amount, Alice, PLAINTEXT\_AFTER\_COMPARE></code>
+      - `<id, Alice, PLAINTEXT_AFTER_JOIN>`
+      - `<[id, age, order_amount, admin_date, out_date], Bob, PLAINTEXT>`
+      - `<[age, admin_date, out_date], Alice, ENCRYPTED_ONLY>`
+      - `<order_amount, Alice, PLAINTEXT_AFTER_COMPARE>`
     </dd>
   </dl>
 </DefinitionList>
@@ -317,8 +317,8 @@ select t2.id, t2.age, t2.age in (50, 60, 70) as r, (t1.join_date >= t2.admin_dat
     </dt>
 
     <dd>
-      - <code>\<\[id, age, income, credit\_rank], Alice, PLAINTEXT></code>
-      - <code>\<\[id, age, income, credit\_rank], Bob, PLAINTEXT></code>
+      - `<[id, age, income, credit_rank], Alice, PLAINTEXT>`
+      - `<[id, age, income, credit_rank], Bob, PLAINTEXT>`
     </dd>
 
     <dt>
@@ -326,8 +326,8 @@ select t2.id, t2.age, t2.age in (50, 60, 70) as r, (t1.join_date >= t2.admin_dat
     </dt>
 
     <dd>
-      - <code>\<\[id, age, order\_amount, is\_active], Alice, PLAINTEXT></code>
-      - <code>\<\[id, age, order\_amount, is\_active], Bob, PLAINTEXT></code>
+      - `<[id, age, order_amount, is_active], Alice, PLAINTEXT>`
+      - `<[id, age, order_amount, is_active], Bob, PLAINTEXT>`
     </dd>
   </dl>
 </DefinitionList>
@@ -347,7 +347,7 @@ select t1.credit_rank + t2.order_amount, t1.credit_rank * t1.income > t2.is_acti
 
 ### Encrypt CCL 场景
 
-如果您认为数据极度敏感，那么您应当将这些数据设置为 <code>ENCRYPTED\_ONLY</code>， 这样的设定下仅能执行聚合函数的 count 操作。
+如果您认为数据极度敏感，那么您应当将这些数据设置为 `ENCRYPTED_ONLY`， 这样的设定下仅能执行聚合函数的 count 操作。
 
 <DefinitionList>
   <dl>
@@ -356,8 +356,8 @@ select t1.credit_rank + t2.order_amount, t1.credit_rank * t1.income > t2.is_acti
     </dt>
 
     <dd>
-      - <code>\<\[id, age, income, credit\_rank], Alice, PLAINTEXT></code>
-      - <code>\<\[id, age, income, credit\_rank], Bob, ENCRYPTED\_ONLY></code>
+      - `<[id, age, income, credit_rank], Alice, PLAINTEXT>`
+      - `<[id, age, income, credit_rank], Bob, ENCRYPTED_ONLY>`
     </dd>
 
     <dt>
@@ -365,8 +365,8 @@ select t1.credit_rank + t2.order_amount, t1.credit_rank * t1.income > t2.is_acti
     </dt>
 
     <dd>
-      - <code>\<\[id, age, order\_amount, is\_active], Alice, ENCRYPTED\_ONLY></code>
-      - <code>\<\[id, age, order\_amount, is\_active], Bob, PLAINTEXT></code>
+      - `<[id, age, order_amount, is_active], Alice, ENCRYPTED_ONLY>`
+      - `<[id, age, order_amount, is_active], Bob, PLAINTEXT>`
     </dd>
   </dl>
 </DefinitionList>
