@@ -20,7 +20,7 @@
 
 ## 创建 InteropConfig
 
-下面以 <code>alice-2-bob.yaml</code> 的内容为例，介绍创建 InteropConfig。
+下面以 `alice-2-bob.yaml` 的内容为例，介绍创建 InteropConfig。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1
@@ -33,11 +33,11 @@ spec:
   - alice
 ```
 
-在该示例中，表示将任务调度方<code>bob</code>集群中<code>alice</code> Namespace 下任务相关的资源同步到任务参与方集群中的<code>alice</code> Namespace 下。
+在该示例中，表示将任务调度方`bob`集群中`alice` Namespace 下任务相关的资源同步到任务参与方集群中的`alice` Namespace 下。
 
-- <code>.metadata.name</code>：表示 InteropConfig 的名称，当前示例为<code>alice-2-bob</code>。
-- <code>.spec.host</code>：表示任务调度方的节点标识。当前示例为<code>bob</code>。
-- <code>.spec.members</code>：表示任务参与方的节点标识。当前示例仅包含一个参与方，节点标识为<code>alice</code>。
+- `.metadata.name`：表示 InteropConfig 的名称，当前示例为`alice-2-bob`。
+- `.spec.host`：表示任务调度方的节点标识。当前示例为`bob`。
+- `.spec.members`：表示任务参与方的节点标识。当前示例仅包含一个参与方，节点标识为`alice`。
 
 1. 在参与方集群中运行以下命令创建 InteropConfig。
 
@@ -51,7 +51,7 @@ kubectl apply -f alice-2-bob.yaml
 kubectl get interop alice-2-bob
 ```
 
-3. 查看创建的 InteropConfig <code>alice-2-bob</code> 详细信息。
+3. 查看创建的 InteropConfig `alice-2-bob` 详细信息。
 
 ```shell
 kubectl get interop alice-2-bob -o yaml
@@ -76,7 +76,7 @@ spec:
 
 ## 更新 InteropConfig
 
-下面以 <code>alice-2-bob.yaml</code> 的内容为例，介绍更新 InteropConfig。
+下面以 `alice-2-bob.yaml` 的内容为例，介绍更新 InteropConfig。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1
@@ -92,7 +92,7 @@ spec:
 
 在该示例中:
 
-- 在<code>.spec.members</code>中新增一个节点标识为<code>alice-mock</code>的参与方。相应地，任务参与方通过 InteropController 将任务调度方<code>bob</code>集群中<code>alice-mock</code> Namespace 下任务相关的资源同步到任务参与方集群中的<code>alice-mock</code> Namespace 下。
+- 在`.spec.members`中新增一个节点标识为`alice-mock`的参与方。相应地，任务参与方通过 InteropController 将任务调度方`bob`集群中`alice-mock` Namespace 下任务相关的资源同步到任务参与方集群中的`alice-mock` Namespace 下。
 
 1. 在参与方集群中运行以下命令更新 InteropConfig。
 
@@ -100,7 +100,7 @@ spec:
 kubectl apply -f alice-2-bob.yaml
 ```
 
-2. 查看更新的 InteropConfig <code>alice-2-bob</code> 详细信息。
+2. 查看更新的 InteropConfig `alice-2-bob` 详细信息。
 
 ```shell
 kubectl get interop alice-2-bob -o yaml | grep "members:" -A2
@@ -113,7 +113,7 @@ kubectl get interop alice-2-bob -o yaml | grep "members:" -A2
 
 ## 清理 InteropConfig
 
-下面以 InteropConfig <code>alice-2-bob</code> 为例，介绍清理 InteropConfig。
+下面以 InteropConfig `alice-2-bob` 为例，介绍清理 InteropConfig。
 
 1. 在参与方集群中运行以下命令清理 InteropConfig。
 
@@ -132,7 +132,7 @@ Error from server (NotFound): interopconfigs.kuscia.secretflow "alice-2-bob" not
 
 ## 参考
 
-下面以 <code>interop-template</code> 模版为例，介绍 InteropConfig 所包含的完整字段。
+下面以 `interop-template` 模版为例，介绍 InteropConfig 所包含的完整字段。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1
@@ -145,11 +145,11 @@ spec:
     - alice
 ```
 
-InteropConfig <code>metadata</code> 的子字段详细介绍如下：
+InteropConfig `metadata` 的子字段详细介绍如下：
 
-- <code>name</code>：表示 InteropConfig 的名称。
+- `name`：表示 InteropConfig 的名称。
 
-InteropConfig <code>spec</code> 的子字段详细介绍如下：
+InteropConfig `spec` 的子字段详细介绍如下：
 
-- <code>host</code>：表示任务调度方的节点标识。
-- <code>members\[]</code>：表示任务参与方的节点标识。当前示例仅包含一个参与方，节点标识为<code>alice</code>，相应地，任务参与方通过 InteropController 将任务调度方<code>bob</code>集群中<code>alice</code> Namespace 下任务相关的资源同步到任务参与方集群中的<code>alice</code> Namespace 下。
+- `host`：表示任务调度方的节点标识。
+- `members[]`：表示任务参与方的节点标识。当前示例仅包含一个参与方，节点标识为`alice`，相应地，任务参与方通过 InteropController 将任务调度方`bob`集群中`alice` Namespace 下任务相关的资源同步到任务参与方集群中的`alice` Namespace 下。

@@ -20,7 +20,7 @@
 
 ## 创建 Domain
 
-下面以 <code>alice-domain.yaml</code> 的内容为例，介绍创建 Domain。
+下面以 `alice-domain.yaml` 的内容为例，介绍创建 Domain。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1
@@ -36,12 +36,12 @@ spec:
 
 在该示例中:
 
-- <code>.metadata.name</code>：表示隐私计算节点 Domain 名称，当前示例为<code>alice</code>。相应地，Kuscia 控制器会创建名称和 Domain 同名的<code>alice</code> Namespace 资源。在 Kuscia 中，通过 Namespace 资源对不同机构用户进行资源隔离。
-- <code>.spec.role</code>：表示隐私计算节点 Domain 的角色，默认为<code>""</code>。支持两种取值：<code>partner</code>和<code>""</code>。
-  - <code>partner</code>：表示外部节点，用在点对点组网模式下的协作方节点。点对点组网模式下，需要在任务调度方的集群中创建协作方的 Domain，在创建该 Domain 时，需要将<code>role</code>的值设置为<code>partner</code>。
-  - <code>""</code>：表示内部节点。
-- <code>.spec.cert</code>：表示 BASE64 编码格式的隐私计算节点证书。
-- <code>.spec.resourceQuota.podMaxCount</code>：表示 Domain 所管理的隐私计算节点命名空间（Namespace）下所允许创建的最大 Pod 数量，当前示例为<code>100</code>。
+- `.metadata.name`：表示隐私计算节点 Domain 名称，当前示例为`alice`。相应地，Kuscia 控制器会创建名称和 Domain 同名的`alice` Namespace 资源。在 Kuscia 中，通过 Namespace 资源对不同机构用户进行资源隔离。
+- `.spec.role`：表示隐私计算节点 Domain 的角色，默认为`""`。支持两种取值：`partner`和`""`。
+  - `partner`：表示外部节点，用在点对点组网模式下的协作方节点。点对点组网模式下，需要在任务调度方的集群中创建协作方的 Domain，在创建该 Domain 时，需要将`role`的值设置为`partner`。
+  - `""`：表示内部节点。
+- `.spec.cert`：表示 BASE64 编码格式的隐私计算节点证书。
+- `.spec.resourceQuota.podMaxCount`：表示 Domain 所管理的隐私计算节点命名空间（Namespace）下所允许创建的最大 Pod 数量，当前示例为`100`。
 
 1. 运行以下命令创建 Domain。
 
@@ -73,7 +73,7 @@ resource-limitation   18s   pods: 0/100
 
 ## 更新 Domain
 
-下面以 <code>alice-domain.yaml</code> 的内容为例，介绍更新 Domain。
+下面以 `alice-domain.yaml` 的内容为例，介绍更新 Domain。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1
@@ -89,7 +89,7 @@ spec:
 
 在该示例中:
 
-- 将<code>.spec.resourceQuota.podMaxCount</code>的值调整为<code>200</code>。
+- 将`.spec.resourceQuota.podMaxCount`的值调整为`200`。
 
 1. 运行以下命令更新 Domain。
 
@@ -109,7 +109,7 @@ resource-limitation   4m    pods: 0/200
 
 ## 清理 Domain
 
-下面以 Domain <code>alice</code> 为例，介绍清理 Domain。
+下面以 Domain `alice` 为例，介绍清理 Domain。
 
 1. 运行以下命令清理 Domain。
 
@@ -148,7 +148,7 @@ alice   Active   20m   true
 
 ## 参考
 
-下面以 <code>domain-template</code> 模版为例，介绍 Domain 所包含的完整字段。
+下面以 `domain-template` 模版为例，介绍 Domain 所包含的完整字段。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1
@@ -171,28 +171,28 @@ status:
       version: e9a8013
 ```
 
-Domain <code>metadata</code> 的子字段详细介绍如下：
+Domain `metadata` 的子字段详细介绍如下：
 
-- <code>name</code>：表示隐私计算节点 Domain 的名称，当前示例为<code>domain-template</code>。相应地，Kuscia 控制器会创建名称和 Domain 同名的<code>domain-template</code> Namespace 资源。在 Kuscia 中，通过 Namespace 资源对不同机构用户进行资源隔离。
+- `name`：表示隐私计算节点 Domain 的名称，当前示例为`domain-template`。相应地，Kuscia 控制器会创建名称和 Domain 同名的`domain-template` Namespace 资源。在 Kuscia 中，通过 Namespace 资源对不同机构用户进行资源隔离。
 
-Domain <code>spec</code> 的子字段详细介绍如下：
+Domain `spec` 的子字段详细介绍如下：
 
-- <code>role</code>：表示隐私计算节点 Domain 的角色，默认为<code>""</code>。支持两种取值：<code>partner</code>和<code>""</code>。
-  - <code>partner</code>：表示外部节点，用在点对点组网模式下的协作方节点。 点对点组网模式下，需要在任务调度方的集群中创建协作方的 Domain，在创建该 Domain 时，需要将<code>role</code>的值设置为<code>partner</code>。
-  - <code>""</code>：表示内部节点。
-- <code>cert</code>：表示 BASE64 编码格式的隐私计算节点证书。用于节点之间 Token 协商或 TLS 认证。
-- <code>interConnProtocols</code>：表示外部隐私计算节点支持的互联互通作业协议类型，默认为<code>""</code>。支持两种取值：<code>kuscia</code>和<code>bfia</code>。当前该字段只支持配置一种协议，若配置多个协议，则会选择第一个协议作为互联互通作业的协议类型。未来会支持多种协议。
-  - <code>kuscia</code>：表示该外部节点参与隐私计算任务时，会使用互联互通蚂蚁<code>kuscia</code>协议运行隐私计算任务。
-  - <code>bfia</code>：表示该外部节点参与隐私计算任务时，会使用互联互通银联<code>bfia</code>协议运行隐私计算任务。
-- <code>resourceQuota.podMaxCount</code>：表示 Domain 所管理的隐私计算节点 Namespace 下所允许创建的最大 Pod 数量，当前示例为<code>100</code>。相应地，Kuscia 控制器会在<code>domain-template</code> Namespace 下创建名称为<code>resource-limitation</code>的 ResourceQuota 资源。
+- `role`：表示隐私计算节点 Domain 的角色，默认为`""`。支持两种取值：`partner`和`""`。
+  - `partner`：表示外部节点，用在点对点组网模式下的协作方节点。 点对点组网模式下，需要在任务调度方的集群中创建协作方的 Domain，在创建该 Domain 时，需要将`role`的值设置为`partner`。
+  - `""`：表示内部节点。
+- `cert`：表示 BASE64 编码格式的隐私计算节点证书。用于节点之间 Token 协商或 TLS 认证。
+- `interConnProtocols`：表示外部隐私计算节点支持的互联互通作业协议类型，默认为`""`。支持两种取值：`kuscia`和`bfia`。当前该字段只支持配置一种协议，若配置多个协议，则会选择第一个协议作为互联互通作业的协议类型。未来会支持多种协议。
+  - `kuscia`：表示该外部节点参与隐私计算任务时，会使用互联互通蚂蚁`kuscia`协议运行隐私计算任务。
+  - `bfia`：表示该外部节点参与隐私计算任务时，会使用互联互通银联`bfia`协议运行隐私计算任务。
+- `resourceQuota.podMaxCount`：表示 Domain 所管理的隐私计算节点 Namespace 下所允许创建的最大 Pod 数量，当前示例为`100`。相应地，Kuscia 控制器会在`domain-template` Namespace 下创建名称为`resource-limitation`的 ResourceQuota 资源。
 
-Domain <code>status</code> 的子字段详细介绍如下：
+Domain `status` 的子字段详细介绍如下：
 
-- <code>nodeStatuses</code>：表示隐私计算节点 Domain 下所有 Kuscia Agent 的状态信息。
-  - <code>nodeStatuses\[].lastHeartbeatTime</code>：表示 Kuscia Agent 最近一次上报心跳的时间。
-  - <code>nodeStatuses\[].lastTransitionTime</code>：表示 Kuscia Agent 最近一次发生更新的时间。
-  - <code>nodeStatuses\[].name</code>：表示 Kuscia Agent 的名称。
-  - <code>nodeStatuses\[].status</code>：表示 Kuscia Agent 的状态。支持两种取值<code>Ready</code>、<code>NotReady</code>。
-    - <code>Ready</code>：表示 Kusica Agent 状态正常。
-    - <code>NotReady</code>：表示 Kusica Agent 状态异常。
-  - <code>nodeStatuses\[].version</code>：表示 Kuscia Agent 的版本。
+- `nodeStatuses`：表示隐私计算节点 Domain 下所有 Kuscia Agent 的状态信息。
+  - `nodeStatuses[].lastHeartbeatTime`：表示 Kuscia Agent 最近一次上报心跳的时间。
+  - `nodeStatuses[].lastTransitionTime`：表示 Kuscia Agent 最近一次发生更新的时间。
+  - `nodeStatuses[].name`：表示 Kuscia Agent 的名称。
+  - `nodeStatuses[].status`：表示 Kuscia Agent 的状态。支持两种取值`Ready`、`NotReady`。
+    - `Ready`：表示 Kusica Agent 状态正常。
+    - `NotReady`：表示 Kusica Agent 状态异常。
+  - `nodeStatuses[].version`：表示 Kuscia Agent 的版本。

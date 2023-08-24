@@ -187,7 +187,7 @@ kubectl get kj
 kubectl get kt
 ```
 
-示例作业的相关文件位于容器的 <code>/home/kuscia/scripts/templates/fate</code> 目录下，描述了由 读数据、数据转换、隐私求交、LR、二分类评估 算子构成的一个 LR 流程的 Pipeline。<code>lr\_job.sh</code> 脚本完成了相应的 AppImage 与 KusciaJob 配置以及作业提交。
+示例作业的相关文件位于容器的 `/home/kuscia/scripts/templates/fate` 目录下，描述了由 读数据、数据转换、隐私求交、LR、二分类评估 算子构成的一个 LR 流程的 Pipeline。`lr_job.sh` 脚本完成了相应的 AppImage 与 KusciaJob 配置以及作业提交。
 
 ![FATE with Kuscia](../_assets/fate_pipeline.png)
 
@@ -197,9 +197,9 @@ kubectl get kt
 
 ## 配置 AppImage
 
-运行 FATE 作业的 AppImage 相对来说要简单很多。下述为示例作业的 AppImage yaml（位于容器 <code>/home/kuscia/scripts/templates/fate/fate\_job.yaml</code>）。
+运行 FATE 作业的 AppImage 相对来说要简单很多。下述为示例作业的 AppImage yaml（位于容器 `/home/kuscia/scripts/templates/fate/fate_job.yaml`）。
 
-如果想在已经部署好的 FATE 集群上发起作业，只需要将 yaml 中容器启动命令的 <code>\{\{.CLUSTER\_IP}}</code> 修改为 initiator 的 FATE 集群 IP 即可。
+如果想在已经部署好的 FATE 集群上发起作业，只需要将 yaml 中容器启动命令的 `{{.CLUSTER_IP}}` 修改为 initiator 的 FATE 集群 IP 即可。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1
@@ -240,18 +240,18 @@ spec:
 
 ## 配置 KusciaJob
 
-KusciaJob 描述了一个 Pipeline，其中一个 <strong>KusciaTask 对应一个 op 算子</strong>。当然你也可以让一个 KusciaTask 去执行整条 Pipeline，其取决于 <code>taskInputConfig</code> 中的定义。
+KusciaJob 描述了一个 Pipeline，其中一个 <strong>KusciaTask 对应一个 op 算子</strong>。当然你也可以让一个 KusciaTask 去执行整条 Pipeline，其取决于 `taskInputConfig` 中的定义。
 
-对于示例中的 Pipeline，其 KusciaJob yaml 位于容器 <code>/home/kuscia/scripts/templates/fate/fate\_job.yaml</code> 。如果需要查看可以进入发起任务的管控容器。
+对于示例中的 Pipeline，其 KusciaJob yaml 位于容器 `/home/kuscia/scripts/templates/fate/fate_job.yaml` 。如果需要查看可以进入发起任务的管控容器。
 
 在该 yaml 中需要注意：
 
-- <code>appImage</code> 需要指定为上述配置的 AppImage。
-- <code>parties</code> 只填写 initiator 一方的 Domain name 即可。
-- FATE 中相关的 dsl 与 conf 配置在每个 KusciaTask 的 <code>taskInputConfig</code> 字段中进行定义。
-- 每个 KusciaTask 的 <code>alias</code> 和 <code>taskID</code> 需要与 <code>taskInputConfig</code> 中 dsl 的 op name 保持一致！
+- `appImage` 需要指定为上述配置的 AppImage。
+- `parties` 只填写 initiator 一方的 Domain name 即可。
+- FATE 中相关的 dsl 与 conf 配置在每个 KusciaTask 的 `taskInputConfig` 字段中进行定义。
+- 每个 KusciaTask 的 `alias` 和 `taskID` 需要与 `taskInputConfig` 中 dsl 的 op name 保持一致！
 
-下述以 LR 算子为例，其 <code>taskInputConfig</code> 定义在 <code>/home/kuscia/scripts/templates/fate/task\_input\_config.hetero\_lr.json</code>。在 KusciaJob yaml 中其 <code>alias</code> 为 <code>\{\{.JOB\_NAME}}-hetero-lr</code>，依赖项为 <code>\{\{.JOB\_NAME}}-intersection</code>；而在 <code>taskInputConfig</code> 中其 component name 同样为 <code>\{\{.JOB\_NAME}}-hetero-lr</code>，依赖上游 <code>\{\{.JOB\_NAME}}-intersection</code> 的输入。
+下述以 LR 算子为例，其 `taskInputConfig` 定义在 `/home/kuscia/scripts/templates/fate/task_input_config.hetero_lr.json`。在 KusciaJob yaml 中其 `alias` 为 `{{.JOB_NAME}}-hetero-lr`，依赖项为 `{{.JOB_NAME}}-intersection`；而在 `taskInputConfig` 中其 component name 同样为 `{{.JOB_NAME}}-hetero-lr`，依赖上游 `{{.JOB_NAME}}-intersection` 的输入。
 
 ```json
 {

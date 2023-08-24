@@ -39,23 +39,23 @@ docker cp ${USER}-kuscia-autonomy-alice:/home/kuscia/scripts/tools/register_app_
 
 工具脚本支持的 Flag 参数含义如下：
 
-- <code>-h</code>：可选参数，查看工具脚本帮助信息
-- <code>-m</code>：必填参数，指定 Kuscia 的部署模式，支持<code>\[center, p2p]</code>。中心化组网模式为<code>center</code>和点对点组网模式为<code>p2p</code>
-- <code>-i</code>：必填参数，指定需要注册的自定义算法的 Docker 镜像，包含镜像名称和 TAG 信息。可以通过命令<code>docker images</code>查询。 镜像示例: <code>secretflow-registry.cn-hangzhou.cr.aliyuncs.com/secretflow/secretflow-lite-anolis8\:latest</code>
-- <code>-u</code>：可选参数，指定部署 Kuscia 的用户，默认为：<code>$\{USER}</code>。通过命令<code>echo $\{USER}</code>可查看当前用户
-- <code>-n</code>：可选参数，指定自定义算法镜像相关的 Kuscia AppImage 名称。若不指定，则工具脚本将根据算法镜像名称生成对应的 AppImage 名称。
+- `-h`：可选参数，查看工具脚本帮助信息
+- `-m`：必填参数，指定 Kuscia 的部署模式，支持`[center, p2p]`。中心化组网模式为`center`和点对点组网模式为`p2p`
+- `-i`：必填参数，指定需要注册的自定义算法的 Docker 镜像，包含镜像名称和 TAG 信息。可以通过命令`docker images`查询。 镜像示例: `secretflow-registry.cn-hangzhou.cr.aliyuncs.com/secretflow/secretflow-lite-anolis8:latest`
+- `-u`：可选参数，指定部署 Kuscia 的用户，默认为：`${USER}`。通过命令`echo ${USER}`可查看当前用户
+- `-n`：可选参数，指定自定义算法镜像相关的 Kuscia AppImage 名称。若不指定，则工具脚本将根据算法镜像名称生成对应的 AppImage 名称。
 
 :target{#appimage}
 
 ## 准备自定义算法镜像的 AppImage
 
-你可以在工具目录<code>register\_app\_image</code>下获取 Secretflow 算法镜像的 AppImage 模版<code>appimage.yaml</code>。若有需要，可参考 [AppImage](../reference/concepts/appimage_cn.mdx) 对模版进行修改。
+你可以在工具目录`register_app_image`下获取 Secretflow 算法镜像的 AppImage 模版`appimage.yaml`。若有需要，可参考 [AppImage](../reference/concepts/appimage_cn.mdx) 对模版进行修改。
 
 在该模版中，以下占位符不建议修改，这些占位符实际内容由工具脚本动态填充。
 
-- <code>\{\{APP\_IMAGE\_NAME}}</code>: 自定义算法镜像对应的 Kuscia AppImage 名称
-- <code>\{\{IMAGE\_NAME}}</code>: 自定义算法镜像名称
-- <code>\{\{IMAGE\_TAG}}</code>: 自定义算法镜像标签
+- `{{APP_IMAGE_NAME}}`: 自定义算法镜像对应的 Kuscia AppImage 名称
+- `{{IMAGE_NAME}}`: 自定义算法镜像名称
+- `{{IMAGE_TAG}}`: 自定义算法镜像标签
 
 :target{#id5}
 
@@ -77,7 +77,7 @@ docker cp ${USER}-kuscia-autonomy-alice:/home/kuscia/scripts/tools/register_app_
 => app_image_name: secretflow-image
 ```
 
-- 在自定义算法镜像注册完成后，可以获取算法镜像对应的 AppImage 资源名称: <code>app\_image\_name: secretflow-image</code>
+- 在自定义算法镜像注册完成后，可以获取算法镜像对应的 AppImage 资源名称: `app_image_name: secretflow-image`
 
 :target{#id7}
 
@@ -95,7 +95,7 @@ docker cp ${USER}-kuscia-autonomy-alice:/home/kuscia/scripts/tools/register_app_
 => app_image_name: secretflow-image
 ```
 
-- 在自定义算法镜像注册完成后，可以获取算法镜像对应的 AppImage 资源名称: <code>app\_image\_name: secretflow-image</code>
+- 在自定义算法镜像注册完成后，可以获取算法镜像对应的 AppImage 资源名称: `app_image_name: secretflow-image`
 
 :target{#id8}
 
@@ -103,9 +103,9 @@ docker cp ${USER}-kuscia-autonomy-alice:/home/kuscia/scripts/tools/register_app_
 
 通过前面步骤注册完自定义算法镜像后，你可以获取算法镜像对应的 AppImage 资源名称。后续使用自定义算法镜像运行任务时，只需修改相应的字段即可。
 
-下面以名称为<code>secretflow-image</code>的 AppImage 为例，使用自定义算法镜像运行 [KusciaJob](../reference/concepts/kusciajob_cn.mdx) 作业。
+下面以名称为`secretflow-image`的 AppImage 为例，使用自定义算法镜像运行 [KusciaJob](../reference/concepts/kusciajob_cn.mdx) 作业。
 
-- 修改 KusciaJob 下 <code>spec.tasks\[].appImage</code>字段的值。
+- 修改 KusciaJob 下 `spec.tasks[].appImage`字段的值。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1

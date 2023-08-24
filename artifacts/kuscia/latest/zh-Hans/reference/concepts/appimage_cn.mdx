@@ -19,7 +19,7 @@
 
 ## 创建 AppImage
 
-下面以 <code>secretflow-image.yaml</code> 的内容为例，介绍创建 AppImage。
+下面以 `secretflow-image.yaml` 的内容为例，介绍创建 AppImage。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1
@@ -72,27 +72,27 @@ spec:
 
 在该示例中:
 
-- <code>.metadata.name</code>：表示 AppImage 名称，当前示例为<code>secretflow-image</code>。
-- <code>.spec.configTemplates</code>：表示启动应用依赖的配置模版信息。
-- <code>.spec.deployTemplates</code>：表示应用部署模版配置信息，在该模版中，可以配置应用的启动命令，监听的端口等信息。该字段下主要包含以下子字段：
-  - <code>.spec.deployTemplates\[0].name</code>：表示应用部署模版名称，当前示例为<code>secretflow</code>。
-  - <code>.spec.deployTemplates\[0].replicas</code>：表示应用副本数，当前示例为<code>1</code>。相应地，在创建任务应用 Pod 资源时，会将应用 Pod 副本数设置为<code>1</code>。
-  - <code>.spec.deployTemplates\[0].spec.containers\[0]</code>：表示应用容器信息。该字段主要复用 K8s Pod containers 部分字段以及扩展了一些自定义字段。该字段下主要包含以下子字段：
-    - <code>.spec.deployTemplates\[0].spec.containers\[0].command</code>：表示应用容器启动命令。
-    - <code>.spec.deployTemplates\[0].spec.containers\[0].configVolumeMounts</code>：表示应用容器启动挂载卷信息。
-    - <code>.spec.deployTemplates\[0].spec.containers\[0].name</code>：表示应用容器名称。
-    - <code>.spec.deployTemplates\[0].spec.containers\[0].ports</code>：表示应用容器的启动端口。该字段下主要包含以下子字段：
-      - <code>.spec.deployTemplates\[0].spec.containers\[0].ports\[].name</code>：表示应用容器的端口名称。
-      - <code>.spec.deployTemplates\[0].spec.containers\[0].ports\[].port</code>：表示应用容器的端口号。
-      - <code>.spec.deployTemplates\[0].spec.containers\[0].ports\[].protocol</code>：表示应用容器的端口使用的协议类型。
-      - <code>.spec.deployTemplates\[0].spec.containers\[0].ports\[].scope</code>：表示应用端口使用范围。支持三种模式：<code>Cluster</code>、<code>Domain</code>、<code>Local</code>。
-    - <code>.spec.deployTemplates\[0].spec.containers\[0].workingDir</code>：表示应用容器的工作目录。
-  - <code>.spec.deployTemplates\[0].spec.restartPolicy</code>：表示应用的重启策略。对应于应用 Pod 的重启策略。
-- <code>.spec.image</code>：表示应用镜像的信息。
-  - <code>.spec.image.id</code>：表示应用镜像的 ID 信息。
-  - <code>.spec.image.name</code>：表示应用镜像的名称信息。
-  - <code>.spec.image.sign</code>：表示应用镜像的签名信息。Kuscia 会对应用镜像做签名校验，以保证镜像的合法性。
-  - <code>.spec.image.tag</code>：表示应用镜像的 Tag 信息。
+- `.metadata.name`：表示 AppImage 名称，当前示例为`secretflow-image`。
+- `.spec.configTemplates`：表示启动应用依赖的配置模版信息。
+- `.spec.deployTemplates`：表示应用部署模版配置信息，在该模版中，可以配置应用的启动命令，监听的端口等信息。该字段下主要包含以下子字段：
+  - `.spec.deployTemplates[0].name`：表示应用部署模版名称，当前示例为`secretflow`。
+  - `.spec.deployTemplates[0].replicas`：表示应用副本数，当前示例为`1`。相应地，在创建任务应用 Pod 资源时，会将应用 Pod 副本数设置为`1`。
+  - `.spec.deployTemplates[0].spec.containers[0]`：表示应用容器信息。该字段主要复用 K8s Pod containers 部分字段以及扩展了一些自定义字段。该字段下主要包含以下子字段：
+    - `.spec.deployTemplates[0].spec.containers[0].command`：表示应用容器启动命令。
+    - `.spec.deployTemplates[0].spec.containers[0].configVolumeMounts`：表示应用容器启动挂载卷信息。
+    - `.spec.deployTemplates[0].spec.containers[0].name`：表示应用容器名称。
+    - `.spec.deployTemplates[0].spec.containers[0].ports`：表示应用容器的启动端口。该字段下主要包含以下子字段：
+      - `.spec.deployTemplates[0].spec.containers[0].ports[].name`：表示应用容器的端口名称。
+      - `.spec.deployTemplates[0].spec.containers[0].ports[].port`：表示应用容器的端口号。
+      - `.spec.deployTemplates[0].spec.containers[0].ports[].protocol`：表示应用容器的端口使用的协议类型。
+      - `.spec.deployTemplates[0].spec.containers[0].ports[].scope`：表示应用端口使用范围。支持三种模式：`Cluster`、`Domain`、`Local`。
+    - `.spec.deployTemplates[0].spec.containers[0].workingDir`：表示应用容器的工作目录。
+  - `.spec.deployTemplates[0].spec.restartPolicy`：表示应用的重启策略。对应于应用 Pod 的重启策略。
+- `.spec.image`：表示应用镜像的信息。
+  - `.spec.image.id`：表示应用镜像的 ID 信息。
+  - `.spec.image.name`：表示应用镜像的名称信息。
+  - `.spec.image.sign`：表示应用镜像的签名信息。Kuscia 会对应用镜像做签名校验，以保证镜像的合法性。
+  - `.spec.image.tag`：表示应用镜像的 Tag 信息。
 
 1. 运行以下命令创建 AppImage。
 
@@ -116,7 +116,7 @@ kubectl get appimage secretflow-image -o yaml
 
 ## 更新 AppImage
 
-下面以 <code>secretflow-image.yaml</code> 的内容为例，介绍更新 AppImage。
+下面以 `secretflow-image.yaml` 的内容为例，介绍更新 AppImage。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1
@@ -167,7 +167,7 @@ spec:
     tag: "latest"
 ```
 
-在该示例中，将 ports 下 name 为<code>global</code>的 port 端口号改为<code>8082</code>。
+在该示例中，将 ports 下 name 为`global`的 port 端口号改为`8082`。
 
 1. 运行以下命令更新 AppImage。
 
@@ -189,7 +189,7 @@ kubectl get appimage secretflow-image -o  yaml | grep '\- name: global' -A 3
 
 ## 清理 AppImage
 
-下面以 AppImage <code>secretflow-image</code> 为例，介绍清理 AppImage。
+下面以 AppImage `secretflow-image` 为例，介绍清理 AppImage。
 
 1. 运行以下命令清理 AppImage。
 
@@ -208,7 +208,7 @@ Error from server (NotFound): appimages.kuscia.secretflow "secretflow-image" not
 
 ## 参考
 
-下面以 <code>app-template</code> 模版为例，介绍 AppImage 所包含的完整字段。
+下面以 `app-template` 模版为例，介绍 AppImage 所包含的完整字段。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1
@@ -347,50 +347,50 @@ spec:
     tag: v1.0.0
 ```
 
-AppImage <code>metadata</code> 的子字段详细介绍如下：
+AppImage `metadata` 的子字段详细介绍如下：
 
-- <code>name</code>：表示 AppImage 的名称，当前示例为<code>app-template</code>。
+- `name`：表示 AppImage 的名称，当前示例为`app-template`。
 
-AppImage <code>spec</code> 的子字段详细介绍如下：
+AppImage `spec` 的子字段详细介绍如下：
 
-- <code>configTemplates</code>：表示应用启动依赖的配置模版信息。在该字段下，应用可以自定义启动依赖的配置文件，当前示例包含的配置文件为<code>task-config.conf</code>。 在<code>task-config.conf</code>配置文件中，当前定义有4个字段，含义分别如下所示：
-  - <code>task\_id</code>：表示任务的 ID。当前内容为占位符<code>\{\{.TASK\_ID}}</code>。在 Kuscia Agent 启动应用时，会用真实的<code>task\_id</code>值替换占位符<code>\{\{.TASK\_ID}}</code>。
-  - <code>task\_input\_config</code>：表示任务的输入参数配置。当前内容为占位符<code>\{\{.TASK\_INPUT\_CONFIG}}</code>。在 Kuscia Agent 启动应用时，会用真实的<code>task\_input\_config</code>值替换占位符<code>\{\{.TASK\_INPUT\_CONFIG}}</code>。
-  - <code>task\_input\_cluster\_def</code>：表示任务所有参与方访问地址信息配置。当前内容为占位符<code>\{\{.TASK\_CLUSTER\_DEFINE}}</code>。在 Kuscia Agent 启动应用时，会用真实的<code>task\_input\_cluster\_def</code>值替换占位符<code>\{\{.TASK\_CLUSTER\_DEFINE}}</code>。
-  - <code>allocated\_ports</code>：表示任务应用启动分配的端口信息配置。当前内容为占位符<code>\{\{.ALLOCATED\_PORTS}}</code>。在 Kuscia Agent 启动应用时，会用真实的<code>allocated\_ports</code>值替换占位符<code>\{\{.ALLOCATED\_PORTS}}</code>。
-- <code>deployTemplates</code>：表示应用部署模版配置信息。Kuscia 控制器会根据该名称和角色，选择合适的 AppImage。若在 AppImage 没有查询到符合的部署模版，则将使用第一个部署模版。
-  - <code>deployTemplates\[].name</code>：表示应用部署模版名称。
-  - <code>deployTemplates\[].role</code>：表示应用作为该角色时，使用的部署模版配置。默认为空，取值范围示例: <code>client</code>、<code>server</code>、<code>client,server</code>。
-  - <code>deployTemplates\[].replicas</code>：表示应用运行的副本数，默认为<code>1</code>。
-  - <code>deployTemplates\[].networkPolicy</code>：表示应用的网络访问策略。该示例表示：当前角色为<code>server</code>的应用允许角色为<code>client</code>的应用访问名称为<code>global</code>的端口。
-    - <code>deployTemplates\[].networkPolicy.ingresses\[].from.roles</code>：表示允许访问当前应用的角色。该示例表示：当前角色为<code>server</code>的应用允许角色为<code>client</code>的应用访问。
-    - <code>deployTemplates\[].networkPolicy.ingresses\[].ports\[].port</code>：表示允许访问当前应用的端口。该示例表示：当前角色为<code>server</code>的应用允许所允许被访问的端口名称为<code>global</code>。
-    - <code>deployTemplates\[].spec.containers</code>：表示应用容器配置信息。该字段复用了 [K8s Pod containers](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container) 部分字段以及扩展了一些自定义字段。主要包含以下子字段：
-      - <code>deployTemplates\[].spec.containers\[].command</code>：表示应用的启动命令。
-      - <code>deployTemplates\[].spec.containers\[].args</code>：表示应用的启动参数。
-      - <code>deployTemplates\[].spec.containers\[].configVolumeMounts</code>：表示应用启动的挂载配置。当前仅支持挂载一个配置文件。当前示例中，将<code>.spec.configTemplates</code>中定义的配置文件<code>task-config.conf</code>挂载到容器中的位置为<code>/etc/kuscia/task-config.conf</code>。
-        - <code>deployTemplates\[].spec.containers\[].configVolumeMounts\[].mountPath</code>：表示文件挂载到容器中的路径。
-        - <code>deployTemplates\[].spec.containers\[].configVolumeMounts\[].subPath</code>：表示文件挂载到容器中的子路径。
-      - <code>deployTemplates\[].spec.containers\[].name</code>：表示应用容器的名称。
-      - <code>deployTemplates\[].spec.containers\[].ports</code>：表示应用容器的启动端口。
-        - <code>.spec.deployTemplates\[].spec.containers\[].ports\[].name</code>：表示应用容器的端口名称。
-        - <code>.spec.deployTemplates\[].spec.containers\[].ports\[].port</code>：表示应用容器的端口号。
-        - <code>.spec.deployTemplates\[].spec.containers\[].ports\[].protocol</code>：表示应用容器的端口使用的协议类型。支持两种类型：<code>HTTP</code>、<code>GRPC</code>。
-        - <code>.spec.deployTemplates\[].spec.containers\[].ports\[].scope</code>：表示应用端口使用范围。支持三种模式：<code>Cluster</code>、<code>Domain</code>、<code>Local</code>。Kuscia 会根据 scope 取值的不同，限制 port 的网络访问策略。具体含义如下所示：
-          - <code>Cluster</code>：表示该 port 用于节点外部和节点内部访问，Kuscia 会给该 port 创建相对应的 k8s service 资源。
-          - <code>Domain</code>：表示该 port 用于节点内部访问，Kuscia 会给该 port 创建相对应的 k8s service 资源。
-          - <code>Local</code>：表示该 port 用于 Pod 内部容器本地访问，Kuscia 不会给该 port 创建相对应的 k8s service 资源。
-      - <code>deployTemplates\[].spec.containers\[].envFrom</code>：表示使用<code>envFrom</code>为应用容器设置环境变量。
-      - <code>deployTemplates\[].spec.containers\[].env</code>：表示使用<code>env</code>为应用容器设置环境变量。
-      - <code>deployTemplates\[].spec.containers\[].resources</code>：表示应用容器申请的资源配置。
-      - <code>deployTemplates\[].spec.containers\[].readinessProbe</code>：表示应用容器的就绪探针配置。
-      - <code>deployTemplates\[].spec.containers\[].livenessProbe</code>：表示应用容器的存活探针配置。
-      - <code>deployTemplates\[].spec.containers\[].startupProbe</code>：表示应用容器的启动探针配置。
-      - <code>deployTemplates\[].spec.containers\[].imagePullPolicy</code>：表示应用容器的镜像拉取策略。
-      - <code>deployTemplates\[].spec.containers\[].workingDir</code>：表示应用容器的工作目录。
-      - <code>deployTemplates\[].spec.restartPolicy</code>：表示应用的重启策略。对应于应用 Pod 的重启策略。
-- <code>image</code>：表示应用镜像的信息。该字段包含以下子字段。
-  - <code>image.id</code>：表示应用镜像的 ID 信息。
-  - <code>image.name</code>：表示应用镜像的名称信息。
-  - <code>image.sign</code>：表示应用镜像的签名信息。Kuscia 会对应用镜像做签名校验，以保证镜像的合法性。
-  - <code>image.tag</code>：表示应用镜像的 Tag 信息。
+- `configTemplates`：表示应用启动依赖的配置模版信息。在该字段下，应用可以自定义启动依赖的配置文件，当前示例包含的配置文件为`task-config.conf`。 在`task-config.conf`配置文件中，当前定义有4个字段，含义分别如下所示：
+  - `task_id`：表示任务的 ID。当前内容为占位符`{{.TASK_ID}}`。在 Kuscia Agent 启动应用时，会用真实的`task_id`值替换占位符`{{.TASK_ID}}`。
+  - `task_input_config`：表示任务的输入参数配置。当前内容为占位符`{{.TASK_INPUT_CONFIG}}`。在 Kuscia Agent 启动应用时，会用真实的`task_input_config`值替换占位符`{{.TASK_INPUT_CONFIG}}`。
+  - `task_input_cluster_def`：表示任务所有参与方访问地址信息配置。当前内容为占位符`{{.TASK_CLUSTER_DEFINE}}`。在 Kuscia Agent 启动应用时，会用真实的`task_input_cluster_def`值替换占位符`{{.TASK_CLUSTER_DEFINE}}`。
+  - `allocated_ports`：表示任务应用启动分配的端口信息配置。当前内容为占位符`{{.ALLOCATED_PORTS}}`。在 Kuscia Agent 启动应用时，会用真实的`allocated_ports`值替换占位符`{{.ALLOCATED_PORTS}}`。
+- `deployTemplates`：表示应用部署模版配置信息。Kuscia 控制器会根据该名称和角色，选择合适的 AppImage。若在 AppImage 没有查询到符合的部署模版，则将使用第一个部署模版。
+  - `deployTemplates[].name`：表示应用部署模版名称。
+  - `deployTemplates[].role`：表示应用作为该角色时，使用的部署模版配置。默认为空，取值范围示例: `client`、`server`、`client,server`。
+  - `deployTemplates[].replicas`：表示应用运行的副本数，默认为`1`。
+  - `deployTemplates[].networkPolicy`：表示应用的网络访问策略。该示例表示：当前角色为`server`的应用允许角色为`client`的应用访问名称为`global`的端口。
+    - `deployTemplates[].networkPolicy.ingresses[].from.roles`：表示允许访问当前应用的角色。该示例表示：当前角色为`server`的应用允许角色为`client`的应用访问。
+    - `deployTemplates[].networkPolicy.ingresses[].ports[].port`：表示允许访问当前应用的端口。该示例表示：当前角色为`server`的应用允许所允许被访问的端口名称为`global`。
+    - `deployTemplates[].spec.containers`：表示应用容器配置信息。该字段复用了 [K8s Pod containers](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container) 部分字段以及扩展了一些自定义字段。主要包含以下子字段：
+      - `deployTemplates[].spec.containers[].command`：表示应用的启动命令。
+      - `deployTemplates[].spec.containers[].args`：表示应用的启动参数。
+      - `deployTemplates[].spec.containers[].configVolumeMounts`：表示应用启动的挂载配置。当前仅支持挂载一个配置文件。当前示例中，将`.spec.configTemplates`中定义的配置文件`task-config.conf`挂载到容器中的位置为`/etc/kuscia/task-config.conf`。
+        - `deployTemplates[].spec.containers[].configVolumeMounts[].mountPath`：表示文件挂载到容器中的路径。
+        - `deployTemplates[].spec.containers[].configVolumeMounts[].subPath`：表示文件挂载到容器中的子路径。
+      - `deployTemplates[].spec.containers[].name`：表示应用容器的名称。
+      - `deployTemplates[].spec.containers[].ports`：表示应用容器的启动端口。
+        - `.spec.deployTemplates[].spec.containers[].ports[].name`：表示应用容器的端口名称。
+        - `.spec.deployTemplates[].spec.containers[].ports[].port`：表示应用容器的端口号。
+        - `.spec.deployTemplates[].spec.containers[].ports[].protocol`：表示应用容器的端口使用的协议类型。支持两种类型：`HTTP`、`GRPC`。
+        - `.spec.deployTemplates[].spec.containers[].ports[].scope`：表示应用端口使用范围。支持三种模式：`Cluster`、`Domain`、`Local`。Kuscia 会根据 scope 取值的不同，限制 port 的网络访问策略。具体含义如下所示：
+          - `Cluster`：表示该 port 用于节点外部和节点内部访问，Kuscia 会给该 port 创建相对应的 k8s service 资源。
+          - `Domain`：表示该 port 用于节点内部访问，Kuscia 会给该 port 创建相对应的 k8s service 资源。
+          - `Local`：表示该 port 用于 Pod 内部容器本地访问，Kuscia 不会给该 port 创建相对应的 k8s service 资源。
+      - `deployTemplates[].spec.containers[].envFrom`：表示使用`envFrom`为应用容器设置环境变量。
+      - `deployTemplates[].spec.containers[].env`：表示使用`env`为应用容器设置环境变量。
+      - `deployTemplates[].spec.containers[].resources`：表示应用容器申请的资源配置。
+      - `deployTemplates[].spec.containers[].readinessProbe`：表示应用容器的就绪探针配置。
+      - `deployTemplates[].spec.containers[].livenessProbe`：表示应用容器的存活探针配置。
+      - `deployTemplates[].spec.containers[].startupProbe`：表示应用容器的启动探针配置。
+      - `deployTemplates[].spec.containers[].imagePullPolicy`：表示应用容器的镜像拉取策略。
+      - `deployTemplates[].spec.containers[].workingDir`：表示应用容器的工作目录。
+      - `deployTemplates[].spec.restartPolicy`：表示应用的重启策略。对应于应用 Pod 的重启策略。
+- `image`：表示应用镜像的信息。该字段包含以下子字段。
+  - `image.id`：表示应用镜像的 ID 信息。
+  - `image.name`：表示应用镜像的名称信息。
+  - `image.sign`：表示应用镜像的签名信息。Kuscia 会对应用镜像做签名校验，以保证镜像的合法性。
+  - `image.tag`：表示应用镜像的 Tag 信息。
