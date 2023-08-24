@@ -479,13 +479,13 @@ We recommend users to try some actions if you come across “strange” outputs:
 
 1. If <strong>huge error</strong> occurs(maybe even <strong>opposite sign</strong>):
    - It’s common that numerator is <strong>too large</strong>, which leads to overflow.
-   - Try <strong>Larger</strong> field(<code>FM128</code>) first. Larger field can accommodate larger number when fxp is fixed, so overflow can be avoided. But it will drag down the efficiency of <strong>nearly all op</strong> dramatically.
+   - Try <strong>Larger</strong> field(`FM128`) first. Larger field can accommodate larger number when fxp is fixed, so overflow can be avoided. But it will drag down the efficiency of <strong>nearly all op</strong> dramatically.
 
 2. Else, if the gap is not very significant, you can try to modify another two parameters:
 
-   1. Enlarging <code>fxp\_fraction\_bits</code>: it is an essential parameters for fixed-point arithmetic and will influence all the op associated with float-point. For fixed field, larger fxp can support more bits for fraction part which may give more precision. However, larger fxp will occupy the bits for integer part, and makes <strong>overflow</strong> easier.
-   2. Enlarging <code>fxp\_div\_goldschmidt\_iters</code>: the precision of Goldschmidt’s method depends on iter numbers. So if you eager to more precise output, you can enlarge this parameter. But it’s worthy to note that:
-   - Larger this parameter, larger the cost of <code>Div</code> and all op containing it(like <code>Log</code> and <code>Tanh</code>).
+   1. Enlarging `fxp_fraction_bits`: it is an essential parameters for fixed-point arithmetic and will influence all the op associated with float-point. For fixed field, larger fxp can support more bits for fraction part which may give more precision. However, larger fxp will occupy the bits for integer part, and makes <strong>overflow</strong> easier.
+   2. Enlarging `fxp_div_goldschmidt_iters`: the precision of Goldschmidt’s method depends on iter numbers. So if you eager to more precise output, you can enlarge this parameter. But it’s worthy to note that:
+   - Larger this parameter, larger the cost of `Div` and all op containing it(like `Log` and `Tanh`).
    - The final precision is also influenced by field, fxp and even method for truncation. We only recommend to adjust this when you really care about the <strong>high precision</strong>(low absolute error) and other methods not work.
 
 <Notebook.Cell>
@@ -513,7 +513,7 @@ We recommend users to try some actions if you come across “strange” outputs:
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-When numerator is very large(<InlineMath>$>2^{28}$</InlineMath> for <code>FM64</code> and <code>fxp=18</code>), then the integer part may overflow under large probability, and this brings huge error.
+When numerator is very large(<InlineMath>$>2^{28}$</InlineMath> for `FM64` and `fxp=18`), then the integer part may overflow under large probability, and this brings huge error.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
@@ -548,7 +548,7 @@ When numerator is very large(<InlineMath>$>2^{28}$</InlineMath> for <code>FM64</
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-In this situation, <strong>enlarging</strong> field to <code>FM128</code> may be the only remedy.
+In this situation, <strong>enlarging</strong> field to `FM128` may be the only remedy.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[20]:" stderr={false} type="input">
@@ -630,10 +630,10 @@ We first go through the algorithm quickly. let <InlineMath>$r_i$</InlineMath> de
 
 It’s easy to prove that:
 
-1. To compute <code>Div(a, b)</code>, if we need <InlineMath>$|\frac{a}{b} - r_i| \le 2^{-l}$</InlineMath>, then <InlineMath>$\lceil {log(\frac{l +log(a)}{\tau})} \rceil$</InlineMath> iterations should be done(we assume <InlineMath>$|\frac{1}{b} - r_0| \le 2^{-\tau}$</InlineMath>).In current implementation, we choose polynomial of degree 1 as the initial guess of reciprocal, which leads to <InlineMath>$\tau \approx 3.5$</InlineMath>.
-2. The relative error <InlineMath>$e_i = e_0^{2^i}$</InlineMath>(same as <code>Div(a,b)</code>).
+1. To compute `Div(a, b)`, if we need <InlineMath>$|\frac{a}{b} - r_i| \le 2^{-l}$</InlineMath>, then <InlineMath>$\lceil {log(\frac{l +log(a)}{\tau})} \rceil$</InlineMath> iterations should be done(we assume <InlineMath>$|\frac{1}{b} - r_0| \le 2^{-\tau}$</InlineMath>).In current implementation, we choose polynomial of degree 1 as the initial guess of reciprocal, which leads to <InlineMath>$\tau \approx 3.5$</InlineMath>.
+2. The relative error <InlineMath>$e_i = e_0^{2^i}$</InlineMath>(same as `Div(a,b)`).
 
-Although some other factors like fxp and truncation will also bring into some errors, the above error analysis can still give readers some recommendations when deciding <code>fxp\_div\_goldschmidt\_iters</code>.
+Although some other factors like fxp and truncation will also bring into some errors, the above error analysis can still give readers some recommendations when deciding `fxp_div_goldschmidt_iters`.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[24]:" stderr={false} type="input">

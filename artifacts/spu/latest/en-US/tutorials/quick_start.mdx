@@ -112,23 +112,23 @@ This command starts multi-processes to simulate parties that do not trust each o
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-<code>ppd.init</code> initialize the SPU device system on the given cluster.
+`ppd.init` initialize the SPU device system on the given cluster.
 
 The cluster has three nodes, each node is a process that listens on a given port.
 
 The 3 physical nodes construct 3 virtual devices.
 
-- <code>P1</code> and <code>P2</code> are so called <code>PYU Device</code>, which is just a simple Python device that can run a python program.
-- <code>SPU</code> is a virtual device hosted by all 3-nodes, which use MPC protocols to compute securely.
+- `P1` and `P2` are so called `PYU Device`, which is just a simple Python device that can run a python program.
+- `SPU` is a virtual device hosted by all 3-nodes, which use MPC protocols to compute securely.
 
 Virtually, it looks like below picture.
 
 ![alt text](../_assets/server_aided.svg)
 
-- On the left side, there are three physical nodes, a circle means the node runs a <code>PYU Device</code> and a triangle means the node runs a <code>SPU Device Slice</code>.
+- On the left side, there are three physical nodes, a circle means the node runs a `PYU Device` and a triangle means the node runs a `SPU Device Slice`.
 - On the right side, its virtual device layout is constructed by the left physical node.
 
-We can also check the detail of <code>SPU device</code>.
+We can also check the detail of `SPU device`.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
@@ -144,7 +144,7 @@ We can also check the detail of <code>SPU device</code>.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-The <code>SPU</code> device uses <code>ABY3</code> as the its backend protocol and runs on <code>Ring128</code> field.
+The `SPU` device uses `ABY3` as the its backend protocol and runs on `Ring128` field.
 
 :target{#Move-JAX-program-to-SPU}
 
@@ -167,16 +167,16 @@ Now, let’s move the JAX program from CPU to SPU.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-<code>ppd.device("P1")(make\_rand)</code> convert a python function to a <code>DeviceFunction</code> which will be called on <code>P1</code> device.
+`ppd.device("P1")(make_rand)` convert a python function to a `DeviceFunction` which will be called on `P1` device.
 
-The terminal that starts the cluster will print log like this, which means the <code>make\_rand</code> function is relocated to another node and executed there.
+The terminal that starts the cluster will print log like this, which means the `make_rand` function is relocated to another node and executed there.
 
 ```sh
 [2022-05-03 19:17:44,363] [Process-1] Run: make_rand from node:0
 [2022-05-03 19:17:44,373] [Process-2] Run: make_rand from node:1
 ```
 
-The result of <code>make\_rand</code> is also stored on <code>P1</code> and invisible for other device/node. For example, when printing them, all the above objects are <code>DeviceObject</code>, the plaintext object is invisible.
+The result of `make_rand` is also stored on `P1` and invisible for other device/node. For example, when printing them, all the above objects are `DeviceObject`, the plaintext object is invisible.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
@@ -192,7 +192,7 @@ The result of <code>make\_rand</code> is also stored on <code>P1</code> and invi
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-And finally, we can reveal the result via <code>ppd.get</code>, which will fetch the plaintext from devices to this host(notebook).
+And finally, we can reveal the result via `ppd.get`, which will fetch the plaintext from devices to this host(notebook).
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
@@ -208,7 +208,7 @@ And finally, we can reveal the result via <code>ppd.get</code>, which will fetch
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-The result shows that the random variable <code>x</code> from <code>P1</code> is greater than <code>y</code> from <code>P2</code>, we can check the result by revealing origin inputs.
+The result shows that the random variable `x` from `P1` is greater than `y` from `P2`, we can check the result by revealing origin inputs.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
@@ -228,7 +228,7 @@ The result shows that the random variable <code>x</code> from <code>P1</code> is
 
 With above code, we implements the classic [Yao’s millionares’ problem](https://en.wikipedia.org/wiki/Yao%27s_Millionaires%27_problem) on SPU. Note:
 
-- SPU re-uses <code>jax</code> api, and translates it to SPU executable, there is no <code>import spu.jax as jax</code> stuffs.
+- SPU re-uses `jax` api, and translates it to SPU executable, there is no `import spu.jax as jax` stuffs.
 - SPU hides secure semantic, to compute a function <em>securely</em>, just simply mark it on SPU.
 
 :target{#Logistic-regression}
@@ -314,7 +314,7 @@ Run the program on CPU, the result (AUC) works as expected.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Now, use <code>ppd.device</code> to make the above code run on SPU.
+Now, use `ppd.device` to make the above code run on SPU.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
@@ -331,7 +331,7 @@ Now, use <code>ppd.device</code> to make the above code run on SPU.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-<code>P1</code> loads the features(X) only, <code>P2</code> loads the labels(Y) only, and for convenience, P1/P2 uses the same dataset, but only loads partial (either feature or label). Now <code>P1 and P2</code> want to train the model without telling each other the privacy data, so they use SPU to run the <code>train</code> function.
+`P1` loads the features(X) only, `P2` loads the labels(Y) only, and for convenience, P1/P2 uses the same dataset, but only loads partial (either feature or label). Now `P1 and P2` want to train the model without telling each other the privacy data, so they use SPU to run the `train` function.
 
 It takes a little while to run the above program since privacy preserving program runs much slower than plaintext version.
 
@@ -392,7 +392,7 @@ SPU compiler/runtime pipeline works together to protect privacy information.
 
 When an object is transferred from PYU to SPU device, the data is first encrypted (secret shared) and then sent to SPU hosts.
 
-The SPU compiler deduces the visibility of the entire program, including all nodes in the compute DAG, from the input’s visibility with a very simple rule: for each SPU instruction, when any input is a secret, the output is a secret. In this way, the <code>secure semantic</code> is propagated through the entire DAG.
+The SPU compiler deduces the visibility of the entire program, including all nodes in the compute DAG, from the input’s visibility with a very simple rule: for each SPU instruction, when any input is a secret, the output is a secret. In this way, the `secure semantic` is propagated through the entire DAG.
 
 For example,
 
@@ -415,7 +415,7 @@ For example,
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-It shows that <code>ppd.device</code> decorated <code>sigmoid</code> is a <code>DeviceFunction</code> which could be launched by SPU.
+It shows that `ppd.device` decorated `sigmoid` is a `DeviceFunction` which could be launched by SPU.
 
 We can print the SPU bytecode via
 
@@ -439,11 +439,11 @@ It shows that the function type signature is:
 tensor<3x3x!pphlo.pub<f32>>) -> tensor<3x3x!pphlo.pub<f32>>
 ```
 
-Note, since the input is random from the driver (this notebook), which is not privacy information by default, so the input is <code>tensor\<3x3x!pphlo.pub\<f32>></code>, which means it accepts a <code>3x3 public f32 tensor</code>.
+Note, since the input is random from the driver (this notebook), which is not privacy information by default, so the input is `tensor<3x3x!pphlo.pub<f32>>`, which means it accepts a `3x3 public f32 tensor`.
 
-The compiler deduces the whole program’s visibility type, and finds output should be <code>tensor\<3x3x!pphlo.pub\<f32>></code>, which means a <code>3x3 public f32 tensor</code>.
+The compiler deduces the whole program’s visibility type, and finds output should be `tensor<3x3x!pphlo.pub<f32>>`, which means a `3x3 public f32 tensor`.
 
-Now let’s generate input from <code>P1</code> and run the program again.
+Now let’s generate input from `P1` and run the program again.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
@@ -461,12 +461,12 @@ Now let’s generate input from <code>P1</code> and run the program again.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Since the input comes from <code>P1</code>, which is private, so the function signature becomes:
+Since the input comes from `P1`, which is private, so the function signature becomes:
 
 ```none
 tensor<1x!pphlo.sec<i32>>) -> tensor<1x!pphlo.sec<f32>
 ```
 
-This means accepts <code>1 secret i32</code> data and outputs <code>1 secret f32</code> data, inside the compiled function, all internal instruction’s visibility type is also correctly deduced.
+This means accepts `1 secret i32` data and outputs `1 secret f32` data, inside the compiled function, all internal instruction’s visibility type is also correctly deduced.
 
 With the JIT(just in time) type deduction, SPU protects the clients’ privacy.

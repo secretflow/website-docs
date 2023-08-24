@@ -89,8 +89,8 @@ Now we can represent the polymorphic mul op as:
 mul :: type(V0, D0) -> type(V1, D1) -> type(narrow(V0, V1), promote(D0, D1))
 ```
 
-- the op takes two parameters, first type is <code>type(V0, D0)</code>, second type is <code>type(V1, D1)</code>.
-- the op returns <code>type(narrow(V0, V1), promote(D0, D1))</code> as a result.
+- the op takes two parameters, first type is `type(V0, D0)`, second type is `type(V1, D1)`.
+- the op returns `type(narrow(V0, V1), promote(D0, D1))` as a result.
 - when applying the op to two arbitrary arguments, the result could be deduced from the above type expressions.
 
 :target{#use-of-type}
@@ -253,4 +253,4 @@ Note:
 
 In the type dispatch step, type information is used to select next op, and when partial of type information is used, it’s <em>erased</em>. For example, when <cite>dtype</cite> is used to select <cite>fmul</cite> in the above example, dtype is useless in the future and could be erased, the lower level op does not distinguish dtype (via a generic type parameter). In a real implementation, we don’t erase the type explicitly, just leave it there without further use.
 
-The return value takes the <cite>reverse progress</cite> of dispatch. The return type is filled from bottom to up. For example, in the above progress, when <code>z=rmul(x,y)</code> is called, <cite>rmul</cite> knows <cite>z</cite>’s visibility type is <cite>SECRET</cite> but does not know its dtype yet, so here <cite>z</cite> has a partial type <cite>type(SECRET, \$UNKNOWN)</cite>. The type will be filled step by step during stack popup, and eventually be completed as a full type when the whole dispatch progress is done.
+The return value takes the <cite>reverse progress</cite> of dispatch. The return type is filled from bottom to up. For example, in the above progress, when `z=rmul(x,y)` is called, <cite>rmul</cite> knows <cite>z</cite>’s visibility type is <cite>SECRET</cite> but does not know its dtype yet, so here <cite>z</cite> has a partial type <cite>type(SECRET, \$UNKNOWN)</cite>. The type will be filled step by step during stack popup, and eventually be completed as a full type when the whole dispatch progress is done.
