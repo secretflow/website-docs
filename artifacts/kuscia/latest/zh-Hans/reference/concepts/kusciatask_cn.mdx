@@ -20,7 +20,7 @@
 
 ## 创建 KusciaTask
 
-下面以 <code>secretflow-task-psi.yaml</code> 的内容为例，介绍创建 KusciaTask。
+下面以 `secretflow-task-psi.yaml` 的内容为例，介绍创建 KusciaTask。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1
@@ -39,14 +39,14 @@ spec:
 
 在该示例中:
 
-- <code>.metadata.name</code>：表示 KusciaTask 的名称，当前示例为<code>secretflow-task-psi</code>。
-- <code>.spec.initiator</code>：表示任务参与方中负责发起任务的节点标识，当前示例为<code>alice</code>。
-- <code>.spec.parties</code>：表示所有任务参与方的信息。该字段下主要包含以下子字段：
-  - <code>.spec.parties\[0].domainID</code>：表示任务的一个参与方节点标识为<code>bob</code>。
-  - <code>.spec.parties\[0].appImageRef</code>：表示节点标识为<code>bob</code>的任务参与方所依赖的应用镜像 AppImage 名称为<code>secretflow-image</code>。
-  - <code>.spec.parties\[1].domainID</code>：表示任务的另一个参与方节点标识为<code>alice</code>。
-  - <code>.spec.parties\[1].appImageRef</code>：表示节点标识为<code>alice</code>的任务参与方所依赖的应用镜像 AppImage 名称为<code>secretflow-image</code>。
-- <code>.spec.taskInputConfig</code>：表示任务输入参数配置。
+- `.metadata.name`：表示 KusciaTask 的名称，当前示例为`secretflow-task-psi`。
+- `.spec.initiator`：表示任务参与方中负责发起任务的节点标识，当前示例为`alice`。
+- `.spec.parties`：表示所有任务参与方的信息。该字段下主要包含以下子字段：
+  - `.spec.parties[0].domainID`：表示任务的一个参与方节点标识为`bob`。
+  - `.spec.parties[0].appImageRef`：表示节点标识为`bob`的任务参与方所依赖的应用镜像 AppImage 名称为`secretflow-image`。
+  - `.spec.parties[1].domainID`：表示任务的另一个参与方节点标识为`alice`。
+  - `.spec.parties[1].appImageRef`：表示节点标识为`alice`的任务参与方所依赖的应用镜像 AppImage 名称为`secretflow-image`。
+- `.spec.taskInputConfig`：表示任务输入参数配置。
 
 1. 运行以下命令创建 KusciaTask。
 
@@ -58,7 +58,7 @@ kubectl apply -f secretflow-task-psi.yaml
 
 ## 查看 KusciaTask
 
-下面以 KusciaTask <code>secretflow-task-psi</code> 为例，介绍如何查看任务运行状态。
+下面以 KusciaTask `secretflow-task-psi` 为例，介绍如何查看任务运行状态。
 
 1. 运行以下命令查看 KusciaTask。
 
@@ -70,11 +70,11 @@ secretflow-task-psi   7s          7s               7s                  Succeeded
 
 上述命令输出内容，各个列字段的含义如下：
 
-- <code>NAME</code>：表示 KusciaTask 的名称，当前示例为<code>secretflow-task-psi</code>。
-- <code>STARTTIME</code>：表示 KusciaTask 从开始执行到现在经历的时间。
-- <code>COMPLETIONTIME</code>：表示 KusciaTask 从完成执行到现在经历的时间。
-- <code>LASTRECONCILETIME</code>：表示 KusciaTask 从上次被更新到现在经历的时间。
-- <code>PHASE</code>：表示 KusciaTask 当前所处的阶段。当前示例阶段为<code>Succeeded</code>。
+- `NAME`：表示 KusciaTask 的名称，当前示例为`secretflow-task-psi`。
+- `STARTTIME`：表示 KusciaTask 从开始执行到现在经历的时间。
+- `COMPLETIONTIME`：表示 KusciaTask 从完成执行到现在经历的时间。
+- `LASTRECONCILETIME`：表示 KusciaTask 从上次被更新到现在经历的时间。
+- `PHASE`：表示 KusciaTask 当前所处的阶段。当前示例阶段为`Succeeded`。
 
 2. 运行以下命令查看 KusciaTask 详细的状态信息。
 
@@ -179,7 +179,7 @@ kubectl get kt secretflow-task-psi -o jsonpath={.status} | jq
 
 ## 清理 KusciaTask
 
-下面以 KusciaTask <code>secretflow-task-psi</code> 为例，介绍如何清理 KusciaTask。
+下面以 KusciaTask `secretflow-task-psi` 为例，介绍如何清理 KusciaTask。
 
 1. 运行以下命令清理 KusciaTask。
 
@@ -198,7 +198,7 @@ Error from server (NotFound): kusciatasks.kuscia.secretflow "secretflow-task-psi
 
 ## 参考
 
-下面以 <code>task-template</code> 模版为例，介绍 KusciaTask 所包含的完整字段。
+下面以 `task-template` 模版为例，介绍 KusciaTask 所包含的完整字段。
 
 ```yaml
 apiVersion: kuscia.secretflow/v1alpha1
@@ -312,55 +312,55 @@ status:
   startTime: "2023-06-26T03:46:38Z"
 ```
 
-KusciaTask <code>metadata</code> 的子字段详细介绍如下：
+KusciaTask `metadata` 的子字段详细介绍如下：
 
-- <code>name</code>：表示 KusciaTask 的名称。
+- `name`：表示 KusciaTask 的名称。
 
-KusciaTask <code>spec</code> 的子字段详细介绍如下：
+KusciaTask `spec` 的子字段详细介绍如下：
 
-- <code>initiator</code>：表示任务参与方中负责发起任务的节点标识。
-- <code>scheduleConfig</code>：表示任务调度的相关配置。默认为空，表示使用默认值。
-  - <code>scheduleConfig.minReservedMembers</code>：表示任务调度成功时，需要最小的已预留成功的任务参与方个数。默认为空，表示所有任务参与方都需成功预留资源。
-  - <code>scheduleConfig.resourceReservedSeconds</code>：表示成功预留资源的任务参与方，在等待其他任务参与方成功预留资源期间，占用资源的时长，默认为30s。若占用资源超过该时长，则释放该资源，等待下一轮调度。
-  - <code>scheduleConfig.lifecycleSeconds</code>：表示任务调度的生命周期，默认为300s。若在规定的时间内，任务没有完成调度，则将任务置为失败。
-  - <code>scheduleConfig.retryIntervalSeconds</code>：表示任务在一个调度周期失败后，等待下次调度的时间间隔，默认为30s。
-- <code>taskInputConfig</code>：表示任务输入参数配置。
-- <code>parties</code>：表示所有任务参与方的信息。
-  - <code>parties\[].domainID</code>：表示任务参与方的节点标识。
-  - <code>parties\[].appImageRef</code>：表示任务参与方所依赖的应用镜像名称。
-  - <code>parties\[].role</code>：表示任务参与方的角色。
-  - <code>parties\[].minReservedPods</code>：表示任务参与方最小已预留资源的 Pod 数量，默认为空，表示任务参与方所有的 Pod 数量。Kuscia 调度器对每个任务参与方使用 Co-Scheduling 调度策略，
+- `initiator`：表示任务参与方中负责发起任务的节点标识。
+- `scheduleConfig`：表示任务调度的相关配置。默认为空，表示使用默认值。
+  - `scheduleConfig.minReservedMembers`：表示任务调度成功时，需要最小的已预留成功的任务参与方个数。默认为空，表示所有任务参与方都需成功预留资源。
+  - `scheduleConfig.resourceReservedSeconds`：表示成功预留资源的任务参与方，在等待其他任务参与方成功预留资源期间，占用资源的时长，默认为30s。若占用资源超过该时长，则释放该资源，等待下一轮调度。
+  - `scheduleConfig.lifecycleSeconds`：表示任务调度的生命周期，默认为300s。若在规定的时间内，任务没有完成调度，则将任务置为失败。
+  - `scheduleConfig.retryIntervalSeconds`：表示任务在一个调度周期失败后，等待下次调度的时间间隔，默认为30s。
+- `taskInputConfig`：表示任务输入参数配置。
+- `parties`：表示所有任务参与方的信息。
+  - `parties[].domainID`：表示任务参与方的节点标识。
+  - `parties[].appImageRef`：表示任务参与方所依赖的应用镜像名称。
+  - `parties[].role`：表示任务参与方的角色。
+  - `parties[].minReservedPods`：表示任务参与方最小已预留资源的 Pod 数量，默认为空，表示任务参与方所有的 Pod 数量。Kuscia 调度器对每个任务参与方使用 Co-Scheduling 调度策略，
     仅当任务参与方下已预留资源的 Pod 数量大于等于该值时，设置该参与方为已完成预留资源。
-  - <code>parties\[].template</code>：表示任务参与方应用的模版信息。若配置该模版，则使用模版中配置的信息替换从<code>parties\[].appImageRef</code>获取的模版信息。该字段下所包含的子字段含义，请参考概念 [AppImage](appimage_cn.mdx)。
+  - `parties[].template`：表示任务参与方应用的模版信息。若配置该模版，则使用模版中配置的信息替换从`parties[].appImageRef`获取的模版信息。该字段下所包含的子字段含义，请参考概念 [AppImage](appimage_cn.mdx)。
 
-KusciaTask <code>status</code> 的子字段详细介绍如下：
+KusciaTask `status` 的子字段详细介绍如下：
 
-- <code>phase</code>：表示 KusciaTask 当前所处的阶段。当前包括以下几种 PHASE：
-  - <code>Pending</code>：表示 KusciaTask 被创建，然后 KusciaTask Controller 会根据 KusciaTask 的描述信息，创建跟 KusciaTask 相关的任务资源，例如：Configmap、Service、Pod 等。
-  - <code>Running</code>：表示 KusciaTask 正处于运行状态。
-  - <code>Succeeded</code>：表示 KusciaTask 运行成功。
-  - <code>Failed</code>：表示 KusciaTask 运行失败。
-- <code>partyTaskStatus</code>：表示参与方的任务运行状态。
-  - <code>partyTaskStatus\[].domainID</code>：表示参与方的节点标识。
-  - <code>partyTaskStatus\[].role</code>：表示参与方的角色。
-  - <code>partyTaskStatus\[].phase</code>：表示所属参与方的单方任务当前所处阶段。
-  - <code>partyTaskStatus\[].message</code>：表示所属参与方的单方任务运行失败时的详细信息。
-- <code>reason</code>: 表示为什么 KusciaTask 处于该阶段。
-- <code>message</code>: 表示 KusciaTask 处于该阶段的详细描述信息，用于对<code>reason</code>的补充。
-- <code>conditions</code>: 表示 KusciaTask 处于该阶段时所包含的一些状况。
-  - <code>conditions\[].type</code>: 表示状况的名称。
-  - <code>conditions\[].status</code>: 表示该状况是否适用，可能的取值有<code>True</code>、<code>False</code>或<code>Unknown</code>。
-  - <code>conditions\[].reason</code>: 表示该状况的原因。
-  - <code>conditions\[].message</code>: 表示该状况的详细信息。
-  - <code>conditions\[].lastTransitionTime</code>: 表示转换为该状态的时间戳。
-- <code>podStatuses</code>: 表示 KusciaTask 相关的所有参与方的 Pod 状态信息。
-  - <code>podStatuses\[].podName</code>: 表示 Pod 的名称。
-  - <code>podStatuses\[].namespace</code>: 表示 Pod 的所在的 Namespace。
-  - <code>podStatuses\[].nodeName</code>: 表示 Pod 的所在的 Node 名称。
-  - <code>podStatuses\[].podPhase</code>: 表示 Pod 的所处阶段。
-  - <code>podStatuses\[].reason</code>: 表示 Pod 处在该阶段的原因。
-  - <code>podStatuses\[].message</code>: 表示 Pod 处在该阶段的详细描述信息。
-  - <code>podStatuses\[].terminationLog</code>: 表示 Pod 异常终止时的日志信息。
-- <code>startTime</code>: 表示 KusciaTask 第一次被 Kuscia 控制器处理的时间戳。
-- <code>completionTime</code>: 表示 KusciaTask 运行完成的时间戳。
-- <code>lastReconcileTime</code>: 表示 KusciaTask 上次更新的时间戳。
+- `phase`：表示 KusciaTask 当前所处的阶段。当前包括以下几种 PHASE：
+  - `Pending`：表示 KusciaTask 被创建，然后 KusciaTask Controller 会根据 KusciaTask 的描述信息，创建跟 KusciaTask 相关的任务资源，例如：Configmap、Service、Pod 等。
+  - `Running`：表示 KusciaTask 正处于运行状态。
+  - `Succeeded`：表示 KusciaTask 运行成功。
+  - `Failed`：表示 KusciaTask 运行失败。
+- `partyTaskStatus`：表示参与方的任务运行状态。
+  - `partyTaskStatus[].domainID`：表示参与方的节点标识。
+  - `partyTaskStatus[].role`：表示参与方的角色。
+  - `partyTaskStatus[].phase`：表示所属参与方的单方任务当前所处阶段。
+  - `partyTaskStatus[].message`：表示所属参与方的单方任务运行失败时的详细信息。
+- `reason`: 表示为什么 KusciaTask 处于该阶段。
+- `message`: 表示 KusciaTask 处于该阶段的详细描述信息，用于对`reason`的补充。
+- `conditions`: 表示 KusciaTask 处于该阶段时所包含的一些状况。
+  - `conditions[].type`: 表示状况的名称。
+  - `conditions[].status`: 表示该状况是否适用，可能的取值有`True`、`False`或`Unknown`。
+  - `conditions[].reason`: 表示该状况的原因。
+  - `conditions[].message`: 表示该状况的详细信息。
+  - `conditions[].lastTransitionTime`: 表示转换为该状态的时间戳。
+- `podStatuses`: 表示 KusciaTask 相关的所有参与方的 Pod 状态信息。
+  - `podStatuses[].podName`: 表示 Pod 的名称。
+  - `podStatuses[].namespace`: 表示 Pod 的所在的 Namespace。
+  - `podStatuses[].nodeName`: 表示 Pod 的所在的 Node 名称。
+  - `podStatuses[].podPhase`: 表示 Pod 的所处阶段。
+  - `podStatuses[].reason`: 表示 Pod 处在该阶段的原因。
+  - `podStatuses[].message`: 表示 Pod 处在该阶段的详细描述信息。
+  - `podStatuses[].terminationLog`: 表示 Pod 异常终止时的日志信息。
+- `startTime`: 表示 KusciaTask 第一次被 Kuscia 控制器处理的时间戳。
+- `completionTime`: 表示 KusciaTask 运行完成的时间戳。
+- `lastReconcileTime`: 表示 KusciaTask 上次更新的时间戳。
