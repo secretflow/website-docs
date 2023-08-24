@@ -415,7 +415,7 @@ The F in FPaillier denotes a floating point number <InlineMath>$\\mathbb{F}$</In
   The algorithm principle of FPaillier is similar to the [Python-Paillier](https://github.com/data61/pythonpaillier) library.
 </Container>
 
-The principle of FPaillier supporting floating point numbers is to represent the input data in the form of int\_rep: <code>scalar = int\_rep \* (BASE \*\* exponent)</code>
+The principle of FPaillier supporting floating point numbers is to represent the input data in the form of int\_rep: `scalar = int_rep * (BASE ** exponent)`
 
 <figure id="id27">
   <figcaption>
@@ -439,7 +439,7 @@ When scalar is encrypted, only the value of int\_rep is encrypted, and exponent 
 
 <strong>Homomorphic Operation</strong>
 
-First align the exponents, reduce the exponent of the number with the larger exponent to the smaller exponent (new\_exp), that is, <code>int\_rep =  int\_rep \* (base\*\*(exponent-new\_exp))</code>, then perform the homomorphic operation.
+First align the exponents, reduce the exponent of the number with the larger exponent to the smaller exponent (new\_exp), that is, `int_rep =  int_rep * (base**(exponent-new_exp))`, then perform the homomorphic operation.
 
 <Container type="tip">
   The floating-point operation interface of FPaillier is not exposed at the Python level. The interface provided by FPaillier at the Python end is consistent with ZPaillier. To use the FPaillier floating-point functionality, you must call it through the C++ interface. For more details, please refer to [FPaillier Unit Test](https://github.com/secretflow/heu/blob/main/heu/library/algorithms/paillier_float/paillier_test.cc).
