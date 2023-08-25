@@ -59,6 +59,7 @@ language = "en"
 locale_dirs = ["./locales/"]  # path is example but recommended.
 gettext_compact = False  # optional.
 gettext_uuid = False  # optional.
+gettext_allow_fuzzy_translations = True
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -146,7 +147,7 @@ myst_enable_extensions = [
 
 suppress_warnings = ["myst.header"]
 
-myst_heading_anchors = 3
+myst_heading_anchors = 6
 myst_title_to_header = True
 
 
