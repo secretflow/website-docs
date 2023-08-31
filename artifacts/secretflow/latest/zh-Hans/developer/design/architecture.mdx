@@ -14,7 +14,7 @@
 
 1. 没有一种隐私计算技术可以适用于所有的场景
 2. 隐私计算学习曲线很高，其他背景用户使用困难
-3. 隐私计算涉及领域众多，需要领域专家共同协作
+3. Privacy-preserving computing involves many fields and requires the cooperation of different domain experts.
 
 隐语的设计目标是使得数据科学家和机器学习开发者可以非常容易地使用隐私计算技术进行数据分析和机器学习建模，而无需了解底层技术细节。为了达到这个目标，隐语提供了一层设备抽象，将多方安全计算(MPC)、同态加密(HE)和可信执行环境(TEE)等隐私计算技术抽象为密文设备，将单方计算抽象为明文设备。基于这层抽象，数据分析和机器学习工作流可以表示为一张计算图，其中节点表示某个设备上的计算，边表示设备之间的数据流动，不同类型设备之间的数据流动需要进行协议转换。在这一点上，隐语借鉴了主流的深度学习框架，后者将神经网络表示为一张由设备上的算子和设备间的张量流动构成的计算图。
 
@@ -410,7 +410,7 @@ z = x @ y  # matmul
 
 Ray是适用于局域网环境的分布式系统，要将其应用于隐私计算场景，需要做许多安全加固和环境适配工作。我们与蚂蚁计算智能Ray内核团队展开深入合作，打造一个安全可靠的、适合隐私计算的Ray框架。
 
-在安全加固方面，我们通过身份认证、代码预装、代码存证等手段对框架做了整体加固。未来，我们还将探索沙箱隔离、访问控制、静态图等机制以进一步加强Ray的安全水位。在环境适配方面，为了适配跨机构网络通信的特点，我们推进了GCS gRPC通信、域名支持、弱网断线处理等相关功能的开发。同时，我们也在探索Ray生态，如Mars, Ray Datasets, Ray Train等在隐私计算场景的使用。
+In terms of security reinforcement, we have reinforced the framework as a whole by means of identity authentication, code pre-installation, and code storage. In the future, we will also explore mechanisms such as sandbox isolation, access control, and static graphs to further strengthen Ray’s security level. In terms of environment adaptation, in order to adapt to the characteristics of cross-organization network communication, we have promoted the development of related functions such as GCS gRPC communication, domain name support, and weak network disconnection handling. At the same time, we are also exploring the use of Ray ecosystem, such as Mars, Ray Datasets, Ray Train, etc., in privacy-preserving computing scenarios.
 
 :target{#privacy-preserving-algorithm}
 

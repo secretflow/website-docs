@@ -104,8 +104,8 @@ Let’s first load a sample dataset.
 
 Sometimes we may need the iv values. Releasing bin ivs will potentially leak label information according to issue [https://github.com/secretflow/secretflow/issues/565](https://github.com/secretflow/secretflow/issues/565). Currently, we choose to save bin iv values in label holders device. It is up to label holder’s choice to
 
-1. share no iv information
-2. share some chosen iv information
+1. 将一些iv信息分享给其他方
+2. 将一些iv信息分享给其他方
 
 我们将演示如何共享特征iv。
 

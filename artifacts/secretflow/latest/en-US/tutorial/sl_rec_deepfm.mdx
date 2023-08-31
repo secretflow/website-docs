@@ -1,8 +1,8 @@
-:target{#SplitREC：在SecretFlow中使用DeepFM算法}
+:target{#SplitREC:-Using-DeepFM-Algorithm-in-SecretFlow}
 
-# SplitREC：在SecretFlow中使用DeepFM算法
+# SplitREC: Using DeepFM Algorithm in SecretFlow
 
-> 以下代码仅作为示例，请勿在生产环境直接使用。
+> The following codes are demos only. It’s NOT for production due to system security concerns, please DO NOT use it directly in production.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
@@ -13,33 +13,26 @@
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-<LineBlock>
-  隐语在垂直场景提供了SLModel来满足用户的垂直联邦需求，垂直场景中，各方通过特征互补，联合训练来达到训练出更好模型的目的。而在实际的应用场景中，推荐场景和垂直联邦方案非常契合。有很大的应用前景。
+SecretFlow framework provides SLModel to meet user’s needs for Vertical Federated Learning. In the vertical scenario, all parties achieve the purpose of training a better model through complementary features and joint training. In actual application scenarios, the recommendation scenario fits well with the vertical federation solution. It has great application prospects. Different data holders have different features and are unwilling to share with each other, but the features are complementary,
+such as consumer features, financial features and user portraits, etc. However, recommendation algorithms are often not so directly applicable to split learning. For example, the FM algorithm requires feature crossover. Therefore, we provide a special item in SecretFlow, by encapsulating commonly used recommendation algorithms, to facilitate users to use federated learning for recommendation applications. This article will introduce how to use the DeepFM algorithm in SecretFlow.
 
-  不同的数据持有方拥有不同的特征，彼此不愿意分享，但是特征之间是互补的，比如消费特征、金融特征和用户画像等。但是推荐算法往往并不是那么直接可以被应用到拆分学习中，比如FM算法需要特征交叉。
+:target{#Introduction-to-the-principle-of-DeepFM-splitting}
 
-  因此我们在隐语中提供了一个专项，通过对常用的推荐算法进行封装，来达到方便用户使用联邦学习进行推荐应用的目的。
+## Introduction to the principle of DeepFM splitting
 
-  本文将会介绍下如何在隐语中使用DeepFM算法
-</LineBlock>
-
-:target{#DeepFM拆分原理介绍}
-
-## DeepFM拆分原理介绍
-
-DeepFM算法结合了FM和神经网络的长处，可以同时提升低维和高维特征，相比Wide\&Deep模型还免去了特征工程的部分。
+The DeepFM algorithm combines the strengths of FM and neural networks, can improve low-dimensional and high-dimensional features at the same time. Compared with the Wide\&Deep model, DeepFM algorithm also eliminates the feature engineering part.
 
 ![deepfm\_algo](../_assets/deepfm_algo.png)
 
-整体上来看。这个模型可以分成两个部分，分别是FM部分以及Deep部分。这两个部分的输入是一样的，并没有像Wide & Deep模型那样做区分。 Deep的部分用来训练这些特征的高维的关联，而FM模型会通过隐藏向量V的形式来计算特征之间的二维交叉的信息。
+From the overall structure, This model can be divided into two parts, namely the FM part and the Deep part. The input of these two parts is the same, and there is no distinction like the Wide & Deep model. The Deep part is used to train the high-dimensional correlations of these features, while the FM model calculates the two-dimensional cross information between features through the hidden vector v.
 
 :target{#DeepFM-On-SecretFlow}
 
 ## DeepFM On SecretFlow
 
-拆分方案
+Split Scheme
 
-DeepFM公式推导
+DeepFM formula derivation
 
 <Math>
   $$
@@ -57,7 +50,7 @@ DeepFM公式推导
   $$
 </Math>
 
-进行数学化简
+Mathematical simplification
 
 <Math>
   $$
@@ -65,40 +58,34 @@ DeepFM公式推导
   \sum_{i=1}^n\sum_{j=i+1}^nv_i^Tv_jx_ix_j &= \frac12\sum_{i=1}^n\sum_{j=1}^nv_i^Tv_jx_ix_j -
   \frac12\sum_{i=1}^nv_i^Tv_jx_ix_j  \\
   &= \frac12(\sum_{i=1}^n\sum_{j=1}^n\sum_{k=1}^nv_{i,f}v_{j,f}x_ix_j - \sum_{i=1}^n\sum_{f=1}^nv_{i,f}v_{j,f}x_ix_i) \\
-  &= \frac12\sum_{f=1}^k((\sum_{i=1}^nv_{i,f}x_i)(\sum_{j=1}^nv_{j,f}x_j) - (\sum_{i=1}^nv_{i,f}^2x_i^2))
+  &= \frac12\sum_{f=1}^k[(\sum_{i=1}^nv_{i,f}x_i)(\sum_{j=1}^nv_{j,f}x_j) - (\sum_{i=1}^nv_{i,f}^2x_i^2)]
   \\
-  &= \frac12\sum_{f=1}^k((\sum_{i=1}^nv_{i,f}x_i)^2 - \sum_{i=1}^nv_{i,f}^2x_i^2) \\
+  &= \frac12\sum_{f=1}^k[(\sum_{i=1}^nv_{i,f}x_i)^2 - \sum_{i=1}^nv_{i,f}^2x_i^2] \\
   \end{align}
   $$
 </Math>
 
-<LineBlock>
-  最终得到公式
+end up with the formula
 
-  <br />
-</LineBlock>
+<Math>
+  $$
+  \hat{y} = w_0 + \sum_{i=1}^nw_ix_i + \frac12[\sum{f_1}^k(\sum_{i=1}^nv_{i,f}x_i)^2-\sum_{i=1}^nv_{i,f}^2x_i^2]
+  $$
+</Math>
 
-> <Math>
->   $$
->   \hat{y} = w_0 + \sum_{i=1}^nw_ix_i + \frac12\sum{f_1}^k(\sum_{i=1}^nv_{i,f}x_i)^2-\sum_{i=1}^nv_{i,f}^2x_i^2)
->   $$
-> </Math>
+:target{#DeepFM-split-version}
 
-:target{#DeepFM拆分版本}
+## DeepFM split version
 
-## DeepFM拆分版本
+It can be seen from the derivation of the above formula that <InlineMath>$V_j$</InlineMath> is eliminated in the calculation of FM
 
-<LineBlock>
-  从上面的公式推导可以看出，FM的计算中消去了<InlineMath>$V_j$</InlineMath>
-</LineBlock>
+<Math>
+  $$
+  \hat{y} = w_0 + \sum_{i=1}^nw_ix_i + \frac12[\sum{f_1}^k(\sum_{i=1}^nv_{i,f}x_i)^2-\sum_{i=1}^nv_{i,f}^2x_i^2]
+  $$
+</Math>
 
-> <Math>
->   $$
->   \hat{y} = w_0 + \sum_{i=1}^nw_ix_i + \frac12\sum{f_1}^k(\sum_{i=1}^nv_{i,f}x_i)^2-\sum_{i=1}^nv_{i,f}^2x_i^2)
->   $$
-> </Math>
->
-> 所以问题就转成了只要每方计算好自己的 <InlineMath>$\sum_{i}^kViX$</InlineMath> 和 <InlineMath>$\sum_{i}^kV_i^2X^2$</InlineMath> 继续对这个公式进行化简得到
+So the problem turns to as long as each party calculates their own <InlineMath>$\sum_{i}^kViX$</InlineMath> and <InlineMath>$\sum_{i}^kV_i^2X^2$</InlineMath>, continue to simplify this formula to get
 
 <LineBlock>
   <br />
@@ -113,56 +100,49 @@ DeepFM公式推导
 > </Math>
 
 <LineBlock>
-  扩展到2方，假设alice和bob分别由Na和Nb个特征，那么
+  Extended to 2 parties, assuming that alice and bob have Na and Nb features respectively, then
 </LineBlock>
 
-> <Math>
->   $$
->   \hat{y}=
->   w_{a0}+w_{b0}+\sum_{i=1}^{Na}w_ix_i
->   +
->   \sum_{i=1}^{Nb}w_ix_i +\frac{1}{2}[\sum_{f=1}^k(\sum_{i=1}^{Na}V_{i,f}x_i+\sum_{i=1}^{Nb}V_{i,f}x_i)^2
->   - (\sum_{f=1}^k\sum_{i=1}^{Na}V_{i,f}^2{x_i}^2+\sum_{f=1}^k\sum_{i=1}^{Nb}V_{i,f}^2{x_i}^2)]
->   $$
-> </Math>
+<Math>
+  $$
+  \hat{y}=w_{a0}+w_{b0}+\sum_{i=1}^{Na}w_ix_i + \sum_{i=1}^{Nb}w_ix_i +\frac{1}{2}[\sum_{f=1}^k(\sum_{i=1}^{Na}V_{i,f}x_i+\sum_{i=1}^{Nb}V_{i,f}x_i)^2 - (\sum_{f=1}^k\sum_{i=1}^{Na}V_{i,f}^2{x_i}^2+\sum_{f=1}^k\sum_{i=1}^{Nb}V_{i,f}^2{x_i}^2)]
+  $$
+</Math>
+
+It can be seen from the derivation of the formula that each participant only needs to calculate the first order <InlineMath>$\sum_{i=1}^aV_{i,f}x_i$</InlineMath> and <InlineMath>$\sum_{i=1}^aV_{i,f}^2{x_i}^2$</InlineMath> locally, and then transmit the two parts (1) and (2) to fusenet to complete the lossless fm part calculation
+
+<Math>
+  $$
+  w_{a0}+\sum_{i=1}^aw_ix_i+\sum_{i=1}^aV_{i,f}^2{x_i}^2 \tag 1
+
+
+  $$
+</Math>
+
+<Math>
+  $$
+  \sum_{i=1}^aV_{i,f}x_i \tag 2
+
+
+  $$
+</Math>
 
 <LineBlock>
-  从公式推导中可以看出，对于每一方参与者只需要在本地算出一阶，<InlineMath>$\sum_{i=1}^aV_{i,f}x_i$</InlineMath>和<InlineMath>$\sum_{i=1}^aV_{i,f}^2{x_i}^2$</InlineMath>
+  The dimension of the original V\_vector is `batchsize*Na*k`, and the dimension of Bob is `batchsize*Nb*k`
 
-  然后传输（1）和（2）两部分到fusenet即可完成无损的fm部分计算
+  The data actually transmitted after derivation:
 
-  <br />
+  \- The dimension of (1) is `batchsize*1`, which will not leak the information of the v matrix
+
+  \- The dimension of (2) is `batchsize*K`, the information on the feature dimension has been eliminated, and only the sum information on the FM vector dimension is retained (usually dim=4)
 </LineBlock>
 
-> <Math>
->   $$
->   w_{a0}+\sum_{i=1}^aw_ix_i+\sum_{i=1}^aV_{i,f}^2{x_i}^2 \tag 1
->
->
->   $$
-> </Math>
-> <Math>
->   $$
->   \sum_{i=1}^aV_{i,f}x_i \tag 2
->
->
->   $$
-> </Math>
+![deepfm\_path](../_assets/deepfm_plan.jpg):target{#SecretFlow-encapsulation}
+
+## SecretFlow encapsulation
 
 <LineBlock>
-  其中原始的V\_vector的维度是batchsize<em>Na</em>k， Bob的维度是batchsize<em>Nb</em>k
-
-  经过推导之后实际传输的数据： - (1) 的维度是`batchsize*1`,不会泄露v矩阵的信息 - (2) 的维度是batchsize\*K，对于特征维度的信息已经消去，只保留了FM vector dimension上的和信息（通常dim=4）
-</LineBlock>
-
-![deepfm\_path](../_assets/deepfm_plan.jpg):target{#隐语封装}
-
-## 隐语封装
-
-<LineBlock>
-  我们在SecretFlow中的application提供了对于各种应用的封装。
-
-  关于DeepFM的封装在secretflow/ml/nn/applications/sl\_deep\_fm.py，提供了`DeepFMBase`和`DeepFMFuse`两个模块。
+  Our application in SecretFlow provides packaging for various applications. The encapsulation of DeepFM is in secretflow/ml/nn/applications/sl\_deep\_fm.py, which provides `DeepFMBase` and `DeepFMFuse` two modules.
 
   <strong>DeepFMBase</strong>
 </LineBlock>
@@ -192,11 +172,11 @@ class DeepFMfuse(tf.keras.Model):
     def __init__(self, dnn_units_size, dnn_activation="relu", **kwargs):
 ```
 
-<strong>下面我们通过一个例子来看一下如果使用隐语封装的DeepFM来进行训练和预测</strong>
+<strong>Let’s take an example to see how to use DeepFM packaged in SecretFlow for training and prediction</strong>
 
-:target{#环境设置}
+:target{#Environment-settings}
 
-## 环境设置
+## Environment settings
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
@@ -220,27 +200,31 @@ class DeepFMfuse(tf.keras.Model):
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-:target{#数据集介绍}
+:target{#Dataset-introduction}
 
-## 数据集介绍
+## Dataset introduction
 
 <LineBlock>
-  我们这里将使用最经典的MovieLens数据集来进行演示。
+  We will use the most classic <strong>MovieLens</strong> dataset for demonstration here. <strong>MovieLens</strong> is an open recommendation system dataset that includes movie ratings and movie metadata information.
 
-  MovieLens是一个开放式的推荐系统数据集，包含了电影评分和电影元数据信息。
-
-  [数据集地址](https://secretflow-data.oss-accelerate.aliyuncs.com/datasets/movielens/ml-1m.zip)
+  [Dataset address](https://secretflow-data.oss-accelerate.aliyuncs.com/datasets/movielens/ml-1m.zip)
 </LineBlock>
 
-我们对数据进行了切分： - alice: “UserID”, “Gender”, “Age”, “Occupation”, “Zip-code” - bob: “MovieID”, “Rating”, “Title”, “Genres”, “Timestamp”
+<LineBlock>
+  We split the data:
 
-DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
+  \- alice: “UserID”, “Gender”, “Age”, “Occupation”, “Zip-code”
 
-:target{#下载并处理数据}
+  \- bob: “MovieID”, “Rating”, “Title”, “Genres”, “Timestamp”
+</LineBlock>
 
-## 下载并处理数据
+For details about DataBuilder, please see CustomDataLoaderOnSL
 
-数据拆分处理
+:target{#Download-and-process-data}
+
+## Download and process data
+
+Data splitting
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
@@ -256,7 +240,7 @@ DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
     ```python
-    # 读取dat格式的数据并转成字典
+    # Read the data in dat format and convert it into a dictionary
     def load_data(filename, columns):
         data = {}
         with open(filename, "r", encoding="unicode_escape") as f:
@@ -336,11 +320,16 @@ DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-:target{#到此为止我们已经完成了数据的处理和拆分}
+:target{#So-far-we-have-completed-the-data-processing-and-splitting}
 
-### 到此为止我们已经完成了数据的处理和拆分
+### So far we have completed the data processing and splitting
 
-产出了 `alice: alice_ml1m.c™sv bob: bob_ml1m.csv`™
+Produced
+
+```none
+alice: alice_ml1m.csv
+bob: bob_ml1m.csv
+```
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
@@ -370,9 +359,9 @@ DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-:target{#构造data_builder_dict}
+:target{#Build-data_builder_dict}
 
-## 构造data\_builder\_dict
+## Build data\_builder\_dict
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
@@ -450,7 +439,7 @@ DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
     ```python
-    # 使用封装好的DeepFMBase和DeepFMFuse定义模型
+    # Use the packaged DeepFMBase and DeepFMFuse to define the model
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -490,12 +479,22 @@ DataBuilder相关的细节内容，请查看CustomDataLoaderOnSL
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-DeepFMBase有4个参数： - dnn\_units\_size: 这个参数需要提供一个list来对dnn部分进行定义，比如\[256,32]意思是中间两个隐层分别是256，和32 - dnn\_activation: dnn 的激活函数，eg\:relu - preprocess\_layer: 需要对输入进行处理，传入一个定义好的keras.preprocesslayer - fm\_embedding\_dim: fm vector的维度是多少
+<LineBlock>
+  DeepFMBase has 4 parameters:
+
+  \- dnn\_units\_size: This parameter needs to provide a list to define the dnn part, such as \[256,32] means that the two hidden layers in the middle are 256 and 32 respectively
+
+  \- dnn\_activation: activation function of dnn, eg\:relu
+
+  \- preprocess\_layer: Need to process the input, pass in a defined keras.preprocesslayer
+
+  \- fm\_embedding\_dim: Dimensions of fm vector
+</LineBlock>
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
     ```python
-    # 定义alice的basenet
+    # Define alice's basenet
     def create_base_model_alice():
         # Create model
         def create_model():
@@ -554,7 +553,7 @@ DeepFMBase有4个参数： - dnn\_units\_size: 这个参数需要提供一个lis
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
     ```python
-    # 定义bob的basenet
+    # Define bob's basenet
     def create_base_model_bob():
         # Create model
         def create_model():
@@ -601,9 +600,9 @@ DeepFMBase有4个参数： - dnn\_units\_size: 这个参数需要提供一个lis
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-:target{#定义Fusenet}
+:target{#Define-Fusenet}
 
-## 定义Fusenet
+## Define Fusenet
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
@@ -639,9 +638,9 @@ DeepFMBase有4个参数： - dnn\_units\_size: 这个参数需要提供一个lis
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-:target{#运行起来看看}
+:target{#Run-it}
 
-## 运行起来看看
+## Run it
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[16]:" stderr={false} type="input">
@@ -674,10 +673,24 @@ DeepFMBase有4个参数： - dnn\_units\_size: 这个参数需要提供一个lis
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-到此为止，我们已经使用隐语提供的deepfm封装完成了movie lens数据集上的推荐任务训练。
+So far, we have used the deepfm package provided by SecretFlow to complete the recommendation task training on the <strong>MovieLens</strong> dataset.
 
-:target{#总结}
+:target{#Summarize}
 
-## 总结
+## Summarize
 
-本文通过movie lens数据集上的推荐任务来演示了如何通过隐语来实现DeepFM 您需要： 1. 下载并拆分数据集 2. 定义好数据处理的dataloader 3. 定义好数据预处理的preprocesslayer,定义好dnn结构，调用DeepFMBase，DeepFMFuse来进行模型定义 4. 使用SLModel进行训练，预测，评估即可。 您可以在自己的数据集上进行尝试，如有任何问题，可以在github上进行讨论
+<LineBlock>
+  This article demonstrates how to use SecretFlow to implement DeepFM through the recommendation task on the <strong>MovieLens</strong> dataset
+
+  you need:
+
+  1\. Download and split the dataset
+
+  2\. Define the dataloader for data processing
+
+  3\. Define the preprocesslayer for data preprocessing, define the dnn structure, and call DeepFMBase and DeepFMFuse to define the model
+
+  4\. Use SLModel for training, prediction, and evaluation.
+
+  You can try it on your own dataset, if you have any questions, you can discuss it on github
+</LineBlock>
