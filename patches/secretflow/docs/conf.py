@@ -145,16 +145,9 @@ myst_enable_extensions = [
     "tasklist",
 ]
 
-suppress_warnings = ["myst.header"]
+suppress_warnings = ["autosectionlabel", "myst.header"]
 
+# Enable all MyST features
+myst_gfm_only = False
+# Enable anchors for heading level h1 through h6
 myst_heading_anchors = 6
-myst_title_to_header = True
-
-
-# app setup hook
-def setup(app):
-    app.add_config_value(
-        "recommonmark_config",
-        {"auto_toc_tree_section": "Contents"},
-        True,
-    )

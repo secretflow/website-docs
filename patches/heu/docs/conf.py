@@ -104,7 +104,9 @@ html_theme_options = {
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-suppress_warnings = ["myst.header"]
+suppress_warnings = ["autosectionlabel", "myst.header"]
 
-myst_heading_anchors = 3
-myst_title_to_header = True
+# Enable all MyST features
+myst_gfm_only = False
+# Enable anchors for heading level h1 through h6
+myst_heading_anchors = 6
