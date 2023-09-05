@@ -1,5 +1,5 @@
 sphinx==6.2.1
-doctutils==0.19
+docutils==0.19
 nbsphinx==0.9.1  # nbsphinx>0.9.1 has issues with MyST anchors somehow
 linkify-it-py
 myst-parser
