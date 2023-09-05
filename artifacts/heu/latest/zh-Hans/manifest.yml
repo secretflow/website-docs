@@ -1,0 +1,24 @@
+sidebar:
+  - items:
+      - {id: getting_started/installation.mdx, label: 安装, type: doc}
+      - {id: getting_started/quick_start.mdx, label: 快速入门, type: doc}
+      - {id: getting_started/numpy.mdx, label: 矩阵运算, type: doc}
+      - {id: getting_started/algo_choice.mdx, label: 算法选择, type: doc}
+      - {id: getting_started/faq.mdx, label: 常见问题, type: doc}
+    label: 准备开始
+    link: {id: getting_started/index.mdx, label: 准备开始, type: doc}
+    type: category
+  - items:
+      - {id: development/arch.mdx, label: HEU 架构, type: doc}
+      - {id: development/phe_dev.mdx, label: 开发新算法, type: doc}
+    label: 开发
+    link: {id: development/index.mdx, label: 开发, type: doc}
+    type: category
+  - items:
+      - {id: references/phe_api.mdx, label: PHE 模块, type: doc}
+      - {id: references/numpy_api.mdx, label: Numpy 模块, type: doc}
+      - {id: references/upgrade_guide.mdx, label: 升级指南, type: doc}
+    label: API 手册
+    link: {id: references/index.mdx, label: API 手册, type: doc}
+    type: category
+version: '1'
