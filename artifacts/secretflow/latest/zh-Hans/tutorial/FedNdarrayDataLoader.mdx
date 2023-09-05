@@ -2,7 +2,7 @@
 
 # 在 SecretFlow 中加载 Numpy 数据
 
-The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+下述代码仅作为展示用例。考虑到系统安全因素，其 <strong>不适用于生产环境</strong> 。请 <strong>不要</strong> 在生产实践中直接使用。
 
 <LineBlock>
   本教程将展示如何在 SecretFlow 的多方安全环境中加载 Numpy 数据。
@@ -232,7 +232,7 @@ FedNpz 的每一个 value 是 FedNdarray。
 
   比如我有一个图像数据集或者语音数据集，我该怎么样通过 FedNdarray 将数据传入联邦模型？
 
-  Let’s take the flower classification dataset Flower as an example.
+  我们这里以花卉分类数据集 Flower 来举个例子。
 </LineBlock>
 
 <Notebook.Cell>
@@ -258,7 +258,7 @@ FedNpz 的每一个 value 是 FedNdarray。
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-After downloading and extracting the dataset, the root directory of the dataset is “flower\_photos”.
+下载解压后根目录存在 Root = “flower\_photos”
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[17]:" stderr={false} type="input">

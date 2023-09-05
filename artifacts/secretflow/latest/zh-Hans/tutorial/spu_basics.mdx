@@ -2,7 +2,7 @@
 
 # SPU基础
 
-> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+> 以下代码仅作为示例，请勿在生产环境直接使用。
 
 SPU设备在SecretFlow中负责执行MPC计算。
 
@@ -50,7 +50,7 @@ SecretFlow Parties是在SecretFlow的基本节点，我们将会创建4个party 
 
 ### 创建一个基于三方ABY3协议的SPU设备
 
-After that, let’s create an SPU device with [ABY3](https://eprint.iacr.org/2018/403.pdf) protocol.
+之后，我们创建一个基于 [ABY3](https://eprint.iacr.org/2018/403.pdf) 协议的SPU设备。
 
 `sf.utils.testing.cluster_def` 是一个helper通过寻找未占用的端口来创建一个设置。
 
@@ -70,7 +70,7 @@ After that, let’s create an SPU device with [ABY3](https://eprint.iacr.org/201
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Then let’s use <em>aby3\_config</em> to create an SPU device and check its cluster\_def.
+随后我们用 <em>aby3\_config</em> 来创建一个SPU设备并检查其 cluster\_def 。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
@@ -88,7 +88,7 @@ Then let’s use <em>aby3\_config</em> to create an SPU device and check its clu
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Lastly, let’s create two PYU devices.
+最后，我们创建两个PYU设备。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -102,7 +102,7 @@ Lastly, let’s create two PYU devices.
 
 ## 向SPU设备传值
 
-Before talking about computation with SPU device, let’s understand how to pass a Python object or a PYUObject to SPU device.
+在讨论利用SPU设备计算之前，我们需要理解如何将一个 Python object / PYUObject 传给一个SPU设备。
 
 :target{#SPUObject}
 
@@ -110,7 +110,7 @@ Before talking about computation with SPU device, let’s understand how to pass
 
 PYU Object可以转化到 SPU Object被SPU节点来共享秘密。
 
-<strong>sf.device.SPUIO</strong> is the helper class to do the job. You don’t need to call this method in your code. We just use it to demonstrate the structure of <strong>SPUObjects</strong> and everything happens for you.
+<strong>sf.device.SPUIO</strong> 是执行该任务的辅助类。您不需要在代码中调用此方法。我们只是使用它来向你演示SPUObjects的结构和发生的一切。
 
 每一个SPUObject包含两个成员：
 
@@ -131,7 +131,7 @@ PYU Object可以转化到 SPU Object被SPU节点来共享秘密。
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Let’s check meta first.
+我们首先查看meta。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
@@ -151,9 +151,9 @@ Let’s check meta first.
 
 - data\_type, 代表了值是整数还是定点数。
 - visibility，代表了值是密文还是明文。
-- storage\_type, indicates attributes of value, e.g. MPC protocol(ABY3 in our case), field size(128 bits in our case), etc
+- storage\_type，代表了值的属性，比如MPC协议（这里是ABY3），field size（我们这里是128位），等等。
 
-Then let’s check shares of bank\_account\_spu. Since we are passing data to a 3PC SPU device. We would have three pieces of shares, and we are going to check the first piece.
+随后我们检查bank\_account\_spu的 <em>shares</em> 。 由于我们将数据传递至一个3PC的SPU设备。我们将会得到有3个分片，我们将会检查第1个分片。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
@@ -173,7 +173,7 @@ Then let’s check shares of bank\_account\_spu. Since we are passing data to a 
 
 你应该发现一个SPU Object的分片非常类似于meta和原始数据。它仍保留原始数据的结构，但数字被编码的密文替换了（如果你想，可以试着猜测原始数据）。
 
-Well, let’s reconstruct the origin Python object from SPU object.
+好的，让我们从SPU对象重构原始的Python对象。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
@@ -217,7 +217,7 @@ Well, let’s reconstruct the origin Python object from SPU object.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Then let’s pass debit\_amount\_pyu from PYU to SPU. We will get an SPU object as result. Under the hood, <strong>alice</strong> calls <strong>sf.device.SPUIO.make\_shares</strong> to get <strong>meta</strong> and <strong>shares</strong> to send to nodes of the spu device.
+然后让我们将从PYU传递debit\_amount\_pyu到SPU。我们将得到一个SPU对象作为结果。在幕后， <strong>alice</strong> 调用 <strong>sf.device.SPUIO.make\_shares</strong> 来获取 <strong>meta</strong> 和 <strong>shares</strong> ，以备将它们发送给SPU设备的节点。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">
@@ -235,7 +235,7 @@ Then let’s pass debit\_amount\_pyu from PYU to SPU. We will get an SPU object 
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Let’s check meta of debit\_amount\_spu.
+我们检查一下debit\_amount\_spu的meta。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">
@@ -251,7 +251,7 @@ Let’s check meta of debit\_amount\_spu.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Oh no, it’s a Ray ObjectRef located at alice part. So how about shares of debit\_amount\_spu?
+不，它是一个在alice一边的Ray ObjectRef。debit\_amount\_spu的shares是怎样的呢？
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
@@ -267,7 +267,7 @@ Oh no, it’s a Ray ObjectRef located at alice part. So how about shares of debi
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-So you get a list of ObjectRef! Since it’s located at alice part, we couldn’t check the value at host.
+你会得到一个ObjectRef列表。因为它在alice这一侧，我们无法在host检查它的值。
 
 如果你非常好奇，我们可以用 <strong>sf.reveal</strong> 检查原始值。在生产环境中，请谨慎使用 <strong>sf.reveal</strong> ！当在 <strong>SPUObjects</strong> 上应用 <strong>sf.reveal</strong> 时，<strong>sf.device.SPUIO.reconstruct</strong> 将会被自动调用。
 
@@ -289,7 +289,7 @@ So you get a list of ObjectRef! Since it’s located at alice part, we couldn’
 
 ### 将一个Python Object从Host传到SPU
 
-Let’s pass a dict from Host to SPU device.
+让我们将一个字典从HOST传给SPU设备。
 
 > 注：我知道这看起来很奇怪。目前，如果你想把一个Python对象传递给SPU设备，你必须先将它传递给一个PYU。
 
@@ -310,13 +310,13 @@ Let’s pass a dict from Host to SPU device.
 - Python Object/PYU Object可以转化到 SPU Object。
 - 一个SPU Object 包含了meta 和 shares。
 - <strong>sf.to</strong> 和 <strong>sf.reveal</strong> 调用 <strong>sf.device.SPUIO</strong> 来在SPU对象和Python对象之间转换数据。
-- Just converting to SPU Object won’t trigger data flow from PYU to SPU. e.g. When you transferred a PYU object to an SPU object. All the field of SPU objects including meta and shares are still located at the PYU device. The shares would only be sent to parties of SPU device when computation do happen. In short, data flow is lazy.
+- 仅仅转化为SPU Object不会触发从PYU至SPU的数据流动，比如当你将一个PYU Object转化为SPU Object时。SPU object所有内容包括meta和shares仍然位于PYU设备。shares只会在计算发生的时候将会被发送到SPU设备的各方。简单的来说，数据流动是lazy的。
 
 :target{#使用-SPU-设备进行计算}
 
 ## 使用 SPU 设备进行计算
 
-Since we have two SPU objects - <em>bank\_account\_spu</em> and <em>debit\_amount\_spu</em> as inputs. Let’s try to do some computation with SPU device.
+因为我们有两个 SPU Object - <em>bank\_account\_spu</em> 和 <em>debit\_amount\_spu</em> 作为输入。 让我们尝试使用 SPU 设备进行一些计算。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
@@ -346,10 +346,10 @@ Since we have two SPU objects - <em>bank\_account\_spu</em> and <em>debit\_amoun
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-<em>new\_bank\_account\_spu</em> is also a <strong>SPUObject</strong>. But it’s a bit different from <em>debit\_amount\_spu</em>!
+<em>new\_bank\_account\_spu</em> 也是一个 <strong>SPU Object</strong> 。 但它与 <em>debit\_amount\_spu</em> 有点不同！
 
 - <em>debit\_amount\_spu</em> 位于 alice，因此只有 alice 可以检查值。
-- <em>new\_bank\_account\_spu</em> is located at spu, each party of spu have a piece of shares. And you couldn’t check the value directly without <em>sf.reveal</em>.
+- <em>new\_bank\_account\_spu</em> 位于spu，spu的每一方都有一份shares。 如果没有 <em>sf.reveal</em> ，您将无法直接检查该值。
 
 好吧，但是 SPU 设备的计算背后发生了什么？
 
@@ -386,7 +386,7 @@ SPU 设备的每一方将获得：
 
 ## 从 SPU 设备中获取值
 
-But in the end, we need to get value from spu, we couldn’t always keep <em>SPUObject</em> as secret!
+但最后，我们需要从 spu 中获取值，我们不能总是将 <em>SPUObject</em> 当作密文！
 
 处理 <em>SPUObject</em> 的最常见方法是将秘密传递给一方。 该方不一定是由 SPU 设备组成的各方之一。
 
@@ -406,7 +406,7 @@ But in the end, we need to get value from spu, we couldn’t always keep <em>SPU
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-We just pass <em>new\_bank\_account\_spu</em> to <strong>pyu</strong>, then it becomes a <em>PYUObject</em>! And it’s owned by dave. Let’s check the value of <em>new\_bank\_account\_pyu</em>.
+我们只是将 <em>new\_bankaccountspu</em> 传递给 <strong>pyu</strong> ，然后它就变成了 <em>PYUObject</em> ！ 它归dave所有。 让我们检查 <em>new\_bank\_account\_pyu</em> 的值。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[17]:" stderr={false} type="input">
@@ -442,7 +442,7 @@ We just pass <em>new\_bank\_account\_spu</em> to <strong>pyu</strong>, then it b
 
 ## 进阶主题：使用不同的 MPC 协议
 
-At this moment, SPU device supports multiple MPC protocol besides ABY3. It’s easy to use different MPC protocol - just set the proper field in cluster def.
+目前SPU设备支持ABY3之外的多种MPC协议。 使用不同的 MPC 协议很容易 - 只需在 cluster def 中设置适当的字段。
 
 例如，如果有人想使用 2PC 协议 - Cheetah，你应该准备另一个集群 def：
 
@@ -479,7 +479,7 @@ At this moment, SPU device supports multiple MPC protocol besides ABY3. It’s e
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Let’s check the <em>cluster\_def</em> of spu\_device2.
+让我们检查一下 spu\_device2 的 <em>cluster\_def</em>。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[21]:" stderr={false} type="input">
@@ -495,7 +495,7 @@ Let’s check the <em>cluster\_def</em> of spu\_device2.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-We could use <em>spu\_device2</em> to check famous Yao’s Millionaires’ problem.
+我们可以使用 <em>spu\_device2</em> 来检查著名的姚氏百万富翁问题。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[22]:" stderr={false} type="input">
@@ -561,7 +561,7 @@ We could use <em>spu\_device2</em> to check famous Yao’s Millionaires’ probl
 
 ### 选项 1：将所有返回值视为单一返回值
 
-This is the default behavior of SPU. Let’s see.
+这是 SPU 的默认行为。 让我们来看看。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[25]:" stderr={false} type="input">
@@ -579,7 +579,7 @@ This is the default behavior of SPU. Let’s see.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-We could see we only get a single <em>SPUObject</em>. Let’s reveal it.
+我们可以看到我们只得到一个\*SPUObject\*。 让我们揭示它。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[26]:" stderr={false} type="input">
@@ -623,7 +623,7 @@ We could see we only get a single <em>SPUObject</em>. Let’s reveal it.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-let’s check two outputs respectively.
+让我们分别检查两个输出。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[28]:" stderr={false} type="input">
@@ -666,7 +666,7 @@ let’s check two outputs respectively.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-let’s also check two outputs respectively.
+让我们分别检查两个输出。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[30]:" stderr={false} type="input">
@@ -683,15 +683,15 @@ let’s also check two outputs respectively.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Let’s summarize what we have:
+让我们总结一下我们所拥有的结论：
 
 - 默认情况下，SPU 将所有返回值视为单个返回值。
 - 由于 SPU 编译器生成 SPU 可执行文件，它可以计算出返回值数量。 但是，这个选项会导致一些延迟，因为我们必须使编译工作阻塞。
 - 如果您想避免延迟，我们可以手动提供返回值数量。 但是你必须确保你提供了正确的数字，否则程序会报错！
 
-:target{id="What's-Next?"}
+:target{#下一步是什么}
 
-## What’s Next?
+## 下一步是什么
 
 在学习了 SPU 的基础知识后，您可以查看一些 SPU 高级教程：
 

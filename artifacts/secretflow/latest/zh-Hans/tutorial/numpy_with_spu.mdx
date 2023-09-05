@@ -2,7 +2,7 @@
 
 # 在SPU中使用NumPy实现隐私保护的科学计算
 
-NumPy is one of the most popular tool for scientific computing. It is so common that we could find lots of equivalents of NumPy in other languages like [xtensor](https://xtensor.readthedocs.io/en/latest/) and [Gonum](https://www.gonum.org/). So we can’t help thinking whether we could express computation with NumPy-like APIs in privacy-preserving settings since everyone loves NumPy.
+NumPy是最流行的科学计算工具之一。它非常常见，以至于我们可以在其他语言中找到许多类似于NumPy的工具，比如 [xtensor](https://xtensor.readthedocs.io/en/latest/) 和 [Gonum](https://www.gonum.org/) 。因此，我们不禁想到，是否可以在隐私保护的环境中使用类似于NumPy的API表达计算，因为每个人都喜欢NumPy。
 
 幸运的是，借助 [JAX](https://jax.readthedocs.io/en/latest/) NumPy软件包的强大功能，我们可以轻松实现这个目标。在本教程中，我们将介绍以下内容：1. JAX和SPU之间的关系2. 编写可编译的JAX程序3. 在SPU上执行JAX程序
 
@@ -16,14 +16,13 @@ NumPy is one of the most popular tool for scientific computing. It is so common 
 
 SPU实际上由两个组件组成 - 编译器和运行时。SPU运行时只能执行 [PPHlo](https://www.secretflow.org.cn/docs/spu/en/reference/pphlo_doc.html) 。一个PPHlo内核的例子是 [\*\*pphlo.add\*\*](https://www.secretflow.org.cn/docs/spu/en/reference/pphlo_doc.html#pphlo-add-mlir-pphlo-addop) 。实际上，当逻辑非常简单和清晰时，我们只需将PPHlo程序直接输入SPU运行时以执行MPC程序，用于一些内部应用。
 
-SPU compiler could translate [XLA](https://www.tensorflow.org/xla) programs to [PPHlo](https://www.secretflow.org.cn/docs/spu/en/reference/pphlo_doc.html). You could check “Supported” XLA ops in [this documentation](https://www.secretflow.org.cn/docs/spu/en/reference/xla_status.html). You may find XLA ops are very similar to PPHlo ops in most cases. It seems we still couldn’t write XLA programs by hand. You are absolutely correct. If you happen to check
-[here](https://www.tensorflow.org/xla#xla_frontends), you should find actually there are lot’s of AI frameworks which could emit XLA programs without your effort, including:
+SPU编译器可以将 [XLA](https://www.tensorflow.org/xla) 程序转换为 [PPHlo](https://www.secretflow.org.cn/docs/spu/en/reference/pphlo_doc.html) 。您可以在 [此文档](https://www.secretflow.org.cn/docs/spu/en/reference/xla_status.html) 中检查“支持的”XLA操作。在大多数情况下，您会发现XLA操作与PPHlo操作非常相似。似乎我们仍然不能手动编写XLA程序。事实的确如此。如果您查看 [这里](https://www.tensorflow.org/xla#xla_frontends) ，您应该会发现实际上有很多人工智能框架可以自动生成XLA程序，包括：
 
 - TensorFLow
 - Pytorch
 - JAX
 
-Let’s go through each step to have a look at different programs!
+让我们逐步看一下不同的程序！
 
 :target{#JAX-程序}
 
@@ -57,7 +56,7 @@ Let’s go through each step to have a look at different programs!
 
 #### XLA 程序
 
-Let’s check what the XLA program for this JAX program looks like. JAX provides [xla\_computation](https://jax.readthedocs.io/en/latest/_autosummary/jax.xla_computation.html) to convert JAX programs to XLA programs.
+让我们来看看这个JAX程序的XLA程序是什么样子。JAX提供 [xla\_computation](https://jax.readthedocs.io/en/latest/_autosummary/jax.xla_computation.html) 函数将JAX程序转换为XLA程序。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
@@ -84,7 +83,7 @@ Let’s check what the XLA program for this JAX program looks like. JAX provides
 
 #### PPHlo 程序
 
-Lastly, let’s check the PPHlo program for this XLA program. <strong>spu.compile</strong> could convert XLA programs to PPHlo programs.
+最后，让我们查看这个XLA程序的PPHlo程序。 <strong>spu.compile</strong> 函数可以将XLA程序转换为PPHlo程序。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -112,10 +111,10 @@ Lastly, let’s check the PPHlo program for this XLA program. <strong>spu.compil
 
 您可能会发现，PPHlo程序与XLA程序几乎完全相同。区别是：
 
-- You have to provide the input visibility to SPU compiler, i.e. <strong>\[spu.Visibility.VIS\_SECRET, spu.Visibility.VIS\_SECRET]</strong> in our case.
+- 您必须向SPU编译器提供输入可见性，例如我们的情况下为 <strong>\[spu.Visibility.VIS\_SECRET, spu.Visibility.VIS\_SECRET]</strong>
 - 与XLA程序相比，Visibility是PPHlo程序中所有变量的额外属性。例如， <strong>tensor\<2x2x!pphlo.sec></strong> 表示这是一个密态的2x2 i32张量。
 
-SPU compiler would deduce visibility in each step, let’s modify input visibility and check what would happen.
+SPU编译器会在每一步中推导可见性，让我们修改输入可见性并查看会发生什么。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
@@ -142,7 +141,7 @@ SPU compiler would deduce visibility in each step, let’s modify input visibili
 
 ### 从JAX到SPU
 
-So this is the whole story. 1. You write a JAX program in Python. 2. Then you could turn JAX program to XLA program with the first-party API from JAX, i.e. jax.xla\_computation. 3. Afterwards, SPU compiler could transfer XLA program to PPHlo program - the only language could be understood by SPU Runtime. 4. In the end, the PPHlo program is sent to SPU Runtimes and executed.
+这就是整个故事。1. 您可以使用Python编写JAX程序。2. 您可以使用JAX的第一方API（即jax.xla\_computation）将JAX程序转换为XLA程序。3. SPU编译器可以将XLA程序转换为PPHlo程序——这是SPU运行时唯一能理解的语言。4. 将PPHlo程序发送到SPU运行时并执行。
 
 在SecretFlow中，我们已经实现了一些辅助方法，这样您就可以一开始就编写JAX程序，我们会为您处理其余的步骤。
 
@@ -152,7 +151,7 @@ So this is the whole story. 1. You write a JAX program in Python. 2. Then you co
 
 可即时编译（Jittable）指的是JAX程序可以即时编译（JIT）为XLA程序。因此，只有当一个JAX程序是可即时编译的，它才可能被SPU执行。
 
-Since SPU doesn’t support all XLA operators, even a JAX program is jittable, SPU runtime still could refuse to execute.
+由于SPU不支持所有的XLA运算符，即使一个JAX程序是可即时编译的，SPU运行时仍然可能拒绝执行。
 
 :target{#JAX-NumPy库}
 
@@ -160,7 +159,7 @@ Since SPU doesn’t support all XLA operators, even a JAX program is jittable, S
 
 我们可以使用 JAX 中的这些 类似于 NumPy 的 API。[JAX NumPy](https://jax.readthedocs.io/en/latest/jax.numpy.html) 的 API 和原始的 NumPy API 非常相似，但是有以下几点不同：- JAX NumPy 数组是不可变的，因此您必须使用 <strong>ndarray.at</strong> 来进行非就地数组更新。- 您必须提供一些额外的参数使方法调用可即时编译（稍后我们会讨论这个）。
 
-And actually SPU doesn’t support all JAX NumPy operators, please also check [this documentation](http://www.secretflow.org.cn/docs/spu/en/reference/np_op_status.html). We are updating this document promptly and we have listed the current status of each operators.
+实际上，SPU 不支持所有的 JAX NumPy 操作符，请查看这份 [文档](http://www.secretflow.org.cn/docs/spu/en/reference/np_op_status.html) .我们正在及时更新这份文档，并列出了每个操作符的当前状态。
 
 接下来，我们将编写一些 JAX NumPy 程序。
 
@@ -179,7 +178,7 @@ And actually SPU doesn’t support all JAX NumPy operators, please also check [t
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Let’s check whether it is jittable by <strong>jax.jit</strong>. You could also use <strong>jax.xla\_computation</strong> for testing as well.
+我们可以用 <strong>jax.jit</strong> 来检查它是否是jittable的， 也可以用 <strong>jax.xla\_computation</strong>
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
@@ -241,7 +240,7 @@ Let’s check whether it is jittable by <strong>jax.jit</strong>. You could also
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Let’s check whether <strong>area\_of\_simple\_polygon</strong> is jittable.
+让我们检查一下 <strong>area\_of\_simple\_polygon</strong> 是否是 jittable 的。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
@@ -356,7 +355,7 @@ so which method we should choose when the program is unjittable?
 
 ### （可选）SPU 模拟
 
-If you hope to get a quick try, I would like to introduce <strong>spu.sim\_jax</strong> to you. Let’s show how does it work!
+如果您希望快速尝试，我想向您介绍 <strong>spu.sim\_jax</strong>。让我们展示它是如何工作的！
 
 > <strong>spu.sim\_jax</strong> 仅在 <strong>spu v0.3.1b8</strong> 之后提供。
 
@@ -480,7 +479,7 @@ If you hope to get a quick try, I would like to introduce <strong>spu.sim\_jax</
 
 ## 总结
 
-This is the end of the tutorial. Let’s summarize the steps to do privacy-preserving scientific computation with JAX NumPy APIS:
+本教程到此结束。让我们总结一下使用 JAX NumPy APIS 进行隐私保护科学计算的步骤：
 
 1. 编写一个 jittable JAX NumPy 程序。您应该使用 <strong>jax.jit</strong> 或 <strong>jax.xla\_computation</strong> 对其进行测试。
 2. 可选）尝试使用 <strong>SPU 模拟</strong> 执行 JAX 程序。

@@ -2,7 +2,7 @@
 
 # WOE编码
 
-> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+> 以下代码仅用于演示。由于系统安全问题，请勿直接在生产中使用。
 
 建议使用 [jupyter](https://jupyter.org/) 运行本教程。
 
@@ -19,7 +19,7 @@ bin_iv = ((bin_positives / total_positives) - (bin_negatives / total_negatives))
 
 目前我们为垂直分割的数据集提供WOE编码。
 
-Let’s first load a sample dataset.
+让我们先加载一个样本数据集。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
@@ -102,7 +102,7 @@ Let’s first load a sample dataset.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Sometimes we may need the iv values. Releasing bin ivs will potentially leak label information according to issue [https://github.com/secretflow/secretflow/issues/565](https://github.com/secretflow/secretflow/issues/565). Currently, we choose to save bin iv values in label holders device. It is up to label holder’s choice to
+有时我们可能需要IV值。根据GitHub issue, [https://github.com/secretflow/secretflow/issues/565](https://github.com/secretflow/secretflow/issues/565)，发布分桶的ivs可能会泄漏标签信息。目前，我们选择将桶的iv值保存在标签持有者设备中。标签持有者可以选择 1. 不共享iv信息 2. 共享一些已选择的iv信息
 
 1. 将一些iv信息分享给其他方
 2. 将一些iv信息分享给其他方

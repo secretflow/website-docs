@@ -6,7 +6,7 @@
 
 首先，我们展示如何使用 JAX 和 Hugging Face transformers 库基于预训练 GPT-2 模型生成文本。然后，我们展示如何通过少量代码修改在 Puma 上生成文本。
 
-> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+> 以下代码仅作为示例，请勿在生产环境直接使用。
 
 > 本教程可能需要比 16c48g 更多的资源。
 
@@ -34,9 +34,9 @@ Puma 是一个快速且准确的端到端安全三方安全Transformer模型推�
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-> The JAX version required by transformers is not satisfied with SPU. But it’s ok to run with the conflicted JAX with SPU in this example.
+> transformers 库要求的 JAX 版本与 SPU 不一致，但不影响运行本教程的示例。
 
-:target{#加载预训练-GPT-2-模型%22}
+:target{id="加载预训练-GPT-2-模型&#x22;"}
 
 ### 加载预训练 GPT-2 模型”
 
@@ -332,7 +332,7 @@ hidden_states = jax.nn.gelu(hidden_states)
 
 ### 检查 Puma 的输出
 
-As you can see, it’s very easy to run GPT-2 inference on Puma. Now let’s reveal the generated text from Puma.
+可以发现，在 Puma 上运行 GPT-2 推理非常简单。接下来让我们明文显示 SPU 生成的文本。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">

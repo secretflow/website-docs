@@ -112,7 +112,7 @@ Lastly, let’s check the PPHlo program for this XLA program. <strong>spu.compil
 
 You may find the PPHlo program is identical to XLA program. The only differences are:
 
-- You have to provide the input visibility to SPU compiler, i.e. <strong>\[spu.Visibility.VIS\_SECRET, spu.Visibility.VIS\_SECRET]</strong> in our case.
+- You have to provide the input visibility to SPU compiler, i.e. <strong>\[spu.Visibility.VIS\_SECRET, spu.Visibility.VIS\_SECRET]</strong> in our case.
 - Comparing to XLA program, <strong>Visibility</strong> is an extra attribute to all variables in PPHlo program like <strong>tensor\<2x2x!pphlo.sec></strong> means this is a secret 2x2 i32 tensor.
 
 SPU compiler would deduce visibility in each step, let’s modify input visibility and check what would happen.
@@ -142,7 +142,7 @@ SPU compiler would deduce visibility in each step, let’s modify input visibili
 
 ### From JAX to SPU
 
-So this is the whole story. 1. You write a JAX program in Python. 2. Then you could turn JAX program to XLA program with the first-party API from JAX, i.e. jax.xla\_computation. 3. Afterwards, SPU compiler could transfer XLA program to PPHlo program - the only language could be understood by SPU Runtime. 4. In the end, the PPHlo program is sent to SPU Runtimes and executed.
+So this is the whole story. 1. You write a JAX program in Python. 2. Then you could turn JAX program to XLA program with the first-party API from JAX, i.e. jax.xla\_computation. 3. Afterwards, SPU compiler could transfer XLA program to PPHlo program - the only language could be understood by SPU Runtime. 4. In the end, the PPHlo program is sent to SPU Runtimes and executed.
 
 In SecretFlow, we have implemented some helper methods so that you could just write a JAX program in the beginning, we would take care of the remaining steps for you.
 

@@ -2,7 +2,7 @@
 
 # 安全聚合
 
-> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+> <strong>以下代码仅作为演示用，请勿直接在生产环境使用。</strong>
 
 推荐使用 [jupyter](https://jupyter.org/) 运行教程里的代码。
 
@@ -173,7 +173,7 @@
 
 <cite>Masking with One-Time Pads</cite> 基于半诚实假设且不支持掉线，更多信息可以参考  [Practical Secure Aggregation for Privacy-Preserving Machine Learning](https://eprint.iacr.org/2017/281.pdf)
 
-> <strong>Warning:</strong> The SecureAggregator uses [numpy.random.PCG64](https://numpy.org/doc/stable/reference/random/bit_generators/pcg64.html#numpy.random.PCG64). There are many discussions of whether PCG is a CSPRNG (e.g. [https://crypto.stackexchange.com/questions/77101/is-the-pcg-prng-a-csprng-or-why-not](https://crypto.stackexchange.com/questions/77101/is-the-pcg-prng-a-csprng-or-why-not)), we prefer a conservative strategy unless a further security analysis came up. Therefore we recommend users to use a standardized CSPRNG in industrial scenarios.
+> <strong>警告:</strong> SecureAggregator使用了 [numpy.random.PCG64](https://numpy.org/doc/stable/reference/random/bit_generators/pcg64.html#numpy.random.PCG64)。对于PCG是否是CSPRNG有很多讨论(比如 [https://crypto.stackexchange.com/questions/77101/is-the-pcg-prng-a-csprng-or-why-not](https://crypto.stackexchange.com/questions/77101/is-the-pcg-prng-a-csprng-or-why-not))，我们倾向于保守看待此类讨论，因此我们建议用户在真正工业场景中使用标准的CSPRNG。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">

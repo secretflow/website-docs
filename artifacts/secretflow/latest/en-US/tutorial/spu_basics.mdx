@@ -151,7 +151,7 @@ I guess you could find meta preserves the structure of origin data and replaces 
 
 - data\_type, indicates whether the value is integer or fixed points.
 - visibility, indicates whether the value is a secret or a public content.
-- storage\_type, indicates attributes of value, e.g. MPC protocol(ABY3 in our case), field size(128 bits in our case), etc
+- storage\_type, indicates attributes of value, e.g. MPC protocol(ABY3 in our case), field size(128 bits in our case), etc
 
 Then let’s check shares of bank\_account\_spu. Since we are passing data to a 3PC SPU device. We would have three pieces of shares, and we are going to check the first piece.
 
@@ -310,7 +310,7 @@ This is the first part of Data Flow with SPU device, at this moment, you should 
 - A Python Object/PYU Object could be transferred to an SPU Object.
 - An SPU Object consists of meta and shares.
 - <strong>sf.to</strong> and <strong>sf.reveal</strong> calls <strong>sf.device.SPUIO</strong> to transfer between SPUObjects and Python objects.
-- Just converting to SPU Object won’t trigger data flow from PYU to SPU. e.g. When you transferred a PYU object to an SPU object. All the field of SPU objects including meta and shares are still located at the PYU device. The shares would only be sent to parties of SPU device when computation do happen. In short, data flow is lazy.
+- Just converting to SPU Object won’t trigger data flow from PYU to SPU. e.g. When you transferred a PYU object to an SPU object. All the field of SPU objects including meta and shares are still located at the PYU device. The shares would only be sent to parties of SPU device when computation do happen. In short, data flow is lazy.
 
 :target{#Computation-with-SPU-Device}
 
@@ -689,7 +689,7 @@ Let’s summarize what we have:
 - Since SPU compiler generates the SPU executable, it can figure out return nums. However, the options results some latency since we have to make compilation blocked.
 - If you want to avoid latency, we can provide return nums manually. But you have to make sure you provide the right nums, otherwise, the program would complain!
 
-:target{id="What's-Next?"}
+:target{#What’s-Next?}
 
 ## What’s Next?
 
