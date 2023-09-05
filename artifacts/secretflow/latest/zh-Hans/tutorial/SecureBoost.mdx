@@ -2,14 +2,13 @@
 
 # 垂直联邦XGB (SecureBoost)
 
-> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+> 以下代码仅供演示。出于系统安全考虑，请 <strong>不要</strong> 直接用于生产。
 
 欢迎来到SecureBoost教程！
 
-In this tutorial, we will explore how to use SecretFlow’s tree modeling capabilities to perform vertical federated learning using the SecureBoost algorithm. SecureBoost is a classical algorithm that prioritizes the protection of label information on vertically partitioned datasets. It accomplishes this using Homomorphic Encryption technology, which allows for the encryption of labels and the execution of key tree boosting steps in ciphertext. The outcome is a distributed boosted-trees model
-comprised of PYUObjects, with each party having knowledge only of their own split points. This implementation utilizes both HEU and PYU devices to achieve high performance with ease.
+在本教程中，我们将探索如何使用隐语的树模型能力，使用SecureBoost算法执行垂直联邦学习。SecureBoost是一种经典算法，它优先保护垂直分区数据集中的标签信息。它使用同态加密技术实现标签加密和密文中的关键树增强步骤执行。其结果是由PYU对象组成的分布式提升树模型，每个参与方仅了解自己的拆分点。该实现利用HEU和PYU设备实现高性能。
 
-Let’s dive into the details and learn how to use SecureBoost with SecretFlow!
+让我们深入了解细节，学习如何使用隐语进行SecureBoost！
 
 :target{#设备设置}
 
@@ -228,7 +227,7 @@ Let’s dive into the details and learn how to use SecureBoost with SecretFlow!
 
 现在我们可以保存模型, 并在以后使用它。请注意，模型是分布式的，我们将保存到多个参与方，并从多个参与方中加载。
 
-Let’s first define the paths.
+让我们先定义路径。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
@@ -243,7 +242,7 @@ Let’s first define the paths.
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Then let’s save the model.
+然后让我们保存模型。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[9]:" stderr={false} type="input">
@@ -256,7 +255,7 @@ Then let’s save the model.
 
 现在您可以在之前指定的位置检查文件。
 
-Finally, let’s load the model and do a sanity check.
+最后，让我们加载模型并进行一次检查。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[10]:" stderr={false} type="input">

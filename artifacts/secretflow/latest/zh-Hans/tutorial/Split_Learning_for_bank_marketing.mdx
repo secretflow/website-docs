@@ -2,11 +2,11 @@
 
 # 拆分学习：银行营销
 
-> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+> 以下代码仅作为演示用，请勿直接在生产环境使用。
 
-In this tutorial, we will use the bank’s marketing model as an example to show how to accomplish split learning in vertical scenarios under the SecretFlow framework. SecretFlow provides a user-friendly Api that makes it easy to apply your Keras model or PyTorch model to split learning scenarios to complete joint modeling tasks for vertical scenarios.
+在这个教程中，我们将以银行的市场营销模型为例，展示在 <cite>SecretFlow</cite> 框架下如何完成垂直场景下的拆分学习。 <cite>SecretFlow</cite> 框架提供了一套用户友好的API，可以很方便的将您的Keras模型或者PyTorch模型应用到拆分学习场景，以完成垂直场景的联合建模任务.
 
-In this tutorial we will show you how to turn your existing ‘Keras’ model into a split learning model under Secretflow to complete federated multi-party modeling tasks.
+在接下来的教程中我们将手把手演示，如何将您已有的 <cite>Keras</cite> 模型变成 <cite>SecretFlow</cite> 下的拆分学习模型，完成联邦多方建模任务。
 
 :target{#什么是拆分学习？}
 
@@ -45,7 +45,7 @@ In this tutorial we will show you how to turn your existing ‘Keras’ model in
 2. 特征16维，标签为2分类
 3. 我们预先对数据进行了切割，alice持有其中的4维基础属性特征，bob持有12维银行交易特征，对应的label只有alice方持有
 
-Let’s start by looking at what our bank’s marketing data look like?
+我们先来看看我们的银行市场营销数据长什么样的?
 
 原始数据被拆分为bank\_alice和bank\_bob，分别存在alice和bob两方。这里的csv是仅经过拆分没有做预处理的原始数据，我们将使用secretflow preprocess进行FedData预处理。
 
@@ -154,7 +154,7 @@ Let’s start by looking at what our bank’s marketing data look like?
   </Notebook.FancyOutput>
 </Notebook.Cell>
 
-Bob is an old bank, they have the user’s account balance, house, loan, and recent marketing feedback.
+Bob端是一个老银行，他们有用户的账户余额，是否有房，是否有贷款，以及最近的营销反馈
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -251,9 +251,9 @@ Bob is an old bank, they have the user’s account balance, house, loan, and rec
 <LineBlock>
   环境的搭建
 
-  Where ‘Alice’ and ‘Bob’ are two `PYU`.
+  Alice 和 bob 是两个 PYU 。
 
-  Once you’ve constructed the two objects, you can happily start Splitting Learning.
+  在 Secretflow 环境中创建 2 个实体 \[Alice, Bob]，其中 ‘Alice’ 和 ‘Bob’ 是两个 PYU。 一旦您构建了这两个对象，您可以愉快地开始拆分学习
 </LineBlock>
 
 :target{#引入依赖}
@@ -321,9 +321,9 @@ read_csv(file_dict,delimiter,ppu,keys,drop_key)
 
 <cite>data</cite> 为构建好的垂直联邦表，它从全局上只拥有所有数据的 <cite>Schema</cite>
 
-Let’s examine the data management of `VDF` more closely.
+我们进一步来看一下VDF的数据管理
 
-As shown in the example, the `age` field belongs to `Alice`, so the corresponding column can be obtained from `Alice`’s partition. However, if `Bob` tries to obtain the `age` field, a `KeyError` error will be reported.
+通过一个实例可以看出，age这个字段是属于alice的，所以在alice方的partition可以得到对应的列，但是bob方想要去获取age的时候会报\`KeyError\`错误。
 
 这里有一个Partition的概念，是我们定义的一个数据分片，每个Partition都会有自己的device归属，只有归属的device才可以操作数据。
 
@@ -451,7 +451,7 @@ As shown in the example, the `age` field belongs to `Alice`, so the correspondin
 
 接下来我们开始创建我们定义的联邦模型 <cite>SLTFModel</cite> 和 <cite>SLTorchModel(WIP，工作正在进行)</cite> ,用于构建垂直场景的拆分学习，我们定义了简单易用的可扩展接口，可以很方便的将您已有的模型，转换成SF—Model，进而进行垂直场景联邦建模。
 
-Split learning is to break up a model so that one part is executed locally on the data and the other part is executed on the label side. First let’s define the locally executed model – base\_model.
+拆分学习即将一个模型拆分开来，一部分放在数据的本地执行，另外一部分放在有label的一方。首先我们来定义本地执行的模型——base\_model
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
@@ -484,7 +484,7 @@ Split learning is to break up a model so that one part is executed locally on th
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-We use create\_base\_model to create their base models for ‘Alice’ and ‘Bob’, respectively.
+我们使用create\_base\_model分别为 <cite>Alice</cite> 和 <cite>Bob</cite> 创建他们的base model
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
@@ -519,7 +519,7 @@ We use create\_base\_model to create their base models for ‘Alice’ and ‘Bo
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Next we define the side with the label, or the server-side model – fuse\_model In the definition of fuse\_model, we need to correctly define `loss`, `optimizer`, and `metrics`. This is compatible with all configurations of your existing Keras model.
+接下来我们定义有label的一方，或者server端的模型——fuse\_model。在fuse\_model的定义中，我们需要正确的定义loss，optimizer，metrics。这里可以兼容所有您已有的Keras模型的配置
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[17]:" stderr={false} type="input">
@@ -713,7 +713,7 @@ base_model_dict:Dict[PYU,model_fn]
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Let’s visualize the training process
+我们来可视化训练过程
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[26]:" stderr={false} type="input">
@@ -772,7 +772,7 @@ Let’s visualize the training process
   </Notebook.FancyOutput>
 </Notebook.Cell>
 
-Let’s call the evaluation function
+我们来调用一下评估函数，看下训练效果怎么样
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[29]:" stderr={false} type="input">
@@ -791,7 +791,7 @@ Let’s call the evaluation function
 
   数据
 
-  The data also use kaggle’s anti-fraud data. Here, we just use Alice’s data of the new bank.
+  数据也使用 Kaggle 的反欺诈数据集。在这里，我们只使用 Alice 的新银行数据。
 
   样本量总计11162个，其中训练集8929， 测试集2233
 
@@ -945,7 +945,7 @@ Let’s call the evaluation function
 
 ### 小结
 
-The above two experiments simulate a typical vertical scene training problem. Alice and Bob have the same sample group, but each side has only a part of the features. If Alice only uses her own data to train the model, an accuracy of <strong>0.872</strong>, AUC <strong>0.53</strong> model can be obtained. However, if Bob’s data are combined, a model with an accuracy of <strong>0.875</strong> and AUC <strong>0.885</strong> can be obtained.
+上面两个实验模拟了一个典型的垂直场景的训练问题，Alice和Bob拥有相同的样本群体，但每一方只有样本的一部分特征数据，如果Alice只用自己的一方数据来训练模型，能够得到一个准确率为0.583,auc 分数为0.53的模型，但是如果联合Bob的数据之后，可以获得一个准确率为0.893，auc分数为0.883的模型。
 
 :target{#总结}
 

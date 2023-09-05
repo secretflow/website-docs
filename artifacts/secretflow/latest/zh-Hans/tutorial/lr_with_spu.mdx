@@ -2,7 +2,7 @@
 
 # 使用 SPU 进行逻辑回归
 
-> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+> 以下代码仅作为示例，请勿在生产环境直接使用。
 
 [SPU](https://www.secretflow.org.cn/docs/spu/en/) 是一个特定领域的编译器和运行时套件，提供可证明的安全计算服务。SPU编译器使用 [XLA](https://www.tensorflow.org/xla) 作为前端IR，支持多种AI框架（如Tensorflow、JAX和PyTorch）。SPU 编译器将 XLA 转换为可由 SPU 运行时解释的 IR。 目前 SPU 团队强烈推荐使用 [JAX](https://github.com/google/jax) 作为前端。
 
@@ -10,14 +10,14 @@
 
 ## 学习目标：
 
-After doing this lab, you’ll know how to:
+完成本实验后，您将知道如何：
 
 - 如何使用 JAX 编写逻辑回归训练程序。
 - 如何轻松地将 JAX 程序转换为 SPU(MPC) 程序。
 
 在本实验室中，我们选择 [Breast Cancer](https://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+\(diagnostic\)) 作为数据集。 我们需要通过 30 个特征来判断癌症是恶性还是良性。 在 MPC 程序中，两方共同训练模型，每一方提供一半的特征（15）。
 
-While, first, let’s just forget MPC settings and just write a Logistic Regression training program with JAX directly.
+首先，让我们忘记 MPC 语意，直接使用 JAX 编写逻辑回归训练程序。
 
 :target{#使用-JAX-训练模型}
 
@@ -63,7 +63,7 @@ While, first, let’s just forget MPC settings and just write a Logistic Regress
 
 ### 定义模型
 
-First, let’s define the loss function, which is a negative log-likelihood in our case.
+首先，让我们定义损失函数，在我们的例子中它是一个负对数似然。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
@@ -89,7 +89,7 @@ First, let’s define the loss function, which is a negative log-likelihood in o
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Second, let’s define a single train step with SGD optimizer. Just to remind you, x1 represents 15 features from one party while x2 represents the other 15 features from the other party.
+其次，让我们使用 SGD 优化器定义单个训练步骤。 提醒一下，x1 代表来自一方的 15 个特征，而 x2 代表来自另一方的其他 15 个特征。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
@@ -107,7 +107,7 @@ Second, let’s define a single train step with SGD optimizer. Just to remind yo
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Last, let’s build everything together as a `fit` method which returns the model and losses of each epoch.
+最后，让我们将所有内容构建为“fit”方法，该方法返回每个epoch的模型和损失。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -143,7 +143,7 @@ Last, let’s build everything together as a `fit` method which returns the mode
 
 ### 试试！
 
-Let’s put everything we have together and train a LR model!
+让我们把所有的东西放在一起，训练一个 LR 模型！
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
@@ -295,7 +295,7 @@ Let’s put everything we have together and train a LR model!
 
 > 请小心使用 `sf.reveal`，因为它可能导致秘密泄露。
 
-Finally, let’s validate the model with AUC.
+最后，让我们用 AUC 验证模型。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[11]:" stderr={false} type="input">

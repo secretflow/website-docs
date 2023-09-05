@@ -2,7 +2,7 @@
 
 # 在 SecretFlow 中使用自定义 DataBuilder（Torch）
 
-The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+下面的代码只是演示。出于系统安全考虑，请不要直接在生产中使用。
 
 本教程将展示下，怎样在 SecretFlow 的多方安全环境中，如何使用自定义 DataBuilder 模式加载数据，并训练模型。
 
@@ -47,7 +47,7 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
 
 使用 DataBuilder 的步骤：
 
-1. Develop the DataBuilder function for constructing the DataLoader under the PyTorch engine in the single-machine version. <em>Note: The dataset\_builder function requires the ‘stage’ parameter.</em>
+1. 使用单机版本 PyTorch 引擎进行开发，完成 PyTorch 下构建 DataLoader 的 DataBuilder 函数。<em>注：dataset\_builder 函数需要传入 stage 参数</em>
 2. 将各方的 DataBuilder 函数进行 wrap，得到 create\_dataset\_builder。
 3. 构造 data\_builder\_dict \[PYU, dataset\_builder]。
 4. 将得到的 data\_builder\_dict 作为参数传入 `fit` 函数的 `dataset_builder` 。此时 `x` 参数位置传入 dataset\_builder 中需要的输入。（比如：本例中传入的输入是实际使用的图像路径）。
@@ -183,7 +183,7 @@ Flower 数据集介绍：flower 数据集是一个包含了 5 种花卉（雏菊
 
 需要注意的是：
 
-- FLModel requires that the input to DataBuilder must include the stage parameter (stage=”train”).
+- FLModel 要求 DataBuilder 的输入必须包含 stage 参数（stage=“train”）
 - FLModel 要求传入的 DataBuilder 需要返回两个结果（`data_set`，`steps_per_epoch`）
 
 <Notebook.Cell>

@@ -2,7 +2,7 @@
 
 # SplitREC：在隐语中使用DeepFM算法
 
-> The following codes are demos only. It’s NOT for production due to system security concerns, please DO NOT use it directly in production.
+> 以下代码仅作为示例，请勿在生产环境直接使用。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
@@ -13,8 +13,7 @@
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-SecretFlow framework provides SLModel to meet user’s needs for Vertical Federated Learning. In the vertical scenario, all parties achieve the purpose of training a better model through complementary features and joint training. In actual application scenarios, the recommendation scenario fits well with the vertical federation solution. It has great application prospects. Different data holders have different features and are unwilling to share with each other, but the features are complementary,
-such as consumer features, financial features and user portraits, etc. However, recommendation algorithms are often not so directly applicable to split learning. For example, the FM algorithm requires feature crossover. Therefore, we provide a special item in SecretFlow, by encapsulating commonly used recommendation algorithms, to facilitate users to use federated learning for recommendation applications. This article will introduce how to use the DeepFM algorithm in SecretFlow.
+隐语在垂直场景提供了SLModel来满足用户的垂直联邦需求，垂直场景中，各方通过特征互补，联合训练来达到训练出更好模型的目的。而在实际的应用场景中，推荐场景和垂直联邦方案非常契合。有很大的应用前景。  不同的数据持有方拥有不同的特征，彼此不愿意分享，但是特征之间是互补的，比如消费特征、金融特征和用户画像等。但是推荐算法往往并不是那么直接可以被应用到拆分学习中，比如FM算法需要特征交叉。  因此我们在隐语中提供了一个专项，通过对常用的推荐算法进行封装，来达到方便用户使用联邦学习进行推荐应用的目的。 本文下面将会介绍何在隐语中使用DeepFM算法
 
 :target{#DeepFM拆分原理介绍}
 
@@ -172,7 +171,7 @@ class DeepFMfuse(tf.keras.Model):
     def __init__(self, dnn_units_size, dnn_activation="relu", **kwargs):
 ```
 
-<strong>Let’s take an example to see how to use DeepFM packaged in SecretFlow for training and prediction</strong>
+下面我们通过一个例子来看一下如果使用隐语封装的DeepFM来进行训练和预测
 
 :target{#环境设置}
 

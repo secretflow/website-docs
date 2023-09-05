@@ -2,7 +2,7 @@
 
 # 特征工程
 
-> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+> 本页面中的代码仅供参考，部署模式存在安全问题，请 <strong>不要</strong> 作为生产代码使用。
 
 推荐使用 [jupyter](https://jupyter.org/) 运行本教程。
 
@@ -14,7 +14,7 @@ Secretflow 提供了多种工具来分析数据集，以提高机器学习结果
 
 初始化Secretflow，并创建alice/bob两个计算参与方兼数据提供方。
 
-> 💡 Before using preprocessing, you may need to get to know secretflow’s [DataFrame](../preprocessing/DataFrame.mdx).
+> 使用前请先了解Secretflow的数据集设定 [DataFrame](../preprocessing/DataFrame.mdx)。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[13]:" stderr={false} type="input">
@@ -103,7 +103,7 @@ Secretflow 提供了多种工具来分析数据集，以提高机器学习结果
 
 SecretFlow 的 `SSVertPearsonR` 模块可以用于探查垂直划分数据集的皮尔逊积矩相关系数，计算过程使用秘密分享协议保护。
 
-SSVertPearsonR will standardize input dataset first. After standardized, all features’ variance is 1 and the mean is 0, the calculation is simplified to:
+SSVertPearsonR会首先标准化数据集，这样一来所有特征的均值为0方差为1，可以将计算简化为：
 
 <Math>
   $$

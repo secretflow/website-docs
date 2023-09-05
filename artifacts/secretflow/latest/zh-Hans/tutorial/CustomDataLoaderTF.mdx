@@ -2,7 +2,7 @@
 
 # 在 SecretFlow 中使用自定义 DataBuilder（TensorFlow）
 
-The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+以下代码仅作为示例，请勿在生产环境直接使用。
 
 本教程将展示下，怎样在 SecretFlow 的多方安全环境中，如何使用自定义 DataBuilder 模式加载数据，并训练模型。本教程将使用 Flower 数据集的图像分类任务来进行介绍，如何使用自定义 DataBuilder 完成联邦学习。
 
@@ -39,7 +39,7 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
 
 ## 接口介绍
 
-We support custom DataBuilder reads in SecretFlow’s `FLModel` to make it easier for users to handle data inputs more flexibly according to their needs. Let’s use an example to demonstrate how to use the custom DataBuilder for federated model training.
+我们在 SecretFlow 的 `FLModel` 中支持了自定义 DataBuilder 的读取方式，可以方便用户根据需求更灵活的处理数据输入。下面我们以一个例子来展示下，如何使用自定义 DataBuilder 来进行联邦模型训练。
 
 使用 DataBuilder 的步骤：
 
@@ -99,7 +99,7 @@ Flower 数据集介绍：flower 数据集是一个包含了 5 种花卉（雏菊
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Next let’s start building a custom DataBuilder
+接下来我们开始构造自定义 DataBuilder
 
 :target{id="1.-使用单机引擎开发-DataBuilder"}
 

@@ -2,7 +2,7 @@
 
 # 水平联邦：图像分类
 
-> The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
+> 以下代码仅作为示例，请勿在生产环境直接使用。
 
 在这个教程中，我们将使用图像分类任务来介绍在secretflow框架下怎样来完成水平联邦学习任务。secretflow框架提供了一套用户友好的api，可以很方便的将您的keras模型或者pytorch模型应用到联邦学习场景，成为联邦学习模型。在接下来的教程中我们将手把手演示，如何将您已有的模型变成secretflow下的联邦模型，完成联邦多方建模任务。
 
@@ -80,8 +80,7 @@ Alice 和 Bob 各自拥有一半的数据。
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-`x_train`, `y_train`, `x_test`, `y_test` are both `FedNdarray`. Let’s take a look at the data obtained from FedNdarray. FedNdarray is a virtual Ndarray built on a multi-party concept to protect data privacy. The underlying data is stored in each participant. The FedNdarray operation is actually performed by each participant on their own local data. The server or other clients do not touch the original data. For demonstration purposes, we will manually download the data to the driver.
-<strong>This data will be used later in the unilateral model comparison</strong>.
+`x_train`, `y_train`, `x_test`, `y_test` 都是 `FedNdarray`.我们来看一下获得到的FedNdarray数据，FedNdarray是一个构建在多方概念上的虚拟的Ndarray，目的是保护数据隐私。底层数据存储在各个参与方，对于FedNdarray的操作，实际上只是各个参与方对自己的local数据做操作。server端或者其他client不会接触到原始的数据。这里为了方便演示，我们手动把数据下载到driver端。 <strong>这个数据在后面的单方模型对比使用</strong>。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
@@ -96,7 +95,7 @@ Alice 和 Bob 各自拥有一半的数据。
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Let’s grab some samples from the data set, and just visually see, what does the data look like for Both Alice and Bob?
+让我们从数据集中抓取一些样本，通过可视化的方法来看看，在Alice和Bob两方的数据是什么样？
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
@@ -398,8 +397,7 @@ Let’s grab some samples from the data set, and just visually see, what does th
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-The two experiments above simulated a training problem in a typical horizontal federation scenario, Alice and Bob have same type of data. Each side had only a portion of the sample, but the training objectives is the same. If Alice only uses her own data to train the model, could only obtain a model with an accuracy of 0.945. However, if Bob’s data is combined, a model with an accuracy close to 0.995 can be obtained. In addition, the generalization performance of the model jointly trained with
-multi-party data will also be better.
+上面两个实验模拟了一个典型的水平联邦场景的训练问题，Alice和Bob拥有类型的图片，每一方只有样本的一部分数据，但是双方的训练目的是一致的如果Alice只用自己的一方数据来训练模型，能够得到一个精确度0.945的模型，但是如果联合Bob的数据之后，可以获得一个精确度接近0.995的模型，而且多方数据联合训练的模型的泛化性能也会更好。
 
 :target{#总结}
 

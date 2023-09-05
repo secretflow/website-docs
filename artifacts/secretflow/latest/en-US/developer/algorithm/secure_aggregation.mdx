@@ -173,7 +173,7 @@ the secrets are cancelled out after aggregation and then we can get the correct 
 
 Note that `Masking with One-Time Pads` is based on semi-honest assumptions and does not support client dropping. For more information, please refer to [Practical Secure Aggregation for Privacy-Preserving Machine Learning](https://eprint.iacr.org/2017/281.pdf)
 
-> <strong>Warning:</strong> The SecureAggregator uses [numpy.random.PCG64](https://numpy.org/doc/stable/reference/random/bit_generators/pcg64.html#numpy.random.PCG64). There are many discussions of whether PCG is a CSPRNG (e.g. [https://crypto.stackexchange.com/questions/77101/is-the-pcg-prng-a-csprng-or-why-not](https://crypto.stackexchange.com/questions/77101/is-the-pcg-prng-a-csprng-or-why-not)), we prefer a conservative strategy unless a further security analysis came up. Therefore we recommend users to use a standardized CSPRNG in industrial scenarios.
+> <strong>Warning:</strong> The SecureAggregator uses [numpy.random.PCG64](https://numpy.org/doc/stable/reference/random/bit_generators/pcg64.html#numpy.random.PCG64). There are many discussions of whether PCG is a CSPRNG (e.g. [https://crypto.stackexchange.com/questions/77101/is-the-pcg-prng-a-csprng-or-why-not](https://crypto.stackexchange.com/questions/77101/is-the-pcg-prng-a-csprng-or-why-not)), we prefer a conservative strategy unless a further security analysis came up. Therefore we recommend users to use a standardized CSPRNG in industrial scenarios.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
