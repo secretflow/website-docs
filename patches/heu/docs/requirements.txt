@@ -1,7 +1,7 @@
 sphinx>=7
+nbsphinx==0.9.1  # nbsphinx>0.9.1 has issues with MyST anchors somehow
 linkify-it-py
 myst-parser
-nbsphinx
 sphinx_design
 sphinxcontrib-mermaid
 sf-heu
