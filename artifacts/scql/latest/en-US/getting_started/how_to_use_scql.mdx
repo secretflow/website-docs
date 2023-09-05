@@ -18,9 +18,11 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
 
 - Alice: the user in party alice
 - Bob: the user in party bob
-- Admin: the root user in SCDB
-- GRM: Global Resource Manager
 - SCDB: the SCDB server
+
+<Container type="note">
+  Before the start of the project, Alice and Bob need to obtain the root user’s username and password from the admin.
+</Container>
 
 :target{#prepare-stage}
 
@@ -29,27 +31,19 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
 <DefinitionList>
   <dl>
     <dt>
-      <DefinitionList.Term><span>1.0 register information</span></DefinitionList.Term>
+      <DefinitionList.Term><span>1.0 create database</span></DefinitionList.Term>
     </dt>
 
     <dd>
-      Information which contains table schema and engine information registered in [<span>GRM</span>](../reference/grm.mdx#grm).
+      Alice or Bob creates a new database using the root user account through [<span>CREATE DATABASE Statement</span>](../reference/scql_manual.mdx#create-database-stm), which can be considered a new project, SCQL supports running multiple projects simultaneously.
     </dd>
-  </dl>
-</DefinitionList>
 
-<Container type="note">
-  The specific process of this step depends on the implementation of GRM. For example, in ToyGRM, it just loads information from a JSON file.
-</Container>
-
-<DefinitionList>
-  <dl>
     <dt>
-      <DefinitionList.Term><span>2.0 create database</span></DefinitionList.Term>
+      <DefinitionList.Term><span>2.0 create and grant user</span></DefinitionList.Term>
     </dt>
 
     <dd>
-      The Admin actor creates a new database through [<span>CREATE DATABASE Statement</span>](../reference/scql_manual.mdx#create-database-stm), which can be considered a new project, , SCQL supports running multiple projects simultaneously.
+      Alice creates user account “Alice” in SCDB using the root user account by [<span>CREATE USER Statement</span>](../reference/scql_manual.mdx#create-user-stm), and grants access to the relevant database by [<span>GRANT Statement</span>](../reference/scql_manual.mdx#scql-grant-revoke)
     </dd>
 
     <dt>
@@ -57,7 +51,7 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
     </dt>
 
     <dd>
-      The Admin actor creates users Alice and Bob in SCDB by [<span>CREATE USER Statement</span>](../reference/scql_manual.mdx#create-user-stm), and grants access to the relevant database by [<span>GRANT Statement</span>](../reference/scql_manual.mdx#scql-grant-revoke)
+      Bob creates user account “Bob” in SCDB using the root user account by [<span>CREATE USER Statement</span>](../reference/scql_manual.mdx#create-user-stm), and grants access to the relevant database by [<span>GRANT Statement</span>](../reference/scql_manual.mdx#scql-grant-revoke)
     </dd>
 
     <dt>
@@ -65,23 +59,7 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
     </dt>
 
     <dd>
-      Alice creates table in SCDB by [<span>CREATE TABLE Statement</span>](../reference/scql_manual.mdx#create-table).
-    </dd>
-
-    <dt>
-      <DefinitionList.Term><span>4.1 check table owner</span></DefinitionList.Term>
-    </dt>
-
-    <dd>
-      SCDB check if Alice is the owner of the table by send message to GRM through [<span>VerifyTableOwnership</span>](../reference/grm.mdx#verify-table-ownership).
-    </dd>
-
-    <dt>
-      <DefinitionList.Term><span>4.2 get table schema</span></DefinitionList.Term>
-    </dt>
-
-    <dd>
-      SCDB retrieves table schema information of the table created by Alice from GRM through [<span>GetTableMeta</span>](../reference/grm.mdx#get-table-meta).
+      Alice creates table in SCDB using the account “Alice” by [<span>CREATE TABLE Statement</span>](../reference/scql_manual.mdx#create-table).
     </dd>
 
     <dt>
@@ -89,23 +67,7 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
     </dt>
 
     <dd>
-      Bob creates table in SCDB by [<span>CREATE TABLE Statement</span>](../reference/scql_manual.mdx#create-table).
-    </dd>
-
-    <dt>
-      <DefinitionList.Term><span>5.1 check table owner</span></DefinitionList.Term>
-    </dt>
-
-    <dd>
-      SCDB check if Bob is the owner of the table by send message to GRM through [<span>VerifyTableOwnership</span>](../reference/grm.mdx#verify-table-ownership).
-    </dd>
-
-    <dt>
-      <DefinitionList.Term><span>5.2 get table schema</span></DefinitionList.Term>
-    </dt>
-
-    <dd>
-      SCDB retrieves table schema information of the table created by Bob from GRM through [<span>GetTableMeta</span>](../reference/grm.mdx#get-table-meta).
+      Bob creates table in SCDB using the account “Bob” by [<span>CREATE TABLE Statement</span>](../reference/scql_manual.mdx#create-table).
     </dd>
 
     <dt>
@@ -113,15 +75,15 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
     </dt>
 
     <dd>
-      Alice grants CCL about the table created by Alice for Alice and Bob in SCDB, see [<span>CCL</span>](../reference/scql_ccl_intro.mdx) for more information.
+      Alice grants CCL about the table created by Alice for Alice and Bob in SCDB using the account “Alice”, see [<span>CCL</span>](../reference/scql_ccl_intro.mdx) for more information.
     </dd>
 
     <dt>
-      <DefinitionList.Term><span>6.1 grant CCL</span></DefinitionList.Term>
+      <DefinitionList.Term><span>7.0 grant CCL</span></DefinitionList.Term>
     </dt>
 
     <dd>
-      Bob grants CCL about the table created by Bob for Alice and Bob in SCDB, see [<span>CCL</span>](../reference/scql_ccl_intro.mdx) for more information.
+      Bob grants CCL about the table created by Bob for Alice and Bob in SCDB using the account “Bob”, see [<span>CCL</span>](../reference/scql_ccl_intro.mdx) for more information.
     </dd>
   </dl>
 </DefinitionList>
@@ -133,19 +95,11 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
 <DefinitionList>
   <dl>
     <dt>
-      <DefinitionList.Term><span>7.0 submit a DQL</span></DefinitionList.Term>
+      <DefinitionList.Term><span>8.0 submit a DQL</span></DefinitionList.Term>
     </dt>
 
     <dd>
-      Alice submits a DQL to SCDB through [<span>public/submit\_query</span>](../development/scql_api.mdx#submit-query) or [<span>public/submit\_and\_get</span>](../development/scql_api.mdx#submit-and-get).
-    </dd>
-
-    <dt>
-      <DefinitionList.Term><span>8.0 get engine information</span></DefinitionList.Term>
-    </dt>
-
-    <dd>
-      SCDB retrieves the engine information of the relevant parties from GRM through [<span>GetEngines</span>](../reference/grm.mdx#get-engines).
+      Alice submits a DQL to SCDB through [<span>public/submit\_query</span>](../development/scql_api.mdx#submit-query) or [<span>public/submit\_and\_get</span>](../development/scql_api.mdx#submit-and-get) using the account “Alice”.
     </dd>
 
     <dt>
