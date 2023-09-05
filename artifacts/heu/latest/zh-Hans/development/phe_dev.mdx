@@ -703,10 +703,9 @@ bazel run -c opt heu/library/benchmark:np
 单元测试通过后，请执行以下命令编译、安装 Pip 包，以便在 Python 环境中使用您的新算法：
 
 ```shell
-# Please switch to Python 3.8 environment
 pip install pybind11 # Only need to run once
 
-sh heu/pylib/reinstall.sh
+sh build_wheel_entrypoint.sh
 ```
 
 基本使用：

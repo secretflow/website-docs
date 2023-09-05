@@ -703,10 +703,9 @@ bazel run -c opt heu/library/benchmark:np
 After the unit tests are passed, execute the following commands to compile and install the HEU pip package so that your new algorithm can be used:
 
 ```shell
-# Please switch to Python 3.8 environment
 pip install pybind11 # Only need to run once
 
-sh heu/pylib/reinstall.sh
+sh build_wheel_entrypoint.sh
 ```
 
 Basic usage:
