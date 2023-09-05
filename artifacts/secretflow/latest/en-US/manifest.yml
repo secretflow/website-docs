@@ -1,0 +1,488 @@
+sidebar:
+  - items:
+      - {id: getting_started/installation.mdx, label: Installation, type: doc}
+      - {id: getting_started/deployment.mdx, label: Deployment, type: doc}
+    label: Getting started
+    link: {id: getting_started/index.mdx, label: Getting started, type: doc}
+    type: category
+  - items:
+      - items:
+          - {id: user_guide/preprocessing/DataFrame.mdx, label: DataFrame, type: doc}
+          - {id: user_guide/preprocessing/WeightOfEvidenceEncoding.mdx, label: Weight
+              Of Evidence encoding, type: doc}
+        label: Preprocessing
+        link: {id: user_guide/preprocessing/index.mdx, label: Preprocessing, type: doc}
+        type: category
+      - {id: user_guide/psi.mdx, label: Private Set Intersection(PSI), type: doc}
+      - items:
+          - {id: user_guide/mpc_ml/linear_model.mdx, label: Linear Models, type: doc}
+          - {id: user_guide/mpc_ml/decision_tree.mdx, label: Decision Trees, type: doc}
+          - {id: user_guide/mpc_ml/feature_eng.mdx, label: Feature Engineering, type: doc}
+        label: MPC Machine Learning
+        link: {id: user_guide/mpc_ml/index.mdx, label: MPC Machine Learning, type: doc}
+        type: category
+      - items:
+          - items:
+              - {id: user_guide/federated_learning/horizontal_federated_learning/fl_model.mdx,
+                label: Federated NN Model, type: doc}
+              - {id: user_guide/federated_learning/horizontal_federated_learning/tree.mdx,
+                label: Horizontally Federated XGBoost, type: doc}
+            label: Horizontal Federated Learning
+            link: {id: user_guide/federated_learning/horizontal_federated_learning/index.mdx,
+              label: Horizontal Federated Learning, type: doc}
+            type: category
+          - items:
+              - {id: user_guide/federated_learning/vertical_federated_learning/split_learning.mdx,
+                label: Split Learning, type: doc}
+              - {id: user_guide/federated_learning/vertical_federated_learning/tree.mdx,
+                label: Vertically Federated XGB (SecureBoost), type: doc}
+            label: Vertical Federated Learning
+            link: {id: user_guide/federated_learning/vertical_federated_learning/index.mdx,
+              label: Vertical Federated Learning, type: doc}
+            type: category
+          - {id: user_guide/federated_learning/mix_federated_learning.mdx, label: Mix
+              Federated Learning, type: doc}
+        label: Federated Learning
+        link: {id: user_guide/federated_learning/index.mdx, label: Federated Learning,
+          type: doc}
+        type: category
+    label: User Guide
+    link: {id: user_guide/index.mdx, label: User Guide, type: doc}
+    type: category
+  - items:
+      - items:
+          - items:
+              - items:
+                  - {id: source/secretflow.component.component.feature.mdx, label: secretflow.component.feature
+                      package, type: doc}
+                  - items:
+                      - items:
+                          - {id: source/secretflow.component.ml.boost.component.ml.boost.sgb.mdx,
+                            label: secretflow.component.ml.boost.sgb package, type: doc}
+                          - {id: source/secretflow.component.ml.boost.component.ml.boost.ss_xgb.mdx,
+                            label: secretflow.component.ml.boost.ss_xgb package, type: doc}
+                        label: secretflow.component.ml.boost package
+                        link: {id: source/secretflow.component.ml.component.ml.boost.mdx,
+                          label: secretflow.component.ml.boost package, type: doc}
+                        type: category
+                      - {id: source/secretflow.component.ml.component.ml.eval.mdx,
+                        label: secretflow.component.ml.eval package, type: doc}
+                      - {id: source/secretflow.component.ml.component.ml.linear.mdx,
+                        label: secretflow.component.ml.linear package, type: doc}
+                    label: secretflow.component.ml package
+                    link: {id: source/secretflow.component.component.ml.mdx, label: secretflow.component.ml
+                        package, type: doc}
+                    type: category
+                  - {id: source/secretflow.component.component.preprocessing.mdx,
+                    label: secretflow.component.preprocessing package, type: doc}
+                  - {id: source/secretflow.component.component.stats.mdx, label: secretflow.component.stats
+                      package, type: doc}
+                label: secretflow.component package
+                link: {id: source/secretflow.component.mdx, label: secretflow.component
+                    package, type: doc}
+                type: category
+              - items:
+                  - {id: source/secretflow.data.data.horizontal.mdx, label: secretflow.data.horizontal
+                      package, type: doc}
+                  - {id: source/secretflow.data.data.io.mdx, label: secretflow.data.io
+                      package, type: doc}
+                  - {id: source/secretflow.data.data.mix.mdx, label: secretflow.data.mix
+                      package, type: doc}
+                  - {id: source/secretflow.data.data.vertical.mdx, label: secretflow.data.vertical
+                      package, type: doc}
+                label: secretflow.data package
+                link: {id: source/secretflow.data.mdx, label: secretflow.data package,
+                  type: doc}
+                type: category
+              - items:
+                  - {id: source/secretflow.device.device.device.mdx, label: secretflow.device.device
+                      package, type: doc}
+                  - {id: source/secretflow.device.device.kernels.mdx, label: secretflow.device.kernels
+                      package, type: doc}
+                label: secretflow.device package
+                link: {id: source/secretflow.device.mdx, label: secretflow.device
+                    package, type: doc}
+                type: category
+              - {id: source/secretflow.distributed.mdx, label: secretflow.distributed
+                  package, type: doc}
+              - {id: source/secretflow.kuscia.mdx, label: secretflow.kuscia package,
+                type: doc}
+              - items:
+                  - items:
+                      - {id: source/secretflow.ml.boost.ml.boost.core.mdx, label: secretflow.ml.boost.core
+                          package, type: doc}
+                      - items:
+                          - {id: source/secretflow.ml.boost.homo_boost.ml.boost.homo_boost.boost_core.mdx,
+                            label: secretflow.ml.boost.homo_boost.boost_core package,
+                            type: doc}
+                          - {id: source/secretflow.ml.boost.homo_boost.ml.boost.homo_boost.tree_core.mdx,
+                            label: secretflow.ml.boost.homo_boost.tree_core package,
+                            type: doc}
+                        label: secretflow.ml.boost.homo_boost package
+                        link: {id: source/secretflow.ml.boost.ml.boost.homo_boost.mdx,
+                          label: secretflow.ml.boost.homo_boost package, type: doc}
+                        type: category
+                      - items:
+                          - items:
+                              - {id: source/secretflow.ml.boost.sgb_v.core.ml.boost.sgb_v.core.cache.mdx,
+                                label: secretflow.ml.boost.sgb_v.core.cache package,
+                                type: doc}
+                              - {id: source/secretflow.ml.boost.sgb_v.core.ml.boost.sgb_v.core.distributed_tree.mdx,
+                                label: secretflow.ml.boost.sgb_v.core.distributed_tree
+                                  package, type: doc}
+                              - {id: source/secretflow.ml.boost.sgb_v.core.ml.boost.sgb_v.core.pure_numpy_ops.mdx,
+                                label: secretflow.ml.boost.sgb_v.core.pure_numpy_ops
+                                  package, type: doc}
+                            label: secretflow.ml.boost.sgb_v.core package
+                            link: {id: source/secretflow.ml.boost.sgb_v.ml.boost.sgb_v.core.mdx,
+                              label: secretflow.ml.boost.sgb_v.core package, type: doc}
+                            type: category
+                          - items:
+                              - {id: source/secretflow.ml.boost.sgb_v.factory.ml.boost.sgb_v.factory.booster.mdx,
+                                label: secretflow.ml.boost.sgb_v.factory.booster package,
+                                type: doc}
+                              - items:
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.bucket_sum_calculator.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.bucket_sum_calculator
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.cache.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.cache
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.data_preprocessor.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.data_preprocessor
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.gradient_encryptor.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.gradient_encryptor
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.leaf_manager.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.leaf_manager
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.loss_computer.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.loss_computer
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.model_builder.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.model_builder
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.node_selector.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.node_selector
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.order_map_manager.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.order_map_manager
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.sampler.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.sampler
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.shuffler.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.shuffler
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.split_candidate_manager.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.split_candidate_manager
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.split_finder.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.split_finder
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.split_tree_builder.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.split_tree_builder
+                                      package, type: doc}
+                                  - {id: 
+                                      source/secretflow.ml.boost.sgb_v.factory.components.ml.boost.sgb_v.factory.components.tree_trainer.mdx,
+                                    label: secretflow.ml.boost.sgb_v.factory.components.tree_trainer
+                                      package, type: doc}
+                                label: secretflow.ml.boost.sgb_v.factory.components
+                                  package
+                                link: {id: source/secretflow.ml.boost.sgb_v.factory.ml.boost.sgb_v.factory.components.mdx,
+                                  label: secretflow.ml.boost.sgb_v.factory.components
+                                    package, type: doc}
+                                type: category
+                            label: secretflow.ml.boost.sgb_v.factory package
+                            link: {id: source/secretflow.ml.boost.sgb_v.ml.boost.sgb_v.factory.mdx,
+                              label: secretflow.ml.boost.sgb_v.factory package, type: doc}
+                            type: category
+                        label: secretflow.ml.boost.sgb_v package
+                        link: {id: source/secretflow.ml.boost.ml.boost.sgb_v.mdx,
+                          label: secretflow.ml.boost.sgb_v package, type: doc}
+                        type: category
+                      - items:
+                          - {id: source/secretflow.ml.boost.ss_xgb_v.ml.boost.ss_xgb_v.core.mdx,
+                            label: secretflow.ml.boost.ss_xgb_v.core package, type: doc}
+                        label: secretflow.ml.boost.ss_xgb_v package
+                        link: {id: source/secretflow.ml.boost.ml.boost.ss_xgb_v.mdx,
+                          label: secretflow.ml.boost.ss_xgb_v package, type: doc}
+                        type: category
+                    label: secretflow.ml.boost package
+                    link: {id: source/secretflow.ml.ml.boost.mdx, label: secretflow.ml.boost
+                        package, type: doc}
+                    type: category
+                  - items:
+                      - {id: source/secretflow.ml.linear.ml.linear.hess_sgd.mdx, label: secretflow.ml.linear.hess_sgd
+                          package, type: doc}
+                      - items:
+                          - {id: source/secretflow.ml.linear.ss_glm.ml.linear.ss_glm.core.mdx,
+                            label: secretflow.ml.linear.ss_glm.core package, type: doc}
+                        label: secretflow.ml.linear.ss_glm package
+                        link: {id: source/secretflow.ml.linear.ml.linear.ss_glm.mdx,
+                          label: secretflow.ml.linear.ss_glm package, type: doc}
+                        type: category
+                      - {id: source/secretflow.ml.linear.ml.linear.ss_sgd.mdx, label: secretflow.ml.linear.ss_sgd
+                          package, type: doc}
+                    label: secretflow.ml.linear package
+                    link: {id: source/secretflow.ml.ml.linear.mdx, label: secretflow.ml.linear
+                        package, type: doc}
+                    type: category
+                  - items:
+                      - {id: source/secretflow.ml.nn.ml.nn.applications.mdx, label: secretflow.ml.nn.applications
+                          package, type: doc}
+                      - items:
+                          - items:
+                              - items:
+                                  - {id: 
+                                      source/secretflow.ml.nn.fl.backend.tensorflow.ml.nn.fl.backend.tensorflow.strategy.mdx,
+                                    label: secretflow.ml.nn.fl.backend.tensorflow.strategy
+                                      package, type: doc}
+                                label: secretflow.ml.nn.fl.backend.tensorflow package
+                                link: {id: source/secretflow.ml.nn.fl.backend.ml.nn.fl.backend.tensorflow.mdx,
+                                  label: secretflow.ml.nn.fl.backend.tensorflow package,
+                                  type: doc}
+                                type: category
+                              - items:
+                                  - {id: source/secretflow.ml.nn.fl.backend.torch.ml.nn.fl.backend.torch.strategy.mdx,
+                                    label: secretflow.ml.nn.fl.backend.torch.strategy
+                                      package, type: doc}
+                                label: secretflow.ml.nn.fl.backend.torch package
+                                link: {id: source/secretflow.ml.nn.fl.backend.ml.nn.fl.backend.torch.mdx,
+                                  label: secretflow.ml.nn.fl.backend.torch package,
+                                  type: doc}
+                                type: category
+                            label: secretflow.ml.nn.fl.backend package
+                            link: {id: source/secretflow.ml.nn.fl.ml.nn.fl.backend.mdx,
+                              label: secretflow.ml.nn.fl.backend package, type: doc}
+                            type: category
+                        label: secretflow.ml.nn.fl package
+                        link: {id: source/secretflow.ml.nn.ml.nn.fl.mdx, label: secretflow.ml.nn.fl
+                            package, type: doc}
+                        type: category
+                      - items:
+                          - {id: source/secretflow.ml.nn.sl.ml.nn.sl.agglayer.mdx,
+                            label: secretflow.ml.nn.sl.agglayer package, type: doc}
+                          - items:
+                              - {id: source/secretflow.ml.nn.sl.attack.ml.nn.sl.attack.torch.mdx,
+                                label: secretflow.ml.nn.sl.attack.torch package, type: doc}
+                            label: secretflow.ml.nn.sl.attack package
+                            link: {id: source/secretflow.ml.nn.sl.ml.nn.sl.attack.mdx,
+                              label: secretflow.ml.nn.sl.attack package, type: doc}
+                            type: category
+                          - items:
+                              - items:
+                                  - {id: 
+                                      source/secretflow.ml.nn.sl.backend.tensorflow.ml.nn.sl.backend.tensorflow.strategy.mdx,
+                                    label: secretflow.ml.nn.sl.backend.tensorflow.strategy
+                                      package, type: doc}
+                                label: secretflow.ml.nn.sl.backend.tensorflow package
+                                link: {id: source/secretflow.ml.nn.sl.backend.ml.nn.sl.backend.tensorflow.mdx,
+                                  label: secretflow.ml.nn.sl.backend.tensorflow package,
+                                  type: doc}
+                                type: category
+                              - items:
+                                  - {id: source/secretflow.ml.nn.sl.backend.torch.ml.nn.sl.backend.torch.strategy.mdx,
+                                    label: secretflow.ml.nn.sl.backend.torch.strategy
+                                      package, type: doc}
+                                label: secretflow.ml.nn.sl.backend.torch package
+                                link: {id: source/secretflow.ml.nn.sl.backend.ml.nn.sl.backend.torch.mdx,
+                                  label: secretflow.ml.nn.sl.backend.torch package,
+                                  type: doc}
+                                type: category
+                            label: secretflow.ml.nn.sl.backend package
+                            link: {id: source/secretflow.ml.nn.sl.ml.nn.sl.backend.mdx,
+                              label: secretflow.ml.nn.sl.backend package, type: doc}
+                            type: category
+                        label: secretflow.ml.nn.sl package
+                        link: {id: source/secretflow.ml.nn.ml.nn.sl.mdx, label: secretflow.ml.nn.sl
+                            package, type: doc}
+                        type: category
+                    label: secretflow.ml.nn package
+                    link: {id: source/secretflow.ml.ml.nn.mdx, label: secretflow.ml.nn
+                        package, type: doc}
+                    type: category
+                label: secretflow.ml package
+                link: {id: source/secretflow.ml.mdx, label: secretflow.ml package,
+                  type: doc}
+                type: category
+              - items:
+                  - items:
+                      - {id: source/secretflow.preprocessing.binning.preprocessing.binning.kernels.mdx,
+                        label: secretflow.preprocessing.binning.kernels package, type: doc}
+                    label: secretflow.preprocessing.binning package
+                    link: {id: source/secretflow.preprocessing.preprocessing.binning.mdx,
+                      label: secretflow.preprocessing.binning package, type: doc}
+                    type: category
+                label: secretflow.preprocessing package
+                link: {id: source/secretflow.preprocessing.mdx, label: secretflow.preprocessing
+                    package, type: doc}
+                type: category
+              - items:
+                  - {id: source/secretflow.protos.protos.component.mdx, label: secretflow.protos.component
+                      package, type: doc}
+                label: secretflow.protos package
+                link: {id: source/secretflow.protos.mdx, label: secretflow.protos
+                    package, type: doc}
+                type: category
+              - items:
+                  - {id: source/secretflow.security.security.aggregation.mdx, label: secretflow.security.aggregation
+                      package, type: doc}
+                  - {id: source/secretflow.security.security.compare.mdx, label: secretflow.security.compare
+                      package, type: doc}
+                  - items:
+                      - {id: source/secretflow.security.privacy.security.privacy.accounting.mdx,
+                        label: secretflow.security.privacy.accounting package, type: doc}
+                      - items:
+                          - {id: 
+                              source/secretflow.security.privacy.mechanism.security.privacy.mechanism.tensorflow.mdx,
+                            label: secretflow.security.privacy.mechanism.tensorflow
+                              package, type: doc}
+                          - {id: 
+                              source/secretflow.security.privacy.mechanism.security.privacy.mechanism.torch.mdx,
+                            label: secretflow.security.privacy.mechanism.torch package,
+                            type: doc}
+                        label: secretflow.security.privacy.mechanism package
+                        link: {id: source/secretflow.security.privacy.security.privacy.mechanism.mdx,
+                          label: secretflow.security.privacy.mechanism package, type: doc}
+                        type: category
+                    label: secretflow.security.privacy package
+                    link: {id: source/secretflow.security.security.privacy.mdx, label: secretflow.security.privacy
+                        package, type: doc}
+                    type: category
+                label: secretflow.security package
+                link: {id: source/secretflow.security.mdx, label: secretflow.security
+                    package, type: doc}
+                type: category
+              - items:
+                  - {id: source/secretflow.stats.stats.core.mdx, label: secretflow.stats.core
+                      package, type: doc}
+                label: secretflow.stats package
+                link: {id: source/secretflow.stats.mdx, label: secretflow.stats package,
+                  type: doc}
+                type: category
+              - items:
+                  - items:
+                      - {id: source/secretflow.utils.simulation.utils.simulation.data.mdx,
+                        label: secretflow.utils.simulation.data package, type: doc}
+                    label: secretflow.utils.simulation package
+                    link: {id: source/secretflow.utils.utils.simulation.mdx, label: secretflow.utils.simulation
+                        package, type: doc}
+                    type: category
+                label: secretflow.utils package
+                link: {id: source/secretflow.utils.mdx, label: secretflow.utils package,
+                  type: doc}
+                type: category
+            label: secretflow package
+            link: {id: source/secretflow.mdx, label: secretflow package, type: doc}
+            type: category
+        label: secretflow
+        link: {id: source/modules.mdx, label: secretflow, type: doc}
+        type: category
+    label: API Documentation
+    link: {id: api/index.mdx, label: API Documentation, type: doc}
+    type: category
+  - items:
+      - {id: tutorial/FedDataFrameDataLoader.mdx, label: Loading CSV data in SecretFlow,
+        type: doc}
+      - {id: tutorial/FedNdarrayDataLoader.mdx, label: Load Numpy data in SecretFlow,
+        type: doc}
+      - {id: tutorial/CustomDataLoaderTF.mdx, label: Using Custom DataBuilder in SecretFlow
+          (TensorFlow), type: doc}
+      - {id: tutorial/CustomDataLoaderTorch.mdx, label: Using Custom DataBuilder in
+          SecretFlow (Torch), type: doc}
+      - {id: tutorial/CustomDataLoaderOnSL.mdx, label: Customize DataBuilder on SLModel
+          in SecretFlow, type: doc}
+      - {id: tutorial/data_preprocessing_with_data_frame.mdx, label: Data Preprocessing
+          with DataFrame, type: doc}
+      - {id: tutorial/WeightOfEvidenceEncoding.mdx, label: Weight Of Evidence encoding,
+        type: doc}
+      - {id: tutorial/spu_basics.mdx, label: SPU Basics, type: doc}
+      - {id: tutorial/lr_with_spu.mdx, label: Logistic Regression with SPU, type: doc}
+      - {id: tutorial/nn_with_spu.mdx, label: Neural Network with SPU, type: doc}
+      - {id: tutorial/gpt2_with_spu.mdx, label: GPT-2 private inference with SPU,
+        type: doc}
+      - {id: tutorial/numpy_with_spu.mdx, label: Privacy-Preserving Scientific Computing
+          with NumPy in SPU, type: doc}
+      - {id: tutorial/gpt2_with_puma.mdx, label: GPT-2 Secure inference with Puma,
+        type: doc}
+      - {id: tutorial/teeu.mdx, label: TEEU Getting Started Guide, type: doc}
+      - {id: tutorial/teeu_xgboost.mdx, label: 'TEEU Example: XGBoost', type: doc}
+      - {id: tutorial/PSI_On_SPU.mdx, label: PSI On SPU, type: doc}
+      - {id: tutorial/Federate_Learning_for_Image_Classification.mdx, label: Federated
+          Learning for Image Classification, type: doc}
+      - {id: tutorial/Federated_Learning_with_Pytorch_backend.mdx, label: Federated
+          Learning with Pytorch Backend, type: doc}
+      - {id: tutorial/Federated_Xgboost.mdx, label: Horizontally Federated XGBoost,
+        type: doc}
+      - {id: tutorial/SecureBoost.mdx, label: Vertically Federated XGB (SecureBoost),
+        type: doc}
+      - {id: tutorial/Split_Learning_for_bank_marketing.mdx, label: Split Learning—Bank
+          Marketing, type: doc}
+      - {id: tutorial/split_learning_gnn.mdx, label: Split Learning for Graph Neural
+          Network, type: doc}
+      - {id: tutorial/mix_lr.mdx, label: Mix Federated Learning - Logistic Regression,
+        type: doc}
+      - {id: tutorial/sl_rec_deepfm.mdx, label: 'SplitREC: Using DeepFM Algorithm
+          in SecretFlow', type: doc}
+      - {id: tutorial/risk_control_scenario.mdx, label: 隐语SecretFlow金融风控全链路能力展示, type: doc}
+      - {id: tutorial/practical_case_walkthrough_using_sf_with_spu.mdx, label: 隐语SecretFlow实际场景MPC算法开发实践,
+        type: doc}
+      - {id: tutorial/GPU_check.mdx, label: GPU check, type: doc}
+    label: Tutorial
+    link: {id: tutorial/index.mdx, label: Tutorial, type: doc}
+    type: category
+  - items:
+      - {id: component/comp_spec.mdx, label: Component Specification, type: doc}
+      - {id: component/comp_list.mdx, label: SecretFlow Component List, type: doc}
+      - {id: component/comp_spec_design.mdx, label: Design of Component Specification,
+        type: doc}
+      - {id: component/comp_guide.mdx, label: Guide of SecretFlow Components, type: doc}
+    label: Component
+    link: {id: component/index.mdx, label: Component, type: doc}
+    type: category
+  - items:
+      - {href: https://www.yuque.com/secret-flow/admin/exgixt72drdvdsy3, label: A
+          comprehensive comparison of various privacy-preserving technologies, type: link}
+      - {id: developer/design/architecture.mdx, label: Architecture, type: doc}
+      - {id: developer/design/spu.mdx, label: SPU (Secure Processing Unit), type: doc}
+      - {id: developer/design/heu.mdx, label: HEU Device, type: doc}
+      - {id: developer/design/teeu.mdx, label: TEEU, type: doc}
+      - {id: developer/design/flmodel.mdx, label: FLModel Design, type: doc}
+      - {id: developer/design/strategy.mdx, label: Strategy Design, type: doc}
+      - {id: developer/design/programming_in_secretflow.mdx, label: Programming in
+          SecretFlow, type: doc}
+      - {id: developer/algorithm/secure_aggregation.mdx, label: Secure Aggregation,
+        type: doc}
+      - {id: developer/algorithm/mix_lr.mdx, label: Federated Logistic Regression
+          with Mix Partitioned data, type: doc}
+      - {id: developer/algorithm/federated_learning/fed_prox.mdx, label: 'Strategy:
+          FedProx', type: doc}
+      - {id: developer/algorithm/federated_learning/fed_scr.mdx, label: 'Strategy:
+          FedSCR', type: doc}
+      - {id: developer/algorithm/federated_learning/fed_stc.mdx, label: 'Strategy:
+          FedSTC', type: doc}
+      - {id: developer/algorithm/differential_privacy/GlobalDP.mdx, label: 'Differential
+          Privacy: Global DP in Federated Learning', type: doc}
+      - {id: developer/benchmark/psi_benchmark.mdx, label: 隐语PSI Benchmark白皮书, type: doc}
+      - {id: developer/benchmark/ubpsi_benchmark.mdx, label: 隐语非平衡(Unbalanced) PSI
+          Benchmark白皮书, type: doc}
+    label: Developer
+    link: {id: developer/index.mdx, label: Developer, type: doc}
+    type: category
+version: '1'

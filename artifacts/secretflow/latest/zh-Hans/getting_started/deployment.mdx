@@ -8,6 +8,17 @@
 
 隐语使用Ray作为分布式计算调度框架。Ray集群由一个主节点和零或若干个从节点组成，更多Ray的知识可以访问[Ray官网](https://docs.ray.io/)。
 
+:target{#deploy-based-on-kuscia}
+
+## 基于Kuscia部署
+
+Kuscia是一款基于K8s的隐私计算任务编排框架，旨在屏蔽异构的基础设施和协议，提供统一的隐私计算底座。
+
+With Kuscia, you can easily manage and execute SecretFlow jobs through kubectl commands or apis without paying attention to the details of SecretFlow networking.
+In addition, Kuscia supports communication security and running SecretFlow jobs concurrently.
+
+如果你需要在业务中使用SecretFlow，推荐基于Kuscia部署运行SecretFlow。详情请参考Kuscia的[快速入门](https://www.secretflow.org.cn/docs/kuscia/latest/zh-Hans/getting_started/quickstart_cn)文档。
+
 :target{#simulation}
 
 ## 仿真
@@ -757,9 +768,3 @@ sf.init(address='bob ray head node address', cluster_config=cluster_config)
            cross_silo_serializing_allowed_list=allowed_list
    )
    ```
-
-:target{#deploy-based-on-kuscia}
-
-## 基于Kuscia部署
-
-Kuscia是一款基于K8s的隐私计算任务编排框架，旨在屏蔽异构的基础设施和协议，提供统一的隐私计算底座。如果你需要在业务中使用SecretFlow，推荐基于Kuscia部署运行SecretFlow。详情请参考Kuscia的[快速入门](https://www.secretflow.org.cn/docs/kuscia/latest/zh-Hans/getting_started/quickstart_cn)文档。

@@ -48,12 +48,9 @@ Below, we provide an example to demonstrate how to use the custom DataBuilder fo
 Steps for using DataBuilder:
 
 1. Develop the DataBuilder function for constructing the DataLoader under the PyTorch engine in the single-machine version. <em>Note: The dataset\_builder function requires the ‘stage’ parameter.</em>
-
-2) Wrap the DataBuilder functions of each party to obtain create\_dataset\_builder.
-
+2. Wrap the DataBuilder functions of each party to obtain create\_dataset\_builder.
 3. Construct data\_builder\_dict \[PYU, dataset\_builder].
-
-4) Pass the obtained data\_builder\_dict as an argument to the `dataset_builder` in the `fit` function. At this point, provide the required input to the dataset\_builder in the `x` parameter position. (For example, in this case, the input provided is the actual image paths used.)
+4. Pass the obtained data\_builder\_dict as an argument to the `dataset_builder` in the `fit` function. At this point, provide the required input to the dataset\_builder in the `x` parameter position. (For example, in this case, the input provided is the actual image paths used).
 
 In FLModel, using DataBuilder requires predefining a databuilder dictionary, which needs to be able to return `tf.dataset` and `steps_per_epoch`. Moreover, the `steps_per_epoch` returned by each party must remain consistent.
 
@@ -76,7 +73,9 @@ data_builder_dict =
 Introduction to the Flower Dataset: The Flower dataset is a collection of 4323 color images containing 5 different types of flowers(namely, tulips, daffodils, irises, lilies, and sunflowers). Each flower category comprises multiple images captured from various angles and under different lighting conditions. The resolution of each image is 320x240. This dataset is commonly used for image classification and training/testing machine learning algorithms. The number of samples in each category is as
 follows: daisies (633), dandelions (898), roses (641), sunflowers (699), and tulips (852).
 
-Download link\:http\://download.tensorflow\.org/example\_images/flower\_photos.tgz ![flower\_dataset\_demo.png](https://www.secretflow.org.cn/static/flower_dataset_demo.553ea776.png)
+Download link\:http\://download.tensorflow\.org/example\_images/flower\_photos.tgz
+
+![flower\_dataset\_demo.png](https://www.secretflow.org.cn/static/flower_dataset_demo.553ea776.png)
 
 :target{#Download-data-and-extract}
 
@@ -108,11 +107,11 @@ Download link\:http\://download.tensorflow\.org/example\_images/flower\_photos.t
 
 :target{id="Next,-we-proceed-to-construct-a-custom-DataBuilder."}
 
-# Next, we proceed to construct a custom DataBuilder.
+## Next, we proceed to construct a custom DataBuilder.
 
 :target{id="1.-Develop-DataBuilder-using-a-single-machine-engine."}
 
-## 1. Develop DataBuilder using a single-machine engine.
+### 1. Develop DataBuilder using a single-machine engine.
 
 In the development of the `DataBuilder`, we are free to follow the logic of single-machine development. The objective is to construct a `Dataloader` object in `Torch`.
 
@@ -177,13 +176,16 @@ In the development of the `DataBuilder`, we are free to follow the logic of sing
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-:target{id="2.Wrap-the-developed-DataBuilder."}
+:target{id="2.-Wrap-the-developed-DataBuilder."}
 
-## 2.Wrap the developed DataBuilder.
+### 2. Wrap the developed DataBuilder.
 
 The DataBuilder we have developed needs to be distributed and executed on various computing machines during runtime. To facilitate serialization, we need to wrap them.
 
-It is essential to consider the following points: - FLModel requires that the input to DataBuilder must include the stage parameter (stage=”train”). - FLModel requires that the passed DataBuilder must return two results, namely, `data_set` and `steps_per_epoch`.
+It is essential to consider the following points:
+
+- FLModel requires that the input to DataBuilder must include the stage parameter (stage=”train”).
+- FLModel requires that the passed DataBuilder must return two results, namely, `data_set` and `steps_per_epoch`.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
@@ -247,7 +249,7 @@ It is essential to consider the following points: - FLModel requires that the in
 
 :target{id="3.-Construct-the-dataset_builder_dict."}
 
-## 3. Construct the dataset\_builder\_dict.
+### 3. Construct the dataset\_builder\_dict.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
@@ -273,13 +275,13 @@ It is essential to consider the following points: - FLModel requires that the in
 
 :target{id="4.-Once-we-obtain-the-dataset_builder_dict,-we-can-proceed-with-federated-training-using-it."}
 
-## 4. Once we obtain the `dataset_builder_dict`, we can proceed with federated training using it.
+### 4. Once we obtain the `dataset_builder_dict`, we can proceed with federated training using it.
 
 Next, we define a FLModel with a Torch backend for training.
 
 :target{#Define-the-Model-Architecture}
 
-### Define the Model Architecture
+#### Define the Model Architecture
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
