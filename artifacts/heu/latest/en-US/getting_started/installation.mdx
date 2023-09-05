@@ -60,8 +60,7 @@ Compile and install:
 ```bash
 git clone --recursive git@github.com:secretflow/heu.git
 cd heu
-bazel build //heu/pylib -c opt
-pip install bazel-bin/heu/pylib/(cat bazel-bin/heu/pylib/pylib.name) --force-reinstall
+sh build_wheel_entrypoint.sh
 ```
 
 :target{#id6}

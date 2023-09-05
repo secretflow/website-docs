@@ -1,0 +1,24 @@
+sidebar:
+  - items:
+      - {id: getting_started/installation.mdx, label: Installation, type: doc}
+      - {id: getting_started/quick_start.mdx, label: Quick start, type: doc}
+      - {id: getting_started/numpy.mdx, label: Matrix Operations, type: doc}
+      - {id: getting_started/algo_choice.mdx, label: Algorithm Selection, type: doc}
+      - {id: getting_started/faq.mdx, label: Frequently asked questions (FAQ), type: doc}
+    label: Getting started
+    link: {id: getting_started/index.mdx, label: Getting started, type: doc}
+    type: category
+  - items:
+      - {id: development/arch.mdx, label: HEU Architecture, type: doc}
+      - {id: development/phe_dev.mdx, label: Develop new algorithms, type: doc}
+    label: Development
+    link: {id: development/index.mdx, label: Development, type: doc}
+    type: category
+  - items:
+      - {id: references/phe_api.mdx, label: PHE Module, type: doc}
+      - {id: references/numpy_api.mdx, label: Numpy Module, type: doc}
+      - {id: references/upgrade_guide.mdx, label: Upgrade Guide, type: doc}
+    label: API Reference
+    link: {id: references/index.mdx, label: API Reference, type: doc}
+    type: category
+version: '1'
