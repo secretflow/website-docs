@@ -2,11 +2,11 @@
 
 # SCQL 配置手册
 
-本配置手册旨在帮助用户了解 SCQL 系统可用的各种配置选项。 它可以分为两部分：SCDB 配置选项和Engine 配置选项。
+本配置手册旨在帮助用户了解 SCQL 系统的各种配置项。 它可以分为两部分：SCDB 配置项和Engine 配置项。
 
 :target{#scdb-configuration-options}
 
-## SCDB 配置选项
+## SCDB 配置说明
 
 在 SCDB 中配置参数以 yaml 文件形式提供。
 
@@ -23,6 +23,10 @@ session_expire_time: 1h
 session_expire_check_time: 100ms
 password_check: true
 log_level: debug
+enable_audit_logger: true
+audit:
+  audit_log_file: audit/audit.log
+  audit_detail_file: audit/detail.log
 security_compromise:
   reveal_group_mark: false
 storage:
@@ -32,18 +36,20 @@ storage:
   max_open_conns: 100
   conn_max_idle_time: 2m
   conn_max_lifetime: 5m
-grm:
-  grm_mode: stdgrm
-  host: http://your-grm-host
-  timeout: 5s
 engine:
     timeout: 120s
     protocol: http
     content_type: application/json
-    spu:
-      protocol: SEMI2K
-      field: FM64
-      sigmoid_mode: SIGMOID_REAL
+    spu: |
+      {
+        "protocol": "SEMI2K",
+        "field": "FM64",
+        "sigmoid_mode": "SIGMOID_REAL"
+      }
+party_auth:
+  method: pubkey
+  enable_timestamp_check: true
+  validity_period: 1m
 ```
 
 :target{#config-in-scdb}
@@ -78,7 +84,7 @@ engine:
       </td>
 
       <td>
-        引擎通知SCDB的回调URL
+        SCQLEngine通知SCDB的回调URL
       </td>
     </tr>
 
@@ -102,7 +108,7 @@ engine:
       </td>
 
       <td>
-        http
+        https
       </td>
 
       <td>
@@ -116,11 +122,11 @@ engine:
       </td>
 
       <td>
-        200毫秒
+        200ms
       </td>
 
       <td>
-        Timeout for SCDB to notify the query result
+        SCDB 返回查询结果的超时时间
       </td>
     </tr>
 
@@ -130,7 +136,7 @@ engine:
       </td>
 
       <td>
-        48小时
+        48h
       </td>
 
       <td>
@@ -144,7 +150,7 @@ engine:
       </td>
 
       <td>
-        1小时
+        1h
       </td>
 
       <td>
@@ -158,7 +164,7 @@ engine:
       </td>
 
       <td>
-        正确
+        true
       </td>
 
       <td>
@@ -176,7 +182,105 @@ engine:
       </td>
 
       <td>
-        记录事件的类型和严重性
+        日志等级
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_audit\_logger
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        是否记录审计日志
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit.audit\_log\_file
+      </td>
+
+      <td>
+        audit/audit.log
+      </td>
+
+      <td>
+        存储基础审计信息的日志文件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit.audit\_detail\_file
+      </td>
+
+      <td>
+        audit/detail.log
+      </td>
+
+      <td>
+        存储补充审计信息的日志文件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit.audit\_max\_size
+      </td>
+
+      <td>
+        5000
+      </td>
+
+      <td>
+        单个审计日志文件的最大容量，单位为MB
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit.audit\_max\_backups
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        系统中保留的审计日志文件的最大数量，0 表示保留所有的日志文件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit.audit\_max\_age\_days
+      </td>
+
+      <td>
+        180
+      </td>
+
+      <td>
+        单个审计日志文件所能保存的最长时间，单位：天
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit.audit\_max\_compress
+      </td>
+
+      <td>
+        false
+      </td>
+
+      <td>
+        是否对审计日志进行压缩
       </td>
     </tr>
 
@@ -204,7 +308,7 @@ engine:
       </td>
 
       <td>
-        启用支持crt/pem类型的TSL证书文件路径
+        启用支持 crt/pem 类型的TSL证书文件路径
       </td>
     </tr>
 
@@ -218,7 +322,7 @@ engine:
       </td>
 
       <td>
-        启用支持key/pem类型的TLS私钥文件路径
+        启用支持 key/pem 类型的 TLS 私钥文件路径
       </td>
     </tr>
 
@@ -246,7 +350,7 @@ engine:
       </td>
 
       <td>
-        用于连接到数据库
+        数据库连接串
       </td>
     </tr>
 
@@ -260,7 +364,7 @@ engine:
       </td>
 
       <td>
-        Maximum number of connections in idle connection pool
+        空闲连接池最大连接数
       </td>
     </tr>
 
@@ -308,62 +412,6 @@ engine:
 
     <tr>
       <td>
-        grm.grm\_mode
-      </td>
-
-      <td>
-        无
-      </td>
-
-      <td>
-        支持 toygrm/stdgrm的grm 服务类型
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        grm.host
-      </td>
-
-      <td>
-        无
-      </td>
-
-      <td>
-        stdgrm主机
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        grm.timeout
-      </td>
-
-      <td>
-        无
-      </td>
-
-      <td>
-        SCDB 从 stdgrm 获取信息超时
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        grm.toy\_grm\_conf
-      </td>
-
-      <td>
-        无
-      </td>
-
-      <td>
-        toygrm路径配置
-      </td>
-    </tr>
-
-    <tr>
-      <td>
         engine.timeout
       </td>
 
@@ -372,7 +420,7 @@ engine:
       </td>
 
       <td>
-        SCDB 向引擎发送消息超时
+        SCDB 向 SCQLEngine 发送消息的响应超时时间
       </td>
     </tr>
 
@@ -386,7 +434,7 @@ engine:
       </td>
 
       <td>
-        引擎传输协议支持http/https
+        SCQLEngine 传输协议，支持 http/https
       </td>
     </tr>
 
@@ -400,7 +448,7 @@ engine:
       </td>
 
       <td>
-        从 SCDB 到引擎所发送的正文中原始媒体类型
+        从 SCDB 向 SCQLEngine 实际发送的数据类型
       </td>
     </tr>
 
@@ -414,7 +462,7 @@ engine:
       </td>
 
       <td>
-        引擎使用的 mpc 协议
+        SCQLEngine 使用的 mpc 协议
       </td>
     </tr>
 
@@ -428,7 +476,7 @@ engine:
       </td>
 
       <td>
-        引擎所使用的安全参数类型
+        SCQLEngine 所使用的安全参数类型
       </td>
     </tr>
 
@@ -442,7 +490,49 @@ engine:
       </td>
 
       <td>
-        引擎使用的类似Sigmoid方法
+        SCQLEngine 中 MPC 协议中的 Sigmoid 方法
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party\_auth.method
+      </td>
+
+      <td>
+        pubkey
+      </td>
+
+      <td>
+        注册用户时验证参与者的方法，支持 pubkey/token 认证
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party\_auth.enable\_timestamp\_check
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        使用 pubkey 认证时，是否检查签名时间戳以避免 [replay attacks](https://en.wikipedia.org/wiki/Replay_attack)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party\_auth.validity\_period
+      </td>
+
+      <td>
+        30s
+      </td>
+
+      <td>
+        当启用时间戳检查时，SCDB 将检查签名时间戳是否在 (now() - valid\_period, now()) 内
       </td>
     </tr>
   </tbody>
@@ -454,9 +544,8 @@ engine:
 
 SCDB 提供了一些安全妥协选项，当安全风险可以接受时可以选择性地启用这些选项，以加快整体运行速度
 
-1. reveal\_group\_mark:
-
-> default disable, if enabled, SCDB will expose grouping information(size of each group) when calculating group-by-aggregation, thereby avoiding the overhead caused by pre-shuffle.  `risk`: group size will be leaked, which is equivalent to the result of count(\*)
+1\. reveal\_group\_mark:
+default disable, if enabled, SCDB will expose grouping information(size of each group) when calculating group-by-aggregation, thereby avoiding the overhead caused by pre-shuffle.  `risk`: group size will be leaked, which is equivalent to the result of count(\*)
 
 典型的配置如下：
 
@@ -469,16 +558,16 @@ security_compromise:
 
 #### 存储配置
 
-SCDB中的数据库用于存储SCQL系统数据，如CCL和用户信息，目前SCDB支持MySQL/SQLite3。 您可以通过在存储配置中设置“conn\_str”和“type”来连接到数据库。
+SCDB 中的数据库用于存储 SCQL 系统数据，如 CCL 和用户信息，目前 SCDB 支持 MySQL/SQLite3 。您可以通过配置项 `conn_str` 和 `type` 来连接不同的数据库。
 
 <DefinitionList>
   <dl>
     <dt>
-      <DefinitionList.Term><span>类型</span></DefinitionList.Term>
+      <DefinitionList.Term><span>type</span></DefinitionList.Term>
     </dt>
 
     <dd>
-      数据库类型可以设置为mysql/sqlite，推荐经过充分测试的MySQL。
+      数据库类型可以设置为 mysql/sqlite，我们更加推荐使用 MySQL 来作为 SCDB 的数据库，其相关测试更加充分。
     </dd>
 
     <dt>
@@ -486,25 +575,21 @@ SCDB中的数据库用于存储SCQL系统数据，如CCL和用户信息，目前
     </dt>
 
     <dd>
-      MySQL语句格式：
+      MySQL语句格式, 更多信息请参考: [dsn-data-source-name](https://github.com/mattn/go-sqlite3#connection-string)
 
-      >       <LineBlock>
-      >         \[username\[:password]@]\[protocol\[(address)]]/dbname\[?param1=value1&…\&paramN=valueN]
-      >
-      >         <em>see</em> [dsn-data-source-name](https://github.com/go-sql-driver/mysql#dsn-data-source-name) <em>for more infos</em>.
-      >       </LineBlock>
+      > \[username\[:password]@]\[protocol\[(address)]]/dbname\[?param1=value1&…\&paramN=valueN]
 
-      MySQL语句示例：
+      MySQL 连接串示例：
 
-      > user\:pass\@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4\&parseTime=True\&loc=Local\&interpolateParams=true
+      > `user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true`
 
-      SQLite3语句格式：
+      SQLite3 连接串示例：
 
-      > 更多信息: [https://github.com/mattn/go-sqlite3#connection-string](https://github.com/mattn/go-sqlite3#connection-string).
+      > 参考: [https://github.com/mattn/go-sqlite3#connection-string](https://github.com/mattn/go-sqlite3#connection-string).
 
-      SQLite3语句示例：
+      SQLite3 连接串示例：
 
-      > scdb.db
+      > `scdb.db`
     </dd>
   </dl>
 </DefinitionList>
@@ -522,63 +607,32 @@ storage:
 ```
 
 <Container type="note">
-  正确处理 time.Time需要包含 parseTime 参数。为了完全支持UTF-8编码，需要更改 “charset=utf8 to charset=utf8mb4”
+  正确处理 time.Time 需要包含 parseTime 参数。为了完全支持 UTF-8 编码，需要将 `charset=utf8` 更改为 `charset=utf8mb4`
 </Container>
+
+:target{#config-for-audit}
+
+#### 审计日志配置
+
+SCDB 的审计日志是用来记录 SCDB 在执行 query 过程中所产生的一系列事件，它有两种类型：基础审计日志和补充审计日志。
+
+> 基础审计日志是用来记录 SCDB 在执行过程中的所产生一些事件的的基本信息，比如说：一次查询的结果、提交查询的用户信息等。补充审计日志信息，则是用来记录一些额外的信息，比如单词查询的执行计划、CCL信息等。更多信息请参考 [scdb\_audit](https://github.com/secretflow/scql/blob/main/pkg/audit/audit.proto) 。
+
+审计日志的文件是系统自动生成的，当审计日志的大小达到 `audit_max_size` 的设定值时，系统会自动将日志进行归档，归档的日志文件命名格式为 `name-timestamp.ext` ，其中 <cite>name</cite> 是 `audit_log_file` 中设置的不带后缀的文件名，<cite>timestamp</cite> 是当前时间（格式为 <cite>2006-01-02T15-04-05.000</cite>），<cite>ext</cite> 是在 `audit_log_file` 中设置的后缀名。
+
+> 例如，通过设置 `audit.audit_log_file` 为 <cite>audit/audit.log</cite> ， 在2016年11月4日18:30归档的审计日志会被保存至 <cite>./audit/audit-2016-11-04T18-30-00.000.log</cite> 。
 
 :target{#password-check}
 
-#### PassWord Check
+#### 密码校验
 
-“password\_check”用于验证密码强度。 对于 ALTER USER、CREATE USER 语句，如果为 true，则密码应至少为 16 个字符，其中包括数字、小写字母、大写字母和特殊字符。
-
-:target{#config-for-grm}
-
-#### GRM配置
-
-GRM服务除了由开发人员提供外，还可以通过读取本地JSON文件来模拟，用于测试和开发，您可以如下选择。
-
-<DefinitionList>
-  <dl>
-    <dt>
-      <DefinitionList.Term><span>stdgrm</span></DefinitionList.Term>
-    </dt>
-
-    <dd>
-      如果您想使用自己开发的GRM服务，则grm\_mode需要设置为stdgrm。
-    </dd>
-  </dl>
-</DefinitionList>
-
-```yaml
-grm:
-  grm_mode: stdgrm
-  host: ${host of grm service} # eg. http://localhost:8080
-  timeout: ${timeout of grm service} # eg. 2m
-```
-
-<DefinitionList>
-  <dl>
-    <dt>
-      <DefinitionList.Term><span>toygrm</span></DefinitionList.Term>
-    </dt>
-
-    <dd>
-      如果想直接从json文件模拟GRM服务，除了将grm\_mode设置为toygrm外，还需要设置toy\_grm\_conf。
-    </dd>
-  </dl>
-</DefinitionList>
-
-```yaml
-grm:
-  grm_mode: toygrm
-  toy_grm_conf: ${file path of toy grm config} # eg. toy_grm.json
-```
+<cite>password\_check</cite> 用于验证密码强度校验。如果该参数设置为true， 对于 ALTER USER、CREATE USER 语句，其所涉及的密码长度至少为 16 个字符，其中包括数字、小写字母、大写字母和特殊字符。
 
 :target{#config-for-tls}
 
-#### TLS配置
+#### TLS 配置
 
-如果需要在SCDB中启用TLS，请参考以下配置。
+如果需要在 SCDB 中启用 TLS ，请参考以下配置。
 
 ```yaml
 scdb_host: ${host of scdb service}  # eg. https://localhost:8080
@@ -590,13 +644,13 @@ engine:
   protocol: https
 ```
 
-此外，还需要配置引擎以使用 SSL，请参阅“SSL 配置”
+除此之外，用户还需要设置 [SCQLEngine 的 SSL 配置](#scqlengine-tls)，以保证 SCDB 和 SCQLEngine 能正常工作。
 
 :target{#config-for-spu}
 
-#### SPU配置
+#### SPU 配置
 
-SCQL 支持 SPU 支持的不同 mpc 协议，您可以通过设置 SPU 运行时配置来选择不同的 mpc 协议，建议使用经过充分测试并支持多方的 SEMI2K 协议。 请参阅“ SPU 配置”\<[https://www.secretflow.org.cn/docs/spu/en/reference/runtime\_config.html](https://www.secretflow.org.cn/docs/spu/en/reference/runtime_config.html)>获得更多信息
+SCQL 的底层 MPC 协议由 SPU 控制，你可以通过更改 SPU 相关配置来选择不同的 MPC 协议， 更多信息请参考 [SPU 配置](https://www.secretflow.org.cn/docs/spu/en/reference/runtime_config.html) 。
 
 ```yaml
 spu:
@@ -605,15 +659,15 @@ spu:
   sigmoid_mode: SIGMOID_REAL
 ```
 
-:target{#engine-configuration-options}
+:target{#scqlengine-configuration-options}
 
-## 引擎配置选项
+## SCQLEngine 配置说明
 
-SCQLEngine 设置时使用 Gflags 来管理配置。
+SCQLEngine 使用 Gflags 来管理配置项。
 
-:target{#example-for-engine}
+:target{#example-for-scqlengine}
 
-### 引擎示例
+### SCQLEngine 配置示例
 
 ```default
 # Config for Brpc server
@@ -623,9 +677,9 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
 --embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"${connection_str}"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
 ```
 
-:target{#config-in-engine}
+:target{#config-in-scqlengine}
 
-### Engine配置
+### SCQLEngine 配置项
 
 <table>
   <thead>
@@ -647,11 +701,25 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
   <tbody>
     <tr>
       <td>
+        log\_enable\_console\_logger
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        是否记录日志文件到控制台
+      </td>
+    </tr>
+
+    <tr>
+      <td>
         log\_dir
       </td>
 
       <td>
-        日志
+        logs
       </td>
 
       <td>
@@ -661,15 +729,57 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
 
     <tr>
       <td>
-        log\_enable\_console\_logger
+        enable\_audit\_logger
       </td>
 
       <td>
-        正确
+        true
       </td>
 
       <td>
-        是否记录日志文件到 stdout
+        是否记录审计日志
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit\_log\_file
+      </td>
+
+      <td>
+        audit/audit.log
+      </td>
+
+      <td>
+        存储基础审计信息的日志文件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit\_detail\_file
+      </td>
+
+      <td>
+        audit/detail.log
+      </td>
+
+      <td>
+        存储补充审计信息的日志文件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit\_max\_files
+      </td>
+
+      <td>
+        180
+      </td>
+
+      <td>
+        系统中保留的审计日志文件的最大数量，0 表示保留所有的日志文件
       </td>
     </tr>
 
@@ -683,7 +793,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎与引擎之间的rpc协议
+        SCQLEngine 与 SCQLEngine 之间的rpc协议
       </td>
     </tr>
 
@@ -697,7 +807,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        The rpc connection type between engine and engine
+        SCQLEngine 与SCQLEngine 之间的 rpc 连接类型
       </td>
     </tr>
 
@@ -711,7 +821,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎与引擎之间的rpc超时时间，单位：ms
+        SCQLEngine 与 SCQLEngine之间的 rpc 超时时间，单位：ms
       </td>
     </tr>
 
@@ -725,7 +835,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎与引擎之间的rpc最大重试次数（不包括第一个rpc）
+        SCQLEngine 与 SCQLEngine 之间的rpc最大重试次数（不包括第一个rpc）
       </td>
     </tr>
 
@@ -735,11 +845,11 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        正确
+        true
       </td>
 
       <td>
-        向其他引擎发送消息时是否启用ssl加密
+        SCQLEngine 与 SCQLEngine 之间发送消息是否启用ssl加密
       </td>
     </tr>
 
@@ -753,7 +863,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        向其他引擎发送消息时是否启用证书验证
+        作为客户端时，是否验证来自其他 SCQLEngine 的证书
       </td>
     </tr>
 
@@ -767,7 +877,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        向另一个引擎发送消息时用于验证证书 CA 文件
+        可信 CA 文件，作为客户端时，用于验证来自其他 SCQLEngine 的证书
       </td>
     </tr>
 
@@ -781,7 +891,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎等待其他引擎消息的最大时间
+        等待其他 SCQLEngine 消息的最大响应时间
       </td>
     </tr>
 
@@ -795,7 +905,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎与SCDB之间的rpc协议
+        SCQLEngine 与 SCDB 之间的 rpc 协议
       </td>
     </tr>
 
@@ -809,7 +919,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎与SCDB之间的rpc连接类型
+        SCQLEngine 与 SCDB 之间的 rpc 连接类型
       </td>
     </tr>
 
@@ -823,7 +933,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎与SCDB之间的rpc超时时间，单位：ms
+        SCQLEngine 与 SCDB 之间的 rpc 超时时间，单位：ms
       </td>
     </tr>
 
@@ -837,7 +947,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎和SCDB之间的rpc最大重试次数（不包括第一个rpc）
+        SCQLEngine 和 SCDB 之间的 rpc 最大重试次数（不包括第一个 rpc）
       </td>
     </tr>
 
@@ -847,11 +957,11 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        正确
+        true
       </td>
 
       <td>
-        向 SCDB 发送消息时是否启用 ssl 加密
+        作为客户端，向 SCDB 发送消息时是否启用 ssl 加密
       </td>
     </tr>
 
@@ -865,7 +975,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        向SCDB发送消息时是否启用证书验证
+        作为客户端，是否验证 SCDB 的证书
       </td>
     </tr>
 
@@ -879,7 +989,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        向 SCDB 发送消息时用于验证证书的 CA 文件
+        可信 CA 文件，作为客户端时，用于验证 SCDB 的证书
       </td>
     </tr>
 
@@ -893,7 +1003,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎服务监听端口
+        SCQLEngine 作为服务器的监听端口
       </td>
     </tr>
 
@@ -907,7 +1017,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        是否启用brpc内置服务
+        是否启用 brpc 内置服务
       </td>
     </tr>
 
@@ -921,7 +1031,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        brpc内置服务的监听端口
+        The listening port of brpc builtin services
       </td>
     </tr>
 
@@ -935,7 +1045,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎与 SCDB 之间的空闲连接关闭延迟（以秒为单位）
+        SCQLEngine 与 SCDB 之间的空闲连接关闭延迟（单位：秒）
       </td>
     </tr>
 
@@ -945,11 +1055,11 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        正确
+        true
       </td>
 
       <td>
-        引擎作为服务器时是否启用SSL
+        SCQLEngine 作为服务器时是否启用SSL
       </td>
     </tr>
 
@@ -963,7 +1073,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎作为服务器时启用 SSL 的证书文件路径
+        SCQLEngine 作为服务器时启用 SSL 的证书文件路径
       </td>
     </tr>
 
@@ -977,7 +1087,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎作为服务器时启用 SSL 的私钥文件路径
+        SCQLEngine 作为服务器时启用 SSL 的私钥文件路径
       </td>
     </tr>
 
@@ -991,7 +1101,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        当引擎作为服务器时是否检查请求的http 头部
+        SCQLEngine 作为服务器时是否检查请求的 http 头
       </td>
     </tr>
 
@@ -1005,7 +1115,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        检查请求http头部用于授权
+        SCQLEngine 作为服务器时用于检查请求的 http 头的 凭证
       </td>
     </tr>
 
@@ -1019,7 +1129,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        是否启动SCDB身份认证
+        是否启动 SCDB 身份认证
       </td>
     </tr>
 
@@ -1047,7 +1157,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        引擎与SCDB之间的会话过期时间，单位：秒
+        SCQLEngine 与 SCDB 之间的会话过期时间，单位：秒
       </td>
     </tr>
 
@@ -1057,7 +1167,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        嵌入的
+        embed
       </td>
 
       <td>
@@ -1075,7 +1185,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        json 格式的嵌入路由配置
+        数据源的路由配置，其类型为 json 字符串格式
       </td>
     </tr>
 
@@ -1089,7 +1199,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
       </td>
 
       <td>
-        用于连接mysql的连接字符串
+        用于连接 MySQL 数据库的连接串
       </td>
     </tr>
 
@@ -1106,6 +1216,62 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
         是否使用OU算法来加速 HeSum, 考虑到更优的安全性，默认使用 ZPaillier, 参见: [heu/ou](https://www.secretflow.org.cn/docs/heu/latest/zh-Hans/getting_started/algo_choice#ou-paillier)
       </td>
     </tr>
+
+    <tr>
+      <td>
+        enable\_self\_auth
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        是否启用自我身份认证
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        private\_key\_pem\_path
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        私钥 pem 文件的路径
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_peer\_auth
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        是否启用对端身份认证
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        authorized\_profile\_path
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        数据源的路由配置，其类型为 json 字符串格式
+      </td>
+    </tr>
   </tbody>
 </table>
 
@@ -1115,9 +1281,7 @@ SCQLEngine 设置时使用 Gflags 来管理配置。
 
 SCQLEngine 支持多种数据源，包括 MySQL/SQLite3/PostgreSQL/CSVDB 。
 
-<em>datasource\_router</em> is design to support multi datasources, currently only supported: embed.
-
-embed\_router is initialized with <em>embed\_router\_conf</em> first, a json string like:
+`datasource_router` 是为了支持多数据源而设计的，目前仅支持 <cite>embed</cite> 方式配值数据源，其首先通过 `embed_router_conf` 来初始化，`embed_router_conf` 是一个 json 类型的字符串，一个典型的配置项如下所示：
 
 ```default
 "datasources": [
@@ -1137,11 +1301,11 @@ embed\_router is initialized with <em>embed\_router\_conf</em> first, a json str
 ]
 ```
 
-if <em>embed\_router\_conf</em> is empty, embed\_router will try to initialized with <em>db\_connection\_info</em>.
+如果 `embed_router_conf` 为空， <cite>embed\_router</cite> 则会尝试通过 `db_connection_info` 来初始化。
 
 :target{#embed-router}
 
-##### 嵌入式路由
+##### Embed router
 
 embed\_router\_conf 中的 datasources 包含用于连接 MySQL/SQLite3/PostgreSQL/CSVDB 数据源的信息:
 
@@ -1149,14 +1313,14 @@ embed\_router\_conf 中的 datasources 包含用于连接 MySQL/SQLite3/PostgreS
 >
 > name：自定义描述，有助于区分数据源。
 >
-> kind：数据源类型，目前支持MySQL/SQLite3/PostgreSQL/CSVDB。
+> kind：数据源类型，目前支持 MySQL/SQLite3/PostgreSQL/CSVDB。
 >
-> connection\_str：用于连接MySQL/SQLite3/PostgreSQL/CSVDB的字符串。
+> connection\_str：用于连接 MySQL/SQLite3/PostgreSQL/CSVDB 数据库的连接串。
 >
 > > <DefinitionList>
 > >   <dl>
 > >     <dt>
-> >       <DefinitionList.Term><span>MySQL连接字符串格式：</span></DefinitionList.Term>
+> >       <DefinitionList.Term><span>MySQL 连接串格式：</span></DefinitionList.Term>
 > >     </dt>
 > >
 > >     <dd>
@@ -1167,31 +1331,31 @@ embed\_router\_conf 中的 datasources 包含用于连接 MySQL/SQLite3/PostgreS
 > >     </dd>
 > >
 > >     <dt>
-> >       <DefinitionList.Term><span>MySQL连接字符串示例：</span></DefinitionList.Term>
+> >       <DefinitionList.Term><span>MySQL 连接串示例：</span></DefinitionList.Term>
 > >     </dt>
 > >
 > >     <dd>
-> >       “db=$\{db};user=$\{user};password=$\{password};host=$\{host}”
+> >       `db=${db};user=${user};password=${password};host=${host}`
 > >     </dd>
 > >
 > >     <dt>
-> >       <DefinitionList.Term><span>SQLite3连接字符串格式：</span></DefinitionList.Term>
+> >       <DefinitionList.Term><span>SQLite3 连接串格式：</span></DefinitionList.Term>
 > >     </dt>
 > >
 > >     <dd>
-> >       更多信息：[https://www.sqlite.org/c3ref/open.html](https://www.sqlite.org/c3ref/open.html)
+> >       参考：[https://www.sqlite.org/c3ref/open.html](https://www.sqlite.org/c3ref/open.html)
 > >     </dd>
 > >
 > >     <dt>
-> >       <DefinitionList.Term><span>SQLite3连接字符串示例</span></DefinitionList.Term>
+> >       <DefinitionList.Term><span>SQLite3 连接串示例</span></DefinitionList.Term>
 > >     </dt>
 > >
 > >     <dd>
-> >       “[file\:data\_test.db?mode=memory\&cache=shared](file:///data_test.db.mdx?mode=memory\&cache=shared)”
+> >       `file:data_test.db?mode=memory&cache=shared`
 > >     </dd>
 > >
 > >     <dt>
-> >       <DefinitionList.Term><span>PostgreSQL 连接字符串格式：</span></DefinitionList.Term>
+> >       <DefinitionList.Term><span>PostgreSQL 连接串格式：</span></DefinitionList.Term>
 > >     </dt>
 > >
 > >     <dd>
@@ -1202,19 +1366,19 @@ embed\_router\_conf 中的 datasources 包含用于连接 MySQL/SQLite3/PostgreS
 > >     </dd>
 > >
 > >     <dt>
-> >       <DefinitionList.Term><span>PostgreSQL 连接字符串示例：</span></DefinitionList.Term>
+> >       <DefinitionList.Term><span>PostgreSQL 连接串示例：</span></DefinitionList.Term>
 > >     </dt>
 > >
 > >     <dd>
-> >       “db=$\{db};user=$\{user};password=$\{password};host=$\{host}”
+> >       `db=${db};user=${user};password=${password};host=${host}`
 > >     </dd>
 > >
 > >     <dt>
-> >       <DefinitionList.Term><span>CSVDB 连接字符串格式：</span></DefinitionList.Term>
+> >       <DefinitionList.Term><span>CSVDB 连接串格式：</span></DefinitionList.Term>
 > >     </dt>
 > >
 > >     <dd>
-> >       由于connection\_str是另一个json对象中的对象，因此格式为CsvdbConf对应的转换后的json字符串 \<[https://github.com/secretflow/scql/tree/main/engine/datasource/csvdb\_conf.proto](https://github.com/secretflow/scql/tree/main/engine/datasource/csvdb_conf.proto)>
+> >       由于 connection\_str 是另一个 json 对象中的对象，因此其格式是根据 [CsvdbConf](https://github.com/secretflow/scql/tree/main/engine/datasource/csvdb_conf.proto) 结构体转换后的的json字符串
 > >     </dd>
 > >
 > >     <dt>
@@ -1231,21 +1395,19 @@ embed\_router\_conf 中的 datasources 包含用于连接 MySQL/SQLite3/PostgreS
 
 ##### 路由规则
 
-embed\_router 的规则支持通配符 ‘\*’，当给定格式为 database\_name\:table\_name 的表时，embed\_router 将通过以下方式路由到相应的数据源：
+embed\_router 的规则支持通配符 `*` ，当给定一个 <em>database\_name\:table\_name</em> 的数据表时，embed\_router 将通过以下方式路由到对应的数据源：
 
-```default
-1. find the exact rules first, whose `${db}:${table}` equals to database_name:table_name;
-2. try the database_name:* rules;
-3. try *:table_name in the end.
-```
+1. 在 <cite>embed\_router\_conf</cite> 的 <cite>rules</cite> 中查找 <cite>$\{db}:$\{table}</cite> 与 <cite>database\_name\:table\_name</cite> 完全相等的 rule
+2. 在 <cite>embed\_router\_conf</cite> 的 <cite>rules</cite> 中查找 <cite>$\{db}</cite> 与 <cite>database\_name</cite> 完全相等的 rule
+3. 在 <cite>embed\_router\_conf</cite> 的 <cite>rules</cite> 中查找 <cite>$\{table}</cite> 与 <cite>table\_name</cite> 完全相等的 rule
 
-一旦找到，SCQLEngine将尝试使用与 datasource\_id 对应的数据源信息连接数据库。
+一旦找到对应的 rule ，SCQLEngine 将根据 rule 中 datasource\_id 在 datasources 中找到 对应的数据源信息，并根据这些信息连接对应的数据库。
 
 :target{#config-for-brpc-server}
 
 #### Brpc 服务器配置
 
-SCQLEngine 使用 Brpc 与 SCDB 和其他对等 SCQLEngine 进行通信，每个 SCQLEngine 都会在 local-host\:listen\_port 上启动 Brpc 服务以接收来自外部的数据。如果要启用 Brpc 内置服务，请添加 FLAGS：
+SCQLEngine 使用 Brpc 与 SCDB 以及其他的 SCQLEngine 进行通信，每个 SCQLEngine 都会在 local-host\:listen\_port 上启动 Brpc 服务以接收来自外部的数据。如果要启用 Brpc 内置服务，请添加 FLAGS：
 
 ```default
 --enable_builtin_service=true
@@ -1256,7 +1418,7 @@ SCQLEngine 使用 Brpc 与 SCDB 和其他对等 SCQLEngine 进行通信，每个
 
 #### SSL配置
 
-如果要在 Engine 中启用 SSL，请添加 FLAGS，如下所示。 此外，可能需要配置 SCDB 与 TLS 一起运行，请参阅“TLS 配置”。
+如果要在 Engine 中启用 SSL，请添加 FLAGS，如下所示。 此外，可能需要配置 SCDB 与 TLS 一起运行，请参考 [SCDB 的 TLS 配置](#scdb-tls)。
 
 ```default
 --server_enable_ssl=true
@@ -1265,3 +1427,21 @@ SCQLEngine 使用 Brpc 与 SCDB 和其他对等 SCQLEngine 进行通信，每个
 --peer_engine_enable_ssl_as_client=true
 --scdb_enable_ssl_as_client=true
 ```
+
+:target{#id1}
+
+#### 审计日志配置
+
+SCQLEngine 的审计日志是用来记录 SCQLEngine 在执行 SCDB 下发任务过程中所产生的一系列事件，和 SCDB 一样，它也有两种类型：基础审计日志和详补充审计日志
+
+> 基础审计日志是用来记录 SCQLEngine 在执行任务过程中所产生的一系列事件的基本信息。补充审计日志信息，则是用来记录这些事件一些额外的信息。更多信息请参考 [engine\_audit](https://github.com/secretflow/scql/blob/main/engine/audit/audit.proto) 。
+
+SCQLEngine 会在每天 24:00:00 对当天的审计日志进行归档，归档的审计日志文件命名格式为 `name-date.ext` ，其中 <cite>name</cite> 是在 `audit_log_file` 中设置的不带后缀的文件名， <cite>date</cite> 是当前的日期（格式为 <cite>YYYY-MM-DD</cite>）， <cite>ext</cite> 是在 `audit_log_file` 中设置的后缀名。
+
+> 例如，通过设置 `audit_log_file` 为 <cite>audit/audit.log</cite>，在2016年11月4日 24:00:00 归档的审计日志会保存至 <cite>./audit/audit\_2016-11-04.log</cite> 。
+
+:target{#config-for-party-authentication}
+
+#### 参与方身份验证配置
+
+安全起见，SCQLEngine 默认启用参与方身份验证。 SCQLEngine 将检查 SCDB 请求中自身的公钥是否与 `private_key_pem_path` 中的本地公钥匹配，并且其他参与者的公钥也与 `authorized_profile_path` 中的公钥匹配。

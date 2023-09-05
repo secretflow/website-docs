@@ -6,20 +6,15 @@
 
 ## 概述
 
-如图所示，SCQL 系统需要与 <strong>客户端（Client）</strong> 和 <del id="id2">\*\*</del>全局资源管理器（GRM）\*\*配合工作：
+如图所示，SCQL 系统需要与 <strong>客户端（Client）</strong> 配合工作：
 
 - 客户端（Client）：为提交查询、获取结果而设计的用户接口。
-- 全局资源管理器（GRM）：负责管理表规格信息、校验参与方身份。
-
-<Container type="note">
-  请阅读 [<span>全局资源管理器 (GRM)</span>](../reference/grm.mdx) 了解更多关于 GRM 的信息。
-</Container>
 
 ![](../_assets/scql_system.png)
 
-因此，平台应该提供客户端（Client）和全局资源管理器（GRM）来集成 SCQL 系统。
+因此，平台应该提供客户端（Client）来集成 SCQL 系统。
 
-具体来说，客户端（Client）通过查询 API 与 SCDB 互动，而全局资源管理器（GRM）通过GRM API 与 SCDB 互动。
+具体来说，客户端（Client）通过查询 API 与 SCDB 互动。
 
 :target{#query-api}
 
@@ -39,17 +34,3 @@
 </Container>
 
 简单来说，自定义客户端（Custom Client）应该为用户的 SQL 构建 HTTP 请求，提交到 SCDB 并解析 SCDB 的响应。
-
-:target{#grm-api}
-
-## 全局资源管理器 API
-
-SCQL 使用 rpc API 与全局资源管理器（GRM）通信：
-
-- `/GetTableMeta` ：获取表的元数据，全局资源管理器服务器（GRM server）应监听 `${GRMServerHost}/GetTableMeta`
-- `/GetEngines` ：获取特定 SCQLEngines（参与者）的端点，全局资源管理器服务器（GRM server）应监听 `${GRMServerHost}/GetEngines`
-- `/VerifyTableOwnership` ：检查用户是否拥有表的所有权，全局资源管理器服务器（GRM server）应监听 `${GRMServerHost}/VerifyTableOwnership`
-
-请参考 [全局资源管理器 (GRM)](../reference/grm.mdx) 了解详情。
-
-自定义的全局资源管理器服务器（Custom GRM server）需要支持上述与 GRM API 对应的服务。
