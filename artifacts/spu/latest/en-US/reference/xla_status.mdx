@@ -10,8 +10,7 @@ The list of mhlo ops is obtained from this file:
 
 General limitation with SPU:
     * Dynamic shape is not supported
-    * Complex number is not supported
-    * SPU only supports fixed-point numbers, so no-finite is not supported
+    * SPU uses fixed-point numbers to simulate floating point, so nonfinite numbers are not supported
 ```
 
 :target{#xla-nullary-ops}
@@ -26,7 +25,7 @@ General limitation with SPU:
       </td>
 
       <td>
-        supported(fully/partial/no)
+        supported(yes/partial/no)
       </td>
 
       <td>
@@ -42,7 +41,7 @@ General limitation with SPU:
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -56,7 +55,7 @@ General limitation with SPU:
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -94,8 +93,6 @@ General limitation with SPU:
   </tbody>
 </table>
 
-Count: Total = 4, fully supported = 2
-
 :target{#xla-unary-element-wise-ops}
 
 ## XLA unary element-wise ops
@@ -108,7 +105,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        supported(fully/partial/no)
+        supported(yes/partial/no)
       </td>
 
       <td>
@@ -124,7 +121,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -152,7 +149,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -166,7 +163,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -194,7 +191,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -208,7 +205,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -222,7 +219,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -236,7 +233,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -250,7 +247,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        no
+        yes
       </td>
 
       <td>
@@ -278,7 +275,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -292,7 +289,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -306,7 +303,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -320,7 +317,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -334,7 +331,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -362,7 +359,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        not
+        yes
       </td>
 
       <td>
@@ -390,7 +387,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -418,7 +415,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -432,7 +429,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -446,7 +443,7 @@ Count: Total = 4, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -455,8 +452,6 @@ Count: Total = 4, fully supported = 2
     </tr>
   </tbody>
 </table>
-
-Count: Total = 24, fully supported = 16, partial = 1
 
 :target{#xla-binary-element-wise-ops}
 
@@ -470,7 +465,7 @@ Count: Total = 24, fully supported = 16, partial = 1
       </td>
 
       <td>
-        supported(fully/partial/no)
+        supported(yes/partial/no)
       </td>
 
       <td>
@@ -486,7 +481,7 @@ Count: Total = 24, fully supported = 16, partial = 1
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -514,7 +509,7 @@ Count: Total = 24, fully supported = 16, partial = 1
       </td>
 
       <td>
-        no
+        yes
       </td>
 
       <td>
@@ -528,7 +523,7 @@ Count: Total = 24, fully supported = 16, partial = 1
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -542,7 +537,7 @@ Count: Total = 24, fully supported = 16, partial = 1
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -556,7 +551,7 @@ Count: Total = 24, fully supported = 16, partial = 1
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -570,7 +565,7 @@ Count: Total = 24, fully supported = 16, partial = 1
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -584,7 +579,7 @@ Count: Total = 24, fully supported = 16, partial = 1
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -598,7 +593,7 @@ Count: Total = 24, fully supported = 16, partial = 1
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -612,7 +607,7 @@ Count: Total = 24, fully supported = 16, partial = 1
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -668,7 +663,7 @@ Count: Total = 24, fully supported = 16, partial = 1
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -677,8 +672,6 @@ Count: Total = 24, fully supported = 16, partial = 1
     </tr>
   </tbody>
 </table>
-
-Count: Total = 14, fully supported = 9, partial = 3
 
 :target{#xla-binary-logical-element-wise-ops}
 
@@ -692,7 +685,7 @@ Count: Total = 14, fully supported = 9, partial = 3
       </td>
 
       <td>
-        supported(fully/partial/no)
+        supported(yes/partial/no)
       </td>
 
       <td>
@@ -708,7 +701,7 @@ Count: Total = 14, fully supported = 9, partial = 3
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -722,7 +715,7 @@ Count: Total = 14, fully supported = 9, partial = 3
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -736,7 +729,7 @@ Count: Total = 14, fully supported = 9, partial = 3
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -745,8 +738,6 @@ Count: Total = 14, fully supported = 9, partial = 3
     </tr>
   </tbody>
 </table>
-
-Count: Total = 3, fully supported = 3
 
 :target{#xla-communication-ops}
 
@@ -760,7 +751,7 @@ Count: Total = 3, fully supported = 3
       </td>
 
       <td>
-        supported(fully/partial/no)
+        supported(yes/partial/no)
       </td>
 
       <td>
@@ -828,8 +819,6 @@ Count: Total = 3, fully supported = 3
   </tbody>
 </table>
 
-Count: Total = 4, fully supported = 0
-
 :target{#xla-parallelism-related-ops}
 
 ## XLA parallelism related ops
@@ -842,7 +831,7 @@ Count: Total = 4, fully supported = 0
       </td>
 
       <td>
-        supported(fully/partial/no)
+        supported(yes/partial/no)
       </td>
 
       <td>
@@ -868,8 +857,6 @@ Count: Total = 4, fully supported = 0
   </tbody>
 </table>
 
-Count: Total = 1, fully supported = 0
-
 :target{#xla-control-flow-ops}
 
 ## XLA control flow ops
@@ -882,7 +869,7 @@ Count: Total = 1, fully supported = 0
       </td>
 
       <td>
-        supported(fully/partial/no)
+        supported(yes/partial/no)
       </td>
 
       <td>
@@ -912,7 +899,7 @@ Count: Total = 1, fully supported = 0
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1010,7 +997,7 @@ Count: Total = 1, fully supported = 0
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1019,8 +1006,6 @@ Count: Total = 1, fully supported = 0
     </tr>
   </tbody>
 </table>
-
-Count: Total = 9, fully supported = 2, partial = 1
 
 :target{#xla-tuple-ops}
 
@@ -1034,7 +1019,7 @@ Count: Total = 9, fully supported = 2, partial = 1
       </td>
 
       <td>
-        supported(fully/partial/no)
+        supported(yes/partial/no)
       </td>
 
       <td>
@@ -1050,7 +1035,7 @@ Count: Total = 9, fully supported = 2, partial = 1
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1064,7 +1049,7 @@ Count: Total = 9, fully supported = 2, partial = 1
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1073,8 +1058,6 @@ Count: Total = 9, fully supported = 2, partial = 1
     </tr>
   </tbody>
 </table>
-
-Count: Total = 2, fully supported = 2
 
 :target{#xla-other-ops}
 
@@ -1088,7 +1071,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        supported(fully/partial/no)
+        supported(yes/partial/no)
       </td>
 
       <td>
@@ -1104,7 +1087,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1118,7 +1101,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1132,7 +1115,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1146,7 +1129,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1160,7 +1143,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1174,7 +1157,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1202,7 +1185,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1216,7 +1199,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1244,7 +1227,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1258,7 +1241,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1272,7 +1255,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1300,7 +1283,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1356,7 +1339,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1370,7 +1353,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1384,7 +1367,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1398,7 +1381,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1426,7 +1409,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1454,7 +1437,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1468,7 +1451,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1510,7 +1493,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1524,7 +1507,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1552,7 +1535,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1566,7 +1549,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1580,7 +1563,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1608,7 +1591,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1622,7 +1605,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1636,7 +1619,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1650,7 +1633,7 @@ Count: Total = 2, fully supported = 2
       </td>
 
       <td>
-        fully
+        yes
       </td>
 
       <td>
@@ -1688,8 +1671,6 @@ Count: Total = 2, fully supported = 2
   </tbody>
 </table>
 
-Count: Total = 42, fully supported = 28, partial = 1
-
 :target{#xla-rng-ops}
 
 ## XLA RNG ops
@@ -1702,7 +1683,7 @@ Count: Total = 42, fully supported = 28, partial = 1
       </td>
 
       <td>
-        supported(fully/partial/no)
+        supported(yes/partial/no)
       </td>
 
       <td>
@@ -1718,7 +1699,7 @@ Count: Total = 42, fully supported = 28, partial = 1
       </td>
 
       <td>
-        partial
+        yes
       </td>
 
       <td>
@@ -1756,8 +1737,6 @@ Count: Total = 42, fully supported = 28, partial = 1
   </tbody>
 </table>
 
-Count: Total = 3, fully supported = 0, partial = 1
-
 :target{#xla-quantize-op}
 
 ## XLA quantize op
@@ -1770,7 +1749,7 @@ Count: Total = 3, fully supported = 0, partial = 1
       </td>
 
       <td>
-        supported(fully/partial/no)
+        supported(yes/partial/no)
       </td>
 
       <td>
@@ -1796,8 +1775,6 @@ Count: Total = 3, fully supported = 0, partial = 1
   </tbody>
 </table>
 
-Count: Total = 1, fully supported = 0, partial = 0
-
 :target{#xla-miscellaneous-ops}
 
 ## XLA miscellaneous ops
@@ -1810,7 +1787,7 @@ Count: Total = 1, fully supported = 0, partial = 0
       </td>
 
       <td>
-        supported(fully/partial/no)
+        supported(yes/partial/no)
       </td>
 
       <td>
@@ -1961,5 +1938,3 @@ Count: Total = 1, fully supported = 0, partial = 0
     </tr>
   </tbody>
 </table>
-
-Count: Total = 10, fully supported = 0, partial = 0

@@ -1,0 +1,51 @@
+sidebar:
+  - items:
+      - {id: getting_started/introduction.mdx, label: What is SPU?, type: doc}
+      - {id: getting_started/install.mdx, label: Installation Guidelines, type: doc}
+      - {id: getting_started/issue.mdx, label: Reporting an Issue, type: doc}
+      - {id: getting_started/faq.mdx, label: Frequently Asked Questions (FAQ), type: doc}
+    label: Getting started
+    link: {id: getting_started/index.mdx, label: Getting started, type: doc}
+    type: category
+  - items:
+      - {id: reference/py_api.mdx, label: Python API Reference, type: doc}
+      - {id: reference/cpp_api.mdx, label: C++ API Reference, type: doc}
+      - {id: reference/psi_config.mdx, label: SPU PSI Configuration, type: doc}
+      - {id: reference/runtime_config.mdx, label: SPU Runtime Configuration, type: doc}
+      - {id: reference/np_op_status.mdx, label: JAX NumPy Operators Status, type: doc}
+      - {id: reference/xla_status.mdx, label: XLA Implementation Status, type: doc}
+      - {id: reference/pphlo_doc.mdx, label: PPHlo API reference, type: doc}
+      - {id: reference/mpc_status.mdx, label: Supported MPC Protocol, type: doc}
+      - {id: reference/change_log.mdx, label: CHANGELOGS, type: doc}
+    label: Reference
+    link: {id: reference/index.mdx, label: Reference, type: doc}
+    type: category
+  - items:
+      - {id: tutorials/quick_start.mdx, label: SPU Quickstart, type: doc}
+      - {id: tutorials/spu_inside.mdx, label: SPU Inside, type: doc}
+      - {id: tutorials/cpp_lr_example.mdx, label: 'C++ Example: Logistic Regression',
+        type: doc}
+      - {id: tutorials/develop_your_first_mpc_application.mdx, label: Develop Your
+          First MPC-Application, type: doc}
+      - {id: tutorials/psi.mdx, label: PSI QuickStart, type: doc}
+      - {id: tutorials/pir.mdx, label: PIR QuickStart, type: doc}
+    label: Tutorials
+    link: {id: tutorials/index.mdx, label: Tutorials, type: doc}
+    type: category
+  - items:
+      - {id: development/basic_concepts.mdx, label: Basic concepts, type: doc}
+      - {id: development/pipeline.mdx, label: Pipeline, type: doc}
+      - {id: development/compiler.mdx, label: Compiler, type: doc}
+      - {id: development/runtime.mdx, label: Runtime, type: doc}
+      - {id: development/type_system.mdx, label: Type System, type: doc}
+      - {id: development/ir_dump.mdx, label: Dump IR to DAG, type: doc}
+      - {id: development/policy_sgd_insight.mdx, label: 'Background: SGD in MPC-ML',
+        type: doc}
+      - {id: development/fxp.mdx, label: Pitfalls - Fxp Arithmetic, type: doc}
+      - {id: development/add_protocols.mdx, label: Adding New MPC Protocols, type: doc}
+      - {id: development/psi_protocol_intro.mdx, label: PSI Protocols Introduction,
+        type: doc}
+    label: Development
+    link: {id: development/index.mdx, label: Development, type: doc}
+    type: category
+version: '1'
