@@ -1,12 +1,12 @@
-:target{#在SecretFlow中使用自定义DataBuilder（Torch）}
+:target{#在-SecretFlow-中使用自定义-DataBuilder（Torch）}
 
-# 在SecretFlow中使用自定义DataBuilder（Torch）
+# 在 SecretFlow 中使用自定义 DataBuilder（Torch）
 
 The following codes are demos only. It’s <strong>NOT for production</strong> due to system security concerns, please <strong>DO NOT</strong> use it directly in production.
 
-本教程将展示下，怎样在SecretFlow的多方安全环境中，如何使用自定义DataBuilder模式加载数据，并训练模型。
+本教程将展示下，怎样在 SecretFlow 的多方安全环境中，如何使用自定义 DataBuilder 模式加载数据，并训练模型。
 
-本教程将使用Flower数据集的图像分类任务来进行介绍，如何使用自定义DataBuilder完成联邦学习
+本教程将使用 Flower 数据集的图像分类任务来进行介绍，如何使用自定义 DataBuilder 完成联邦学习。
 
 :target{#环境设置}
 
@@ -41,21 +41,18 @@ The following codes are demos only. It’s <strong>NOT for production</strong> d
 
 ## 接口介绍
 
-我们在SecretFlow的 <cite>FLModel</cite> 中支持了自定义DataBuilder的读取方式，可以方便用户根据需求更灵活的处理数据输入。
+我们在 SecretFlow 的 `FLModel` 中支持了自定义 DataBuilder 的读取方式，可以方便用户根据需求更灵活的处理数据输入。
 
-下面我们以一个例子来展示下，如何使用自定义DataBuilder来进行联邦模型训练。
+下面我们以一个例子来展示下，如何使用自定义 DataBuilder 来进行联邦模型训练。
 
-使用DataBuilder的步骤：
+使用 DataBuilder 的步骤：
 
 1. Develop the DataBuilder function for constructing the DataLoader under the PyTorch engine in the single-machine version. <em>Note: The dataset\_builder function requires the ‘stage’ parameter.</em>
+2. 将各方的 DataBuilder 函数进行 wrap，得到 create\_dataset\_builder。
+3. 构造 data\_builder\_dict \[PYU, dataset\_builder]。
+4. 将得到的 data\_builder\_dict 作为参数传入 `fit` 函数的 `dataset_builder` 。此时 `x` 参数位置传入 dataset\_builder 中需要的输入。（比如：本例中传入的输入是实际使用的图像路径）。
 
-2) 将各方的DataBuilder函数进行wrap，得到create\_dataset\_builder
-
-3. 构造data\_builder\_dict \[PYU,dataset\_builder]
-
-4) 将得到的data\_builder\_dict作为参数传入 <cite>fit</cite> 函数的 <cite>dataset\_builder</cite> 。此时 <cite>x</cite> 参数位置传入dataset\_builder中需要的输入。（eg:本例中传入的输入是实际使用的图像路径）
-
-在FLModel中使用DataBuilder需要预先定义databuilder dict。需要能够返回 <cite>tf.dataset</cite> 和 <cite>steps\_per\_epoch</cite> 。而且各方返回的 <cite>steps\_per\_epoch</cite> 必须保持一致。
+在 FLModel 中使用 DataBuilder 需要预先定义 databuilder dict。需要能够返回 `tf.dataset` 和 `steps_per_epoch` 。而且各方返回的 `steps_per_epoch` 必须保持一致。
 
 ```python
 data_builder_dict =
@@ -73,9 +70,11 @@ data_builder_dict =
 
 ## 下载数据
 
-Flower数据集介绍：Flower数据集是一个包含了5种花卉（郁金香、黄水仙、鸢尾花、百合、向日葵）共计4323张彩色图片的数据集。每种花卉都有多个角度和不同光照下的图片，每张图片的分辨率为320x240。这个数据集常用于图像分类和机器学习算法的训练与测试。数据集中每个类别的数量分别是：daisy（633），dandelion（898），rose（641），sunflower（699），tulip（852）
+Flower 数据集介绍：flower 数据集是一个包含了 5 种花卉（雏菊、蒲公英、玫瑰、向日葵、郁金香）共计 4323 张彩色图片的数据集。每种花卉都有多个角度和不同光照下的图片，每张图片的分辨率为 320x240。这个数据集常用于图像分类和机器学习算法的训练与测试。数据集中每个类别的数量分别是：daisy（633），dandelion（898），rose（641），sunflower（699），tulip（852）
 
-Download link\:http\://download.tensorflow\.org/example\_images/flower\_photos.tgz ![flower\_dataset\_demo.png](https://www.secretflow.org.cn/static/flower_dataset_demo.553ea776.png)
+下载地址: [http://download.tensorflow.org/example\_images/flower\_photos.tgz](http://download.tensorflow.org/example_images/flower_photos.tgz)
+
+![flower\_dataset\_demo.png](https://www.secretflow.org.cn/static/flower_dataset_demo.553ea776.png)
 
 :target{#下载数据并解压}
 
@@ -105,15 +104,15 @@ Download link\:http\://download.tensorflow\.org/example\_images/flower\_photos.t
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-:target{#接下来我们开始构造自定义DataBuilder}
+:target{#接下来我们开始构造自定义-DataBuilder。}
 
-# 接下来我们开始构造自定义DataBuilder
+## 接下来我们开始构造自定义 DataBuilder。
 
-:target{id="1.-使用单机引擎开发DataBuilder"}
+:target{id="1.-使用单机引擎开发-DataBuilder。"}
 
-## 1. 使用单机引擎开发DataBuilder
+### 1. 使用单机引擎开发 DataBuilder。
 
-我们在开发 <cite>DataBuilder</cite> 的时候可以自由的按照单机开发的逻辑即可。目的是构建一个 <cite>Torch</cite> 中 <cite>Dataloader</cite> 对象即可。
+我们在开发 `DataBuilder` 的时候可以自由的按照单机开发的逻辑即可。目的是构建一个 `Torch` 中 `Dataloader` 对象即可。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
@@ -176,13 +175,16 @@ Download link\:http\://download.tensorflow\.org/example\_images/flower\_photos.t
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-:target{id="2.将开发完成的DataBuilder进行包装(wrap)"}
+:target{id="2.-将开发完成的-DataBuilder-进行包装（wrap）"}
 
-## 2.将开发完成的DataBuilder进行包装(wrap)
+### 2. 将开发完成的 DataBuilder 进行包装（wrap）
 
-我们开发好的DataBuilder在运行是需要分发到各个执行机器上去执行，为了序列化，我们需要把他们进行wrap。
+我们开发好的 DataBuilder 在运行是需要分发到各个执行机器上去执行，为了序列化，我们需要把他们进行 wrap。
 
-It is essential to consider the following points: - FLModel requires that the input to DataBuilder must include the stage parameter (stage=”train”). - FLModel requires that the passed DataBuilder must return two results, namely, `data_set` and `steps_per_epoch`.
+需要注意的是：
+
+- FLModel requires that the input to DataBuilder must include the stage parameter (stage=”train”).
+- FLModel 要求传入的 DataBuilder 需要返回两个结果（`data_set`，`steps_per_epoch`）
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
@@ -244,9 +246,9 @@ It is essential to consider the following points: - FLModel requires that the in
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-:target{id="3.-构建dataset_builder_dict"}
+:target{id="3.-构建-dataset_builder_dict。"}
 
-## 3. 构建dataset\_builder\_dict
+### 3. 构建 dataset\_builder\_dict。
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
@@ -270,15 +272,15 @@ It is essential to consider the following points: - FLModel requires that the in
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-:target{id="4.-得到-dataset_builder_dict-我们就可以使用它进行联邦训练了"}
+:target{id="4.-得到-dataset_builder_dict，我们就可以使用它进行联邦训练了。"}
 
-## 4. 得到 <cite>dataset\_builder\_dict</cite> 我们就可以使用它进行联邦训练了
+### 4. 得到 `dataset_builder_dict`，我们就可以使用它进行联邦训练了。
 
-接下来我们定义一个Torch后端的FLModel来进行训练
+接下来我们定义一个 Torch 后端的 FLModel 来进行训练。
 
-:target{#Define-the-Model-Architecture}
+:target{#定义模型架构}
 
-### Define the Model Architecture
+#### 定义模型架构
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
@@ -361,7 +363,7 @@ It is essential to consider the following points: - FLModel requires that the in
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-我们构造好的dataset builder的输入是图像数据集的路径，所以这里需要将输入的数据设置为一个 <cite>Dict</cite>
+我们构造好的 dataset builder 的输入是图像数据集的路径，所以这里需要将输入的数据设置为一个 `Dict`。
 
 ```python
 data = {
