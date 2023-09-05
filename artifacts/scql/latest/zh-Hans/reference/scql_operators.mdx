@@ -2,7 +2,7 @@
 
 # `Add`
 
-Out = Left `Add` Right
+Definition: Out = Left `Add` Right
 
 <strong>Inputs:</strong>
 
@@ -48,11 +48,61 @@ Out = BroadcastTo(In, ShapeRefTensor) = [1, 1, 1]
 2. `T1`: public,private,secret
 3. `T2`: public,private
 
+:target{#casewhen}
+
+# `CaseWhen`
+
+The CaseWhen operator goes through conditions and returns a value when the first condition is met (like an if-then-else statement)
+
+Example:
+
+```python
+Condition = [[true, false, false, false], [true, true, false, false]]
+Value = [[0, 0, 0, 0], [1, 1, 1, 1]]
+ValueElse = [2, 2, 2, 2]
+Out = [0, 1, 2, 2]
+```
+
+<strong>Inputs:</strong>
+
+1. `Condition`(variadic, T): Condition tensor.
+2. `Value`(variadic, T1): Value if condition tensor is true and all previous conditions are false.
+3. `ValueElse`(single, T2): Value if all condition tensors are false.
+
+<strong>Outputs:</strong>
+
+1. `Out`(single, T3): Result tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. `T`: public,private,secret
+2. `T1`: public,private,secret
+3. `T2`: public,private,secret
+4. `T3`: public,private,secret
+
+:target{#cast}
+
+# `Cast`
+
+Definition: Cast Input tensor’s data type to Output tensor’s.
+
+<strong>Inputs:</strong>
+
+1. `In`(single, T): Input tensor.
+
+<strong>Outputs:</strong>
+
+1. `Out`(single, T): Output tensor.
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. `T`: public,private,secret
+
 :target{#concat}
 
 # `Concat`
 
-Definition: Given a number of tensors In (variadic, each tensor’s shape must be the same except for the axis), concat the In tensors along the axis.
+Definition: Given a number of tensors In (variadic, each tensor’s shape must be the same in every dimension except for the axis), concat the In tensors along the axis.
 Example:
 
 ```python
@@ -141,7 +191,7 @@ Definition: Copy source tensor “In” to new tensor “Out” on target party
 
 # `Div`
 
-Out = Left `Div` Right
+Definition: Out = Left `Div` Right
 
 <strong>Inputs:</strong>
 
@@ -185,7 +235,7 @@ Definition: Dump the input tensor. Note: This op will change the affected rows i
 
 # `Equal`
 
-Out = Left `Equal` Right
+Definition: Out = Left `Equal` Right
 
 <strong>Inputs:</strong>
 
@@ -206,7 +256,7 @@ Out = Left `Equal` Right
 
 # `Filter`
 
-Given a boolean tensor Filter (its shape is \[M]), and a number of tensors In
+Definition: Given a boolean tensor Filter (its shape is \[M]), and a number of tensors In
 (variadic, each tensor’s shape must be \[M]), for i in \[0, M-1], keep the In tensors’ element if and only if Filter\[i]
 is True, output the filter result tensors Out (variadic). Example:
 
@@ -260,7 +310,7 @@ Out = [{"d", "b", "a"}, {3, 1, 0}]
 
 # `Greater`
 
-Out = Left `Greater` Right
+Definition: Out = Left `Greater` Right
 
 <strong>Inputs:</strong>
 
@@ -281,7 +331,7 @@ Out = Left `Greater` Right
 
 # `GreaterEqual`
 
-Out = Left `GreaterEqual` Right
+Definition: Out = Left `GreaterEqual` Right
 
 <strong>Inputs:</strong>
 
@@ -328,7 +378,7 @@ GroupNum = {3}
 
 # `GroupAvg`
 
-Definition: Aggregate `Data` for each group.
+Definition: Aggregate `In` for each group.
 Example:
 
 ```python
@@ -356,7 +406,7 @@ Out = [{1, 2, 4}, {8, 7, 5}]
 
 # `GroupCount`
 
-Definition: Aggregate `Data` for each group.
+Definition: Aggregate `In` for each group.
 Example:
 
 ```python
@@ -384,7 +434,7 @@ Out = [{2, 2, 1}, {2, 2, 1}]
 
 # `GroupCountDistinct`
 
-Definition: Aggregate `Data` for each group.
+Definition: Aggregate `In` for each group.
 Example:
 
 ```python
@@ -412,7 +462,7 @@ Out = [{2, 2, 1}, {2, 2, 1}]
 
 # `GroupFirstOf`
 
-Definition: Aggregate `Data` for each group.
+Definition: Aggregate `In` for each group.
 Example:
 
 ```python
@@ -436,11 +486,43 @@ Out = [{0, 1, 4}, {9, 8, 5}]
 
 1. `T`: private
 
+:target{#grouphesum}
+
+# `GroupHeSum`
+
+Definition: Using HE to sum ‘In’ for each group.
+Example:
+
+```python
+GroupId = {0, 1, 0, 1, 2}
+GroupNum = {3}
+In = {0, 1, 2, 3, 4}
+Out = {2, 4, 4}
+```
+
+<strong>Inputs:</strong>
+
+1. `GroupId`(single, T): Input group id vector(shape \[M]\[1]).
+2. `GroupNum`(single, T): Input number of groups vector(shape \[1]\[1]).
+3. `In`(single, T): Input data tensor(shape \[M]\[1]).
+
+<strong>Outputs:</strong>
+
+1. `Out`(single, T): Output data tensors(shape \[K]\[1], K equals to number of groups), Out\[i] is the agg result for i-th group.
+
+<strong>Attributes:</strong>
+
+1. `input_party_codes`: List of parties the inputs belong to(\[PartyCodeForGroupId/Num, PartyCodeForIn]).
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. `T`: private
+
 :target{#groupmax}
 
 # `GroupMax`
 
-Definition: Aggregate `Data` for each group.
+Definition: Aggregate `In` for each group.
 Example:
 
 ```python
@@ -468,7 +550,7 @@ Out = [{2, 3, 4}, {9, 8, 5}]
 
 # `GroupMin`
 
-Definition: Aggregate `Data` for each group.
+Definition: Aggregate `In` for each group.
 Example:
 
 ```python
@@ -496,7 +578,7 @@ Out = [{0, 1, 4}, {7, 6, 5}]
 
 # `GroupSum`
 
-Definition: Aggregate `Data` for each group.
+Definition: Aggregate `In` for each group.
 Example:
 
 ```python
@@ -520,19 +602,65 @@ Out = [{2, 4, 4}, {16, 14, 5}]
 
 1. `T`: private
 
-:target{#in}
+:target{#if}
 
-# `In`
+# `If`
 
-Definition: Given an input tensor Left (its shape is \[M]), and another input tensor Right (its shape is \[N]),
-check whether Left’s element exists in Right’s elements and output a boolean tensor Out (its shape is \[M]). Left and Right must be the same type.
+The IF operator returns a value if a condition is TRUE, or another value if a condition is FALSE.
+
+```none
+Example:
+```
+
+````python
+Condition = [true, false, true, true]
+			ValueIfTrue = [0, 0, 0, 0]
+			ValueIfFalse = [1, 1, 1, 1]
+			Out = [0, 1, 0, 0]
+			```
+  
+
+**Inputs:**  
+
+1. `Condition`(single, T): Condition tensor.
+
+1. `ValueIfTrue`(single, T1): Value if true tensor.
+
+1. `ValueIfFalse`(single, T2): Value if false tensor.
+
+
+**Outputs:**  
+
+1. `Out`(single, T3): Result tensor.
+
+
+
+
+
+
+**TensorStatus(ShareType) Constraints:**
+
+1. `T`: public,private,secret
+
+1. `T1`: public,private,secret
+
+1. `T2`: public,private,secret
+
+1. `T3`: public,private,secret
+
+
+
+### `In`
+
+Definition: Given an input tensor Left (its shape is [M]), and another input tensor Right (its shape is [N]),
+check whether Left's element exists in Right's elements and output a boolean tensor Out (its shape is [M]). Left and Right must be the same type.
 Example:
 
 ```python
 Left = {a, b, c, d}
 Right = {b, d, e, f, g, h}
 Out = {False, True, False, True}
-```
+````
 
 <strong>Inputs:</strong>
 
@@ -562,7 +690,7 @@ Out = {False, True, False, True}
 
 # `IntDiv`
 
-Out = Left `IntDiv` Right
+Definition: Out = Left `IntDiv` Right
 
 <strong>Inputs:</strong>
 
@@ -590,8 +718,23 @@ Example:
 // inner join example
 Left = {4,4,3,2,1} // shape:[M=5]
 Right = {1,3,4,5} // shape: [N=4]
+join_type = 0
 LeftJoinIndex = {4,2,0,1}  // shape:[K=4], rows after applied filter eq-join-list={1,3,4,4}
 RightJoinIndex = {0,1,2,2} // shape:[K=4], rows after applied filter eq-join-list={1,3,4,4}
+
+// Left join example
+Left = {4,4,3,2,1} // shape:[M=5]
+Right = {1,3,4,5} // shape: [N=4]
+join_type = 1
+LeftJoinIndex = {4,2,0,1,3}  // shape:[K=5], rows after applied filter eq-join-list={1,3,4,4,2}
+RightJoinIndex = {0,1,2,2,null} // shape:[K=5], rows after applied filter eq-join-list={1,3,4,4,null}
+
+// Right join example
+Left = {4,4,3,2,1} // shape:[M=5]
+Right = {1,3,4,5} // shape: [N=4]
+join_type = 2
+LeftJoinIndex = {4,2,0,1,null}  // shape:[K=5], rows after applied filter eq-join-list={1,3,4,4,null}
+RightJoinIndex = {0,1,2,2,3} // shape:[K=5], rows after applied filter eq-join-list={1,3,4,4,5}
 ```
 
 <strong>Inputs:</strong>
@@ -607,7 +750,7 @@ RightJoinIndex = {0,1,2,2} // shape:[K=4], rows after applied filter eq-join-lis
 <strong>Attributes:</strong>
 
 1. `input_party_codes`: List of parties the inputs belong to(\[PartyCodeLeft, PartyCodeRight]).
-2. `join_type`: Int64. 0: inner join;
+2. `join_type`: Int64. 0: inner join; 1: left join; 2: right join;
 
 <strong>Default Attribute Values:</strong>
 
@@ -622,7 +765,7 @@ RightJoinIndex = {0,1,2,2} // shape:[K=4], rows after applied filter eq-join-lis
 
 # `Less`
 
-Out = Left `Less` Right
+Definition: Out = Left `Less` Right
 
 <strong>Inputs:</strong>
 
@@ -643,7 +786,7 @@ Out = Left `Less` Right
 
 # `LessEqual`
 
-Out = Left `LessEqual` Right
+Definition: Out = Left `LessEqual` Right
 
 <strong>Inputs:</strong>
 
@@ -660,11 +803,41 @@ Out = Left `LessEqual` Right
 2. `T1`: public,private,secret
 3. `T2`: private,secret
 
+:target{#limit}
+
+# `Limit`
+
+Limit return part of data, the amount of data depends on limit attr, the offset of data depends on offset attr. Example:
+
+```python
+offset = 1
+count = 2
+In = {a, b, c, d, e}
+Out = {b, c}
+```
+
+<strong>Inputs:</strong>
+
+1. `In`(variadic, T): Tensors to be limited.
+
+<strong>Outputs:</strong>
+
+1. `Out`(variadic, T): Output tensor.
+
+<strong>Attributes:</strong>
+
+1. `offset`: offset in limit
+2. `count`: count in limit
+
+<strong>TensorStatus(ShareType) Constraints:</strong>
+
+1. `T`: public,private,secret
+
 :target{#logicaland}
 
 # `LogicalAnd`
 
-Out = Left `LogicalAnd` Right
+Definition: Out = Left `LogicalAnd` Right
 
 <strong>Inputs:</strong>
 
@@ -685,7 +858,7 @@ Out = Left `LogicalAnd` Right
 
 # `LogicalOr`
 
-Out = Left `LogicalOr` Right
+Definition: Out = Left `LogicalOr` Right
 
 <strong>Inputs:</strong>
 
@@ -706,7 +879,7 @@ Out = Left `LogicalOr` Right
 
 # `MakePrivate`
 
-Convert In tensor from share status to private status.
+Definition: Convert In tensor from share status to private status.
 
 <strong>Inputs:</strong>
 
@@ -729,7 +902,7 @@ Convert In tensor from share status to private status.
 
 # `MakePublic`
 
-Convert In tensor from share/private status to public status.
+Definition: Convert In tensor from share/private status to public status.
 
 <strong>Inputs:</strong>
 
@@ -748,7 +921,7 @@ Convert In tensor from share/private status to public status.
 
 # `MakeShare`
 
-Convert In tensor from private status to share status.
+Definition: Convert In tensor from private status to share status.
 
 <strong>Inputs:</strong>
 
@@ -767,7 +940,7 @@ Convert In tensor from private status to share status.
 
 # `Minus`
 
-Out = Left `Minus` Right
+Definition: Out = Left `Minus` Right
 
 <strong>Inputs:</strong>
 
@@ -788,7 +961,7 @@ Out = Left `Minus` Right
 
 # `Mod`
 
-Out = Left `Mod` Right
+Definition: Out = Left `Mod` Right
 
 <strong>Inputs:</strong>
 
@@ -809,7 +982,7 @@ Out = Left `Mod` Right
 
 # `Mul`
 
-Out = Left `Mul` Right
+Definition: Out = Left `Mul` Right
 
 <strong>Inputs:</strong>
 
@@ -830,7 +1003,7 @@ Out = Left `Mul` Right
 
 # `Not`
 
-Out = Not In
+Definition:  Out = Not In
 
 <strong>Inputs:</strong>
 
@@ -848,7 +1021,7 @@ Out = Not In
 
 # `NotEqual`
 
-Out = Left `NotEqual` Right
+Definition: Out = Left `NotEqual` Right
 
 <strong>Inputs:</strong>
 
@@ -1026,7 +1199,7 @@ Out = [{1, 3, 5, 9, 0}, {9, 8, 15, 21, 5}]
 
 # `Publish`
 
-This operator publishes the DAG results.
+Definition: This operator publishes the DAG results.
 
 <strong>Inputs:</strong>
 
@@ -1143,7 +1316,7 @@ Out = {21}
 
 # `RunSQL`
 
-Run a SQL statement and return a list of tensors in private status
+Definition: Run a SQL statement and return a list of tensors in private status
 
 <strong>Inputs:</strong>
 

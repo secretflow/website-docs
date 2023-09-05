@@ -6,20 +6,15 @@
 
 ## Overview
 
-As shown in FIG, SCQL System needs to work with <strong>Client</strong> and <strong>GRM</strong> :
+As shown in FIG, SCQL System needs to work with <strong>Client</strong>:
 
 - Client: user interface designed for query submission and result retrieval.
-- GRM: help to manage schema information and identify parties.
-
-<Container type="note">
-  please read [<span>Global Resource Manager</span>](../reference/grm.mdx) to know more about GRM.
-</Container>
 
 ![](../_assets/scql_system.png)
 
-Therefore the platform should support Client and GRM to integrate SCQL System.
+Therefore the platform should support Client to integrate SCQL System.
 
-Specifically, the Client interact with SCDB through Query API,  while GRM interact with SCDB through GRM API.
+Specifically, the Client interact with SCDB through Query API.
 
 :target{#query-api}
 
@@ -39,17 +34,3 @@ Please refer to [SCQL API](scql_api.mdx) for details.
 </Container>
 
 In a word, the custom Client should construct HTTP request for user’s SQL, post to SCDB and parse the response from SCDB.
-
-:target{#grm-api}
-
-## GRM API
-
-SCQL uses rpc API to communicate with GRM:
-
-- `/GetTableMeta`: fetch metadata of table, GRM server should listen on `${GRMServerHost}/GetTableMeta`
-- `/GetEngines`: get endpoints for specific SCQLEngines(parties), GRM server should listen on `${GRMServerHost}/GetEngines`
-- `/VerifyTableOwnership`: check whether user has ownership of table, GRM server should listen on `${GRMServerHost}/VerifyTableOwnership`
-
-Please refer to [Global Resource Manager](../reference/grm.mdx) for details.
-
-The custom GRM Server needs to support above services corresponding to the GRM API.

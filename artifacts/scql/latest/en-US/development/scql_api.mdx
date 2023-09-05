@@ -221,8 +221,7 @@ If you want execute <cite>show databases</cite>, the request and response messag
         "user": {
             "account_system_type": "NATIVE_USER",
             "native_user": { "name": "someuser", "password": "somepassword" }
-        },
-        "grm_token": "sometoken"
+        }
     },
     "query": "show databases;",
     "biz_request_id": "1234"
@@ -422,8 +421,7 @@ If you want to get the result of the query <cite>show databases</cite>, you can 
         "user": {
             "account_system_type": "NATIVE_USER",
             "native_user": { "name": "some_user", "password": "some_password" }
-        },
-        "grm_token": "some_token"
+        }
     },
     "scdb_session_id": "some_session_id"
 }
@@ -804,8 +802,7 @@ If you want submit a query <cite>show databases</cite>, you can send a request a
         "user": {
             "account_system_type": "NATIVE_USER",
             "native_user": { "name": "someuser", "password": "somepassword" }
-        },
-        "grm_token": "sometoken"
+        }
     },
     "query": "show databases;",
     "biz_request_id": "1234",
@@ -942,24 +939,6 @@ If successful, a response will be received like this:
 
       <td>
         User information, contains password and name
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        grm\_token
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        Y
-      </td>
-
-      <td>
-        The unique identifier of the user in GRM
       </td>
     </tr>
   </tbody>
@@ -2044,20 +2023,6 @@ TensorShape\_Dimension could be dim\_value or dim\_param.
 
       <td>
         User does not have permission to execute the DDL
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        132
-      </td>
-
-      <td>
-        Code\_GRM\_RESOURCE\_PERMISSION\_DENIED
-      </td>
-
-      <td>
-        User has no required permissions on grm resources
       </td>
     </tr>
 

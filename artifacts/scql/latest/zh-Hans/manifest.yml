@@ -1,0 +1,28 @@
+sidebar:
+  - items:
+      - {id: getting_started/scql_intro.mdx, label: SCQL 介绍, type: doc}
+      - {id: getting_started/quickstart.mdx, label: 快速开始, type: doc}
+      - {id: getting_started/how_to_set_ccl.mdx, label: CCL 配置建议, type: doc}
+      - {id: getting_started/deployment.mdx, label: 部署, type: doc}
+      - {id: getting_started/how_to_use_scql.mdx, label: How To Use SCQL, type: doc}
+    label: Getting started
+    link: {id: getting_started/index.mdx, label: Getting started, type: doc}
+    type: category
+  - items:
+      - {id: reference/scql_manual.mdx, label: SCQL 指南, type: doc}
+      - {id: reference/scql_operators_doc.mdx, label: SCQL 算子规范, type: doc}
+      - {id: reference/scql_status.mdx, label: SCQL 实现进度, type: doc}
+      - {id: reference/mysql_compatibility.mdx, label: 与 MySQL 的兼容性, type: doc}
+      - {id: reference/scql_security_statement.mdx, label: SCQL 安全声明, type: doc}
+      - {id: reference/scql_ccl_intro.mdx, label: SCQL CCL, type: doc}
+    label: Reference
+    link: {id: reference/index.mdx, label: Reference, type: doc}
+    type: category
+  - items:
+      - {id: development/scql_api.mdx, label: SCQL API, type: doc}
+      - {id: development/integrate_scql_system.mdx, label: 如何集成 SCQL 系统, type: doc}
+      - {id: development/scql_config_manual.mdx, label: SCQL 配置手册, type: doc}
+    label: Development
+    link: {id: development/index.mdx, label: Development, type: doc}
+    type: category
+version: '1'
