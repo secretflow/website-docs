@@ -14,6 +14,11 @@
 
 > please add your unreleased change here.
 
+:target{#id1}
+
+## 20230906
+
+- \[SPU] 0.5.0 release
 - \[API] Update IO interface to support splitting large data into chunks
 - \[API] Add intrinsic function support
 - \[Feature] Add half type support
@@ -21,14 +26,14 @@
 - \[Feature] Add SineOp/CosineOp support
 - \[Feature] Add complex support
 
-:target{#id1}
+:target{#id2}
 
 ## 20230705
 
 - \[SPU] 0.4.1 release
 - \[Improvement] Improve tanh performance
 
-:target{#id2}
+:target{#id3}
 
 ## 20230614
 
@@ -43,7 +48,7 @@
 - \[Improvement] Improve support of Jax 64bit mode
 - \[API] Add compiler options
 
-:target{#id3}
+:target{#id4}
 
 ## 20230406
 
@@ -66,7 +71,7 @@
 - \[API] Move C++ API from spu to libspu
 - \[PSI] Add ecdh-oprf 2-party two stage mode.
 
-:target{#id4}
+:target{#id5}
 
 ## 20230104
 
@@ -81,7 +86,7 @@
 - \[3p] Build with Tensorflow 2.11.0
 - \[3p] Update JAX to 0.4.1
 
-:target{#id5}
+:target{#id6}
 
 ## 20221116
 
@@ -95,7 +100,7 @@
 - \[bugfix] Relax clamp type constraint
 - \[bugfix] Fix NotOp with non-pred integer types
 
-:target{#id6}
+:target{#id7}
 
 ## 20220905
 
@@ -103,7 +108,7 @@
 - \[bugfix] Fix Tensorflow example
 - \[miscs] Performance improvements
 
-:target{#id7}
+:target{#id8}
 
 ## 20220822
 
@@ -113,7 +118,7 @@
 - \[API] Refactor psi api
 - \[miscs] Various performance improvements
 
-:target{#id8}
+:target{#id9}
 
 ## 20220727
 
@@ -121,7 +126,7 @@
 - \[API] Added rsqrt support
 - \[bugfix] Fixed some crashes and wrong answers
 
-:target{#id9}
+:target{#id10}
 
 ## 20220527
 
@@ -129,7 +134,7 @@
 - \[API] Add exp/log approximation configurations.
 - \[API] Change SigmoidMode enum value.
 
-:target{#id10}
+:target{#id11}
 
 ## 20220513
 
@@ -138,7 +143,7 @@
 - \[Feature] Performance improvements
 - \[Feature] Support SelectAndScatter.
 
-:target{#id11}
+:target{#id12}
 
 ## 20220511
 
@@ -149,14 +154,14 @@
 - \[bugfix] Improve multiply accuracy under certain scenarios.
 - \[bugfix] Ensure dynamic-slice & dynamic-update-slice OOB behavior is aligned with XLA semantics.
 
-:target{#id12}
+:target{#id13}
 
 ## 20220427
 
 - \[SPU] 0.0.8.1 release
 - \[bugfix] Fix iota type mismatch.
 
-:target{#id13}
+:target{#id14}
 
 ## 20220425
 
@@ -164,14 +169,14 @@
 - \[Feature] Add tanh support.
 - \[bugfix] Fix secret shift wrong answer.
 
-:target{#id14}
+:target{#id15}
 
 ## 20220424
 
 - \[SPU] 0.0.7.1 release
 - \[bugfix] Fix secret shift.
 
-:target{#id15}
+:target{#id16}
 
 ## 20220422
 
@@ -182,14 +187,14 @@
 - \[Feature] Support arithmetic right shift operation.
 - \[API] Change DataType definition, support more accurate encoding.
 
-:target{#id16}
+:target{#id17}
 
 ## 20220412.1
 
 - \[SPU] 0.0.6.1 release
 - \[bugfix] Fixed several macOS build issues.
 
-:target{#id17}
+:target{#id18}
 
 ## 20220412
 
@@ -200,14 +205,14 @@
 - \[API] Fix typo, goldschmdit.
 - \[Improvement] fxp div, improvement accuracy with normal distributed inputs.
 
-:target{#id18}
+:target{#id19}
 
 ## 20220325
 
 - \[SPU] 0.0.5.1 release
 - \[Bugfix] Fix SEMI2K divivsion wrong answer
 
-:target{#id19}
+:target{#id20}
 
 ## 20220324
 
@@ -219,7 +224,7 @@
 - \[API] change RuntimeConfig.enable\_op\_time\_profile to enable\_pphlo\_profile.
 - \[API] change RuntimeConfig.fxp\_reciprocal\_goldschmdit\_iters to fxp\_div\_goldschmdit\_iters.
 
-:target{#id20}
+:target{#id21}
 
 ## 20220308
 
@@ -233,7 +238,7 @@
 - \[API] add RuntimeConfig.enable\_op\_time\_profile to ask SPU to collect timing profiling data
 - \[Bugfix] fixed pphlo.ConstOp may lose signed bit after encoding
 
-:target{#id21}
+:target{#id22}
 
 ## 20220303
 
@@ -245,34 +250,34 @@
 - \[Bugfix] Fixed SEGV when reconstruct from an ABY3 scalar secret
 - \[Feature] Left/right shift now properly supports non-scalar inputs
 
-:target{#id22}
+:target{#id23}
 
 ## 20220217
 
 - \[spu] 0.0.2.3 release
 
-:target{#id23}
+:target{#id24}
 
 ## 20220211
 
 - \[spu] 0.0.2.2 release
 - \[Bugfix] Fix exception when kkrt psi input is too small
 
-:target{#id24}
+:target{#id25}
 
 ## 20220210
 
 - \[spu] 0.0.2.1 release
 - \[Bugfix] Fix exception when streaming psi output directory already exists
 
-:target{#id25}
+:target{#id26}
 
 ## 20220209
 
 - \[spu] 0.0.2 release.
 - \[Feature] Support multi-parties psi
 
-:target{#id26}
+:target{#id27}
 
 ## 20210930
 
