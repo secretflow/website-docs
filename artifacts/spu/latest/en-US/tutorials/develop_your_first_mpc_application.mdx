@@ -144,7 +144,7 @@ In this part, we first forget the MPC setting(data split, protocol…) and imple
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-The original response function for LR is sigmoid function, which contains time-consuming ops like exp and division in MPC. So it’s common to approximate sigmoid function with other MPC-friendly function. Here we give two method, i.e. first-order Taylor and square root approximation.
+The original response function for LR is sigmoid function, which contains time-consuming ops like exp and division in MPC. So it’s common to approximate sigmoid function with other MPC-friendly function. Here we give two method, i.e. first-order Taylor and square root approximation.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
@@ -487,7 +487,7 @@ Here, to simulate , we first define a simple simulator with CHEETAH protocol and
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Then, we try it in 3pc setting, i.e. use ABY3 protocol.
+Then, we try it in 3pc setting, i.e. use ABY3 protocol.
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[18]:" stderr={false} type="input">
@@ -591,7 +591,7 @@ If coincidentally, we can get all elements of grad very near to 0(may have littl
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-Restricting large batch\_size is not an appropriate way, the key is to make the scale factor smaller, we can also fix the question by enlarging the `eps`, e.g. change `eps` from 1e-6 to 1e-2.
+Restricting large batch\_size is not an appropriate way, the key is to make the scale factor smaller, we can also fix the question by enlarging the `eps`, e.g. change `eps` from 1e-6 to 1e-2.
 
 <strong>Note</strong>: `eps` in policy-sgd indeed has two affects, one is to prevent the zero-division error, the other is to restrict the maximum scale factor in warm-start phase(first epoch).
 
@@ -625,7 +625,7 @@ Restricting large batch\_size is not an appropriate way, the key is to make the 
   </Notebook.CodeArea>
 </Notebook.Cell>
 
-The above analyses are based on t1 sigmoid, which leads to 0 in grad. So we can switch the t1 approximation to other non-truncate but costly form(e.g. sr approximation).
+The above analyses are based on t1 sigmoid, which leads to 0 in grad. So we can switch the t1 approximation to other non-truncate but costly form(e.g. sr approximation).
 
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[88]:" stderr={false} type="input">
@@ -661,7 +661,7 @@ So, if we just consider it on app layer, we can get three rules for fixing:
 
 1. enlarge `batch_size`.
 2. enlarge `eps`.
-3. use non-truncate sigmoid approximation(e.g. sr approximation).
+3. use non-truncate sigmoid approximation(e.g. sr approximation).
 
 :target{#MPC-Perspective}
 
@@ -1164,7 +1164,7 @@ But when you use t1 approximation for sigmoid, then you may come across <InlineM
 
      $$
    </Math>
-2. <strong>Cheap but approximate</strong> \:Equation (3) can give accurate result, but it contains time-consuming ops(<InlineMath>$log$</InlineMath>, <InlineMath>$exp$</InlineMath>), which cost a lot! If you just want to compute an approximation of loss(e.g. maybe you want to do early stop with loss), you can try Taylor expansion, which gives:
+2. <strong>Cheap but approximate</strong> \:Equation (3) can give accurate result, but it contains time-consuming ops(<InlineMath>$log$</InlineMath>, <InlineMath>$exp$</InlineMath>), which cost a lot! If you just want to compute an approximation of loss(e.g. maybe you want to do early stop with loss), you can try Taylor expansion, which gives:
    <Math>
      $$
      loss = \frac{1}{N} \sum_{i=1}^N [log(2) - (y-0.5)w^T x_i + 0.125 * (w^T x_i)^2]
@@ -1179,7 +1179,7 @@ But when you use t1 approximation for sigmoid, then you may come across <InlineM
 
 > Emulations is an <strong>experimental</strong> feature for now, and is under rapid development, so we do not package the code of sml into spu. Users can try this feature from <strong>source code</strong> and run with bazel .Till now, we only have support for LAN setting(`MULTIPROCESS` mode). `Docker` mode, which runs program like under WAN setting, will be posted in future version.
 
-Finally, we talk about how to do emulations. Comparing to simulator, emulator runs with a simple scheduler like Secretflow does, and offers some facility(e.g. generate mock data) to make benchmark simpler. So spu provides an `Emulator` class and gives an easy-to-use interface.
+Finally, we talk about how to do emulations. Comparing to simulator, emulator runs with a simple scheduler like Secretflow does, and offers some facility(e.g. generate mock data) to make benchmark simpler. So spu provides an `Emulator` class and gives an easy-to-use interface.
 
 Usually, the emulation will be done with larger dataset, so we won’t run directly in this tutorial notebook. Instead, we will show a big picture on how to design and run emulations for MPC application step by step.
 
