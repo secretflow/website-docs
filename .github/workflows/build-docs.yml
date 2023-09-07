@@ -95,6 +95,8 @@ jobs:
           branch: 'docs/${{ matrix.project }}'
           delete-branch: true
           title: 'chore(${{ matrix.project }}): Update docs'
+          reviewers: |
+            tonywu6
           token: ${{ env.BOT_TOKEN }}
           body: |
             This PR updates documentation artifacts for ${{ matrix.project }}.
