@@ -1,11 +1,9 @@
-:target{#domaindata}
+:target{#domain}
 
-# DomainData
+# Domain
 
-DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 侧的管理 DomainData
-的能力。请参考 [DomainData](../../concepts/domaindata_cn.mdx)。
-你可以从 [这里](https://github.com/secretflow/kuscia/blob/main/proto/api/v1alpha1/datamesh/domaindata.proto) 找到对应的
-protobuf 文件。
+在 Kuscia 中将隐私计算的节点称为 Domain，一个 Domain 中可以包含多个 K8s 的工作节点（Node）。详情请参考 [Domain](../concepts/domain_cn.mdx) 。
+你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domain.proto) 找到 Domain 对应的 protobuf 文件。
 
 :target{#id1}
 
@@ -35,73 +33,91 @@ protobuf 文件。
   <tbody>
     <tr>
       <td>
-        [CreateDomainData](#create-domain-data)
+        [CreateDomain](#create-domain)
       </td>
 
       <td>
-        CreateDomainDataRequest
+        CreateDomainRequest
       </td>
 
       <td>
-        CreateDomainDataResponse
+        CreateDomainResponse
       </td>
 
       <td>
-        创建数据对象
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        [UpdateDomainData](#update-domain-data)
-      </td>
-
-      <td>
-        UpdateDomainDataRequest
-      </td>
-
-      <td>
-        UpdateDomainDataResponse
-      </td>
-
-      <td>
-        更新数据对象
+        创建节点
       </td>
     </tr>
 
     <tr>
       <td>
-        [DeleteDomainData](#delete-domain-data)
+        [UpdateDomain](#update-domain)
       </td>
 
       <td>
-        DeleteDomainDataRequest
+        UpdateDomainRequest
       </td>
 
       <td>
-        DeleteDomainDataResponse
+        UpdateDomainResponse
       </td>
 
       <td>
-        删除数据对象
+        更新节点
       </td>
     </tr>
 
     <tr>
       <td>
-        [QueryDomainData](#query-domain-data)
+        [DeleteDomain](#delete-domain)
       </td>
 
       <td>
-        QueryDomainDataRequest
+        DeleteDomainRequest
       </td>
 
       <td>
-        QueryDomainDataResponse
+        DeleteDomainResponse
       </td>
 
       <td>
-        查询数据对象
+        删除节点
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [QueryDomain](#query-domain)
+      </td>
+
+      <td>
+        QueryDomainRequest
+      </td>
+
+      <td>
+        QueryDomainResponse
+      </td>
+
+      <td>
+        查询节点
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [BatchQueryDomainStatus](#batch-query-domain-status)
+      </td>
+
+      <td>
+        BatchQueryDomainStatusRequest
+      </td>
+
+      <td>
+        BatchQueryDomainStatusResponse
+      </td>
+
+      <td>
+        批量查询节点状态
       </td>
     </tr>
   </tbody>
@@ -111,19 +127,19 @@ protobuf 文件。
 
 ## 接口详情
 
-:target{#create-domain-data}
+:target{#create-domain}
 
-### 创建数据对象
+### 创建节点
 
 :target{#http}
 
 #### HTTP路径
 
-/api/v1/datamesh/domaindata/create
+/api/v1/domain/create
 
-:target{#create-domain-data-request}
+:target{#createdomainrequest}
 
-#### 请求（CreateDomainDataRequest）
+#### 请求（CreateDomainRequest）
 
 <table>
   <thead>
@@ -167,25 +183,7 @@ protobuf 文件。
 
     <tr>
       <td>
-        domaindata\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        数据对象ID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        name
+        domain\_id
       </td>
 
       <td>
@@ -197,13 +195,13 @@ protobuf 文件。
       </td>
 
       <td>
-        名称
+        节点ID
       </td>
     </tr>
 
     <tr>
       <td>
-        type
+        role
       </td>
 
       <td>
@@ -215,13 +213,13 @@ protobuf 文件。
       </td>
 
       <td>
-        类型，\[table,model,rule,report,unknown]，大小写敏感
+        角色：\[“”, “partner”]，参考 [<span>Domain概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
 
     <tr>
       <td>
-        relative\_uri
+        cert
       </td>
 
       <td>
@@ -233,105 +231,15 @@ protobuf 文件。
       </td>
 
       <td>
-        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        datasource\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        数据源ID，不填写则使用默认数据源，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        attributes
-      </td>
-
-      <td>
-        map\<string,string>
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        partition
-      </td>
-
-      <td>
-        [Partition](#partition)
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        暂不支持
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        columns
-      </td>
-
-      <td>
-        [DataColumn](#data-column) array
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        列信息
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        vendor
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        来源，用于查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        BASE64的计算节点证书，参考 [<span>Domain概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#create-domain-data-response}
+:target{#createdomainresponse}
 
-#### 响应（CreateDomainDataResponse）
+#### 响应（CreateDomainResponse）
 
 <table>
   <thead>
@@ -372,58 +280,22 @@ protobuf 文件。
         状态信息
       </td>
     </tr>
-
-    <tr>
-      <td>
-        data
-      </td>
-
-      <td>
-        CreateDomainDataResponseData
-      </td>
-
-      <td>
-
-      </td>
-
-      <td>
-
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.domaindata\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        数据对象ID
-      </td>
-    </tr>
   </tbody>
 </table>
 
-:target{#update-domain-data}
+:target{#update-domain}
 
-### 更新数据对象
+### 更新节点
 
 :target{#id3}
 
 #### HTTP路径
 
-/api/v1/datamesh/domaindata/update
+/api/v1/domain/update
 
-:target{#updatedomaindatarequest}
+:target{#updatedomainrequest}
 
-#### 请求（UpdateDomainDataRequest）
+#### 请求（UpdateDomainRequest）
 
 <table>
   <thead>
@@ -467,79 +339,7 @@ protobuf 文件。
 
     <tr>
       <td>
-        domaindata\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        数据对象ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        name
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        名称
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        type
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        类型，\[table,model,rule,report,unknown]，大小写敏感
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        relative\_uri
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        datasource\_id
+        domain\_id
       </td>
 
       <td>
@@ -551,67 +351,13 @@ protobuf 文件。
       </td>
 
       <td>
-        数据源ID，不填写则使用默认数据源，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        节点ID
       </td>
     </tr>
 
     <tr>
       <td>
-        attributes
-      </td>
-
-      <td>
-        map\<string,string>
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        partition
-      </td>
-
-      <td>
-        [Partition](#partition)
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        暂不支持
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        columns
-      </td>
-
-      <td>
-        [DataColumn](#data-column)\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        列信息
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        vendor
+        role
       </td>
 
       <td>
@@ -623,15 +369,33 @@ protobuf 文件。
       </td>
 
       <td>
-        来源，用于批量查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        角色：\[“”, “partner”]，参考 [<span>Domain概念</span>](../concepts/domain_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        cert
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        BASE64的计算节点证书，参考 [<span>Domain概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#updatedomaindataresponse}
+:target{#updatedomainresponse}
 
-#### 响应（UpdateDomainDataResponse）
+#### 响应（UpdateDomainResponse）
 
 <table>
   <thead>
@@ -675,19 +439,19 @@ protobuf 文件。
   </tbody>
 </table>
 
-:target{#delete-domain-data}
+:target{#delete-domain}
 
-### 删除数据对象
+### 删除节点
 
 :target{#id4}
 
 #### HTTP路径
 
-/api/v1/datamesh/domaindata/delete
+/api/v1/domain/delete
 
-:target{#deletedomaindatarequest}
+:target{#deletedomainrequest}
 
-#### 请求（DeleteDomainDataRequest）
+#### 请求（DeleteDomainRequest）
 
 <table>
   <thead>
@@ -731,7 +495,7 @@ protobuf 文件。
 
     <tr>
       <td>
-        domaindata\_id
+        domain\_id
       </td>
 
       <td>
@@ -743,15 +507,15 @@ protobuf 文件。
       </td>
 
       <td>
-        数据对象ID
+        节点ID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#deletedomaindataresponse}
+:target{#deletedomainresponse}
 
-#### 响应（DeleteDomainDataResponse）
+#### 响应（DeleteDomainResponse）
 
 <table>
   <thead>
@@ -795,15 +559,15 @@ protobuf 文件。
   </tbody>
 </table>
 
-:target{#query-domain-data}
+:target{#query-domain}
 
-### 查询数据对象
+### 查询节点
 
 :target{#id5}
 
 #### HTTP路径
 
-/api/v1/datamesh/domaindata/query
+/api/v1/domain/query
 
 :target{#querydomainrequest}
 
@@ -851,7 +615,7 @@ protobuf 文件。
 
     <tr>
       <td>
-        domaindata\_id
+        domain\_id
       </td>
 
       <td>
@@ -863,7 +627,7 @@ protobuf 文件。
       </td>
 
       <td>
-        查询内容
+        节点ID
       </td>
     </tr>
   </tbody>
@@ -919,7 +683,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [DomainData](#domain-data-entity)
+        QueryDomainResponseData
       </td>
 
       <td>
@@ -930,16 +694,244 @@ protobuf 文件。
 
       </td>
     </tr>
+
+    <tr>
+      <td>
+        data.domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.role
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        角色：\[“”, “partner”]，参考 [<span>Domain概念</span>](../concepts/domain_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.cert
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        BASE64的计算节点证书，参考 [<span>Domain概念</span>](../concepts/domain_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.node\_statuses
+      </td>
+
+      <td>
+        [NodeStatus](#node-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        物理节点状态
+      </td>
+    </tr>
   </tbody>
 </table>
+
+:target{#batch-query-domain-status}
+
+### 批量查询节点状态
 
 :target{#id6}
 
+#### HTTP路径
+
+/api/v1/domain/status/batchQuery
+
+:target{#batchquerydomainstatusrequest}
+
+#### 请求（BatchQueryDomainStatusRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domain\_ids
+      </td>
+
+      <td>
+        string\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        待查询的节点ID列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#batchquerydomainstatusresponse}
+
+#### 响应（ BatchQueryDomainStatusResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        BatchQueryDomainStatusResponseData
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.domains
+      </td>
+
+      <td>
+        [DomainStatus](#domain-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id7}
+
 ## 公共
 
-:target{#list-domain-data-request-data}
+:target{#domain-status}
 
-### ListDomainDataRequestData
+### DomainStatus
 
 <table>
   <thead>
@@ -983,317 +975,27 @@ protobuf 文件。
 
     <tr>
       <td>
-        domaindata\_type
+        node\_statuses
       </td>
 
       <td>
-        string
+        [NodeStatus](#node-status)\[]
       </td>
 
       <td>
-        是
+        否
       </td>
 
       <td>
-        类型
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        domaindata\_vendor
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        来源
+        真实物理节点状态
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#domain-data-entity}
+:target{#node-status}
 
-### DomainData
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        字段
-      </td>
-
-      <td>
-        类型
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        描述
-      </td>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>
-        domaindata\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        数据对象ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        name
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        名称
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        type
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        类型，\[table,model,rule,report,unknown]，大小写敏感
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        relative\_uri
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        domain\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        节点ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        datasource\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        数据源ID，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        attributes
-      </td>
-
-      <td>
-        map\<string,string>
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        partition
-      </td>
-
-      <td>
-        [Partition](#partition)
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        暂不支持
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        columns
-      </td>
-
-      <td>
-        [DataColumn](#data-column)\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        列信息
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        vendor
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        来源，用于批量查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#partition}
-
-### Partition
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        字段
-      </td>
-
-      <td>
-        类型
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        描述
-      </td>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>
-        type
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        类型
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        fields
-      </td>
-
-      <td>
-        [DataColumn](#data-column)\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        列信息
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#data-column}
-
-### DataColumn
+### NodeStatus
 
 <table>
   <thead>
@@ -1331,13 +1033,13 @@ protobuf 文件。
       </td>
 
       <td>
-        列名称
+        节点名称
       </td>
     </tr>
 
     <tr>
       <td>
-        type
+        status
       </td>
 
       <td>
@@ -1349,13 +1051,13 @@ protobuf 文件。
       </td>
 
       <td>
-        类型，当前版本由应用算法组件定义和消费，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        节点状态
       </td>
     </tr>
 
     <tr>
       <td>
-        comment
+        version
       </td>
 
       <td>
@@ -1363,11 +1065,47 @@ protobuf 文件。
       </td>
 
       <td>
-        是
+        否
       </td>
 
       <td>
-        列注释
+        节点Agent版本
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        last\_heartbeat\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        最后心跳时间，RFC3339格式（e.g. 2006-01-02T15:04:05Z）
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        last\_transition\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        最后更新时间，RFC3339格式（e.g. 2006-01-02T15:04:05Z）
       </td>
     </tr>
   </tbody>
