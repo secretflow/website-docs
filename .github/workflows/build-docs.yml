@@ -110,6 +110,7 @@ jobs:
             [docs]: https://github.com/secretflow/${{ matrix.project }}/tree/${{ steps.get-project-sha.outputs.sha }}/docs
 
       - name: 'Enable auto-merge'
+        if: ${{ steps.create-pull-request.outputs.pull-request-url != '' }}
         run: gh pr merge ${{ steps.create-pull-request.outputs.pull-request-url }} --auto --squash --delete-branch
         env:
           GH_TOKEN: ${{ github.token }}
