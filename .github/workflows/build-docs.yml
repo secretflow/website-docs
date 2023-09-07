@@ -3,7 +3,7 @@ name: Build docs
 on:
   workflow_dispatch:
   schedule:
-    - cron: '43 * * * *'
+    - cron: '43 0-14/2 * * *'
 
 permissions:
   contents: write
