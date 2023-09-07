@@ -111,3 +111,5 @@ jobs:
 
       - name: 'Enable auto-merge'
         run: gh pr merge ${{ steps.create-pull-request.outputs.pull-request-url }} --auto --squash --delete-branch
+        env:
+          GH_TOKEN: ${{ github.token }}
