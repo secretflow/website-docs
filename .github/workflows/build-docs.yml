@@ -2,6 +2,8 @@ name: Build docs
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '43 * * * *'
 
 permissions:
   contents: write
@@ -20,6 +22,7 @@ jobs:
           - interconnection
           - scql
           - kuscia
+          - secretpad
 
     steps:
       - uses: actions/checkout@v3
