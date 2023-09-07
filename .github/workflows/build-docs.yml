@@ -87,6 +87,7 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
 
       - name: 'Create pull request'
+        id: create-pull-request
         uses: peter-evans/create-pull-request@v5
         with:
           add-paths: |
@@ -104,3 +105,6 @@ jobs:
             Built from [`${{ steps.get-project-sha.outputs.sha }}`][commit]
 
             [commit]: https://github.com/secretflow/${{ matrix.project }}/commit/${{ steps.get-project-sha.outputs.sha }}
+
+      - name: 'Enable auto-merge'
+        run: gh pr merge ${{ steps.create-pull-request.outputs.pull-request-url }} --auto --squash --delete-branch
