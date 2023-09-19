@@ -1,10 +1,12 @@
-:target{#kusciajob}
+:target{#domaindata}
 
-# KusciaJob
+# DomainData
 
-在 Kuscia 中，你可以使用 KusciaJob 来表示一个任务流程。请参考 [KusciaJob](../../concepts/kusciajob_cn.mdx) 。
-你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/job.proto) 找到对应的
+DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts/domaindata_cn.mdx)。
+你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domaindata.proto) 找到对应的
 protobuf 文件。
+
+Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API 请参考 [Data Mesh](datamesh/domaindata_cn.mdx)。
 
 :target{#id1}
 
@@ -34,109 +36,109 @@ protobuf 文件。
   <tbody>
     <tr>
       <td>
-        [CreateJob](#create-job)
+        [CreateDomainData](#create-domain-data)
       </td>
 
       <td>
-        CreateJobRequest
+        CreateDomainDataRequest
       </td>
 
       <td>
-        CreateJobResponse
+        CreateDomainDataResponse
       </td>
 
       <td>
-        创建Job
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        [QueryJob](#query-job)
-      </td>
-
-      <td>
-        QueryJobRequest
-      </td>
-
-      <td>
-        QueryJobResponse
-      </td>
-
-      <td>
-        查询Job
+        创建数据对象
       </td>
     </tr>
 
     <tr>
       <td>
-        [BatchQueryJobStatus](#batch-query-job-status)
+        [UpdateDomainData](#update-domain-data)
       </td>
 
       <td>
-        BatchQueryJobStatusRequest
+        UpdateDomainDataRequest
       </td>
 
       <td>
-        BatchQueryJobStatusResponse
+        UpdateDomainDataResponse
       </td>
 
       <td>
-        批量查询Job状态
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        [DeleteJob](#delete-job)
-      </td>
-
-      <td>
-        DeleteJobRequest
-      </td>
-
-      <td>
-        DeleteJobResponse
-      </td>
-
-      <td>
-        删除Job
+        更新数据对象
       </td>
     </tr>
 
     <tr>
       <td>
-        [StopJob](#stop-job)
+        [DeleteDomainData](#delete-domain-data)
       </td>
 
       <td>
-        StopJobRequest
+        DeleteDomainDataRequest
       </td>
 
       <td>
-        StopJobResponse
+        DeleteDomainDataResponse
       </td>
 
       <td>
-        停止Job
+        删除数据对象
       </td>
     </tr>
 
     <tr>
       <td>
-        [WatchJob](#watch-job)
+        [QueryDomainData](#query-domain-data)
       </td>
 
       <td>
-        WatchJobRequest
+        QueryDomainDataRequest
       </td>
 
       <td>
-        WatchJobEventResponse stream
+        QueryDomainDataResponse
       </td>
 
       <td>
-        监控Job
+        查询数据对象
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [BatchQueryDomainData](#batch-query-domain-data)
+      </td>
+
+      <td>
+        BatchQueryDomainDataRequest
+      </td>
+
+      <td>
+        BatchQueryDomainDataResponse
+      </td>
+
+      <td>
+        批量查询数据对象
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [ListDomainData](#list-domain-data)
+      </td>
+
+      <td>
+        ListDomainDataRequest
+      </td>
+
+      <td>
+        ListDomainDataResponse
+      </td>
+
+      <td>
+        列出数据对象
       </td>
     </tr>
   </tbody>
@@ -146,19 +148,19 @@ protobuf 文件。
 
 ## 接口详情
 
-:target{#create-job}
+:target{#create-domain-data}
 
-### 创建Job
+### 创建数据对象
 
 :target{#http}
 
-#### HTTP路径
+#### HTTP 路径
 
-/api/v1/job/create
+/api/v1/domaindata/create
 
-:target{#createjobrequest}
+:target{#create-domain-data-request}
 
-#### 请求（CreateJobRequest）
+#### 请求（CreateDomainDataRequest）
 
 <table>
   <thead>
@@ -188,7 +190,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -202,47 +204,11 @@ protobuf 文件。
 
     <tr>
       <td>
-        job\_id
+        domaindata\_id
       </td>
 
       <td>
         string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        JobID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        initiator
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        发起方节点ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        max\_parallelism
-      </td>
-
-      <td>
-        int32
       </td>
 
       <td>
@@ -250,17 +216,17 @@ protobuf 文件。
       </td>
 
       <td>
-        并发度，参考 [<span>KusciaJob概念</span>](../../concepts/kusciajob_cn.mdx)
+        数据对象 ID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
       </td>
     </tr>
 
     <tr>
       <td>
-        tasks
+        name
       </td>
 
       <td>
-        [Task](#task)\[]
+        string
       </td>
 
       <td>
@@ -268,15 +234,159 @@ protobuf 文件。
       </td>
 
       <td>
-        任务参数
+        名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        类型，\[table,model,rule,report,unknown]，大小写敏感
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        relative\_uri
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        相对数据源所在位置的路径，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点 ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datasource\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        数据源 ID，不填写则使用默认数据源，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attributes
+      </td>
+
+      <td>
+        map\<string,string>
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        partition
+      </td>
+
+      <td>
+        [Partition](#partition)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        暂不支持
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        columns
+      </td>
+
+      <td>
+        [DataColumn](#data-column) array
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        列信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        vendor
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        来源，用于查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#createjobresponse}
+:target{#create-domain-data-response}
 
-#### 响应（CreateJobResponse）
+#### 响应（CreateDomainDataResponse）
 
 <table>
   <thead>
@@ -324,7 +434,7 @@ protobuf 文件。
       </td>
 
       <td>
-        CreateJobResponseData
+        CreateDomainDataResponseData
       </td>
 
       <td>
@@ -338,7 +448,7 @@ protobuf 文件。
 
     <tr>
       <td>
-        data.job\_id
+        data.domaindata\_id
       </td>
 
       <td>
@@ -350,25 +460,25 @@ protobuf 文件。
       </td>
 
       <td>
-        JobID
+        数据对象 ID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#query-job}
+:target{#update-domain-data}
 
-### 查询Job
+### 更新数据对象
 
 :target{#id3}
 
-#### HTTP路径
+#### HTTP 路径
 
-/api/v1/job/query
+/api/v1/domaindata/update
 
-:target{#queryjobrequest}
+:target{#updatedomaindatarequest}
 
-#### 请求（QueryJobRequest）
+#### 请求（UpdateDomainDataRequest）
 
 <table>
   <thead>
@@ -398,7 +508,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -412,7 +522,7 @@ protobuf 文件。
 
     <tr>
       <td>
-        job\_id
+        domaindata\_id
       </td>
 
       <td>
@@ -424,15 +534,177 @@ protobuf 文件。
       </td>
 
       <td>
-        JobID
+        数据对象 ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        类型，\[table,model,rule,report,unknown]，大小写敏感
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        relative\_uri
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        相对数据源所在位置的路径，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点 ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datasource\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        数据源 ID，不填写则使用默认数据源，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attributes
+      </td>
+
+      <td>
+        map\<string,string>
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        partition
+      </td>
+
+      <td>
+        [Partition](#partition)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        暂不支持
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        columns
+      </td>
+
+      <td>
+        [DataColumn](#data-column)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        列信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        vendor
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        来源，用于批量查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#queryjobresponse}
+:target{#updatedomaindataresponse}
 
-#### 响应（QueryJobResponse）
+#### 响应（UpdateDomainDataResponse）
 
 <table>
   <thead>
@@ -473,130 +745,22 @@ protobuf 文件。
         状态信息
       </td>
     </tr>
-
-    <tr>
-      <td>
-        data
-      </td>
-
-      <td>
-        QueryJobResponseData
-      </td>
-
-      <td>
-
-      </td>
-
-      <td>
-
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.job\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        JobID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.initiator
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        发起方
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.max\_parallelism
-      </td>
-
-      <td>
-        int32
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        并发度
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.tasks
-      </td>
-
-      <td>
-        [TaskConfig](#task-config)\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        任务列表
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.status
-      </td>
-
-      <td>
-        [JobStatusDetail](#job-status-detail)
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        Job状态
-      </td>
-    </tr>
   </tbody>
 </table>
 
-:target{#batch-query-job-status}
+:target{#delete-domain-data}
 
-### 批量查询Job状态
+### 删除数据对象
 
 :target{#id4}
 
-#### HTTP路径
+#### HTTP 路径
 
-/api/v1/job/status/batchQuery
+/api/v1/domaindata/delete
 
-:target{#batchqueryjobstatusrequest}
+:target{#deletedomaindatarequest}
 
-#### 请求（BatchQueryJobStatusRequest）
+#### 请求（DeleteDomainDataRequest）
 
 <table>
   <thead>
@@ -626,7 +790,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -640,11 +804,11 @@ protobuf 文件。
 
     <tr>
       <td>
-        job\_ids
+        domain\_id
       </td>
 
       <td>
-        string\[]
+        string
       </td>
 
       <td>
@@ -652,15 +816,33 @@ protobuf 文件。
       </td>
 
       <td>
-        JobID列表
+        节点 ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domaindata\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        数据对象 ID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#batchqueryjobstatusresponse}
+:target{#deletedomaindataresponse}
 
-#### 响应（BatchQueryJobStatusResponse）
+#### 响应（DeleteDomainDataResponse）
 
 <table>
   <thead>
@@ -701,58 +883,22 @@ protobuf 文件。
         状态信息
       </td>
     </tr>
-
-    <tr>
-      <td>
-        data
-      </td>
-
-      <td>
-        BatchQueryJobStatusResponseData
-      </td>
-
-      <td>
-
-      </td>
-
-      <td>
-
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.jobs
-      </td>
-
-      <td>
-        [JobStatus](#job-status)\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        Job状态列表
-      </td>
-    </tr>
   </tbody>
 </table>
 
-:target{#delete-job}
+:target{#query-domain-data}
 
-### 删除Job
+### 查询数据对象
 
 :target{#id5}
 
-#### HTTP路径
+#### HTTP 路径
 
-/api/v1/job/delete
+/api/v1/domaindata/query
 
-:target{#deletejobrequest}
+:target{#querydomainrequest}
 
-#### 请求（DeleteJobRequest）
+#### 请求（QueryDomainRequest）
 
 <table>
   <thead>
@@ -782,7 +928,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -796,11 +942,11 @@ protobuf 文件。
 
     <tr>
       <td>
-        job\_id
+        data
       </td>
 
       <td>
-        string
+        [QueryDomainDataRequestData](#query-domain-data-request-data)
       </td>
 
       <td>
@@ -808,15 +954,15 @@ protobuf 文件。
       </td>
 
       <td>
-        JobID
+        查询内容
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#deletejobresponse}
+:target{#querydomainresponse}
 
-#### 响应（DeleteJobResponse）
+#### 响应（QueryDomainResponse）
 
 <table>
   <thead>
@@ -864,7 +1010,7 @@ protobuf 文件。
       </td>
 
       <td>
-        DeleteJobResponseData
+        [DomainData](#domain-data-entity)
       </td>
 
       <td>
@@ -873,42 +1019,24 @@ protobuf 文件。
 
       <td>
 
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.job\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        JobID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#stop-job}
+:target{#batch-query-domain-data}
 
-### 停止Job
+### 批量查询数据对象
 
 :target{#id6}
 
-#### HTTP路径
+#### HTTP 路径
 
-/api/v1/job/stop
+/api/v1/domaindata/batchQuery
 
-:target{#stopjobrequest}
+:target{#batchquerydomaindatarequest}
 
-#### 请求（StopJobRequest）
+#### 请求（BatchQueryDomainDataRequest）
 
 <table>
   <thead>
@@ -938,7 +1066,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -952,11 +1080,11 @@ protobuf 文件。
 
     <tr>
       <td>
-        job\_id
+        data
       </td>
 
       <td>
-        string
+        [QueryDomainDataRequestData](#query-domain-data-request-data)\[]
       </td>
 
       <td>
@@ -964,15 +1092,15 @@ protobuf 文件。
       </td>
 
       <td>
-        JobID
+        查询内容
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#stopjobresponse}
+:target{#batchquerydomaindataresponse}
 
-#### 响应（StopJobResponse）
+#### 响应（BatchQueryDomainDataResponse）
 
 <table>
   <thead>
@@ -1020,7 +1148,7 @@ protobuf 文件。
       </td>
 
       <td>
-        StopJobResponseData
+        [DomainDataList](#domain-data-list)
       </td>
 
       <td>
@@ -1029,42 +1157,24 @@ protobuf 文件。
 
       <td>
 
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.job\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        JobID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#watch-job}
+:target{#list-domain-data}
 
-### 监控Job
+### 列出数据对象
 
 :target{#id7}
 
-#### HTTP路径
+#### HTTP 路径
 
-暂不支持 HTTP 接口。
+/api/v1/domaindata/list
 
-:target{#watchjobrequest}
+:target{#listdomaindatarequest}
 
-#### 请求（WatchJobRequest）
+#### 请求（ListDomainDataRequest）
 
 <table>
   <thead>
@@ -1094,7 +1204,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -1108,27 +1218,27 @@ protobuf 文件。
 
     <tr>
       <td>
-        timeout\_seconds
+        data
       </td>
 
       <td>
-        int64
+        [ListDomainDataRequestData](#list-domain-data-request-data)
       </td>
 
       <td>
-        是
+        否
       </td>
 
       <td>
-        超时时间
+        查询请求
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#watchjobeventresponse}
+:target{#listdomaindataresponse}
 
-#### 响应（WatchJobEventResponse）
+#### 响应（ListDomainDataResponse）
 
 <table>
   <thead>
@@ -1154,11 +1264,11 @@ protobuf 文件。
   <tbody>
     <tr>
       <td>
-        类型
+        status
       </td>
 
       <td>
-        [EventType](#event-type)
+        [<span>Status</span>](summary_cn.mdx#status)
       </td>
 
       <td>
@@ -1166,25 +1276,25 @@ protobuf 文件。
       </td>
 
       <td>
-        事件类型
+        状态信息
       </td>
     </tr>
 
     <tr>
       <td>
-        object
+        data
       </td>
 
       <td>
-        [JobStatus](#job-status)
+        [DomainDataList](#domain-data-list)
       </td>
 
       <td>
-        否
+
       </td>
 
       <td>
-        Job状态
+
       </td>
     </tr>
   </tbody>
@@ -1194,209 +1304,9 @@ protobuf 文件。
 
 ## 公共
 
-:target{#job-status}
+:target{#query-domain-data-request-data}
 
-### JobStatus
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        字段
-      </td>
-
-      <td>
-        类型
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        描述
-      </td>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>
-        job\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        JobID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        status
-      </td>
-
-      <td>
-        [JobStatusDetail](#job-status-detail)
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        Job状态详情
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#job-status-detail}
-
-### JobStatusDetail
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        字段
-      </td>
-
-      <td>
-        类型
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        描述
-      </td>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>
-        state
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        总体状态
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        err\_msg
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        错误信息
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        create\_time
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        创建时间
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        start\_time
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        启动时间
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        end\_time
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        结束时间
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        tasks
-      </td>
-
-      <td>
-        [TaskStatus](#task-status)\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        任务列表
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#party}
-
-### Party
+### QueryDomainDataRequestData
 
 <table>
   <thead>
@@ -1434,13 +1344,13 @@ protobuf 文件。
       </td>
 
       <td>
-        DomainID
+        节点 ID
       </td>
     </tr>
 
     <tr>
       <td>
-        role
+        domaindata\_id
       </td>
 
       <td>
@@ -1448,19 +1358,19 @@ protobuf 文件。
       </td>
 
       <td>
-        是
+        否
       </td>
 
       <td>
-        角色
+        数据对象 ID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#party-status}
+:target{#list-domain-data-request-data}
 
-### PartyStatus
+#### ListDomainDataRequestData
 
 <table>
   <thead>
@@ -1498,31 +1408,13 @@ protobuf 文件。
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
     <tr>
       <td>
-        state
-      </td>
-
-      <td>
-        [TaskState](#task-state)
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        总体状态
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        err\_msg
+        domaindata\_type
       </td>
 
       <td>
@@ -1534,15 +1426,33 @@ protobuf 文件。
       </td>
 
       <td>
-        错误信息
+        类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domaindata\_vendor
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        来源
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#task}
+:target{#domain-data-list}
 
-### Task
+### DomainDataList
 
 <table>
   <thead>
@@ -1568,29 +1478,11 @@ protobuf 文件。
   <tbody>
     <tr>
       <td>
-        app\_image
+        domaindata\_list
       </td>
 
       <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        任务镜像
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        parties
-      </td>
-
-      <td>
-        [Party](#party)\[]
+        [DomainData](#domain-data-entity)\[]
       </td>
 
       <td>
@@ -1598,105 +1490,15 @@ protobuf 文件。
       </td>
 
       <td>
-        参与方节点ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        alias
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        任务别名
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        task\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        任务ID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        dependencies
-      </td>
-
-      <td>
-        string\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        依赖任务
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        task\_input\_config
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        任务配置
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        priority
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        优先级，值越大优先级越高
+        数据对象列表
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#task-config}
+:target{#domain-data-entity}
 
-### TaskConfig
+### DomainData
 
 <table>
   <thead>
@@ -1722,7 +1524,7 @@ protobuf 文件。
   <tbody>
     <tr>
       <td>
-        app\_image
+        domaindata\_id
       </td>
 
       <td>
@@ -1734,31 +1536,13 @@ protobuf 文件。
       </td>
 
       <td>
-        任务镜像
+        数据对象 ID
       </td>
     </tr>
 
     <tr>
       <td>
-        parties
-      </td>
-
-      <td>
-        [Party](#party)\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        参与方
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        alias
+        name
       </td>
 
       <td>
@@ -1770,13 +1554,13 @@ protobuf 文件。
       </td>
 
       <td>
-        任务别名
+        名称
       </td>
     </tr>
 
     <tr>
       <td>
-        task\_id
+        type
       </td>
 
       <td>
@@ -1788,31 +1572,13 @@ protobuf 文件。
       </td>
 
       <td>
-        任务ID
+        类型，\[table,model,rule,report,unknown]，大小写敏感
       </td>
     </tr>
 
     <tr>
       <td>
-        dependencies
-      </td>
-
-      <td>
-        string\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        依赖任务
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        task\_input\_config
+        relative\_uri
       </td>
 
       <td>
@@ -1824,13 +1590,103 @@ protobuf 文件。
       </td>
 
       <td>
-        任务配置
+        相对数据源所在位置的路径，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
 
     <tr>
       <td>
-        priority
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点 ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datasource\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        数据源 ID，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attributes
+      </td>
+
+      <td>
+        map\<string,string>
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        partition
+      </td>
+
+      <td>
+        [Partition](#partition)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        暂不支持
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        columns
+      </td>
+
+      <td>
+        [DataColumn](#data-column)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        列信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        vendor
       </td>
 
       <td>
@@ -1842,15 +1698,15 @@ protobuf 文件。
       </td>
 
       <td>
-        优先级，值越大优先级越高
+        来源，用于批量查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#task-status}
+:target{#partition}
 
-### TaskStatus
+### Partition
 
 <table>
   <thead>
@@ -1876,25 +1732,7 @@ protobuf 文件。
   <tbody>
     <tr>
       <td>
-        task\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        任务ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        state
+        type
       </td>
 
       <td>
@@ -1906,35 +1744,17 @@ protobuf 文件。
       </td>
 
       <td>
-        任务状态，参考 [TaskState](#task-state)
+        类型
       </td>
     </tr>
 
     <tr>
       <td>
-        err\_msg
+        fields
       </td>
 
       <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        错误信息
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        create\_time
-      </td>
-
-      <td>
-        string
+        [DataColumn](#data-column)\[]
       </td>
 
       <td>
@@ -1942,79 +1762,29 @@ protobuf 文件。
       </td>
 
       <td>
-        创建事件
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        start\_time
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        开始事件
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        end\_time
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        结束事件
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        parties
-      </td>
-
-      <td>
-        [PartyStatus](#party-status)\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        参与方
+        列信息
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#event-type}
+:target{#data-column}
 
-### EventType
+### DataColumn
 
 <table>
   <thead>
     <tr>
       <td>
-        Name
+        字段
       </td>
 
       <td>
-        Number
+        类型
+      </td>
+
+      <td>
+        可选
       </td>
 
       <td>
@@ -2026,137 +1796,55 @@ protobuf 文件。
   <tbody>
     <tr>
       <td>
-        ADDED
+        name
       </td>
 
       <td>
-        0
+        string
       </td>
 
       <td>
-        增加事件
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        MODIFIED
+        否
       </td>
 
       <td>
-        1
-      </td>
-
-      <td>
-        修改事件
+        列名称
       </td>
     </tr>
 
     <tr>
       <td>
-        DELETED
+        type
       </td>
 
       <td>
-        2
+        string
       </td>
 
       <td>
-        删除事件
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        ERROR
+        否
       </td>
 
       <td>
-        3
-      </td>
-
-      <td>
-        错误事件
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#task-state}
-
-### TaskState
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        Name
-      </td>
-
-      <td>
-        Number
-      </td>
-
-      <td>
-        描述
-      </td>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>
-        Pending
-      </td>
-
-      <td>
-        0
-      </td>
-
-      <td>
-        未开始运行
+        类型，当前版本由应用算法组件定义和消费，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
 
     <tr>
       <td>
-        Running
+        comment
       </td>
 
       <td>
-        1
+        string
       </td>
 
       <td>
-        运行中
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        Succeeded
+        是
       </td>
 
       <td>
-        2
-      </td>
-
-      <td>
-        成功
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        Failed
-      </td>
-
-      <td>
-        3
-      </td>
-
-      <td>
-        失败
+        列注释
       </td>
     </tr>
   </tbody>

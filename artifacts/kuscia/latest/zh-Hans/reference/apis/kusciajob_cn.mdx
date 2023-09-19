@@ -1,12 +1,10 @@
-:target{#domaindata}
+:target{#kusciajob}
 
-# DomainData
+# KusciaJob
 
-DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../../concepts/domaindata_cn.mdx)。
-你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domaindata.proto) 找到对应的
+在 Kuscia 中，你可以使用 KusciaJob 来表示一个任务流程。请参考 [KusciaJob](../concepts/kusciajob_cn.mdx) 。
+你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/job.proto) 找到对应的
 protobuf 文件。
-
-Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API 请参考 [Data Mesh](../datamesh/domaindata_cn.mdx)。
 
 :target{#id1}
 
@@ -36,109 +34,109 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
   <tbody>
     <tr>
       <td>
-        [CreateDomainData](#create-domain-data)
+        [CreateJob](#create-job)
       </td>
 
       <td>
-        CreateDomainDataRequest
+        CreateJobRequest
       </td>
 
       <td>
-        CreateDomainDataResponse
+        CreateJobResponse
       </td>
 
       <td>
-        创建数据对象
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        [UpdateDomainData](#update-domain-data)
-      </td>
-
-      <td>
-        UpdateDomainDataRequest
-      </td>
-
-      <td>
-        UpdateDomainDataResponse
-      </td>
-
-      <td>
-        更新数据对象
+        创建 Job
       </td>
     </tr>
 
     <tr>
       <td>
-        [DeleteDomainData](#delete-domain-data)
+        [QueryJob](#query-job)
       </td>
 
       <td>
-        DeleteDomainDataRequest
+        QueryJobRequest
       </td>
 
       <td>
-        DeleteDomainDataResponse
+        QueryJobResponse
       </td>
 
       <td>
-        删除数据对象
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        [QueryDomainData](#query-domain-data)
-      </td>
-
-      <td>
-        QueryDomainDataRequest
-      </td>
-
-      <td>
-        QueryDomainDataResponse
-      </td>
-
-      <td>
-        查询数据对象
+        查询 Job
       </td>
     </tr>
 
     <tr>
       <td>
-        [BatchQueryDomainData](#batch-query-domain-data)
+        [BatchQueryJobStatus](#batch-query-job-status)
       </td>
 
       <td>
-        BatchQueryDomainDataRequest
+        BatchQueryJobStatusRequest
       </td>
 
       <td>
-        BatchQueryDomainDataResponse
+        BatchQueryJobStatusResponse
       </td>
 
       <td>
-        批量查询数据对象
+        批量查询 Job 状态
       </td>
     </tr>
 
     <tr>
       <td>
-        [ListDomainData](#list-domain-data)
+        [DeleteJob](#delete-job)
       </td>
 
       <td>
-        ListDomainDataRequest
+        DeleteJobRequest
       </td>
 
       <td>
-        ListDomainDataResponse
+        DeleteJobResponse
       </td>
 
       <td>
-        列出数据对象
+        删除 Job
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [StopJob](#stop-job)
+      </td>
+
+      <td>
+        StopJobRequest
+      </td>
+
+      <td>
+        StopJobResponse
+      </td>
+
+      <td>
+        停止 Job
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [WatchJob](#watch-job)
+      </td>
+
+      <td>
+        WatchJobRequest
+      </td>
+
+      <td>
+        WatchJobEventResponse stream
+      </td>
+
+      <td>
+        监控 Job
       </td>
     </tr>
   </tbody>
@@ -148,19 +146,19 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
 
 ## 接口详情
 
-:target{#create-domain-data}
+:target{#create-job}
 
-### 创建数据对象
+### 创建 Job
 
 :target{#http}
 
-#### HTTP路径
+#### HTTP 路径
 
-/api/v1/domaindata/create
+/api/v1/job/create
 
-:target{#create-domain-data-request}
+:target{#createjobrequest}
 
-#### 请求（CreateDomainDataRequest）
+#### 请求（CreateJobRequest）
 
 <table>
   <thead>
@@ -190,7 +188,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -204,25 +202,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
 
     <tr>
       <td>
-        domaindata\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        数据对象ID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        name
+        job\_id
       </td>
 
       <td>
@@ -234,13 +214,13 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        名称
+        JobID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
       </td>
     </tr>
 
     <tr>
       <td>
-        type
+        initiator
       </td>
 
       <td>
@@ -252,17 +232,35 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        类型，\[table,model,rule,report,unknown]，大小写敏感
+        发起方节点 ID
       </td>
     </tr>
 
     <tr>
       <td>
-        relative\_uri
+        max\_parallelism
       </td>
 
       <td>
-        string
+        int32
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        并发度，参考 [<span>KusciaJob 概念</span>](../concepts/kusciajob_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tasks
+      </td>
+
+      <td>
+        [Task](#task)\[]
       </td>
 
       <td>
@@ -270,123 +268,15 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        domain\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        节点ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        datasource\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        数据源ID，不填写则使用默认数据源，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        attributes
-      </td>
-
-      <td>
-        map\<string,string>
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        partition
-      </td>
-
-      <td>
-        [Partition](#partition)
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        暂不支持
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        columns
-      </td>
-
-      <td>
-        [DataColumn](#data-column) array
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        列信息
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        vendor
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        来源，用于查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        任务参数
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#create-domain-data-response}
+:target{#createjobresponse}
 
-#### 响应（CreateDomainDataResponse）
+#### 响应（CreateJobResponse）
 
 <table>
   <thead>
@@ -434,7 +324,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        CreateDomainDataResponseData
+        CreateJobResponseData
       </td>
 
       <td>
@@ -448,7 +338,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
 
     <tr>
       <td>
-        data.domaindata\_id
+        data.job\_id
       </td>
 
       <td>
@@ -460,25 +350,25 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        数据对象ID
+        JobID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#update-domain-data}
+:target{#query-job}
 
-### 更新数据对象
+### 查询 Job
 
 :target{#id3}
 
-#### HTTP路径
+#### HTTP 路径
 
-/api/v1/domaindata/update
+/api/v1/job/query
 
-:target{#updatedomaindatarequest}
+:target{#queryjobrequest}
 
-#### 请求（UpdateDomainDataRequest）
+#### 请求（QueryJobRequest）
 
 <table>
   <thead>
@@ -508,7 +398,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -522,7 +412,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
 
     <tr>
       <td>
-        domaindata\_id
+        job\_id
       </td>
 
       <td>
@@ -534,177 +424,15 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        数据对象ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        name
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        名称
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        type
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        类型，\[table,model,rule,report,unknown]，大小写敏感
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        relative\_uri
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        domain\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        节点ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        datasource\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        数据源ID，不填写则使用默认数据源，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        attributes
-      </td>
-
-      <td>
-        map\<string,string>
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        partition
-      </td>
-
-      <td>
-        [Partition](#partition)
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        暂不支持
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        columns
-      </td>
-
-      <td>
-        [DataColumn](#data-column)\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        列信息
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        vendor
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        来源，用于批量查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        JobID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#updatedomaindataresponse}
+:target{#queryjobresponse}
 
-#### 响应（UpdateDomainDataResponse）
+#### 响应（QueryJobResponse）
 
 <table>
   <thead>
@@ -745,22 +473,130 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
         状态信息
       </td>
     </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        QueryJobResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.initiator
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        发起方
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.max\_parallelism
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        并发度
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.tasks
+      </td>
+
+      <td>
+        [TaskConfig](#task-config)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务列表
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.status
+      </td>
+
+      <td>
+        [JobStatusDetail](#job-status-detail)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Job 状态
+      </td>
+    </tr>
   </tbody>
 </table>
 
-:target{#delete-domain-data}
+:target{#batch-query-job-status}
 
-### 删除数据对象
+### 批量查询 Job 状态
 
 :target{#id4}
 
-#### HTTP路径
+#### HTTP 路径
 
-/api/v1/domaindata/delete
+/api/v1/job/status/batchQuery
 
-:target{#deletedomaindatarequest}
+:target{#batchqueryjobstatusrequest}
 
-#### 请求（DeleteDomainDataRequest）
+#### 请求（BatchQueryJobStatusRequest）
 
 <table>
   <thead>
@@ -790,7 +626,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -804,29 +640,11 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
 
     <tr>
       <td>
-        domain\_id
+        job\_ids
       </td>
 
       <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        节点ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        domaindata\_id
-      </td>
-
-      <td>
-        string
+        string\[]
       </td>
 
       <td>
@@ -834,15 +652,15 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        数据对象ID
+        JobID 列表
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#deletedomaindataresponse}
+:target{#batchqueryjobstatusresponse}
 
-#### 响应（DeleteDomainDataResponse）
+#### 响应（BatchQueryJobStatusResponse）
 
 <table>
   <thead>
@@ -883,22 +701,58 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
         状态信息
       </td>
     </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        BatchQueryJobStatusResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.jobs
+      </td>
+
+      <td>
+        [JobStatus](#job-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Job 状态列表
+      </td>
+    </tr>
   </tbody>
 </table>
 
-:target{#query-domain-data}
+:target{#delete-job}
 
-### 查询数据对象
+### 删除 Job
 
 :target{#id5}
 
-#### HTTP路径
+#### HTTP 路径
 
-/api/v1/domaindata/query
+/api/v1/job/delete
 
-:target{#querydomainrequest}
+:target{#deletejobrequest}
 
-#### 请求（QueryDomainRequest）
+#### 请求（DeleteJobRequest）
 
 <table>
   <thead>
@@ -928,7 +782,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -942,11 +796,11 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
 
     <tr>
       <td>
-        data
+        job\_id
       </td>
 
       <td>
-        [QueryDomainDataRequestData](#query-domain-data-request-data)
+        string
       </td>
 
       <td>
@@ -954,15 +808,15 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        查询内容
+        JobID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#querydomainresponse}
+:target{#deletejobresponse}
 
-#### 响应（QueryDomainResponse）
+#### 响应（DeleteJobResponse）
 
 <table>
   <thead>
@@ -1010,7 +864,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        [DomainData](#domain-data-entity)
+        DeleteJobResponseData
       </td>
 
       <td>
@@ -1021,22 +875,40 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
 
       </td>
     </tr>
+
+    <tr>
+      <td>
+        data.job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
   </tbody>
 </table>
 
-:target{#batch-query-domain-data}
+:target{#stop-job}
 
-### 批量查询数据对象
+### 停止 Job
 
 :target{#id6}
 
-#### HTTP路径
+#### HTTP 路径
 
-/api/v1/domaindata/batchQuery
+/api/v1/job/stop
 
-:target{#batchquerydomaindatarequest}
+:target{#stopjobrequest}
 
-#### 请求（BatchQueryDomainDataRequest）
+#### 请求（StopJobRequest）
 
 <table>
   <thead>
@@ -1066,7 +938,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -1080,11 +952,11 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
 
     <tr>
       <td>
-        data
+        job\_id
       </td>
 
       <td>
-        [QueryDomainDataRequestData](#query-domain-data-request-data)\[]
+        string
       </td>
 
       <td>
@@ -1092,15 +964,15 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        查询内容
+        JobID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#batchquerydomaindataresponse}
+:target{#stopjobresponse}
 
-#### 响应（BatchQueryDomainDataResponse）
+#### 响应（StopJobResponse）
 
 <table>
   <thead>
@@ -1148,7 +1020,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        [DomainDataList](#domain-data-list)
+        StopJobResponseData
       </td>
 
       <td>
@@ -1159,22 +1031,40 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
 
       </td>
     </tr>
+
+    <tr>
+      <td>
+        data.job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
   </tbody>
 </table>
 
-:target{#list-domain-data}
+:target{#watch-job}
 
-### 列出数据对象
+### 监控 Job
 
 :target{#id7}
 
-#### HTTP路径
+#### HTTP 路径
 
-/api/v1/domaindata/list
+暂不支持 HTTP 接口。
 
-:target{#listdomaindatarequest}
+:target{#watchjobrequest}
 
-#### 请求（ListDomainDataRequest）
+#### 请求（WatchJobRequest）
 
 <table>
   <thead>
@@ -1204,7 +1094,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -1218,27 +1108,27 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
 
     <tr>
       <td>
-        data
+        timeout\_seconds
       </td>
 
       <td>
-        [ListDomainDataRequestData](#list-domain-data-request-data)
+        int64
       </td>
 
       <td>
-        否
+        是
       </td>
 
       <td>
-        查询请求
+        超时时间
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#listdomaindataresponse}
+:target{#watchjobeventresponse}
 
-#### 响应（ListDomainDataResponse）
+#### 响应（WatchJobEventResponse）
 
 <table>
   <thead>
@@ -1264,11 +1154,11 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
   <tbody>
     <tr>
       <td>
-        status
+        类型
       </td>
 
       <td>
-        [<span>Status</span>](summary_cn.mdx#status)
+        [EventType](#event-type)
       </td>
 
       <td>
@@ -1276,25 +1166,25 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        状态信息
+        事件类型
       </td>
     </tr>
 
     <tr>
       <td>
-        data
+        object
       </td>
 
       <td>
-        [DomainDataList](#domain-data-list)
+        [JobStatus](#job-status)
       </td>
 
       <td>
-
+        否
       </td>
 
       <td>
-
+        Job 状态
       </td>
     </tr>
   </tbody>
@@ -1304,9 +1194,209 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
 
 ## 公共
 
-:target{#query-domain-data-request-data}
+:target{#job-status}
 
-### QueryDomainDataRequestData
+### JobStatus
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        job\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        JobID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [JobStatusDetail](#job-status-detail)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Job 状态详情
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#job-status-detail}
+
+### JobStatusDetail
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        state
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        总体状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        err\_msg
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        错误信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        create\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        创建时间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        start\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        启动时间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        end\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        结束时间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tasks
+      </td>
+
+      <td>
+        [TaskStatus](#task-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#party}
+
+### Party
 
 <table>
   <thead>
@@ -1344,13 +1434,13 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        节点ID
+        DomainID
       </td>
     </tr>
 
     <tr>
       <td>
-        domaindata\_id
+        role
       </td>
 
       <td>
@@ -1358,19 +1448,19 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        否
+        是
       </td>
 
       <td>
-        数据对象ID
+        角色
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#list-domain-data-request-data}
+:target{#party-status}
 
-#### ListDomainDataRequestData
+### PartyStatus
 
 <table>
   <thead>
@@ -1408,13 +1498,31 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
     <tr>
       <td>
-        domaindata\_type
+        state
+      </td>
+
+      <td>
+        [TaskState](#task-state)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        总体状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        err\_msg
       </td>
 
       <td>
@@ -1426,33 +1534,15 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        类型
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        domaindata\_vendor
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        来源
+        错误信息
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#domain-data-list}
+:target{#task}
 
-### DomainDataList
+### Task
 
 <table>
   <thead>
@@ -1478,11 +1568,11 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
   <tbody>
     <tr>
       <td>
-        domaindata\_list
+        app\_image
       </td>
 
       <td>
-        [DomainData](#domain-data-entity)\[]
+        string
       </td>
 
       <td>
@@ -1490,15 +1580,123 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        数据对象列表
+        任务镜像
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parties
+      </td>
+
+      <td>
+        [Party](#party)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        参与方节点 ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        alias
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务别名
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        task\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务 ID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        dependencies
+      </td>
+
+      <td>
+        string\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        依赖任务
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        task\_input\_config
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务配置
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        priority
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        优先级，值越大优先级越高
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#domain-data-entity}
+:target{#task-config}
 
-### DomainData
+### TaskConfig
 
 <table>
   <thead>
@@ -1524,7 +1722,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
   <tbody>
     <tr>
       <td>
-        domaindata\_id
+        app\_image
       </td>
 
       <td>
@@ -1536,13 +1734,31 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        数据对象ID
+        任务镜像
       </td>
     </tr>
 
     <tr>
       <td>
-        name
+        parties
+      </td>
+
+      <td>
+        [Party](#party)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        参与方
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        alias
       </td>
 
       <td>
@@ -1554,13 +1770,13 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        名称
+        任务别名
       </td>
     </tr>
 
     <tr>
       <td>
-        type
+        task\_id
       </td>
 
       <td>
@@ -1572,13 +1788,31 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        类型，\[table,model,rule,report,unknown]，大小写敏感
+        任务 ID
       </td>
     </tr>
 
     <tr>
       <td>
-        relative\_uri
+        dependencies
+      </td>
+
+      <td>
+        string\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        依赖任务
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        task\_input\_config
       </td>
 
       <td>
@@ -1590,103 +1824,13 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        任务配置
       </td>
     </tr>
 
     <tr>
       <td>
-        domain\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        节点ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        datasource\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        数据源ID，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        attributes
-      </td>
-
-      <td>
-        map\<string,string>
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        partition
-      </td>
-
-      <td>
-        [Partition](#partition)
-      </td>
-
-      <td>
-        是
-      </td>
-
-      <td>
-        暂不支持
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        columns
-      </td>
-
-      <td>
-        [DataColumn](#data-column)\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        列信息
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        vendor
+        priority
       </td>
 
       <td>
@@ -1698,15 +1842,15 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        来源，用于批量查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        优先级，值越大优先级越高
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#partition}
+:target{#task-status}
 
-### Partition
+### TaskStatus
 
 <table>
   <thead>
@@ -1732,107 +1876,7 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
   <tbody>
     <tr>
       <td>
-        type
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        类型
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        fields
-      </td>
-
-      <td>
-        [DataColumn](#data-column)\[]
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        列信息
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#data-column}
-
-### DataColumn
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        字段
-      </td>
-
-      <td>
-        类型
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        描述
-      </td>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>
-        name
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        列名称
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        type
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        否
-      </td>
-
-      <td>
-        类型，当前版本由应用算法组件定义和消费，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        comment
+        task\_id
       </td>
 
       <td>
@@ -1844,7 +1888,275 @@ Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API
       </td>
 
       <td>
-        列注释
+        任务 ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        state
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        任务状态，参考 [TaskState](#task-state)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        err\_msg
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        错误信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        create\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        创建事件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        start\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        开始事件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        end\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        结束事件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parties
+      </td>
+
+      <td>
+        [PartyStatus](#party-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        参与方
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#event-type}
+
+### EventType
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        ADDED
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        增加事件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        MODIFIED
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        修改事件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        DELETED
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        删除事件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ERROR
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        错误事件
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#task-state}
+
+### TaskState
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        Pending
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        未开始运行
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Running
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        运行中
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Succeeded
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        成功
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Failed
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        失败
       </td>
     </tr>
   </tbody>

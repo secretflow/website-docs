@@ -40,7 +40,7 @@ Kuscia 扩展了一组 Kubernetes 控制器，用于处理 Kuscia 的自定义�
 - Task Controller：任务控制器，负责解析任务的描述信息，实现多方任务的 Co-Scheduling 调度，对应作业 DAG 中的顶点。
 - Kuscia Scheduler： Kuscia 调度器，负责多方 Pod 的 Co-Scheduling 调度，具备 All-or-Nothing 调度效果。
 - Domain Controller：节点控制器，负责管理节点资源、为节点分配 Namespace。
-- DomainRoute Controller：路由控制器，负责管理节点与节点、节点与 Master的路由规则以及身份认证和鉴权策略。
+- DomainRoute Controller：路由控制器，负责管理节点与节点、节点与 Master 的路由规则以及身份认证和鉴权策略。
 - InterConn Controllers：互联互通控制器，负责不同控制平面下的节点互通，从而协同完成多方任务调度，支持多种互联互通协议。
 - Data Controller: 数据控制器，负责数据授权管理，暂未开源。
 - Serving Controller：服务控制器，负责常驻任务流的编排和调度，暂未开源。
@@ -90,7 +90,7 @@ Agent 当前支持 RunC 运行时，后续还将支持 RunP 和 RunK 模式：
 
 #### NetworkMesh
 
-NetworkMesh是算法容器之间进行网络通信的基础设施，包含CoreDNS、DomainRoute、Envoy、Transport四个组件。
+NetworkMesh 是算法容器之间进行网络通信的基础设施，包含 CoreDNS、DomainRoute、Envoy、Transport 四个组件。
 
 :target{#coredns}
 

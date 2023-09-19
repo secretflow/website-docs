@@ -1,15 +1,10 @@
 sidebar:
   - items:
-      - {id: getting_started/quickstart_cn.mdx, label: 快速入门, type: doc}
-      - items:
-          - {id: getting_started/deploy/deploy_p2p_cn.mdx, label: 多机部署点对点集群, type: doc}
-          - {id: getting_started/deploy/deploy_master_lite_cn.mdx, label: 多机部署中心化集群,
-            type: doc}
-        label: 部署
-        link: {id: getting_started/deploy/index.mdx, label: 部署, type: doc}
-        type: category
-    label: 准备开始
-    link: {id: getting_started/index.mdx, label: 准备开始, type: doc}
+      - {id: getting_started/quickstart_cn.mdx, label: Kuscia 入门教程 —— 快速开始, type: doc}
+      - {id: getting_started/run_secretflow_cn.mdx, label: Kuscia 入门教程 —— 了解 KusciaJob,
+        type: doc}
+    label: 入门教程
+    link: {id: getting_started/index.mdx, label: 入门教程, type: doc}
     type: category
   - items:
       - {id: reference/architecture_cn.mdx, label: 架构, type: doc}
@@ -21,52 +16,43 @@ sidebar:
           - {id: reference/concepts/kusciatask_cn.mdx, label: KusciaTask, type: doc}
           - {id: reference/concepts/interopconfig_cn.mdx, label: InteropConfig, type: doc}
           - {id: reference/concepts/appimage_cn.mdx, label: AppImage, type: doc}
-        label: 概念
-        link: {id: reference/concepts/index.mdx, label: 概念, type: doc}
+        label: Kuscia 概念
+        link: {id: reference/concepts/index.mdx, label: Kuscia 概念, type: doc}
         type: category
       - items:
-          - items:
-              - {id: reference/apis/kusciaapis/summary_cn.mdx, label: 概览, type: doc}
-              - {id: reference/apis/kusciaapis/domain_cn.mdx, label: Domain, type: doc}
-              - {id: reference/apis/kusciaapis/domainroute_cn.mdx, label: DomainRoute,
-                type: doc}
-              - {id: reference/apis/kusciaapis/domaindata_cn.mdx, label: DomainData,
-                type: doc}
-              - {id: reference/apis/kusciaapis/kusciajob_cn.mdx, label: KusciaJob,
-                type: doc}
-              - {id: reference/apis/kusciaapis/health_cn.mdx, label: Health, type: doc}
-            label: KusciaAPI
-            link: {id: reference/apis/kusciaapis/index.mdx, label: KusciaAPI, type: doc}
-            type: category
-          - items:
-              - {id: reference/apis/datamesh/summary_cn.mdx, label: 概览, type: doc}
-              - {id: reference/apis/datamesh/domaindata_cn.mdx, label: DomainData,
-                type: doc}
-            label: DataMesh
-            link: {id: reference/apis/datamesh/index.mdx, label: DataMesh, type: doc}
-            type: category
-        label: 接口定义
-        link: {id: reference/apis/index.mdx, label: 接口定义, type: doc}
+          - {id: reference/apis/summary_cn.mdx, label: 概览, type: doc}
+          - {id: reference/apis/domain_cn.mdx, label: Domain, type: doc}
+          - {id: reference/apis/domainroute_cn.mdx, label: DomainRoute, type: doc}
+          - {id: reference/apis/domaindata_cn.mdx, label: DomainData, type: doc}
+          - {id: reference/apis/kusciajob_cn.mdx, label: KusciaJob, type: doc}
+          - {id: reference/apis/health_cn.mdx, label: Health, type: doc}
+        label: Kuscia API
+        link: {id: reference/apis/index.mdx, label: Kuscia API, type: doc}
         type: category
-      - {id: reference/operation_cn.mdx, label: 运维, type: doc}
       - {id: reference/faq_cn.mdx, label: 常见问题, type: doc}
     label: 参考手册
     link: {id: reference/index.mdx, label: 参考手册, type: doc}
     type: category
   - items:
-      - {id: tutorial/run_secretflow_cn.mdx, label: 如何运行一个 Secretflow 作业, type: doc}
+      - {id: deployment/deploy_p2p_cn.mdx, label: 多机部署点对点集群, type: doc}
+      - {id: deployment/deploy_master_lite_cn.mdx, label: 多机部署中心化集群, type: doc}
+      - {id: deployment/operation_cn.mdx, label: 运维操作, type: doc}
+    label: 部署
+    link: {id: deployment/index.mdx, label: 部署, type: doc}
+    type: category
+  - items:
       - {id: tutorial/run_secretflow_with_api_cn.mdx, label: 如何使用 Kuscia API 运行一个
-          Secretflow 作业, type: doc}
+          SecretFlow 作业, type: doc}
       - {id: tutorial/run_bfia_job_cn.mdx, label: 如何运行一个互联互通银联 BFIA 协议作业, type: doc}
       - {id: tutorial/run_fate_cn.mdx, label: 如何运行一个 FATE 作业, type: doc}
       - {id: tutorial/security_plan_cn.mdx, label: 安全加固方案, type: doc}
-    label: 教程
-    link: {id: tutorial/index.mdx, label: 教程, type: doc}
+    label: 指南
+    link: {id: tutorial/index.mdx, label: 指南, type: doc}
     type: category
   - items:
       - {id: development/build_kuscia_cn.mdx, label: 构建命令, type: doc}
       - {id: development/register_custom_image.mdx, label: 注册自定义算法镜像, type: doc}
-    label: 开发
-    link: {id: development/index.mdx, label: 开发, type: doc}
+    label: 开发 Kuscia
+    link: {id: development/index.mdx, label: 开发 Kuscia, type: doc}
     type: category
 version: '1'
