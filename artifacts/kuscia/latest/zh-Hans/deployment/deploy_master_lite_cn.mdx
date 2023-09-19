@@ -6,7 +6,7 @@
 
 ## 前言
 
-本教程帮助你在多台机器上使用 [中心化组网模式](../../reference/architecture_cn.mdx#centralized) 来部署 Kuscia 集群。
+本教程帮助你在多台机器上使用 [中心化组网模式](../reference/architecture_cn.mdx#centralized) 来部署 Kuscia 集群。
 
 :target{#token}
 
@@ -61,10 +61,19 @@ alias km="docker exec -it ${USER}-kuscia-master"
 
 #### 部署 lite 节点 alice
 
-在部署 alice 节点之前，我们需要在 master 上注册 alice 节点并获取部署时需要用到的 token（以abcdefg为例）。
+在部署 alice 节点之前，我们需要在 master 上注册 alice 节点并获取部署时需要用到的 token 。
+执行以下命令，完成节点注册并从返回中得到 token （下文将以abcdefg为例）。
 
-```default
+```bash
 docker exec -it ${USER}-kuscia-master sh scripts/deploy/add_domain_lite.sh alice
+abcdefg
+```
+
+如果token遗忘了，可以通过该命令重新获取
+
+```bash
+docker exec -it ${USER}-kuscia-master kubectl get domain alice -o=jsonpath='{.status.deployTokenStatuses[?(@.state=="unused")].token}' && echo
+abcdefg
 ```
 
 接下来，登录到安装 alice 的机器上，假设对外ip是2.2.2.2。
@@ -95,10 +104,19 @@ docker run --rm $KUSCIA_IMAGE cat /home/kuscia/scripts/deploy/deploy.sh > deploy
 
 #### 部署 lite 节点 bob
 
-在部署 bob 节点之前，我们需要在 master 注册 bob 节点，并获取到部署时需要用到的 token 以hijklmn为例）。
+在部署 bob 节点之前，我们需要在 master 注册 bob 节点，并获取到部署时需要用到的 token 。
+执行以下命令，完成节点注册并从返回中得到 token （下文将以hijklmn为例）。
 
-```default
+```bash
 docker exec -it ${USER}-kuscia-master sh scripts/deploy/add_domain_lite.sh bob
+hijklmn
+```
+
+如果token遗忘了，可以通过该命令重新获取
+
+```bash
+docker exec -it ${USER}-kuscia-master kubectl get domain bob -o=jsonpath='{.status.deployTokenStatuses[?(@.state=="unused")].token}' && echo
+hijklmn
 ```
 
 接下来，登录到安装 bob 的机器上，假设对外ip是3.3.3.3。

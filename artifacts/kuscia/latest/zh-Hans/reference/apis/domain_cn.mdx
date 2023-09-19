@@ -3,7 +3,7 @@
 # Domain
 
 在 Kuscia 中将隐私计算的节点称为 Domain，一个 Domain 中可以包含多个 K8s
-的工作节点（Node）。详情请参考 [Domain](../../concepts/domain_cn.mdx) 。
+的工作节点（Node）。详情请参考 [Domain](../concepts/domain_cn.mdx) 。
 你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domain.proto) 找到对应的
 protobuf 文件。
 
@@ -135,7 +135,7 @@ protobuf 文件。
 
 :target{#http}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domain/create
 
@@ -171,7 +171,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -197,7 +197,7 @@ protobuf 文件。
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -215,7 +215,7 @@ protobuf 文件。
       </td>
 
       <td>
-        角色：\[“”, “partner”]，参考 [<span>Domain概念</span>](../../concepts/domain_cn.mdx)
+        角色：\[“”, “partner”]，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
 
@@ -233,7 +233,7 @@ protobuf 文件。
       </td>
 
       <td>
-        BASE64的计算节点证书，参考 [<span>Domain概念</span>](../../concepts/domain_cn.mdx)
+        BASE64 的计算节点证书，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
 
@@ -309,7 +309,7 @@ protobuf 文件。
 
 :target{#id3}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domain/update
 
@@ -345,7 +345,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -371,7 +371,7 @@ protobuf 文件。
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -389,7 +389,7 @@ protobuf 文件。
       </td>
 
       <td>
-        角色：\[“”, “partner”]，参考 [<span>Domain概念</span>](../../concepts/domain_cn.mdx)
+        角色：\[“”, “partner”]，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
 
@@ -407,7 +407,7 @@ protobuf 文件。
       </td>
 
       <td>
-        BASE64的计算节点证书，参考 [<span>Domain概念</span>](../../concepts/domain_cn.mdx)
+        BASE64 的计算节点证书，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
   </tbody>
@@ -465,7 +465,7 @@ protobuf 文件。
 
 :target{#id4}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domain/delete
 
@@ -501,7 +501,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -527,7 +527,7 @@ protobuf 文件。
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
   </tbody>
@@ -585,7 +585,7 @@ protobuf 文件。
 
 :target{#id5}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domain/query
 
@@ -621,7 +621,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -647,7 +647,7 @@ protobuf 文件。
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
   </tbody>
@@ -729,7 +729,7 @@ protobuf 文件。
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -747,7 +747,7 @@ protobuf 文件。
       </td>
 
       <td>
-        角色：\[“”, “partner”]，参考 [<span>Domain概念</span>](../../concepts/domain_cn.mdx)
+        角色：\[“”, “partner”]，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
 
@@ -765,7 +765,7 @@ protobuf 文件。
       </td>
 
       <td>
-        BASE64的计算节点证书，参考 [<span>Domain概念</span>](../../concepts/domain_cn.mdx)
+        BASE64 的计算节点证书，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
 
@@ -849,7 +849,7 @@ protobuf 文件。
 
 :target{#id6}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domain/status/batchQuery
 
@@ -885,7 +885,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -911,7 +911,7 @@ protobuf 文件。
       </td>
 
       <td>
-        待查询的节点ID列表
+        待查询的节点 ID 列表
       </td>
     </tr>
   </tbody>
@@ -1043,7 +1043,7 @@ protobuf 文件。
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -1161,7 +1161,7 @@ protobuf 文件。
       </td>
 
       <td>
-        节点Agent版本
+        节点 Agent 版本
       </td>
     </tr>
 
@@ -1179,7 +1179,7 @@ protobuf 文件。
       </td>
 
       <td>
-        最后心跳时间，RFC3339格式（e.g. 2006-01-02T15:04:05Z）
+        最后心跳时间，RFC3339 格式（e.g. 2006-01-02T15:04:05Z）
       </td>
     </tr>
 
@@ -1197,7 +1197,7 @@ protobuf 文件。
       </td>
 
       <td>
-        最后更新时间，RFC3339格式（e.g. 2006-01-02T15:04:05Z）
+        最后更新时间，RFC3339 格式（e.g. 2006-01-02T15:04:05Z）
       </td>
     </tr>
   </tbody>
@@ -1261,7 +1261,7 @@ protobuf 文件。
       </td>
 
       <td>
-        节点到中心Token生成类型，目前仅支持 UID-RSA-GEN
+        节点到中心 Token 生成类型，目前仅支持 UID-RSA-GEN
       </td>
     </tr>
   </tbody>
@@ -1343,7 +1343,7 @@ protobuf 文件。
       </td>
 
       <td>
-        最后更新时间，RFC3339格式（e.g. 2006-01-02T15:04:05Z）
+        最后更新时间，RFC3339 格式（e.g. 2006-01-02T15:04:05Z）
       </td>
     </tr>
   </tbody>
