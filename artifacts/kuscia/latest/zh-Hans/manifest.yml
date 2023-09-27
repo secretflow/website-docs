@@ -14,6 +14,8 @@ sidebar:
           - {id: reference/concepts/domaindata_cn.mdx, label: DomainData, type: doc}
           - {id: reference/concepts/kusciajob_cn.mdx, label: KusciaJob, type: doc}
           - {id: reference/concepts/kusciatask_cn.mdx, label: KusciaTask, type: doc}
+          - {id: reference/concepts/kusciadeployment_cn.mdx, label: KusciaDeployment,
+            type: doc}
           - {id: reference/concepts/interopconfig_cn.mdx, label: InteropConfig, type: doc}
           - {id: reference/concepts/appimage_cn.mdx, label: AppImage, type: doc}
         label: Kuscia 概念
@@ -25,6 +27,7 @@ sidebar:
           - {id: reference/apis/domainroute_cn.mdx, label: DomainRoute, type: doc}
           - {id: reference/apis/domaindata_cn.mdx, label: DomainData, type: doc}
           - {id: reference/apis/kusciajob_cn.mdx, label: KusciaJob, type: doc}
+          - {id: reference/apis/serving_cn.mdx, label: Serving, type: doc}
           - {id: reference/apis/health_cn.mdx, label: Health, type: doc}
         label: Kuscia API
         link: {id: reference/apis/index.mdx, label: Kuscia API, type: doc}
