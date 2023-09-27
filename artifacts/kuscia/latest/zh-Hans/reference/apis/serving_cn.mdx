@@ -1,0 +1,1702 @@
+:target{#serving}
+
+# Serving
+
+在 Kuscia 中，你可以使用 Serving 接口管理联合预测服务，
+从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/serving.proto) 可以找到对应的 protobuf 文件。
+
+:target{#id1}
+
+## 接口总览
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        方法名
+      </td>
+
+      <td>
+        请求类型
+      </td>
+
+      <td>
+        响应类型
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        [CreateServing](#create-serving)
+      </td>
+
+      <td>
+        CreateServingRequest
+      </td>
+
+      <td>
+        CreateServingResponse
+      </td>
+
+      <td>
+        创建Serving
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [UpdateServing](#update-serving)
+      </td>
+
+      <td>
+        UpdateServingRequest
+      </td>
+
+      <td>
+        UpdateServingResponse
+      </td>
+
+      <td>
+        更新Serving
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [DeleteServing](#delete-serving)
+      </td>
+
+      <td>
+        DeleteServingRequest
+      </td>
+
+      <td>
+        DeleteServingResponse
+      </td>
+
+      <td>
+        删除Serving
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [QueryServing](#query-serving)
+      </td>
+
+      <td>
+        QueryServingRequest
+      </td>
+
+      <td>
+        QueryServingResponse
+      </td>
+
+      <td>
+        查询Serving
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [BatchQueryServingStatus](#batch-query-serving-status)
+      </td>
+
+      <td>
+        BatchQueryServingStatusRequest
+      </td>
+
+      <td>
+        BatchQueryServingStatusResponse
+      </td>
+
+      <td>
+        批量查询Serving状态
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id2}
+
+## 接口详情
+
+:target{#create-serving}
+
+### 创建Serving
+
+:target{#http}
+
+#### HTTP路径
+
+/api/v1/serving/create
+
+:target{#createservingrequest}
+
+#### 请求（CreateServingRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        serving\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        ServingID，满足[DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        serving\_input\_config
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        预测配置
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        initiator
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        发起方节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parties
+      </td>
+
+      <td>
+        [ServingParty](#serving-party)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        参与方信息
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#createservingresponse}
+
+#### 响应（CreateServingResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#update-serving}
+
+### 更新Serving
+
+:target{#id3}
+
+#### HTTP路径
+
+/api/v1/serving/update
+
+:target{#updateservingrequest}
+
+#### 请求（UpdateServingRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        serving\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        ServingID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        serving\_input\_config
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        预测配置
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parties
+      </td>
+
+      <td>
+        [ServingParty](#serving-party)\[]
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        参与方信息
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#updateservingresponse}
+
+#### 响应（UpdateServingResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#delete-serving}
+
+### 删除Serving
+
+:target{#id4}
+
+#### HTTP路径
+
+/api/v1/serving/delete
+
+:target{#deleteservingrequest}
+
+#### 请求（DeleteServingRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        serving\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        ServingID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#deleteservingresponse}
+
+#### 响应（DeleteServingResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#query-serving}
+
+### 查询Serving
+
+:target{#id5}
+
+#### HTTP路径
+
+/api/v1/serving/query
+
+:target{#queryservingrequest}
+
+#### 请求（QueryServingRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        serving\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        ServingID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#queryservingresponse}
+
+#### 响应（QueryServingResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        QueryServingResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.serving\_input\_config
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        预测配置
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.initiator
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        发起方节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.parties
+      </td>
+
+      <td>
+        [ServingParty](#serving-party)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        参与方信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.status
+      </td>
+
+      <td>
+        [ServingStatusDetail](#serving-status-detail)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Serving状态
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#batch-query-serving-status}
+
+### 批量查询Serving状态
+
+:target{#id6}
+
+#### HTTP路径
+
+/api/v1/serving/status/batchQuery
+
+:target{#batchqueryservingstatusrequest}
+
+#### 请求（BatchQueryServingStatusRequest）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        自定义请求内容
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        serving\_ids
+      </td>
+
+      <td>
+        string\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        ServingID列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#batchqueryservingstatusresponse}
+
+#### 响应（BatchQueryServingStatusResponse）
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [<span>Status</span>](summary_cn.mdx#status)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        BatchQueryServingStatusResponseData
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.servings
+      </td>
+
+      <td>
+        [ServingStatus](#serving-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Serving状态列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id7}
+
+## 公共
+
+:target{#serving-status}
+
+### ServingStatus
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        serving\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        ServingID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        status
+      </td>
+
+      <td>
+        [ServingStatusDetail](#serving-status-detail)
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Serving状态详情
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#serving-status-detail}
+
+### ServingStatusDetail
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        state
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        Serving状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        total\_parties
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        参与方总数
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        available\_parties
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        可用参与方数量
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        create\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        创建时间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party\_statuses
+      </td>
+
+      <td>
+        [PartyServingStatus](#party-serving-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        参与方状态
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#party-serving-status}
+
+### PartyServingStatus
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        role
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        角色
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        state
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        replicas
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        应用副本总数
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        available\_replicas
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        应用可用副本数
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        unavailable\_replicas
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        应用不可用副本数
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        updatedReplicas
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        最新版本的应用副本数
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        create\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        创建时间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        endpoints
+      </td>
+
+      <td>
+        [Endpoint](#serving-endpoint)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        应用访问地址列表
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#serving-endpoint}
+
+### Endpoint
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        endpoint
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        应用访问地址
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#serving-party}
+
+### ServingParty
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        app\_image
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        应用镜像
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        role
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        角色
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        replicas
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        应用总副本数
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        update\_strategy
+      </td>
+
+      <td>
+        [UpdateStrategy](#update-strategy)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        应用更新策略
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        resources
+      </td>
+
+      <td>
+        [Resource](#resource)\[]
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        应用运行资源
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#update-strategy}
+
+### UpdateStrategy
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        应用更新策略类型：支持”Recreate”和”RollingUpdate”两种类型<br /> “Recreate”：表示重建，在创建新的应用之前，所有现有应用都会被删除<br /> “RollingUpdate”：表示滚动更新，当应用更新时，结合”max\_surge”和”max\_unavailable”控制滚动更新过程
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        max\_surge
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        用来指定可以创建的超出应用总副本数的应用数量。默认为总副本数的”25%”。max\_unavailable为0，则此值不能为0
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        max\_unavailable
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        用来指定更新过程中不可用的应用副本个数上限。默认为总副本数的”25%”。max\_surge为0，则此值不能为0
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#resource}
+
+### Resource
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        container\_name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        容器名称。若为空，则”cpu”和”memory”资源适用于所有容器
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        min\_cpu
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        最小cpu数量。例如：“0.1”：表示100毫核；“1”：表示1核
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        max\_cpu
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        最大cpu数量。例如：“0.1”：表示100毫核；“1”：表示1核
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        min\_memory
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        最小memory数量。单位：“Mi”，“Gi”；例如：“100Mi”：表示100兆字节
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        max\_memory
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        最大memory数量。单位：“Mi”，“Gi”；例如：“100Mi”：表示100兆字节
+      </td>
+    </tr>
+  </tbody>
+</table>
