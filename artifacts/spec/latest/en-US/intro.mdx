@@ -15,7 +15,7 @@
 
 ## [Data](#\(spec.md#data\))
 
-We introduce [DistData](spec.mdx#id3) to represent inputs and outputs in privacy-preserving applications.
+We introduce [DistData](spec.mdx#distdata) to represent inputs and outputs in privacy-preserving applications.
 
 ![DistData](_assets/dist_data.svg)
 
@@ -48,7 +48,7 @@ Public data includes:
 
 :target{#systeminfo}
 
-#### [SystemInfo](spec.mdx#id6)
+#### [SystemInfo](spec.mdx#systeminfo)
 
 For input data, <strong>SystemInfo</strong> describes the application and environment which could consume the data.
 
@@ -65,7 +65,7 @@ DataRef only contains a uri. In order to retrieve the remote data, the owner has
 
 :target{#dataref}
 
-### [DataRef](spec.mdx#distdata-dataref)
+### [DataRef](spec.mdx#distdatadataref)
 
 A <strong>DataRef</strong> is a pointer to a single file belongs to one party. <strong>uri</strong> is the relative path to storage root of its owner.
 <strong>DataRef</strong> is public and open to all parties.
@@ -80,7 +80,7 @@ Don’t try to store any secret with uris. You need to protect the files pointed
 
 :target{#storageconfig}
 
-### [StorageConfig](spec.mdx#id5)
+### [StorageConfig](spec.mdx#storageconfig)
 
 <strong>StorageConfig</strong> specifies the storage root of a party. It could be a local file path, a database table or an OSS bucket.
 
@@ -94,7 +94,7 @@ We purpose some common DistData types.
 
 :target{#individualtable}
 
-#### [IndividualTable](spec.mdx#id4)
+#### [IndividualTable](spec.mdx#individualtable)
 
 <strong>IndividualTable</strong> is a table owned by one party, which means there is a single item in data\_refs field of DistData.
 <strong>IndividualTable</strong> should be packed into <strong>meta</strong> field of DistData which includes <strong>schema</strong> and <strong>line\_count</strong>.
@@ -103,7 +103,7 @@ In SecretFlow, the type str for IndividualTable is <em>sf.table.individual</em>.
 
 :target{#verticaltable}
 
-#### [VerticalTable](spec.mdx#id8)
+#### [VerticalTable](spec.mdx#verticaltable)
 
 <strong>VerticalTable</strong> is a vertical partitioned table owned by multiple parties. <strong>VerticalTable</strong> contains multiple <strong>schema</strong>.
 Correspondingly, there should be multiple data\_refs in DistData.
@@ -121,7 +121,7 @@ A component represent a piece of application which could be integrated into work
 
 :target{#componentdef}
 
-### [ComponentDef](spec.mdx#id15)
+### [ComponentDef](spec.mdx#componentdef)
 
 You could use ComponentDef to define a component:
 
@@ -135,7 +135,7 @@ With a tuple of domain, name and version, user could locate a unqiue component i
 
 :target{#attributedef}
 
-### [AttributeDef](spec.mdx#id13)
+### [AttributeDef](spec.mdx#attributedef)
 
 We organize all attributes of a component as attribute trees.
 
@@ -165,9 +165,9 @@ Let’s go through <strong>Atomic Attributes</strong>, <strong>Struct Attribute 
 
 :target{#atomic-attributes}
 
-#### [Atomic Attributes](spec.mdx#attributedef-atomicattrdesc)
+#### [Atomic Attributes](spec.mdx#attributedefatomicattrdesc)
 
-For <strong>Atomic Attributes</strong>, first you should indicate with “type” field in [AttributeDef](spec.mdx#id13).
+For <strong>Atomic Attributes</strong>, first you should indicate with “type” field in [AttributeDef](spec.mdx#attributedef).
 
 At this moment, we support the following scalar types:
 
@@ -175,7 +175,7 @@ At this moment, we support the following scalar types:
 - AT\_INT
 - AT\_STRING
 - AT\_BOOL
-  And corresponding scalar list types. You may check [AttrType](spec.mdx#id18) as well.
+  And corresponding scalar list types. You may check [AttrType](spec.mdx#attrtype) as well.
 
 Afterwards, you should use <strong>AtomicAttrDesc</strong> to further describe Atomic Attributes.
 
@@ -198,7 +198,7 @@ For all atomic attribue:
 
 A Struct Attribute Group represent a bunch of attributes which should be filled together. e.g. “a/c/f/k” in graph is a struct attribute group with children “a/c/f/k/p” and “a/c/f/k/q”. “a/c/f/k/p” and “a/c/f/k/q” are logically grouped together in this case and should be filled together.
 
-To define a Struct Attribute Group, you should indicate with “type” field in [AttributeDef](spec.mdx#id13) with AT\_STRUCT\_GROUP.
+To define a Struct Attribute Group, you should indicate with “type” field in [AttributeDef](spec.mdx#attributedef) with AT\_STRUCT\_GROUP.
 
 :target{#union-attribute-group}
 
@@ -206,7 +206,7 @@ To define a Struct Attribute Group, you should indicate with “type” field in
 
 A Union Attribute Group is similar to a Stuct Attribute group since it also has children. However, user should choose only one of children to fill-in. e.g. “a/d/h” is a union attribute group and “a/d/h/n” and “a/d/h/o” are children. User must choose “a/d/h/n” or “a/d/h/o” to fill.
 
-To define a Union Attribute Group, you should indicate with “type” field in [AttributeDef](spec.mdx#id13) with AT\_UNION\_GROUP. Afterwards, you should use [UnionAttrGroupDesc](spec.mdx#attributedef-unionattrgroupdesc) to specify the default selection of children.
+To define a Union Attribute Group, you should indicate with “type” field in [AttributeDef](spec.mdx#attributedef) with AT\_UNION\_GROUP. Afterwards, you should use [UnionAttrGroupDesc](spec.mdx#attributedefunionattrgroupdesc) to specify the default selection of children.
 
 ---
 
@@ -220,9 +220,9 @@ To define a Union Attribute Group, you should indicate with “type” field in 
 
 :target{#iodef}
 
-### [IoDef](spec.mdx#id16)
+### [IoDef](spec.mdx#iodef)
 
-IoDef is to specify the requirement of an input or output of the component. You should use <strong>types</strong> to declare accepted types of [DistData](spec.mdx#id3).
+IoDef is to specify the requirement of an input or output of the component. You should use <strong>types</strong> to declare accepted types of [DistData](spec.mdx#distdata).
 
 :target{#tableattrdef}
 
@@ -248,7 +248,7 @@ Again, you could leave <strong>TableAttrDef</strong> alone at this moment since 
 
 :target{#complistdef}
 
-### [CompListDef](spec.mdx#id14)
+### [CompListDef](spec.mdx#complistdef)
 
 A group of a components could be organized by a <strong>CompListDef</strong>. Each privacy-preserving application must provide a CompList.
 
@@ -269,7 +269,7 @@ The result is expressed with  <strong>NodeEvalResult</strong> from application.
 
 :target{#nodeevalparam}
 
-### [NodeEvalParam](spec.mdx#id22)
+### [NodeEvalParam](spec.mdx#nodeevalparam)
 
 It contains:
 
@@ -310,7 +310,7 @@ The attr\_path of an atmoic attribute is the full path of an attribute tree node
 - attr\_path of attribute node named <em>q</em> is “a/c/f/k/q”
 - attr\_path of attribute node named <em>j</em> is “a/c/f/j”
 
-[Attribute](spec.mdx#id12) is used to express the value of an attribute. Please use <em>is\_na</em> to indicate the value is <em>n/a</em> explicitly.
+[Attribute](spec.mdx#attribute) is used to express the value of an attribute. Please use <em>is\_na</em> to indicate the value is <em>n/a</em> explicitly.
 
 <strong>Struct Attribute Group</strong>
 
@@ -322,8 +322,8 @@ For union attribute group, you must provide a pair of attr\_path and attr to ind
 
 e.g. for union attribute group named c, the attr\_path is “a/c”
 
-- If you choose children named e, the attr is a [Attribute](spec.mdx#id12) with <em>s</em> field is e, i.e. children selection is a string.
-- If you choose children named f, the attr is a [Attribute](spec.mdx#id12) with <em>s</em> field is f.
+- If you choose children named e, the attr is a [Attribute](spec.mdx#attribute) with <em>s</em> field is e, i.e. children selection is a string.
+- If you choose children named f, the attr is a [Attribute](spec.mdx#attribute) with <em>s</em> field is f.
 
 <strong>TableAttrDef</strong>
 
@@ -339,7 +339,7 @@ First, you should answer the selected columns. The attr\_path consists of three 
 
 e.g. A typical attr\_path for selected columns id “input/train\_dataset/features”
 
-You should use <em>ss</em> field of [Attribute](spec.mdx#id12) to list selected columns.
+You should use <em>ss</em> field of [Attribute](spec.mdx#attribute) to list selected columns.
 
 Then, if TableAttrDef contains <em>extra\_attrs</em>, you should continue to answer it. The attr\_path contains five parts:
 
@@ -359,7 +359,7 @@ You should provide an uri relative to StorageConfig for each config. The order s
 
 :target{#nodeevalresult}
 
-### [NodeEvalResult](spec.mdx#id23)
+### [NodeEvalResult](spec.mdx#nodeevalresult)
 
 It contains output DistData.
 

@@ -15,7 +15,7 @@
 
 ## [Data](#\(spec.md#data\))
 
-我们引入了 [DistData](spec.mdx#id3) 来表示隐私保护应用程序中的输入和输出
+我们引入了 [DistData](spec.mdx#distdata) 来表示隐私保护应用程序中的输入和输出
 
 ![DistData](_assets/dist_data.svg)
 
@@ -47,7 +47,7 @@ DistData包含两个部分：
 
 :target{#systeminfo}
 
-#### [SystemInfo](spec.mdx#id6)
+#### [SystemInfo](spec.mdx#systeminfo)
 
 对于输入数据，SystemInfo描述了可能使用数据的应用程序和环境。
 
@@ -63,7 +63,7 @@ DataRef只包含一个uri。为了获取远程数据，所有者必须使用自�
 
 :target{#dataref}
 
-### [DataRef](spec.mdx#distdata-dataref)
+### [DataRef](spec.mdx#distdatadataref)
 
 DataRef是指向一个属于一方的单个文件的指针。uri是相对于其所有者的存储根目录的路径。DataRef是公开的，所有方都可以访问。
 
@@ -77,7 +77,7 @@ DataRef是指向一个属于一方的单个文件的指针。uri是相对于其�
 
 :target{#storageconfig}
 
-### [StorageConfig](spec.mdx#id5)
+### [StorageConfig](spec.mdx#storageconfig)
 
 StorageConfig指定了一方的存储根目录。它可以是本地文件路径、数据库表格或 OSS 存储桶。
 
@@ -91,7 +91,7 @@ StorageConfig指定了一方的存储根目录。它可以是本地文件路径�
 
 :target{#individualtable}
 
-#### [IndividualTable](spec.mdx#id4)
+#### [IndividualTable](spec.mdx#individualtable)
 
 IndividualTable是由一方拥有的表格，这意味着DistData的data\_refs字段中只有一个项。IndividualTable应该打包到DistData的meta字段中，该字段包括schema和line\_count。
 
@@ -99,7 +99,7 @@ IndividualTable是由一方拥有的表格，这意味着DistData的data\_refs�
 
 :target{#verticaltable}
 
-#### [VerticalTable](spec.mdx#id8)
+#### [VerticalTable](spec.mdx#verticaltable)
 
 VerticalTable 是多个方拥有的垂直分区表。VerticalTable 包含多个schema。相应地，DistData中应该有多个data\_refs。VerticalTable 应该打包到DistData的meta字段中。
 
@@ -115,7 +115,7 @@ Component是隐语开放标准中最复杂的协议。
 
 :target{#componentdef}
 
-### [ComponentDef](spec.mdx#id15)
+### [ComponentDef](spec.mdx#componentdef)
 
 你可以使用ComponentDef来定义一个组件：
 
@@ -129,15 +129,15 @@ Component是隐语开放标准中最复杂的协议。
 
 :target{#attributedef}
 
-### [AttributeDef](spec.mdx#id13)
+### [AttributeDef](spec.mdx#attributedef)
 
 我们将组件的所有属性组织成属性树。
 
 ![一棵典型的属性树](_assets/attribute_tree.svg)
 
-- 树的叶子节点称为原子属性，表示用户需要填写的固定字段，例如桶大小或学习率，在图中表示为”a/b”，“a/c/e/i”，“a/c/f/j”。
+- 树的叶子节点称为原子属性，表示用户需要填写的固定字段，例如桶大小或学习率，在图中表示为”a/b”，”a/c/e/i”，”a/c/f/j”。
 - 树的非叶子节点称为属性组。有两种类型的属性组：
-  - <strong>Struct Attribute Group</strong> ：组内的所有子节点都需要一起填写。例如，在图中”a/c/f”，“a/d”，“a/d/g”。
+  - <strong>Struct Attribute Group</strong> ：组内的所有子节点都需要一起填写。例如，在图中”a/c/f”，”a/d”，”a/d/g”。
   - <strong>Union Attribute Group</strong> ：用户必须选择组内的一个子节点进行填写。例如，在图中”a/c”和”a/d/h”。
 
 属性组的子节点可以是另一个属性组。
@@ -156,16 +156,16 @@ AttributeDef 表示组件属性树的一个节点。
 
 :target{#atomic-attributes}
 
-#### [Atomic Attributes](spec.mdx#attributedef-atomicattrdesc)
+#### [Atomic Attributes](spec.mdx#attributedefatomicattrdesc)
 
-对于原子属性，首先需要在 [AttributeDef](spec.mdx#id13) 中使用”type”字段进行指定。
+对于原子属性，首先需要在 [AttributeDef](spec.mdx#attributedef) 中使用”type”字段进行指定。
 
 在目前的版本中，我们支持以下标量类型：
 
 - AT\_FLOAT
 - AT\_INT
 - AT\_STRING
-- AT\_BOOL 和相应的标量列表类型。您也可以查看 [AttrType](spec.mdx#id18) 。
+- AT\_BOOL 和相应的标量列表类型。您也可以查看 [AttrType](spec.mdx#attrtype) 。
 
 之后，您应该使用 AtomicAttrDesc 来进一步描述原子属性。
 
@@ -186,7 +186,7 @@ AttributeDef 表示组件属性树的一个节点。
 
 #### Struct Attribute Group
 
-Struct Attribute Group 代表一组应该一起填写的属性。例如，在图中”a/c/f/k” 是一个 Struct Attribute Group ，它的子节点是 “a/c/f/k/p” 和 “a/c/f/k/q”。在这种情况下，“a/c/f/k/p” 和 “a/c/f/k/q” 是逻辑上一起分组的，并且应该一起填写。
+Struct Attribute Group 代表一组应该一起填写的属性。例如，在图中”a/c/f/k” 是一个 Struct Attribute Group ，它的子节点是 “a/c/f/k/p” 和 “a/c/f/k/q”。在这种情况下，”a/c/f/k/p” 和 “a/c/f/k/q” 是逻辑上一起分组的，并且应该一起填写。
 
 要定义一个Struct Attribute Group ，在AttributeDef中使用”type”字段指定为AT\_STRUCT\_GROUP。
 
@@ -194,7 +194,7 @@ Struct Attribute Group 代表一组应该一起填写的属性。例如，在图
 
 #### Union Attribute Group
 
-Union Attribute Group 与 Stuct Attribute group 类似，因为它们都有子节点。然而，用户只能选择一个子节点进行填写。例如，“a/d/h” 是一个 Union Attribute Group ，它的子节点是 “a/d/h/n” 和 “a/d/h/o”。用户必须选择 “a/d/h/n” 或者 “a/d/h/o” 进行填写。
+Union Attribute Group 与 Stuct Attribute group 类似，因为它们都有子节点。然而，用户只能选择一个子节点进行填写。例如，”a/d/h” 是一个 Union Attribute Group ，它的子节点是 “a/d/h/n” 和 “a/d/h/o”。用户必须选择 “a/d/h/n” 或者 “a/d/h/o” 进行填写。
 
 定义一个 Union Attribute Group ，您需要在AttributeDef的”type”字段中使用AT\_UNION\_GROUP进行指示。然后，您可以使用UnionAttrGroupDesc来指定子属性的默认选择。
 
@@ -210,9 +210,9 @@ Union Attribute Group 与 Stuct Attribute group 类似，因为它们都有子�
 
 :target{#iodef}
 
-### [IoDef](spec.mdx#id16)
+### [IoDef](spec.mdx#iodef)
 
-IoDef用于指定组件的输入或输出要求。您应该使用types来声明接受的 [DistData](spec.mdx#id3) 的类型。
+IoDef用于指定组件的输入或输出要求。您应该使用types来声明接受的 [DistData](spec.mdx#distdata) 的类型。
 
 :target{#tableattrdef}
 
@@ -222,7 +222,7 @@ IoDef用于指定组件的输入或输出要求。您应该使用types来声明�
 
 例如，我们可能要求用户提供一个表作为输入/输出，然后选择某些列作为特征，并为每个选定的列填写其他属性。
 
-- name是列的名称，例如”label”、“key”、“features”。它应该在一个输入的所有TableAttrDefs中是唯一的。
+- name是列的名称，例如”label”、”key”、”features”。它应该在一个输入的所有TableAttrDefs中是唯一的。
 - desc指示用户所选列的含义。
 - types指示所选列的类型限制。
 - col\_min\_cnt\_inclusive和col\_max\_cnt\_inclusive指示应选择多少列作为name。
@@ -238,7 +238,7 @@ IoDef用于指定组件的输入或输出要求。您应该使用types来声明�
 
 :target{#complistdef}
 
-### [CompListDef](spec.mdx#id14)
+### [CompListDef](spec.mdx#complistdef)
 
 一组组件可以通过CompListDef进行组织。每个隐私保护应用程序必须提供一个CompList。
 
@@ -259,7 +259,7 @@ IoDef用于指定组件的输入或输出要求。您应该使用types来声明�
 
 :target{#nodeevalparam}
 
-### [NodeEvalParam](spec.mdx#id22)
+### [NodeEvalParam](spec.mdx#nodeevalparam)
 
 它包含：
 
@@ -298,7 +298,7 @@ attr\_paths和attrs的长度必须相同。它们应该遵守相同的顺序。�
 - 属性节点名为q的attr\_path是”a/c/f/k/q”
 - 属性节点名为j的attr\_path是”a/c/f/k/j”
 
-[Attribute](spec.mdx#id12) 用于表示属性的值。请使用is\_na来明确表示值为n/a。
+[Attribute](spec.mdx#attribute) 用于表示属性的值。请使用is\_na来明确表示值为n/a。
 
 <strong>Struct Attribute Group</strong>
 
@@ -310,8 +310,8 @@ attr\_paths和attrs的长度必须相同。它们应该遵守相同的顺序。�
 
 例如，对于名为c的联合属性组，attr\_path是”a/c”
 
-- 如果您选择名为e的子元素，则attr是一个[Attribute](spec.mdx#id12) ，其中s字段为e，即子元素选择是一个字符串。
-- 如果您选择名为f的子元素，则attr是一个[Attribute](spec.mdx#id12) ，其中s字段为f。
+- 如果您选择名为e的子元素，则attr是一个[Attribute](spec.mdx#attribute) ，其中s字段为e，即子元素选择是一个字符串。
+- 如果您选择名为f的子元素，则attr是一个[Attribute](spec.mdx#attribute) ，其中s字段为f。
 
 <strong>TableAttrDef</strong>
 
@@ -327,7 +327,7 @@ attr\_path是 <em>(input|output)/(IoDef name)/(TableAttrDef name)(/(column name)
 
 例如，选择列id的典型attr\_path为”input/train\_dataset/features”
 
-您应该使用 [Attribute](spec.mdx#id12) 的ss字段列出所选列。
+您应该使用 [Attribute](spec.mdx#attribute) 的ss字段列出所选列。
 
 然后，如果TableAttrDef包含extra\_attrs，则应继续回答它。attr\_path包含五个部分：
 
@@ -347,7 +347,7 @@ attr\_path是 <em>(input|output)/(IoDef name)/(TableAttrDef name)(/(column name)
 
 :target{#nodeevalresult}
 
-### [NodeEvalResult](spec.mdx#id23)
+### [NodeEvalResult](spec.mdx#nodeevalresult)
 
 它包含输出的DistData。
 
