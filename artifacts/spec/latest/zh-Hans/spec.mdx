@@ -1,0 +1,2981 @@
+:target{#secretflow-open-specification}
+
+# 隐语开放标准
+
+> This page is auto-generated with protoc-gen-doc.
+
+:target{#table-of-contents}
+
+## 目录
+
+:target{#data}
+
+### [数据](#id1)
+
+- Messages
+  - [DistData](#distdata)
+  - [DistData.DataRef](#distdatadataref)
+  - [IndividualTable](#individualtable)
+  - [StorageConfig](#storageconfig)
+  - [StorageConfig.LocalFSConfig](#storageconfiglocalfsconfig)
+  - [SystemInfo](#systeminfo)
+  - [TableSchema](#tableschema)
+  - [VerticalTable](#verticaltable)
+
+:target{#component}
+
+### [组件](#id9)
+
+- Messages
+  - [Attribute](#attribute)
+  - [AttributeDef](#attributedef)
+  - [AttributeDef.AtomicAttrDesc](#attributedefatomicattrdesc)
+  - [AttributeDef.UnionAttrGroupDesc](#attributedefunionattrgroupdesc)
+  - [CompListDef](#complistdef)
+  - [ComponentDef](#componentdef)
+  - [IoDef](#iodef)
+  - [IoDef.TableAttrDef](#iodeftableattrdef)
+- Enums
+  - [AttrType](#attrtype)
+
+:target{#evaluation}
+
+### [组件执行](#id19)
+
+- Messages
+  - [NodeEvalParam](#nodeevalparam)
+  - [NodeEvalResult](#nodeevalresult)
+
+:target{#report}
+
+### [报告](#REPORT)
+
+- Messages
+  - [Descriptions](#descriptions)
+  - [Descriptions.Item](#descriptionsitem)
+  - [Div](#div)
+  - [Div.Child](#divchild)
+  - [Report](#report)
+  - [Tab](#tab)
+  - [Table](#table)
+  - [Table.HeaderItem](#tableheaderitem)
+  - [Table.Row](#tablerow)
+
+:target{#id1}
+
+## 数据
+
+Proto file: [secretflow/spec/v1/data.proto](https://github.com/secretflow/spec/tree/main/secretflow/spec/v1/data.proto)
+
+:target{#messages}
+
+### Messages
+
+:target{#distdata}
+
+#### DistData
+
+用于表示通用分布式数据的公共记录。
+
+该分布式数据的类型，提供给组件。
+
+具体的数据格式（包括公共和私有部分）由其他 proto 定义。
+
+建议的内部类型，即：
+
+- sf.table.vertical\_table 表示secretflow纵向联合表
+- sf.table.individual\_table 表示secretflow单方表
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        分布式数据名称
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        类型。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        system\_info
+      </td>
+
+      <td>
+        [ SystemInfo](#systeminfo)
+      </td>
+
+      <td>
+        描述产生该分布式数据的系统信息。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        meta
+      </td>
+
+      <td>
+        [<span> google.protobuf.Any</span>](#googleprotobufany)
+      </td>
+
+      <td>
+        对各方公开的信息，比如 VerticalTable 。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data\_refs
+      </td>
+
+      <td>
+        [repeated DistData.DataRef](#distdatadataref)
+      </td>
+
+      <td>
+        远端数据 references 。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#distdata-dataref}
+
+#### DistData.DataRef
+
+一个指向存储在远端数据的reference。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        uri
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        相对于StorageConfig的路径信息。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        拥有方。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        format
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        存储格式，例如csv。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#individualtable}
+
+#### IndividualTable
+
+IndividualTable描述了被一方拥有的表单。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        schema
+      </td>
+
+      <td>
+        [ TableSchema](#tableschema)
+      </td>
+
+      <td>
+        表结构。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        line\_count
+      </td>
+
+      <td>
+        [<span> int64</span>](#int64)
+      </td>
+
+      <td>
+        如果值为-1, 代表列数未知。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#storageconfig}
+
+#### StorageConfig
+
+一个StorageConfig代表了某方所有数据的根。
+
+- 目前仅支持 local\_fs 。
+- 我们将会支持 OSS，数据库等。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        支持：local\_fs 。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        local\_fs
+      </td>
+
+      <td>
+        [ StorageConfig.LocalFSConfig](#storageconfiglocalfsconfig)
+      </td>
+
+      <td>
+        local\_fs 配置。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#storageconfig-localfsconfig}
+
+#### StorageConfig.LocalFSConfig
+
+仅供 local\_fs 。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        wd
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        工作路径。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#systeminfo}
+
+#### SystemInfo
+
+描述了数据相关的应用程序信息。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        app
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        应用程序名称，支持”secretflow”
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        app\_meta
+      </td>
+
+      <td>
+        [<span> google.protobuf.Any</span>](#googleprotobufany)
+      </td>
+
+      <td>
+        应用程序元信息。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tableschema}
+
+#### TableSchema
+
+表结构。
+
+- 一个col必须属于 `id | feature | label` 。 默认为 feature 。
+- 所有名字需要满足正则表达式 `[A-Za-z0-9.][A-Za-z0-9_>./]*` 。
+- 所有数据类型须为
+
++ int8
++ int16
++ int32
++ int64
++ uint8
++ uint16
++ uint32
++ uint64
++ float16
++ float32
++ float64
++ bool
++ int
++ float
++ str
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        ids
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        Id 列名。 可选项，可以为空。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        features
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        特征列名
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        labels
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        标签列名。 可选项，可以为空。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        id\_types
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        Id 列数据类型。 长度需要和 id\_types 一致。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        feature\_types
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        特征列数据类型。 长度需要和 feature\_types 一致。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        label\_types
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        标签列数据类型。 长度需要和 label\_types 一致。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#verticaltable}
+
+#### VerticalTable
+
+VerticalTable 描述了一个属于多方的垂直切分表。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        schemas
+      </td>
+
+      <td>
+        [repeated TableSchema](#tableschema)
+      </td>
+
+      <td>
+        垂直切分各分片的表结构。 需要和 DistData 中的 data\_refs 配合使用。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        line\_count
+      </td>
+
+      <td>
+        [<span> int64</span>](#int64)
+      </td>
+
+      <td>
+        如果值为-1, 代表列数未知。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#enums}
+
+### Enums
+
+:target{#id9}
+
+## 组件
+
+Proto file: [secretflow/spec/v1/component.proto](https://github.com/secretflow/spec/tree/main/secretflow/spec/v1/component.proto)
+
+:target{#id11}
+
+### Messages
+
+:target{#attribute}
+
+#### Attribute
+
+属性的值
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        f
+      </td>
+
+      <td>
+        [<span> float</span>](#float)
+      </td>
+
+      <td>
+        FLOAT
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        i64
+      </td>
+
+      <td>
+        [<span> int64</span>](#int64)
+      </td>
+
+      <td>
+        INT NOTE(junfeng): “is” is preserved by Python. Replaced with “i64”.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        s
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        STRING
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        b
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        BOOL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        fs
+      </td>
+
+      <td>
+        [<span>repeated float</span>](#float)
+      </td>
+
+      <td>
+        FLOATS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        i64s
+      </td>
+
+      <td>
+        [<span>repeated int64</span>](#int64)
+      </td>
+
+      <td>
+        INTS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ss
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        STRINGS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        bs
+      </td>
+
+      <td>
+        [<span>repeated bool</span>](#bool)
+      </td>
+
+      <td>
+        BOOLS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        is\_na
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        表示是否该值被显式置为空。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#attributedef}
+
+#### AttributeDef
+
+描述一个属性。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        prefixes
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        表明一个节点的所有祖先。例如 `[name_a, name_b, name_c]` 说明路径的前缀为 `name_a/name_b/name_c/` 只有 `^[a-zA-Z0-9_.-]*$` 被允许。`input` 和 `output` 为保留词。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        在同一层次必须唯一，和linux文件系统一致。只有 `^[a-zA-Z0-9_.-]*$` 被允许。`input` 和 `output` 为保留词。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        [ AttrType](#attrtype)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        atomic
+      </td>
+
+      <td>
+        [ AttributeDef.AtomicAttrDesc](#attributedefatomicattrdesc)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        union
+      </td>
+
+      <td>
+        [ AttributeDef.UnionAttrGroupDesc](#attributedefunionattrgroupdesc)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#attributedef-atomicattrdesc}
+
+#### AttributeDef.AtomicAttrDesc
+
+atomic 属性额外配置。包括。`AT_FLOAT | AT_INT | AT_STRING | AT_BOOL | AT_FLOATS | AT_INTS | AT_STRINGS | AT_BOOLS` 。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        list\_min\_length\_inclusive
+      </td>
+
+      <td>
+        [<span> int64</span>](#int64)
+      </td>
+
+      <td>
+        仅当类型为 `AT_FLOATS | AT_INTS | AT_STRINGS | AT_BOOLS` 时有效。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        list\_max\_length\_inclusive
+      </td>
+
+      <td>
+        [<span> int64</span>](#int64)
+      </td>
+
+      <td>
+        仅当类型为 `AT_FLOATS | AT_INTS | AT_STRINGS | AT_BOOLS` 时有效。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        is\_optional
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        如果为真，当值没有给出或者 is\_na 为真是， default\_value 将会被使用。否则，值必须给出。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        default\_value
+      </td>
+
+      <td>
+        [ Attribute](#attribute)
+      </td>
+
+      <td>
+        当用户没有给出值时的合理默认值。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        allowed\_values
+      </td>
+
+      <td>
+        [ Attribute](#attribute)
+      </td>
+
+      <td>
+        仅当类型为 `AT_FLOAT | AT_INT | AT_STRING | AT_FLOATS | AT_INTS | AT_STRINGS` 时有效。请使用 AtomicParameter 中表示列表的 field ， 即 `ss`, `i64s`, `fs` 。当属性是一个列表时，allowed\_values 将会限制列表的每一个成员。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        lower\_bound\_enabled
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        仅当类型为 `AT_FLOAT | AT_INT | AT_FLOATS | AT_INTS` 时有效。当属性是一个列表时，lower\_bound 将会限制列表的每一个成员。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        lower\_bound
+      </td>
+
+      <td>
+        [ Attribute](#attribute)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        lower\_bound\_inclusive
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        upper\_bound\_enabled
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        仅当类型为 `AT_FLOAT | AT_INT | AT_FLOATS | AT_INTS` 时有效。当属性是一个列表时，upper\_bound 将会限制列表的每一个成员。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        upper\_bound
+      </td>
+
+      <td>
+        [ Attribute](#attribute)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        upper\_bound\_inclusive
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#attributedef-unionattrgroupdesc}
+
+#### AttributeDef.UnionAttrGroupDesc
+
+Union 属性组额外配置。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        default\_selection
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        默认选择的子节点。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#complistdef}
+
+#### CompListDef
+
+组件列表
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        version
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        comps
+      </td>
+
+      <td>
+        [repeated ComponentDef](#componentdef)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#componentdef}
+
+#### ComponentDef
+
+组件定义。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domain
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        组件命名空间。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        在相同命名空间中需要唯一。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        version
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        组件版本。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attrs
+      </td>
+
+      <td>
+        [repeated AttributeDef](#attributedef)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inputs
+      </td>
+
+      <td>
+        [repeated IoDef](#iodef)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        outputs
+      </td>
+
+      <td>
+        [repeated IoDef](#iodef)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#iodef}
+
+#### IoDef
+
+定义了组件的输入输出。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        需要在组件所有IO中唯一。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        types
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        必须属于 data.proto 中 DistData.type 。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attrs
+      </td>
+
+      <td>
+        [repeated IoDef.TableAttrDef](#iodeftableattrdef)
+      </td>
+
+      <td>
+        仅适用于表。一个 TableAttrDef 的属性路径为 `{input|output}/{IoDef name}/{TableAttrDef name}` 。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#iodef-tableattrdef}
+
+#### IoDef.TableAttrDef
+
+一个表单的额外属性。
+
+如果在一个 IoDef 中提供， 例如
+
+```json
+{
+  "name": "feature",
+  "types": [
+      "int",
+      "float"
+  ],
+  "col_min_cnt_inclusive": 1,
+  "col_max_cnt": 3,
+  "attrs": [
+      {
+          "name": "bucket_size",
+          "type": "AT_INT"
+      }
+  ]
+}
+```
+
+以为着一个用户提供了一个表作为 IO, 他仍然需要制定一些列作为 “feature”:
+
+- col\_min\_cnt\_inclusive 为1: 至少选择一列。
+- col\_max\_cnt\_inclusive 为3: 至多选择3列。并且每选择一列之后， 用户还需要设置一个int属性bucket\_size 。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        在表的所有属性中需要唯一。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        types
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        接受的列数据类型。 请查看 data.proto 中 TableSchema 的 comments。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        col\_min\_cnt\_inclusive
+      </td>
+
+      <td>
+        [<span> int64</span>](#int64)
+      </td>
+
+      <td>
+        inclusive
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        col\_max\_cnt\_inclusive
+      </td>
+
+      <td>
+        [<span> int64</span>](#int64)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        extra\_attrs
+      </td>
+
+      <td>
+        [repeated AttributeDef](#attributedef)
+      </td>
+
+      <td>
+        制定列的额外属性。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id17}
+
+### Enums
+
+:target{#attrtype}
+
+#### AttrType
+
+支持的属性类型。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        ATTR\_TYPE\_UNSPECIFIED
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_FLOAT
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        FLOAT
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_INT
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        INT
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_STRING
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        STRING
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_BOOL
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        BOOL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_FLOATS
+      </td>
+
+      <td>
+        5
+      </td>
+
+      <td>
+        FLOATS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_INTS
+      </td>
+
+      <td>
+        6
+      </td>
+
+      <td>
+        INTS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_STRINGS
+      </td>
+
+      <td>
+        7
+      </td>
+
+      <td>
+        STRINGS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_BOOLS
+      </td>
+
+      <td>
+        8
+      </td>
+
+      <td>
+        BOOLS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_STRUCT\_GROUP
+      </td>
+
+      <td>
+        9
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_UNION\_GROUP
+      </td>
+
+      <td>
+        10
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        AT\_SF\_TABLE\_COL
+      </td>
+
+      <td>
+        11
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id19}
+
+## 组件执行
+
+Proto file: [secretflow/spec/v1/evaluation.proto](https://github.com/secretflow/spec/tree/main/secretflow/spec/v1/evaluation.proto)
+
+:target{#id21}
+
+### Messages
+
+:target{#nodeevalparam}
+
+#### NodeEvalParam
+
+Evaluate a node.
+
+- CompListDef + StorageConfig + NodeEvalParam + 其他额外配置 -> NodeEvalResult
+
+NodeEvalParam 包含了所有用于执行组件的信息。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domain
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        组件命名空间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        组件名称。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        version
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        组件版本。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attr\_paths
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        属性路径。 一个TableAttrDef的属性路径为 \`(input
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        attrs
+      </td>
+
+      <td>
+        [repeated Attribute](#attribute)
+      </td>
+
+      <td>
+        属性的值，需要和 attr\_paths 顺序一致。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inputs
+      </td>
+
+      <td>
+        [repeated DistData](#distdata)
+      </td>
+
+      <td>
+        输入数据，输入的顺序和组件定义中输入顺序一致。注意：DistData 的名称和 ComponentDef 中的 inputs 的名称无关。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        output\_uris
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        输出数据，输出的顺序和组件定义中输出顺序一致。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#nodeevalresult}
+
+#### NodeEvalResult
+
+NodeEvalResult包含了组件执行之后的输出。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        outputs
+      </td>
+
+      <td>
+        [repeated DistData](#distdata)
+      </td>
+
+      <td>
+        输出数据。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id24}
+
+### Enums
+
+:target{#id25}
+
+## 报告
+
+Proto file: [secretflow/spec/v1/report.proto](https://github.com/secretflow/spec/tree/main/secretflow/spec/v1/report.proto)
+
+:target{#id27}
+
+### Messages
+
+:target{#descriptions}
+
+#### Descriptions
+
+以组的形式显示多个值。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Descriptions的名称。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        items
+      </td>
+
+      <td>
+        [repeated Descriptions.Item](#descriptionsitem)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#descriptions-item}
+
+#### Descriptions.Item
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        field 的名称。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        必须是 bool/int/float/str 。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        value
+      </td>
+
+      <td>
+        [ Attribute](#attribute)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#div}
+
+#### Div
+
+一个页面的一部分。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Div的名称。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        children
+      </td>
+
+      <td>
+        [repeated Div.Child](#divchild)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#div-child}
+
+#### Div.Child
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        支持：descriptions, table, div 。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        descriptions
+      </td>
+
+      <td>
+        [ Descriptions](#descriptions)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        table
+      </td>
+
+      <td>
+        [ Table](#table)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        div
+      </td>
+
+      <td>
+        [ Div](#div)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id30}
+
+#### Report
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Report名称。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tabs
+      </td>
+
+      <td>
+        [repeated Tab](#tab)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        err\_code
+      </td>
+
+      <td>
+        [<span> int32</span>](#int32)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        err\_detail
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        结构话的报错细节, 推荐使用JSON编码。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#tab}
+
+#### Tab
+
+一页report。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Tab 名称。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        divs
+      </td>
+
+      <td>
+        [repeated Div](#div)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#table}
+
+#### Table
+
+显示一行数据。
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Table 的名称。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        headers
+      </td>
+
+      <td>
+        [repeated Table.HeaderItem](#tableheaderitem)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        rows
+      </td>
+
+      <td>
+        [repeated Table.Row](#tablerow)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#table-headeritem}
+
+#### Table.HeaderItem
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        必须是 bool/int/float/str 。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#table-row}
+
+#### Table.Row
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        name
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        desc
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        items
+      </td>
+
+      <td>
+        [repeated Attribute](#attribute)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id34}
+
+### Enums
+
+:target{#scalar-value-types}
+
+## 标量值类型
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Type
+      </td>
+
+      <td>
+        Notes
+      </td>
+
+      <td>
+        C++ Type
+      </td>
+
+      <td>
+        Java Type
+      </td>
+
+      <td>
+        Python Type
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <div /><h4 id="double" /><a name="double" /> double
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        double
+      </td>
+
+      <td>
+        double
+      </td>
+
+      <td>
+        float
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="float" /><a name="float" /> float
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        float
+      </td>
+
+      <td>
+        float
+      </td>
+
+      <td>
+        float
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="int32" /><a name="int32" /> int32
+      </td>
+
+      <td>
+        使用可变长度编码。对于编码负数效率较低 - 如果你的字段可能有负值，请使用sint32代替。
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="int64" /><a name="int64" /> int64
+      </td>
+
+      <td>
+        使用可变长度编码。对于编码负数效率较低 - 如果你的字段可能有负值，请使用sint64代替。
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="uint32" /><a name="uint32" /> uint32
+      </td>
+
+      <td>
+        使用可变长度编码。
+      </td>
+
+      <td>
+        uint32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="uint64" /><a name="uint64" /> uint64
+      </td>
+
+      <td>
+        使用可变长度编码。
+      </td>
+
+      <td>
+        uint64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="sint32" /><a name="sint32" /> sint32
+      </td>
+
+      <td>
+        使用可变长度编码。带符号整型值。相比普通的int32，这种编码方式更高效地编码负数。
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="sint64" /><a name="sint64" /> sint64
+      </td>
+
+      <td>
+        使用可变长度编码。带符号整型值。相比普通的int64，这种编码方式更高效地编码负数。
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="fixed32" /><a name="fixed32" /> fixed32
+      </td>
+
+      <td>
+        始终为四个字节。如果值通常大于2^28，则比uint32更高效。
+      </td>
+
+      <td>
+        uint32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="fixed64" /><a name="fixed64" /> fixed64
+      </td>
+
+      <td>
+        始终为八个字节。如果值通常大于2^56，则比uint64更高效。
+      </td>
+
+      <td>
+        uint64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="sfixed32" /><a name="sfixed32" /> sfixed32
+      </td>
+
+      <td>
+        始终为四个字节。
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="sfixed64" /><a name="sfixed64" /> sfixed64
+      </td>
+
+      <td>
+        始终为八个字节。
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="bool" /><a name="bool" /> bool
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        bool
+      </td>
+
+      <td>
+        boolean
+      </td>
+
+      <td>
+        boolean
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="string" /><a name="string" /> string
+      </td>
+
+      <td>
+        字符串必须始终包含UTF-8编码或7位ASCII文本。
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        str/unicode
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div /><h4 id="bytes" /><a name="bytes" /> bytes
+      </td>
+
+      <td>
+        可以包含任意字节序列。
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        ByteString
+      </td>
+
+      <td>
+        str
+      </td>
+    </tr>
+  </tbody>
+</table>
