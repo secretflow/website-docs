@@ -23,6 +23,7 @@ jobs:
           - scql
           - kuscia
           - secretpad
+          - spec
 
     steps:
       - uses: actions/checkout@v3
