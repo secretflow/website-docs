@@ -31,9 +31,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = "Kuscia"
+project = "Secretflow Open Specification"
 copyright = "2023 Ant Group Co., Ltd."
-author = "Kuscia authors"
+author = "SecretFlow authors"
 
 # -- General configuration ---------------------------------------------------
 
@@ -70,6 +70,8 @@ templates_path = ["_templates"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
+locale_dirs = ["locale/"]
+
 # Enable TODO
 todo_include_todos = True
 
@@ -97,13 +99,13 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/secretflow/kuscia",
+            "url": "https://github.com/secretflow/spec",
             "icon": "fab fa-github-square",
             "type": "fontawesome",
         },
     ],
     "logo": {
-        "text": "Kuscia",
+        "text": "spec",
     },
 }
 
