@@ -1,0 +1,4 @@
+sidebar:
+  - {id: spec.mdx, label: Specification, type: doc}
+  - {id: intro.mdx, label: Introduction, type: doc}
+version: '1'

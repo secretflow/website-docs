@@ -1,0 +1,4 @@
+sidebar:
+  - {id: spec.mdx, label: 标准文本, type: doc}
+  - {id: intro.mdx, label: 标准介绍, type: doc}
+version: '1'

@@ -1,0 +1,31 @@
+:target{#instructions-for-documentation}
+
+# Instructions for Documentation
+
+:target{#update-data}
+
+## Update Data
+
+Docker is required.
+
+```default
+sh update_data.sh
+```
+
+:target{#update-sphinx-intl-file}
+
+## Update sphinx-intl File
+
+```default
+sh update_po.sh
+```
+
+:target{#build-html}
+
+## Build Html
+
+```default
+sh build_doc.sh -l <en|zh_CN>
+```
+
+The generated html is at <strong>\_build/html/</strong>
