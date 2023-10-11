@@ -3,7 +3,10 @@
 # DomainData
 
 DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts/domaindata_cn.mdx)。
-你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domaindata.proto) 找到 DomainData 对应的 protobuf 文件。
+你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domaindata.proto) 找到对应的
+protobuf 文件。
+
+Data Mesh API 提供了从 Domain 侧的管理 DomainData 的能力，详细 API 请参考 [Data Mesh](datamesh/domaindata_cn.mdx)。
 
 :target{#id1}
 
@@ -151,7 +154,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
 
 :target{#http}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domaindata/create
 
@@ -187,7 +190,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -213,7 +216,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        数据对象ID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
+        数据对象 ID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
       </td>
     </tr>
 
@@ -267,7 +270,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        相对数据源所在位置的路径，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
 
@@ -285,7 +288,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -303,7 +306,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        数据源ID，不填写则使用默认数据源，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        数据源 ID，不填写则使用默认数据源，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
 
@@ -321,7 +324,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
 
@@ -375,7 +378,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        来源，用于查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        来源，用于查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
   </tbody>
@@ -445,7 +448,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
 
     <tr>
       <td>
-        data.domain\_id
+        data.domaindata\_id
       </td>
 
       <td>
@@ -457,7 +460,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        数据对象ID
+        数据对象 ID
       </td>
     </tr>
   </tbody>
@@ -469,7 +472,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
 
 :target{#id3}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domaindata/update
 
@@ -505,7 +508,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -531,7 +534,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        数据对象ID
+        数据对象 ID
       </td>
     </tr>
 
@@ -585,7 +588,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        相对数据源所在位置的路径，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
 
@@ -603,7 +606,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -621,7 +624,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        数据源ID，不填写则使用默认数据源，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        数据源 ID，不填写则使用默认数据源，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
 
@@ -639,7 +642,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
 
@@ -693,7 +696,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        来源，用于批量查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        来源，用于批量查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
   </tbody>
@@ -747,11 +750,11 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
 
 :target{#delete-domain-data}
 
-### 删除DomainData
+### 删除数据对象
 
 :target{#id4}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domaindata/delete
 
@@ -787,7 +790,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -813,7 +816,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -831,7 +834,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        数据对象ID
+        数据对象 ID
       </td>
     </tr>
   </tbody>
@@ -889,7 +892,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
 
 :target{#id5}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domaindata/query
 
@@ -925,7 +928,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -1027,7 +1030,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
 
 :target{#id6}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domaindata/batchQuery
 
@@ -1063,7 +1066,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -1165,7 +1168,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
 
 :target{#id7}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domaindata/list
 
@@ -1201,7 +1204,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -1341,7 +1344,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -1359,7 +1362,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        数据对象ID
+        数据对象 ID
       </td>
     </tr>
   </tbody>
@@ -1405,7 +1408,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -1533,7 +1536,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        数据对象ID
+        数据对象 ID
       </td>
     </tr>
 
@@ -1587,7 +1590,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        相对数据源所在位置的路径，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
 
@@ -1605,7 +1608,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -1623,7 +1626,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        数据源ID，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        数据源 ID，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
 
@@ -1641,7 +1644,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
 
@@ -1695,7 +1698,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        来源，用于批量查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        来源，用于批量查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
   </tbody>
@@ -1823,7 +1826,7 @@ DomainData 表示被 Kuscia 管理的数据。请参考 [DomainData](../concepts
       </td>
 
       <td>
-        类型，当前版本由应用算法组件定义和消费，参考 [<span>DomainData概念</span>](../concepts/domaindata_cn.mdx)
+        类型，当前版本由应用算法组件定义和消费，参考 [<span>DomainData 概念</span>](../concepts/domaindata_cn.mdx)
       </td>
     </tr>
 

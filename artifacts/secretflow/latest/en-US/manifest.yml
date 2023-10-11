@@ -88,6 +88,17 @@ sidebar:
                       package, type: doc}
                   - {id: source/secretflow.data.data.mix.mdx, label: secretflow.data.mix
                       package, type: doc}
+                  - {id: source/secretflow.data.data.ndarray.mdx, label: secretflow.data.ndarray
+                      package, type: doc}
+                  - items:
+                      - {id: source/secretflow.data.partition.data.partition.pandas.mdx,
+                        label: secretflow.data.partition.pandas package, type: doc}
+                      - {id: source/secretflow.data.partition.data.partition.polars.mdx,
+                        label: secretflow.data.partition.polars package, type: doc}
+                    label: secretflow.data.partition package
+                    link: {id: source/secretflow.data.data.partition.mdx, label: secretflow.data.partition
+                        package, type: doc}
+                    type: category
                   - {id: source/secretflow.data.data.vertical.mdx, label: secretflow.data.vertical
                       package, type: doc}
                 label: secretflow.data package
@@ -377,6 +388,8 @@ sidebar:
                   type: doc}
                 type: category
               - items:
+                  - {id: source/secretflow.utils.utils.compressor.mdx, label: secretflow.utils.compressor
+                      package, type: doc}
                   - items:
                       - {id: source/secretflow.utils.simulation.utils.simulation.data.mdx,
                         label: secretflow.utils.simulation.data package, type: doc}

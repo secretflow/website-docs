@@ -1078,22 +1078,22 @@ one-hot编码适用于将类型编码转化为数值编码。 对于job、marita
     vdf_hat = vdf.drop(columns=["job", "marital", "contact", "month", "day", "poutcome"])
 
     tranformed_df = encoder.fit_transform(vdf['job'])
-    vdf[tranformed_df.dtypes.index] = tranformed_df
+    vdf[tranformed_df.columns] = tranformed_df
 
     tranformed_df = encoder.fit_transform(vdf['marital'])
-    vdf[tranformed_df.dtypes.index] = tranformed_df
+    vdf[tranformed_df.columns] = tranformed_df
 
     tranformed_df = encoder.fit_transform(vdf['contact'])
-    vdf[tranformed_df.dtypes.index] = tranformed_df
+    vdf[tranformed_df.columns] = tranformed_df
 
     tranformed_df = encoder.fit_transform(vdf['month'])
-    vdf[tranformed_df.dtypes.index] = tranformed_df
+    vdf[tranformed_df.columns] = tranformed_df
 
     tranformed_df = encoder.fit_transform(vdf['day'])
-    vdf[tranformed_df.dtypes.index] = tranformed_df
+    vdf[tranformed_df.columns] = tranformed_df
 
     tranformed_df = encoder.fit_transform(vdf['poutcome'])
-    vdf[tranformed_df.dtypes.index] = tranformed_df
+    vdf[tranformed_df.columns] = tranformed_df
 
     vdf = vdf.drop(columns=["job", "marital", "contact", "month", "day", "poutcome"])
 

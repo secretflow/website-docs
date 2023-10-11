@@ -18,6 +18,7 @@
   - [SFClusterConfig.SPUConfig](#sfclusterconfig-spuconfig)
   - [SFClusterDesc](#sfclusterdesc)
   - [SFClusterDesc.DeviceDesc](#sfclusterdesc-devicedesc)
+  - [SFClusterDesc.RayFedConfig](#sfclusterdesc-rayfedconfig)
   - [StorageConfig](#storageconfig)
   - [StorageConfig.LocalFSConfig](#storageconfig-localfsconfig)
 
@@ -246,7 +247,7 @@ SecretFlow 集群的运行时配置。除了内在的 SFClusterDesc 外，还提
   <tbody>
     <tr>
       <td>
-        rayfed\_config
+        ray\_fed\_config
       </td>
 
       <td>
@@ -507,6 +508,20 @@ SecretFlow 集群的内在属性，包括
         秘密设备的描述
       </td>
     </tr>
+
+    <tr>
+      <td>
+        ray\_fed\_config
+      </td>
+
+      <td>
+        [ SFClusterDesc.RayFedConfig](#sfclusterdesc-rayfedconfig)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
   </tbody>
 </table>
 
@@ -608,6 +623,44 @@ SecretFlow 集群的内在属性，包括
 
       <td>
         秘密设备的特别配置。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#sfclusterdesc-rayfedconfig}
+
+#### SFClusterDesc.RayFedConfig
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        cross\_silo\_comm\_backend
+      </td>
+
+      <td>
+        [<span> string</span>](https://docs.python.org/3/library/string.html#module-string "Python 3.11")
+      </td>
+
+      <td>
+        Indicates communication backend of RayFed. Accepted: ‘grpc’, ‘brpc\_link’ Dafault is ‘grpc’
       </td>
     </tr>
   </tbody>

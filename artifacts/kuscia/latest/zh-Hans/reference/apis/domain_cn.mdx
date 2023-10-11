@@ -2,8 +2,10 @@
 
 # Domain
 
-在 Kuscia 中将隐私计算的节点称为 Domain，一个 Domain 中可以包含多个 K8s 的工作节点（Node）。详情请参考 [Domain](../concepts/domain_cn.mdx) 。
-你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domain.proto) 找到 Domain 对应的 protobuf 文件。
+在 Kuscia 中将隐私计算的节点称为 Domain，一个 Domain 中可以包含多个 K8s
+的工作节点（Node）。详情请参考 [Domain](../concepts/domain_cn.mdx) 。
+你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domain.proto) 找到对应的
+protobuf 文件。
 
 :target{#id1}
 
@@ -133,7 +135,7 @@
 
 :target{#http}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domain/create
 
@@ -169,7 +171,7 @@
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -195,7 +197,7 @@
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -209,11 +211,11 @@
       </td>
 
       <td>
-        否
+        是
       </td>
 
       <td>
-        角色：\[“”, “partner”]，参考 [<span>Domain概念</span>](../concepts/domain_cn.mdx)
+        角色：\[“”, “partner”]，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
 
@@ -227,11 +229,29 @@
       </td>
 
       <td>
-        否
+        是
       </td>
 
       <td>
-        BASE64的计算节点证书，参考 [<span>Domain概念</span>](../concepts/domain_cn.mdx)
+        BASE64 的计算节点证书，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        auth\_center
+      </td>
+
+      <td>
+        [AuthCenter](#auth-center)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        节点到中心的授权模式
       </td>
     </tr>
   </tbody>
@@ -289,7 +309,7 @@
 
 :target{#id3}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domain/update
 
@@ -325,7 +345,7 @@
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -351,7 +371,7 @@
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -369,7 +389,7 @@
       </td>
 
       <td>
-        角色：\[“”, “partner”]，参考 [<span>Domain概念</span>](../concepts/domain_cn.mdx)
+        角色：\[“”, “partner”]，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
 
@@ -387,7 +407,7 @@
       </td>
 
       <td>
-        BASE64的计算节点证书，参考 [<span>Domain概念</span>](../concepts/domain_cn.mdx)
+        BASE64 的计算节点证书，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
   </tbody>
@@ -445,7 +465,7 @@
 
 :target{#id4}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domain/delete
 
@@ -481,7 +501,7 @@
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -507,7 +527,7 @@
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
   </tbody>
@@ -565,7 +585,7 @@
 
 :target{#id5}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domain/query
 
@@ -601,7 +621,7 @@
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -627,7 +647,7 @@
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
   </tbody>
@@ -705,11 +725,11 @@
       </td>
 
       <td>
-        是
+        否
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -727,7 +747,7 @@
       </td>
 
       <td>
-        角色：\[“”, “partner”]，参考 [<span>Domain概念</span>](../concepts/domain_cn.mdx)
+        角色：\[“”, “partner”]，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
       </td>
     </tr>
 
@@ -741,11 +761,47 @@
       </td>
 
       <td>
-        否
+        是
       </td>
 
       <td>
-        BASE64的计算节点证书，参考 [<span>Domain概念</span>](../concepts/domain_cn.mdx)
+        BASE64 的计算节点证书，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.annotations
+      </td>
+
+      <td>
+        map\[string]string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        节点的额外信息，比如是否是内置节点等
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.auth\_center
+      </td>
+
+      <td>
+        [AuthCenter](#auth-center)
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        节点到中心的授权模式
       </td>
     </tr>
 
@@ -766,6 +822,24 @@
         物理节点状态
       </td>
     </tr>
+
+    <tr>
+      <td>
+        data.deploy\_token\_statuses
+      </td>
+
+      <td>
+        [DeployTokenStatus](#deploy-token-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        部署令牌状态
+      </td>
+    </tr>
   </tbody>
 </table>
 
@@ -775,7 +849,7 @@
 
 :target{#id6}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/domain/status/batchQuery
 
@@ -811,7 +885,7 @@
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -837,7 +911,7 @@
       </td>
 
       <td>
-        待查询的节点ID列表
+        待查询的节点 ID 列表
       </td>
     </tr>
   </tbody>
@@ -969,7 +1043,7 @@
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -988,6 +1062,24 @@
 
       <td>
         真实物理节点状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        deploy\_token\_statuses
+      </td>
+
+      <td>
+        [DeployTokenStatus](#deploy-token-status)\[]
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        部署令牌状态
       </td>
     </tr>
   </tbody>
@@ -1069,7 +1161,7 @@
       </td>
 
       <td>
-        节点Agent版本
+        节点 Agent 版本
       </td>
     </tr>
 
@@ -1087,7 +1179,7 @@
       </td>
 
       <td>
-        最后心跳时间，RFC3339格式（e.g. 2006-01-02T15:04:05Z）
+        最后心跳时间，RFC3339 格式（e.g. 2006-01-02T15:04:05Z）
       </td>
     </tr>
 
@@ -1105,7 +1197,153 @@
       </td>
 
       <td>
-        最后更新时间，RFC3339格式（e.g. 2006-01-02T15:04:05Z）
+        最后更新时间，RFC3339 格式（e.g. 2006-01-02T15:04:05Z）
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#auth-center}
+
+### AuthCenter
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        authentication\_type
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点到中心授权类型，目前仅支持 Token
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        token\_gen\_method
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        节点到中心 Token 生成类型，目前仅支持 UID-RSA-GEN
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#deploy-token-status}
+
+### DeployTokenStatus
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        token
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        部署令牌
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        state
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        部署令牌状态 used, unsed
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        last\_transition\_time
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        否
+      </td>
+
+      <td>
+        最后更新时间，RFC3339 格式（e.g. 2006-01-02T15:04:05Z）
       </td>
     </tr>
   </tbody>

@@ -1,6 +1,6 @@
 :target{#id1}
 
-# 运维
+# 运维操作
 
 :target{#id2}
 
@@ -183,7 +183,7 @@ status:
 ```
 
 其中，我们需要关注`.status.nodeStatuses[].status`，这个字段记录了 Domain 下的节点是否正常。 有关 Domain
-的更多信息，请查看 [Domain](concepts/domain_cn.mdx) 。
+的更多信息，请查看 [Domain](../reference/concepts/domain_cn.mdx) 。
 
 :target{#domainroute}
 
@@ -235,7 +235,7 @@ kubectl get dr {domain_router_name} -o yaml -n {domain_name}
 kubectl get dr alice-bob -o yaml -n alice
 ```
 
-有关 DomainRoute 的更多信息，请查看 [DomainRoute](concepts/domainroute_cn.mdx) 。
+有关 DomainRoute 的更多信息，请查看 [DomainRoute](../reference/concepts/domainroute_cn.mdx) 。
 
 :target{#appimage}
 
@@ -267,14 +267,13 @@ kubectl get aimg {aimg-name} -o yaml
 kubectl get aimg secretflow-image -o yaml
 ```
 
-有关 AppImage 的更多信息，请查看 [AppImage](concepts/appimage_cn.mdx) 。
+有关 AppImage 的更多信息，请查看 [AppImage](../reference/concepts/appimage_cn.mdx) 。
 
 :target{#kusciajob-kusciatask}
 
 ### KusciaJob & KusciaTask
 
-关于如何配置、运行和查看 KusciaJob 和 KusciaTask，请参考 [如何运行一个 secretflow 作业](../tutorial/run_secretflow_cn.mdx)
-和 [KusciaJob](concepts/kusciajob_cn.mdx) 。
+关于如何配置、运行和查看 KusciaJob 和 KusciaTask，请参考 [如何运行一个 SecretFlow 作业](../getting_started/run_secretflow_cn.mdx) 和 [KusciaJob](../reference/concepts/kusciajob_cn.mdx) 。
 
 :target{#id14}
 

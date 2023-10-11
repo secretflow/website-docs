@@ -3,7 +3,8 @@
 # KusciaJob
 
 在 Kuscia 中，你可以使用 KusciaJob 来表示一个任务流程。请参考 [KusciaJob](../concepts/kusciajob_cn.mdx) 。
-你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/job.proto) 找到 Domain 对应的 protobuf 文件。
+你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/job.proto) 找到对应的
+protobuf 文件。
 
 :target{#id1}
 
@@ -45,7 +46,7 @@
       </td>
 
       <td>
-        创建Job
+        创建 Job
       </td>
     </tr>
 
@@ -63,7 +64,7 @@
       </td>
 
       <td>
-        查询Job
+        查询 Job
       </td>
     </tr>
 
@@ -81,7 +82,7 @@
       </td>
 
       <td>
-        批量查询Job状态
+        批量查询 Job 状态
       </td>
     </tr>
 
@@ -99,7 +100,7 @@
       </td>
 
       <td>
-        删除Job
+        删除 Job
       </td>
     </tr>
 
@@ -117,7 +118,7 @@
       </td>
 
       <td>
-        停止Job
+        停止 Job
       </td>
     </tr>
 
@@ -135,7 +136,7 @@
       </td>
 
       <td>
-        监控Job
+        监控 Job
       </td>
     </tr>
   </tbody>
@@ -147,11 +148,11 @@
 
 :target{#create-job}
 
-### 创建Job
+### 创建 Job
 
 :target{#http}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/job/create
 
@@ -187,7 +188,7 @@
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -231,7 +232,7 @@
       </td>
 
       <td>
-        发起方节点ID
+        发起方节点 ID
       </td>
     </tr>
 
@@ -249,7 +250,7 @@
       </td>
 
       <td>
-        并发度，参考 [<span>KusciaJob概念</span>](../concepts/kusciajob_cn.mdx)
+        并发度，参考 [<span>KusciaJob 概念</span>](../concepts/kusciajob_cn.mdx)
       </td>
     </tr>
 
@@ -357,11 +358,11 @@
 
 :target{#query-job}
 
-### 查询Job
+### 查询 Job
 
 :target{#id3}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/job/query
 
@@ -397,7 +398,7 @@
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -577,7 +578,7 @@
       </td>
 
       <td>
-        Job状态
+        Job 状态
       </td>
     </tr>
   </tbody>
@@ -585,11 +586,11 @@
 
 :target{#batch-query-job-status}
 
-### 批量查询Job状态
+### 批量查询 Job 状态
 
 :target{#id4}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/job/status/batchQuery
 
@@ -625,7 +626,7 @@
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -651,7 +652,7 @@
       </td>
 
       <td>
-        JobID列表
+        JobID 列表
       </td>
     </tr>
   </tbody>
@@ -733,7 +734,7 @@
       </td>
 
       <td>
-        Job状态列表
+        Job 状态列表
       </td>
     </tr>
   </tbody>
@@ -741,11 +742,11 @@
 
 :target{#delete-job}
 
-### 删除Job
+### 删除 Job
 
 :target{#id5}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/job/delete
 
@@ -781,7 +782,7 @@
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -897,11 +898,11 @@
 
 :target{#stop-job}
 
-### 停止Job
+### 停止 Job
 
 :target{#id6}
 
-#### HTTP路径
+#### HTTP 路径
 
 /api/v1/job/stop
 
@@ -937,7 +938,7 @@
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -1053,11 +1054,11 @@
 
 :target{#watch-job}
 
-### 监控Job
+### 监控 Job
 
 :target{#id7}
 
-#### HTTP路径
+#### HTTP 路径
 
 暂不支持 HTTP 接口。
 
@@ -1093,7 +1094,7 @@
       </td>
 
       <td>
-        [<span>RequestHeader</span>](summary_cn.mdx#request-header)
+        [<span>RequestHeader</span>](summary_cn.mdx#requestheader)
       </td>
 
       <td>
@@ -1183,7 +1184,7 @@
       </td>
 
       <td>
-        Job状态
+        Job 状态
       </td>
     </tr>
   </tbody>
@@ -1251,7 +1252,7 @@
       </td>
 
       <td>
-        Job状态详情
+        Job 状态详情
       </td>
     </tr>
   </tbody>
@@ -1497,7 +1498,7 @@
       </td>
 
       <td>
-        节点ID
+        节点 ID
       </td>
     </tr>
 
@@ -1597,7 +1598,7 @@
       </td>
 
       <td>
-        参与方节点ID
+        参与方节点 ID
       </td>
     </tr>
 
@@ -1633,7 +1634,7 @@
       </td>
 
       <td>
-        任务ID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
+        任务 ID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
       </td>
     </tr>
 
@@ -1787,7 +1788,7 @@
       </td>
 
       <td>
-        任务ID
+        任务 ID
       </td>
     </tr>
 
@@ -1887,7 +1888,7 @@
       </td>
 
       <td>
-        任务ID
+        任务 ID
       </td>
     </tr>
 

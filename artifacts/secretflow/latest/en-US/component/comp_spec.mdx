@@ -18,6 +18,7 @@
   - [SFClusterConfig.SPUConfig](#sfclusterconfig-spuconfig)
   - [SFClusterDesc](#sfclusterdesc)
   - [SFClusterDesc.DeviceDesc](#sfclusterdesc-devicedesc)
+  - [SFClusterDesc.RayFedConfig](#sfclusterdesc-rayfedconfig)
   - [StorageConfig](#storageconfig)
   - [StorageConfig.LocalFSConfig](#storageconfig-localfsconfig)
 
@@ -248,7 +249,7 @@ Public and shared to all parties.
   <tbody>
     <tr>
       <td>
-        rayfed\_config
+        ray\_fed\_config
       </td>
 
       <td>
@@ -509,6 +510,20 @@ Intrinsic properties of a SecretFlow cluster, including:
         Description of secret devices
       </td>
     </tr>
+
+    <tr>
+      <td>
+        ray\_fed\_config
+      </td>
+
+      <td>
+        [ SFClusterDesc.RayFedConfig](#sfclusterdesc-rayfedconfig)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
   </tbody>
 </table>
 
@@ -612,6 +627,44 @@ Description for a secret device.
 
       <td>
         Specific config for the secret device.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#sfclusterdesc-rayfedconfig}
+
+#### SFClusterDesc.RayFedConfig
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        cross\_silo\_comm\_backend
+      </td>
+
+      <td>
+        [<span> string</span>](https://docs.python.org/3/library/string.html#module-string "Python 3.11")
+      </td>
+
+      <td>
+        Indicates communication backend of RayFed. Accepted: ‘grpc’, ‘brpc\_link’ Dafault is ‘grpc’
       </td>
     </tr>
   </tbody>

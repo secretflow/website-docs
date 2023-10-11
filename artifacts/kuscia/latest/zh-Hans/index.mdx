@@ -9,31 +9,62 @@ Kuscia（Kubernetes-based Secure Collaborative InfrA）是一款基于 K8s 的�
 - 你可以与行业内多种隐私计算系统进行互联互通。
 - 你可以使用不同的中心化或点对点业务组网模式。
 
-有关详细的 Kuscia 设计，请参考 [Kuscia 架构](reference/architecture_cn.mdx)。
-
 :target{#id1}
 
-## 内容
+## 入门
 
-<TableOfContents>
+从零到一运行你的第一个 SecretFlow 作业！
 
+1. [安装 Kuscia 并运行示例任务](getting_started/quickstart_cn.mdx)
+2. [提交 KusciaJob](getting_started/run_secretflow_cn.mdx)
 
-  - [准备开始](getting_started/index.mdx)
-    - [快速入门](getting_started/quickstart_cn.mdx)
-    - [部署](getting_started/deploy/index.mdx)
-  - [参考手册](reference/index.mdx)
-    - [架构](reference/architecture_cn.mdx)
-    - [概念](reference/concepts/index.mdx)
-    - [接口定义](reference/apis/index.mdx)
-    - [运维](reference/operation_cn.mdx)
-    - [常见问题](reference/faq_cn.mdx)
-  - [教程](tutorial/index.mdx)
-    - [如何运行一个 Secretflow 作业](tutorial/run_secretflow_cn.mdx)
-    - [如何使用 Kuscia API 运行一个 Secretflow 作业](tutorial/run_secretflow_with_api_cn.mdx)
-    - [如何运行一个互联互通银联 BFIA 协议作业](tutorial/run_bfia_job_cn.mdx)
-    - [如何运行一个 FATE 作业](tutorial/run_fate_cn.mdx)
-    - [安全加固方案](tutorial/security_plan_cn.mdx)
-  - [开发](development/index.mdx)
-    - [构建命令](development/build_kuscia_cn.mdx)
-    - [注册自定义算法镜像](development/register_custom_image.mdx)
-</TableOfContents>
+:target{#id2}
+
+## 架构及设计
+
+理解 Kuscia 架构以及重要概念。
+
+- [架构总览](reference/architecture_cn.mdx)
+- Kuscia 概念：[Domain](reference/concepts/domain_cn.mdx) | [DomainRoute](reference/concepts/domainroute_cn.mdx) | [DomainData](reference/concepts/domaindata_cn.mdx) | [KusciaJob](reference/concepts/kusciajob_cn.mdx) | [KusciaTask](reference/concepts/kusciatask_cn.mdx) | [KusciaDeployment](reference/concepts/kusciadeployment_cn.mdx) | [AppImage](reference/concepts/appimage_cn.mdx) | [InteropConfig](reference/concepts/interopconfig_cn.mdx)
+
+:target{#kuscia-api}
+
+## Kuscia API
+
+- [Kuscia API 介绍](reference/apis/summary_cn.mdx) | [教程：用 Kuscia API 运行 SecretFlow 作业](tutorial/run_secretflow_with_api_cn.mdx)
+- API 参考：[请求和响应](reference/apis/summary_cn.mdx#id2) | [Domain](reference/apis/domain_cn.mdx) | [DomainRoute](reference/apis/domainroute_cn.mdx) | [DomainData](reference/apis/domaindata_cn.mdx) | [KusciaJob](reference/apis/kusciajob_cn.mdx) | [Serving](reference/apis/serving_cn.mdx) | [Health](reference/apis/health_cn.mdx)
+
+:target{#id3}
+
+## 部署
+
+- [指南：多机器部署中心化集群](deployment/deploy_p2p_cn.mdx)
+- [指南：多机器部署点对点集群](deployment/deploy_master_lite_cn.mdx)
+- [常见运维操作](deployment/operation_cn.mdx)
+- [网络要求](deployment/networkrequirements.mdx)
+
+:target{#id4}
+
+## 更多指南
+
+- [如何运行一个互联互通银联 BFIA 协议作业](tutorial/run_bfia_job_cn.mdx)
+- [如何运行一个 FATE 作业](tutorial/run_fate_cn.mdx)
+- [安全加固方案](tutorial/security_plan_cn.mdx)
+
+:target{#id5}
+
+## 获得帮助
+
+使用 Kuscia 时遇到问题？在这里找到获得帮助的方式。
+
+- [常见问题（FAQ）](reference/faq_cn.mdx)
+- Kuscia 的 [Issues](https://github.com/secretflow/kuscia/issues) 和 [讨论区](https://github.com/secretflow/kuscia/discussions)
+
+:target{#id6}
+
+## 开发 Kuscia
+
+- [构建 Kuscia](development/build_kuscia_cn.mdx)
+- [注册自定义算法镜像](development/register_custom_image.mdx)
+
+<TableOfContents />
