@@ -8,15 +8,27 @@ sidebar:
     link: {id: getting_started/index.mdx, label: Getting started, type: doc}
     type: category
   - items:
-      - {id: reference/py_api.mdx, label: Python API Reference, type: doc}
-      - {id: reference/cpp_api.mdx, label: C++ API Reference, type: doc}
-      - {id: reference/psi_config.mdx, label: SPU PSI Configuration, type: doc}
-      - {id: reference/runtime_config.mdx, label: SPU Runtime Configuration, type: doc}
-      - {id: reference/np_op_status.mdx, label: JAX NumPy Operators Status, type: doc}
-      - {id: reference/xla_status.mdx, label: XLA Implementation Status, type: doc}
-      - {id: reference/pphlo_doc.mdx, label: PPHlo API reference, type: doc}
-      - {id: reference/mpc_status.mdx, label: Supported MPC Protocol, type: doc}
-      - {id: reference/change_log.mdx, label: CHANGELOGS, type: doc}
+      - items:
+          - {id: reference/py_api.mdx, label: Python API Reference, type: doc}
+          - {id: reference/cpp_api.mdx, label: C++ API Reference, type: doc}
+        label: API
+        type: category
+      - items:
+          - {id: reference/psi_config.mdx, label: SPU PSI Configuration, type: doc}
+          - {id: reference/runtime_config.mdx, label: SPU Runtime Configuration, type: doc}
+        label: Config
+        type: category
+      - items:
+          - {id: reference/np_op_status.mdx, label: JAX NumPy Operators Status, type: doc}
+          - {id: reference/xla_status.mdx, label: XLA Implementation Status, type: doc}
+          - {id: reference/pphlo_doc.mdx, label: PPHlo API reference, type: doc}
+          - {id: reference/mpc_status.mdx, label: Supported MPC Protocol, type: doc}
+        label: Status
+        type: category
+      - items:
+          - {id: reference/change_log.mdx, label: CHANGELOGS, type: doc}
+        label: Misc.
+        type: category
     label: Reference
     link: {id: reference/index.mdx, label: Reference, type: doc}
     type: category
@@ -27,24 +39,39 @@ sidebar:
         type: doc}
       - {id: tutorials/develop_your_first_mpc_application.mdx, label: Develop Your
           First MPC-Application, type: doc}
-      - {id: tutorials/psi.mdx, label: PSI QuickStart, type: doc}
-      - {id: tutorials/pir.mdx, label: PIR QuickStart, type: doc}
+      - items:
+          - {id: tutorials/psi.mdx, label: PSI QuickStart, type: doc}
+          - {id: tutorials/pir.mdx, label: PIR QuickStart, type: doc}
+        label: PSI / PIR
+        type: category
     label: Tutorials
     link: {id: tutorials/index.mdx, label: Tutorials, type: doc}
     type: category
   - items:
-      - {id: development/basic_concepts.mdx, label: Basic concepts, type: doc}
-      - {id: development/pipeline.mdx, label: Pipeline, type: doc}
-      - {id: development/compiler.mdx, label: Compiler, type: doc}
-      - {id: development/runtime.mdx, label: Runtime, type: doc}
-      - {id: development/type_system.mdx, label: Type System, type: doc}
-      - {id: development/ir_dump.mdx, label: Dump IR to DAG, type: doc}
-      - {id: development/policy_sgd_insight.mdx, label: 'Background: SGD in MPC-ML',
-        type: doc}
-      - {id: development/fxp.mdx, label: Pitfalls - Fxp Arithmetic, type: doc}
-      - {id: development/add_protocols.mdx, label: Adding New MPC Protocols, type: doc}
-      - {id: development/psi_protocol_intro.mdx, label: PSI Protocols Introduction,
-        type: doc}
+      - items:
+          - {id: development/basic_concepts.mdx, label: Basic concepts, type: doc}
+          - {id: development/pipeline.mdx, label: Pipeline, type: doc}
+          - {id: development/compiler.mdx, label: Compiler, type: doc}
+          - {id: development/runtime.mdx, label: Runtime, type: doc}
+          - {id: development/type_system.mdx, label: Type System, type: doc}
+        label: Design of SPU
+        type: category
+      - items:
+          - {id: development/ir_dump.mdx, label: Dump IR to DAG, type: doc}
+          - {id: development/policy_sgd_insight.mdx, label: 'Background: SGD in MPC-ML',
+            type: doc}
+          - {id: development/fxp.mdx, label: Pitfalls - Fxp Arithmetic, type: doc}
+        label: Advanced Topics
+        type: category
+      - items:
+          - {id: development/add_protocols.mdx, label: Adding New MPC Protocols, type: doc}
+        label: Extending SPU
+        type: category
+      - items:
+          - {id: development/psi_protocol_intro.mdx, label: PSI Protocols Introduction,
+            type: doc}
+        label: PSI / PIR
+        type: category
     label: Development
     link: {id: development/index.mdx, label: Development, type: doc}
     type: category
