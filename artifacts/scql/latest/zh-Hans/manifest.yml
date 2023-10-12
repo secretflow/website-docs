@@ -1,28 +1,55 @@
 sidebar:
   - items:
-      - {id: getting_started/scql_intro.mdx, label: SCQL 介绍, type: doc}
-      - {id: getting_started/quickstart.mdx, label: 快速开始, type: doc}
-      - {id: getting_started/how_to_set_ccl.mdx, label: CCL 配置建议, type: doc}
-      - {id: getting_started/deployment.mdx, label: 部署, type: doc}
-      - {id: getting_started/how_to_use_scql.mdx, label: How To Use SCQL, type: doc}
-    label: Getting started
-    link: {id: getting_started/index.mdx, label: Getting started, type: doc}
+      - {id: intro/tutorial.mdx, label: 快速开始, type: doc}
+    label: 介绍
+    link: {id: intro/index.mdx, label: 介绍, type: doc}
     type: category
   - items:
-      - {id: reference/scql_manual.mdx, label: SCQL 指南, type: doc}
-      - {id: reference/scql_operators_doc.mdx, label: SCQL 算子规范, type: doc}
-      - {id: reference/scql_status.mdx, label: SCQL 实现进度, type: doc}
-      - {id: reference/mysql_compatibility.mdx, label: 与 MySQL 的兼容性, type: doc}
-      - {id: reference/scql_security_statement.mdx, label: SCQL 安全声明, type: doc}
-      - {id: reference/scql_ccl_intro.mdx, label: SCQL CCL, type: doc}
-    label: Reference
-    link: {id: reference/index.mdx, label: Reference, type: doc}
+      - items:
+          - {id: topics/system/intro.mdx, label: SCQL 系统概述, type: doc}
+          - {id: topics/system/usage.mdx, label: SCQL 使用流程, type: doc}
+        label: SCQL 系统
+        type: category
+      - items:
+          - {id: topics/security/overview.mdx, label: 安全性说明, type: doc}
+        label: 安全性
+        type: category
+      - items:
+          - {id: topics/ccl/intro.mdx, label: SCQL CCL, type: doc}
+          - {id: topics/ccl/usage.mdx, label: CCL 配置建议, type: doc}
+        label: CCL
+        type: category
+      - items:
+          - {id: topics/clients/overview.mdx, label: 如何集成 SCQL 系统, type: doc}
+        label: 客户端
+        type: category
+      - items:
+          - {id: topics/deployment/how-to-deploy-a-cluster.mdx, label: 部署, type: doc}
+        label: 部署
+        type: category
+    label: 主题
+    link: {id: topics/index.mdx, label: 主题, type: doc}
     type: category
   - items:
-      - {id: development/scql_api.mdx, label: SCQL API, type: doc}
-      - {id: development/integrate_scql_system.mdx, label: 如何集成 SCQL 系统, type: doc}
-      - {id: development/scql_config_manual.mdx, label: SCQL 配置手册, type: doc}
-    label: Development
-    link: {id: development/index.mdx, label: Development, type: doc}
+      - items:
+          - {id: reference/lang/manual.mdx, label: SCQL 方言指南, type: doc}
+          - {id: reference/lang/mysql-compatibility.mdx, label: 与 MySQL 的兼容性, type: doc}
+        label: 语言
+        type: category
+      - items:
+          - {id: reference/engine-config.mdx, label: SCQL 系统配置, type: doc}
+        label: 系统
+        type: category
+      - items:
+          - {id: reference/http-api.mdx, label: SCQL API, type: doc}
+        label: 客户端
+        type: category
+      - items:
+          - {id: reference/operators.mdx, label: SCQL 算子规范, type: doc}
+        label: 内部开发者参考
+        type: category
+      - {id: reference/implementation-status.mdx, label: SCQL 实现进度, type: doc}
+    label: 参考文档
+    link: {id: reference/index.mdx, label: 参考文档, type: doc}
     type: category
 version: '1'
