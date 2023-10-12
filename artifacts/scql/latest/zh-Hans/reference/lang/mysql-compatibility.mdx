@@ -1,0 +1,166 @@
+:target{#mysql-compatibility}
+
+# 与 MySQL 的兼容性
+
+SCQL 与 MySQL 高度兼容，但仍有一些语法差异。
+
+:target{#unsupported-features}
+
+## 不支持的功能
+
+1. 分区表
+2. 字符集
+3. 用户自定义的函数
+4. TCL（事务控制语言）
+5. DML（数据操作语言）
+
+:target{#features-that-are-different-from-mysql}
+
+## 与 MySQL 存在语法差异的功能
+
+:target{#ddl-data-definition-language}
+
+### DDL（数据定义语言）
+
+:target{#create-table}
+
+#### 创建表
+
+SCQL 中创建的 Table 是一个虚拟 Table，需要映射到实际 Table，所以我们扩展该语句来传递映射信息。更多信息，请阅读 [SCQL 方言指南](manual.mdx)。
+
+:target{#dql-data-query-language}
+
+### DQL（数据查询语言）
+
+关于实现的具体情况，请阅读 [SCQL 实现进度](../implementation-status.mdx)。
+
+<Container type="note">
+  SCQL 不支持 Null 类型。
+</Container>
+
+:target{#functions-different-from-mysql}
+
+#### 与 MySQL 的功能差异
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        功能名称
+      </td>
+
+      <td>
+        SCQL 的方式
+      </td>
+
+      <td>
+        MySQL 的方式
+      </td>
+
+      <td>
+        备注
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        SUM(INT) 整数求和
+      </td>
+
+      <td>
+        返回整型 int
+      </td>
+
+      <td>
+        返回小数 Decimal /双精度 Double
+      </td>
+
+      <td />
+    </tr>
+
+    <tr>
+      <td>
+        使用 Group BY 的聚合函数
+      </td>
+
+      <td>
+        返回包含三个以上元素的组
+      </td>
+
+      <td>
+        返回所有组
+      </td>
+
+      <td>
+        出于安全性考虑
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#dcl-data-control-language}
+
+### DCL（数据控制语言）
+
+:target{#grant-revoke}
+
+#### GRANT/REVOKE
+
+除了读、写、创建表格、删除数据等与 mysql 相同的权限之外，在执行查询之前还需要设置 ccl。 可以通过 GRANT/REVOKE 更改 CCL 的设置。 关于 SCQL 中的 GRANT/REVOKE 的操作，请阅读 [SCQL 方言指南](manual.mdx)
+
+:target{#type-conversion-rule}
+
+### 类型转换规则
+
+考虑兼容性，当使用运算符操作不同类型的数据时，会发生类型转换。有些转换是隐式发生的。例如，SCQL 会根据需要自动将 int 转换为 float。
+
+```bash
+user> SELECT alice.plain_long AS alice_long, bob.plain_float AS bob_float, alice.plain_long + bob.plain_float AS sum_result FROM alice INNER JOIN bob ON alice.id = bob.id;
++------------+-----------+------------+
+| alice_long | bob_float | sum_result |
++------------+-----------+------------+
+| -1         | -1.5      | -2.5       |
+| 0          | 0.5       | 0.5        |
+| 1          | 1.5       | 2.5        |
++------------+-----------+------------+
+```
+
+以下规则描述了如何在 SCQL 中进行类型转换。
+
+:target{#single-party-query}
+
+#### 单方查询
+
+如果只有一方查询，SCQL 会将查询语句转换成符合参与者数据库（如 MySQL）的语法，然后直接分派到相应的数据库中执行。 因此对于单方查询，其类型转换规则一般与参与方使用的数据库类型一致。
+
+:target{#multi-party-query}
+
+#### 多方查询
+
+如果涉及多方查询，SCQL 将通过以下规则进行类型转换。
+
+:target{#compare}
+
+##### 比较运算 (>, \<, \<=, >=, \<>, =, !=)
+
+- 比较操作中的两个参数都不能是 string 类型。
+- 如果两个参数都是 long 类型，则它们将按照 long 类型进行比较。
+- 如果其中一个参数是 float 或者 double 类型，则会将另一个参数转换为 double 类型进行比较。
+
+:target{#arithmetic}
+
+##### 算术运算 (+, -, \*, /, %)
+
+- 算术运算中的两个参数都不能是 string 类型。
+- 如果两个参数都是 long 类型，则它们将按照 long 类型进行计算。
+- 如果其中一个参数是 float 或者 double 类型，则会将另一个参数转换为 double 进行计算。
+
+:target{#aggregation-sum-count-avg-min-max}
+
+##### 聚合操作 (sum, count, avg, min, max)
+
+- 聚合操作中的所有参数都不能是 string 类型。
+- 如果所有参数都是 long 类型，则它们将按照 long 类型进行计算。
+- 如果其中一个参数是 float 或者 double 类型，则会将另一个参数转换为 double 进行计算。
