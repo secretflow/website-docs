@@ -352,8 +352,14 @@ sidebar:
                     package, type: doc}
                 type: category
               - items:
-                  - {id: source/secretflow.security.security.aggregation.mdx, label: secretflow.security.aggregation
-                      package, type: doc}
+                  - items:
+                      - {id: source/secretflow.security.aggregation.security.aggregation.experiment.mdx,
+                        label: secretflow.security.aggregation.experiment package,
+                        type: doc}
+                    label: secretflow.security.aggregation package
+                    link: {id: source/secretflow.security.security.aggregation.mdx,
+                      label: secretflow.security.aggregation package, type: doc}
+                    type: category
                   - {id: source/secretflow.security.security.compare.mdx, label: secretflow.security.compare
                       package, type: doc}
                   - items:
@@ -411,90 +417,142 @@ sidebar:
     link: {id: api/index.mdx, label: API Documentation, type: doc}
     type: category
   - items:
-      - {id: tutorial/FedDataFrameDataLoader.mdx, label: Loading CSV data in SecretFlow,
-        type: doc}
-      - {id: tutorial/FedNdarrayDataLoader.mdx, label: Load Numpy data in SecretFlow,
-        type: doc}
-      - {id: tutorial/CustomDataLoaderTF.mdx, label: Using Custom DataBuilder in SecretFlow
-          (TensorFlow), type: doc}
-      - {id: tutorial/CustomDataLoaderTorch.mdx, label: Using Custom DataBuilder in
-          SecretFlow (Torch), type: doc}
-      - {id: tutorial/CustomDataLoaderOnSL.mdx, label: Customize DataBuilder on SLModel
-          in SecretFlow, type: doc}
-      - {id: tutorial/data_preprocessing_with_data_frame.mdx, label: Data Preprocessing
-          with DataFrame, type: doc}
-      - {id: tutorial/WeightOfEvidenceEncoding.mdx, label: Weight Of Evidence encoding,
-        type: doc}
-      - {id: tutorial/spu_basics.mdx, label: SPU Basics, type: doc}
-      - {id: tutorial/lr_with_spu.mdx, label: Logistic Regression with SPU, type: doc}
-      - {id: tutorial/nn_with_spu.mdx, label: Neural Network with SPU, type: doc}
-      - {id: tutorial/gpt2_with_spu.mdx, label: GPT-2 private inference with SPU,
-        type: doc}
-      - {id: tutorial/numpy_with_spu.mdx, label: Privacy-Preserving Scientific Computing
-          with NumPy in SPU, type: doc}
-      - {id: tutorial/gpt2_with_puma.mdx, label: GPT-2 Secure inference with Puma,
-        type: doc}
-      - {id: tutorial/teeu.mdx, label: TEEU Getting Started Guide, type: doc}
-      - {id: tutorial/teeu_xgboost.mdx, label: 'TEEU Example: XGBoost', type: doc}
-      - {id: tutorial/PSI_On_SPU.mdx, label: PSI On SPU, type: doc}
-      - {id: tutorial/Federate_Learning_for_Image_Classification.mdx, label: Federated
-          Learning for Image Classification, type: doc}
-      - {id: tutorial/Federated_Learning_with_Pytorch_backend.mdx, label: Federated
-          Learning with Pytorch Backend, type: doc}
-      - {id: tutorial/Federated_Xgboost.mdx, label: Horizontally Federated XGBoost,
-        type: doc}
-      - {id: tutorial/SecureBoost.mdx, label: Vertically Federated XGB (SecureBoost),
-        type: doc}
-      - {id: tutorial/Split_Learning_for_bank_marketing.mdx, label: Split Learning—Bank
-          Marketing, type: doc}
-      - {id: tutorial/split_learning_gnn.mdx, label: Split Learning for Graph Neural
-          Network, type: doc}
-      - {id: tutorial/mix_lr.mdx, label: Mix Federated Learning - Logistic Regression,
-        type: doc}
-      - {id: tutorial/sl_rec_deepfm.mdx, label: 'SplitREC: Using DeepFM Algorithm
-          in SecretFlow', type: doc}
-      - {id: tutorial/risk_control_scenario.mdx, label: 隐语SecretFlow金融风控全链路能力展示, type: doc}
-      - {id: tutorial/practical_case_walkthrough_using_sf_with_spu.mdx, label: 隐语SecretFlow实际场景MPC算法开发实践,
-        type: doc}
-      - {id: tutorial/GPU_check.mdx, label: GPU check, type: doc}
+      - items:
+          - {id: tutorial/FedDataFrameDataLoader.mdx, label: Loading CSV data in SecretFlow,
+            type: doc}
+          - {id: tutorial/FedNdarrayDataLoader.mdx, label: Load Numpy data in SecretFlow,
+            type: doc}
+          - {id: tutorial/CustomDataLoaderTF.mdx, label: Using Custom DataBuilder
+              in SecretFlow (TensorFlow), type: doc}
+          - {id: tutorial/CustomDataLoaderTorch.mdx, label: Using Custom DataBuilder
+              in SecretFlow (Torch), type: doc}
+          - {id: tutorial/CustomDataLoaderOnSL.mdx, label: Customize DataBuilder on
+              SLModel in SecretFlow, type: doc}
+        label: IO
+        type: category
+      - items:
+          - {id: tutorial/data_preprocessing_with_data_frame.mdx, label: Data Preprocessing
+              with DataFrame, type: doc}
+        label: DataFrame
+        type: category
+      - items:
+          - {id: tutorial/WeightOfEvidenceEncoding.mdx, label: Weight Of Evidence
+              encoding, type: doc}
+        label: WOE
+        type: category
+      - items:
+          - {id: tutorial/spu_basics.mdx, label: SPU Basics, type: doc}
+          - {id: tutorial/lr_with_spu.mdx, label: Logistic Regression with SPU, type: doc}
+          - {id: tutorial/nn_with_spu.mdx, label: Neural Network with SPU, type: doc}
+          - {id: tutorial/gpt2_with_spu.mdx, label: GPT-2 private inference with SPU,
+            type: doc}
+          - {id: tutorial/numpy_with_spu.mdx, label: Privacy-Preserving Scientific
+              Computing with NumPy in SPU, type: doc}
+          - {id: tutorial/gpt2_with_puma.mdx, label: GPT-2 Secure inference with Puma,
+            type: doc}
+        label: SPU
+        type: category
+      - items:
+          - {id: tutorial/teeu.mdx, label: TEEU Getting Started Guide, type: doc}
+          - {id: tutorial/teeu_xgboost.mdx, label: 'TEEU Example: XGBoost', type: doc}
+        label: TEEU
+        type: category
+      - items:
+          - {id: tutorial/PSI_On_SPU.mdx, label: PSI On SPU, type: doc}
+        label: PSI
+        type: category
+      - items:
+          - {id: tutorial/Federate_Learning_for_Image_Classification.mdx, label: Federated
+              Learning for Image Classification, type: doc}
+          - {id: tutorial/Federated_Learning_with_Pytorch_backend.mdx, label: Federated
+              Learning with Pytorch Backend, type: doc}
+          - {id: tutorial/Federated_Xgboost.mdx, label: Horizontally Federated XGBoost,
+            type: doc}
+          - {id: tutorial/SecureBoost.mdx, label: Vertically Federated XGB (SecureBoost),
+            type: doc}
+          - {id: tutorial/Split_Learning_for_bank_marketing.mdx, label: Split Learning—Bank
+              Marketing, type: doc}
+          - {id: tutorial/split_learning_gnn.mdx, label: Split Learning for Graph
+              Neural Network, type: doc}
+          - {id: tutorial/mix_lr.mdx, label: Mix Federated Learning - Logistic Regression,
+            type: doc}
+          - {id: tutorial/sl_rec_deepfm.mdx, label: 'SplitREC: Using DeepFM Algorithm
+              in SecretFlow', type: doc}
+        label: Federated Learning
+        type: category
+      - items:
+          - {id: tutorial/risk_control_scenario.mdx, label: 隐语SecretFlow金融风控全链路能力展示,
+            type: doc}
+        label: 场景方案
+        type: category
+      - items:
+          - {id: tutorial/practical_case_walkthrough_using_sf_with_spu.mdx, label: 隐语SecretFlow实际场景MPC算法开发实践,
+            type: doc}
+        label: 培训资料
+        type: category
+      - items:
+          - {id: tutorial/GPU_check.mdx, label: GPU check, type: doc}
+        label: Miscellaneous
+        type: category
     label: Tutorial
     link: {id: tutorial/index.mdx, label: Tutorial, type: doc}
     type: category
   - items:
-      - {id: component/comp_spec.mdx, label: Component Specification, type: doc}
-      - {id: component/comp_list.mdx, label: SecretFlow Component List, type: doc}
-      - {id: component/comp_spec_design.mdx, label: Design of Component Specification,
-        type: doc}
-      - {id: component/comp_guide.mdx, label: Guide of SecretFlow Components, type: doc}
+      - items:
+          - {id: component/comp_spec.mdx, label: Component Specification, type: doc}
+          - {id: component/comp_list.mdx, label: SecretFlow Component List, type: doc}
+        label: References
+        type: category
+      - items:
+          - {id: component/comp_spec_design.mdx, label: Design of Component Specification,
+            type: doc}
+          - {id: component/comp_guide.mdx, label: Guide of SecretFlow Components,
+            type: doc}
+        label: Documentation
+        type: category
     label: Component
     link: {id: component/index.mdx, label: Component, type: doc}
     type: category
   - items:
-      - {href: https://www.yuque.com/secret-flow/admin/exgixt72drdvdsy3, label: A
-          comprehensive comparison of various privacy-preserving technologies, type: link}
-      - {id: developer/design/architecture.mdx, label: Architecture, type: doc}
-      - {id: developer/design/spu.mdx, label: SPU (Secure Processing Unit), type: doc}
-      - {id: developer/design/heu.mdx, label: HEU Device, type: doc}
-      - {id: developer/design/teeu.mdx, label: TEEU, type: doc}
-      - {id: developer/design/flmodel.mdx, label: FLModel Design, type: doc}
-      - {id: developer/design/strategy.mdx, label: Strategy Design, type: doc}
-      - {id: developer/design/programming_in_secretflow.mdx, label: Programming in
-          SecretFlow, type: doc}
-      - {id: developer/algorithm/secure_aggregation.mdx, label: Secure Aggregation,
-        type: doc}
-      - {id: developer/algorithm/mix_lr.mdx, label: Federated Logistic Regression
-          with Mix Partitioned data, type: doc}
-      - {id: developer/algorithm/federated_learning/fed_prox.mdx, label: 'Strategy:
-          FedProx', type: doc}
-      - {id: developer/algorithm/federated_learning/fed_scr.mdx, label: 'Strategy:
-          FedSCR', type: doc}
-      - {id: developer/algorithm/federated_learning/fed_stc.mdx, label: 'Strategy:
-          FedSTC', type: doc}
-      - {id: developer/algorithm/differential_privacy/GlobalDP.mdx, label: 'Differential
-          Privacy: Global DP in Federated Learning', type: doc}
-      - {id: developer/benchmark/psi_benchmark.mdx, label: 隐语PSI Benchmark白皮书, type: doc}
-      - {id: developer/benchmark/ubpsi_benchmark.mdx, label: 隐语非平衡(Unbalanced) PSI
-          Benchmark白皮书, type: doc}
+      - items:
+          - {href: https://www.yuque.com/secret-flow/admin/exgixt72drdvdsy3, label: A
+              comprehensive comparison of various privacy-preserving technologies,
+            type: link}
+        label: Background Materials
+        type: category
+      - items:
+          - {id: developer/design/architecture.mdx, label: Architecture, type: doc}
+          - {id: developer/design/spu.mdx, label: SPU (Secure Processing Unit), type: doc}
+          - {id: developer/design/heu.mdx, label: HEU Device, type: doc}
+          - {id: developer/design/teeu.mdx, label: TEEU, type: doc}
+          - {id: developer/design/flmodel.mdx, label: FLModel Design, type: doc}
+          - {id: developer/design/strategy.mdx, label: Strategy Design, type: doc}
+          - {id: developer/design/programming_in_secretflow.mdx, label: Programming
+              in SecretFlow, type: doc}
+        label: Design Documentation
+        type: category
+      - items:
+          - {id: developer/algorithm/secure_aggregation.mdx, label: Secure Aggregation,
+            type: doc}
+          - {id: developer/algorithm/mix_lr.mdx, label: Federated Logistic Regression
+              with Mix Partitioned data, type: doc}
+          - {id: developer/algorithm/federated_learning/fed_prox.mdx, label: 'Strategy:
+              FedProx', type: doc}
+          - {id: developer/algorithm/federated_learning/fed_scr.mdx, label: 'Strategy:
+              FedSCR', type: doc}
+          - {id: developer/algorithm/federated_learning/fed_stc.mdx, label: 'Strategy:
+              FedSTC', type: doc}
+          - {id: developer/algorithm/differential_privacy/GlobalDP.mdx, label: 'Differential
+              Privacy: Global DP in Federated Learning', type: doc}
+        label: Algorithm
+        type: category
+      - items:
+          - {id: developer/benchmark/psi_benchmark.mdx, label: 隐语PSI Benchmark白皮书,
+            type: doc}
+          - {id: developer/benchmark/ubpsi_benchmark.mdx, label: 隐语非平衡(Unbalanced)
+              PSI Benchmark白皮书, type: doc}
+        label: Benchmark
+        type: category
     label: Developer
     link: {id: developer/index.mdx, label: Developer, type: doc}
     type: category
