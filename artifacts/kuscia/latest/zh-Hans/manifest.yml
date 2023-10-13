@@ -40,6 +40,7 @@ sidebar:
       - {id: deployment/deploy_p2p_cn.mdx, label: 多机部署点对点集群, type: doc}
       - {id: deployment/deploy_master_lite_cn.mdx, label: 多机部署中心化集群, type: doc}
       - {id: deployment/operation_cn.mdx, label: 运维操作, type: doc}
+      - {id: deployment/networkrequirements.mdx, label: 网络要求, type: doc}
     label: 部署
     link: {id: deployment/index.mdx, label: 部署, type: doc}
     type: category
