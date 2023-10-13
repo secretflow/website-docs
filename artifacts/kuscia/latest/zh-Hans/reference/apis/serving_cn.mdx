@@ -1057,6 +1057,42 @@
 
     <tr>
       <td>
+        reason
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        Serving处于该状态的原因，一般用于描述失败的状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        message
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        是
+      </td>
+
+      <td>
+        Serving处于该状态的详细信息，一般用于描述失败的状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
         total\_parties
       </td>
 
@@ -1423,7 +1459,7 @@
       </td>
 
       <td>
-        应用镜像
+        应用镜像，对应[<span>AppImage</span>](../concepts/appimage_cn.mdx)资源名称。<br />在调用更新接口时，如果更新该字段，当前仅会使用新的[<span>AppImage</span>](../concepts/appimage_cn.mdx)资源中的应用镜像Name和Tag信息，更新预测应用。
       </td>
     </tr>
 

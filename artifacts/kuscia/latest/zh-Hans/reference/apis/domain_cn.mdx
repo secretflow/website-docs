@@ -2,7 +2,7 @@
 
 # Domain
 
-在 Kuscia 中将隐私计算的节点称为 Domain，一个 Domain 中可以包含多个 K8s
+在 Kuscia 中将隐私计算的节点称为 Domain，一个 Domain 中可以包含多个 K3s
 的工作节点（Node）。详情请参考 [Domain](../concepts/domain_cn.mdx) 。
 你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domain.proto) 找到对应的
 protobuf 文件。
@@ -197,7 +197,7 @@ protobuf 文件。
       </td>
 
       <td>
-        节点 ID
+        节点 ID 需要符合 DNS 子域名规则要求，参考 [DomainId 规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
       </td>
     </tr>
 
