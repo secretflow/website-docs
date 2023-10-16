@@ -603,59 +603,43 @@ Out = [{2, 4, 4}, {16, 14, 5}]
 
 如果条件为 TRUE ，则 IF 算子返回一个值；如果条件为 FALSE ，则返回另一个值。
 
-```none
-Example:
+```python
+Condition = [true, false, true, true]
+ValueIfTrue = [0, 0, 0, 0]
+ValueIfFalse = [1, 1, 1, 1]
+Out = [0, 1, 0, 0]
 ```
 
-````python
-Condition = [true, false, true, true]
-			ValueIfTrue = [0, 0, 0, 0]
-			ValueIfFalse = [1, 1, 1, 1]
-			Out = [0, 1, 0, 0]
-			```
-  
+<strong>输入：</strong>
 
-**Inputs:**  
+1. `Condition` （多列数组，类型为 T ）：条件 tensor 。
+2. `Filter` （单列数组，类型为 T1 ）：用来做筛选的 tensor 。
+3. `ValueElse` （单列数组，类型为 T2）：当所有 condition tensors 都为假，则取 ValueElse 。
 
-1. `Condition`(single, T): Condition tensor.
+<strong>输出：</strong>
 
-1. `ValueIfTrue`(single, T1): Value if true tensor.
+1. `Out` （单列数组，类型为 T3 ）：结果 tensor 。
 
-1. `ValueIfFalse`(single, T2): Value if false tensor.
+<strong>Tensor 类型约束：</strong>
 
+1. `T` ：公开，私有，密态
+2. `T1` ：公开，私有，密态
+3. `T2` ：公开，私有，密态
+4. `T3` ：公开，私有，密态
 
-**Outputs:**  
+:target{#in}
 
-1. `Out`(single, T3): Result tensor.
+### `Join`
 
-
-
-
-
-
-**TensorStatus(ShareType) Constraints:**
-
-1. `T`: public,private,secret
-
-1. `T1`: public,private,secret
-
-1. `T2`: public,private,secret
-
-1. `T3`: public,private,secret
-
-
-
-### `In`
-
-Definition: Given an input tensor Left (its shape is [M]), and another input tensor Right (its shape is [N]),
-check whether Left's element exists in Right's elements and output a boolean tensor Out (its shape is [M]). Left and Right must be the same type.
+Definition: Given an input tensor Left (its shape is \[M]), and another input tensor Right (its shape is \[N]),
+check whether Left’s element exists in Right’s elements and output a boolean tensor Out (its shape is \[M]). Left and Right must be the same type.
 Example:
 
 ```python
 Left = {a, b, c, d}
 Right = {b, d, e, f, g, h}
 Out = {False, True, False, True}
-````
+```
 
 <strong>输入：</strong>
 

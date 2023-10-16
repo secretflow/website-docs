@@ -617,60 +617,45 @@ Out = [{2, 4, 4}, {16, 14, 5}]
 ### `If`
 
 The IF operator returns a value if a condition is TRUE, or another value if a condition is FALSE.
-
-```none
 Example:
+
+```python
+Condition = [true, false, true, true]
+ValueIfTrue = [0, 0, 0, 0]
+ValueIfFalse = [1, 1, 1, 1]
+Out = [0, 1, 0, 0]
 ```
 
-````python
-Condition = [true, false, true, true]
-			ValueIfTrue = [0, 0, 0, 0]
-			ValueIfFalse = [1, 1, 1, 1]
-			Out = [0, 1, 0, 0]
-			```
-  
-
-**Inputs:**  
+<strong>Inputs:</strong>
 
 1. `Condition`(single, T): Condition tensor.
+2. `ValueIfTrue`(single, T1): Value if true tensor.
+3. `ValueIfFalse`(single, T2): Value if false tensor.
 
-1. `ValueIfTrue`(single, T1): Value if true tensor.
-
-1. `ValueIfFalse`(single, T2): Value if false tensor.
-
-
-**Outputs:**  
+<strong>Outputs:</strong>
 
 1. `Out`(single, T3): Result tensor.
 
-
-
-
-
-
-**TensorStatus(ShareType) Constraints:**
+<strong>TensorStatus(ShareType) Constraints:</strong>
 
 1. `T`: public,private,secret
+2. `T1`: public,private,secret
+3. `T2`: public,private,secret
+4. `T3`: public,private,secret
 
-1. `T1`: public,private,secret
-
-1. `T2`: public,private,secret
-
-1. `T3`: public,private,secret
-
-
+:target{#in}
 
 ### `In`
 
-Definition: Given an input tensor Left (its shape is [M]), and another input tensor Right (its shape is [N]),
-check whether Left's element exists in Right's elements and output a boolean tensor Out (its shape is [M]). Left and Right must be the same type.
+Definition: Given an input tensor Left (its shape is \[M]), and another input tensor Right (its shape is \[N]),
+check whether Left’s element exists in Right’s elements and output a boolean tensor Out (its shape is \[M]). Left and Right must be the same type.
 Example:
 
 ```python
 Left = {a, b, c, d}
 Right = {b, d, e, f, g, h}
 Out = {False, True, False, True}
-````
+```
 
 <strong>Inputs:</strong>
 
