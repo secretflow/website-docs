@@ -2,35 +2,50 @@
 
 # Component
 
-<Container type="note">
-  Both Component Specification and SecretFlow Component List are subject to modify at this moment.
-</Container>
+SecretFlow Component is based on two Specifications. On the one hand, we obey [SecretFlow Open Specification](https://www.secretflow.org.cn/docs/spec/latest). On the other, we defined cluster config and
+some other data types with Extended Specification at [Extended Specification](comp_spec.mdx). Extended Specification only applies on SecretFlow and may not used in other privacy-preserving applications in SecretFlow ecosystem.
+The detailed explanation of Extended Specification is at [Notes on Extended Specification](comp_spec_design.mdx).
 
-Component Specification is a protocol brought by SecretFlow Ecosystem. It mainly includes Data, Component and Node Evaluation protocol.
-Logically, if you wrap any program with Component Specification, it will be recognized by Kuscia(Deployment and scheduling of SecretFlow stack) and
-SecretFlow Platform <sup>:target{#id2}[1](#f1)</sup> (User Interface and Control Panel) . In the one word, for system developers, if you wrap your application with Component Specification,
-you could utilize other open-source SecretFlow projects with little effort.
+We wrapped some commonly used SecretFlow applications as SecretFlow Component List. However, it is not final and we are updating the list promptly. The full SecretFlow Component List is available at [SecretFlow Component List](comp_list.mdx).
 
-Based on Component Specification, we wrapped some commonly used SecretFlow applications. The SecretFlow Component List is not final,
-we are updating the list promptly. Now, you could run SecretFlow applications with component API or CLI apart from writing Python programs.
+Now, you could run SecretFlow applications with component API or CLI apart from writing Python programs. Please check [Guide of SecretFlow Components](comp_guide.mdx).
 
-Besides SecretFlow, we are going to wrap other applications including SCQL and TECC with Component Specification.
+:target{#migration-to-secretflow-open-specification}
 
-For developers who are not familiar with [Component Specification](comp_spec.mdx), they are encouraged to check [Design of Component Specification](comp_spec_design.mdx) first.
+## Migration to [SecretFlow Open Specification](https://www.secretflow.org.cn/docs/spec/latest)
 
-After that, please check [SecretFlow Component List](comp_list.mdx) and corresponding guides at [Guide of SecretFlow Components](comp_guide.mdx).
+There are some breaking changes after introduction of <strong>SecretFlow Open Specification</strong>, including
 
-<p className="sidebar-rubric">
-  Footnotes
-</p>
+:target{#comp-proto}
 
-<Footnote label="1" backrefs={["id2"]} id="f1">
-  Product name is undecided.
-</Footnote>
+### comp.proto
+
+1. <em>comp.proto</em> is renamed to <em>component.proto</em>
+2. In message <em>AttrType</em>, <em>AT\_UNDEFINED</em> is replaced with <em>ATTR\_TYPE\_UNSPECIFIED</em>
+3. In message <em>Attribute</em>, <em>has\_lower\_bound</em> is renamed to <em>lower\_bound\_enabled</em> and <em>has\_upper\_bound</em> is renamed to <em>upper\_bound\_enabled</em>
+4. In message <em>IoDef.TableAttrDef</em>, <em>attrs</em> is renamed to <em>extra\_attrs</em>
+
+:target{#data-proto}
+
+### data.proto
+
+1. In message <em>SystemInfo</em>, <em>app\_name</em> is renamed to <em>app</em> while <em>secretflow</em> (SFClusterDesc) is replaced with <em>app\_meta</em> (Any).
+2. Message <em>StorageConfig</em> is moved from <em>cluster.proto</em>
+3. In message <em>IndividualTable</em> and <em>VerticalTable</em>, <em>num\_lines</em> is renamed to <em>line\_count</em>.
+4. In message <em>DistData</em>, <em>sys\_info</em> is renamed to <em>system\_info</em>.
+
+We are sorry for inconvenience.
 
 :target{#announcement}
 
 ## Announcement
+
+:target{#october-2023}
+
+### October, 2023
+
+1. We officially launched [SecretFlow Open Specification](https://www.secretflow.org.cn/docs/spec/latest) which contains the most common parts which are shared by other privacy-preserving applications.
+2. The remaining part are called Extended Specification.
 
 :target{#july-2023}
 
@@ -45,7 +60,7 @@ From SecretFlow 1.0.0, we officially launch the first version of Component Speci
     References
   </p>
 
-  - [Component Specification](comp_spec.mdx)
+  - [Extended Specification](comp_spec.mdx)
   - [SecretFlow Component List](comp_list.mdx)
 </TableOfContents>
 
@@ -56,6 +71,6 @@ From SecretFlow 1.0.0, we officially launch the first version of Component Speci
     Documentation
   </p>
 
-  - [Design of Component Specification](comp_spec_design.mdx)
+  - [Notes on Extended Specification](comp_spec_design.mdx)
   - [Guide of SecretFlow Components](comp_guide.mdx)
 </TableOfContents>

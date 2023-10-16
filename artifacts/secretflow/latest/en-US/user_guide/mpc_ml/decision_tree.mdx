@@ -4,7 +4,7 @@
 
 With the help of Secret Sharing, a secure multi-party computation technique,
 SecretFlow implements provably secure gradient boosting model
-[`Xgb()`](../../source/secretflow.ml.boost.ml.boost.ss_xgb_v.mdx#secretflow.ml.boost.ss_xgb_v.model.Xgb "secretflow.ml.boost.ss_xgb_v.model.Xgb")
+`Xgb()`
 to support both regression and binary classification machine learning tasks.
 
 :target{#dataset-settings}
@@ -48,7 +48,7 @@ Regression and classification share the same training process except:
 
 ## SS-XGB Training
 
-SS-XGB [`Xgb()`](../../source/secretflow.ml.boost.ml.boost.ss_xgb_v.mdx#secretflow.ml.boost.ss_xgb_v.model.Xgb "secretflow.ml.boost.ss_xgb_v.model.Xgb") use secret sharing to compute the split gain and leaf weights.
+SS-XGB `Xgb()` use secret sharing to compute the split gain and leaf weights.
 
 In order to implement a secure joint training, we replace all the computations with secret sharing protocols,
 e.g. Addition, Multiplication, etc. In addition, we have to take special care to accumulate the gradients
@@ -73,7 +73,7 @@ for more details about SS-XGB algorithm and security analysis.
 A local cluster(Standalone Mode) needs to be initialized as the running environment for this example.
 See [Deployment](../../getting_started/deployment.html.mdx) and refer to the ‘Cluster Mode’.
 
-For more details about the APIs, see [`Xgb()`](../../source/secretflow.ml.boost.ml.boost.ss_xgb_v.mdx#secretflow.ml.boost.ss_xgb_v.model.Xgb "secretflow.ml.boost.ss_xgb_v.model.Xgb")
+For more details about the APIs, see `Xgb()`
 
 ```python
 import sys
