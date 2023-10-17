@@ -29,7 +29,7 @@ Secret Sharing对带宽和延迟比较敏感，而同态加密方案会消耗更
 
 ## SS-SGD
 
-[`SSRegression()`](../../source/secretflow.ml.linear.ml.linear.ss_sgd.mdx#secretflow.ml.linear.ss_sgd.model.SSRegression "secretflow.ml.linear.ss_sgd.model.SSRegression") 使用秘密分享协议实现了针对垂直划分数据集的线性回归和二分类回归训练，求解方式为批量随机梯度下降。
+`SSRegression()` 使用秘密分享协议实现了针对垂直划分数据集的线性回归和二分类回归训练，求解方式为批量随机梯度下降。
 
 [线性回归](https://d2l.ai/chapter_linear-regression/linear-regression.html#basics) 拟合系数为 w = (w1, …, wp) 的线性模型，目标为最小化数据集中标签值与线性近似的预测值之间的残差平方和。
 
@@ -41,7 +41,7 @@ Secret Sharing对带宽和延迟比较敏感，而同态加密方案会消耗更
 
 在本示例中使用单节点模式做示范。集群模式的部署方式： [Deployment](../../getting_started/deployment.html.mdx)
 
-API详情：[`SSRegression()`](../../source/secretflow.ml.linear.ml.linear.ss_sgd.mdx#secretflow.ml.linear.ss_sgd.model.SSRegression "secretflow.ml.linear.ss_sgd.model.SSRegression")
+API详情：`SSRegression()`
 
 ```python
 import sys
@@ -182,7 +182,7 @@ print(classification_report(y, binary_class_results))
 
 ## HESS-SGD
 
-HESS-SGD模块 [`HESSLogisticRegression()`](../../source/secretflow.ml.linear.ml.linear.hess_sgd.mdx#secretflow.ml.linear.hess_sgd.model.HESSLogisticRegression "secretflow.ml.linear.hess_sgd.model.HESSLogisticRegression") 混合使用同态加密和Secret Sharing实现了可证安全的线性回归.
+HESS-SGD模块 `HESSLogisticRegression()` 混合使用同态加密和Secret Sharing实现了可证安全的线性回归.
 
 和SS-SGD最大的区别在于：将SS-SGD中通讯开销最大的梯度计算替换为纯本地的同态计算实现。由于同态加密的非对称特性，目前HESS-SGD只支持2方计算。算法实现参考 [\<When Homomorphic Encryption Marries Secret Sharing: Secure Large-Scale Sparse Logistic Regression and Applications in Risk Control>](https://arxiv.org/pdf/2008.08753.pdf)，并进行一些工程优化改造。
 
@@ -192,7 +192,7 @@ HESS-SGD模块 [`HESSLogisticRegression()`](../../source/secretflow.ml.linear.ml
 
 在本示例中使用单节点模式做示范。集群模式的部署方式： [Deployment](../../getting_started/deployment.html.mdx)
 
-API详情 [`HESSLogisticRegression()`](../../source/secretflow.ml.linear.ml.linear.hess_sgd.mdx#secretflow.ml.linear.hess_sgd.model.HESSLogisticRegression "secretflow.ml.linear.hess_sgd.model.HESSLogisticRegression")
+API详情 `HESSLogisticRegression()`
 
 ```python
 import sys

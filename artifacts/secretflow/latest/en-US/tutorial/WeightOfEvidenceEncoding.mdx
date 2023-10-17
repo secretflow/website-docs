@@ -69,10 +69,10 @@ Now, we are ready to perform WOE binning and substitution.
   <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
     ```python
     from secretflow.preprocessing.binning.vert_woe_binning import VertWoeBinning
-    from secretflow.preprocessing.binning.vert_woe_substitution import VertWOESubstitution
+    from secretflow.preprocessing.binning.vert_bin_substitution import VertBinSubstitution
 
     binning = VertWoeBinning(spu)
-    woe_rules = binning.binning(
+    bin_rules = binning.binning(
         vdf,
         binning_method="chimerge",
         bin_num=4,
@@ -80,8 +80,8 @@ Now, we are ready to perform WOE binning and substitution.
         label_name="y",
     )
 
-    woe_sub = VertWOESubstitution()
-    vdf = woe_sub.substitution(vdf, woe_rules)
+    woe_sub = VertBinSubstitution()
+    vdf = woe_sub.substitution(vdf, bin_rules)
 
     # this is for demo only, be careful with reveal
     print(sf.reveal(vdf.partitions[alice].data))
@@ -91,13 +91,19 @@ Now, we are ready to perform WOE binning and substitution.
 
   <Notebook.CodeArea prompt="" stderr={false} type="output">
     <pre>
-      <span className="ansi-cyan-fg">{"(_run pid=3833768)"}</span>{" [2023-06-26 13:58:34.369] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=3839631)"}</span>{" 2023-06-26 13:58:34.779 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=3839630)"}</span>{" 2023-06-26 13:58:34.869 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 63\n"}
+      <span className="ansi-cyan-fg">{"(SPURuntime pid=3800442)"}</span>{" 2023-10-07 18:03:26.686 [info] [default_brpc_retry_policy.cc:DoRetry:52] socket error, sleep=1000000us and retry\n"}
     </pre>
   </Notebook.CodeArea>
 
   <Notebook.CodeArea prompt="" stderr={false} type="output">
     <pre>
-      {"           x11       x12       x13       x14       x15       x16       x17  \\\n0     0.241531 -0.705729 -0.020094 -0.486932  0.851992  0.035219 -0.796096\n1    -0.402727  0.115744  0.468149 -0.697152  0.386395  0.712798  0.239583\n2     0.872675 -0.559321  0.390246  0.000472  0.225594 -0.639674  0.279511\n3    -0.644718 -0.409382  0.141747 -0.797517  0.314084 -0.802476  0.348878\n4    -0.949669 -0.940787 -0.951708  0.187475  0.272346  0.124419  0.853226\n...        ...       ...       ...       ...       ...       ...       ...\n9995 -0.031331 -0.078700 -0.020636 -0.575713  0.210120 -0.288943 -0.262945\n9996  0.047039  0.965614 -0.921435 -0.092970  0.205778  0.155392  0.922683\n9997  0.269438 -0.115586  0.928880  0.430016  0.269042 -0.331772  0.520971\n9998  0.999325  0.433372 -0.805999  0.311548  0.072405  0.973399 -0.123470\n9999 -0.203443  0.772931 -0.146181 -0.195646  0.274590  0.803816 -0.312047\n\n           x18       x19       x20  y\n0     0.810261  0.048303  0.937679  1\n1     0.312728  0.526637  0.589773  1\n2     0.039087 -0.753417  0.516735  0\n3    -0.855979  0.250944  0.979465  1\n4    -0.238805  0.243109 -0.121446  1\n...        ...       ...       ... ..\n9995 -0.847253  0.069960  0.786748  1\n9996 -0.502486 -0.076290 -0.604832  1\n9997 -0.424209  0.434947  0.998955  1\n9998  0.914291 -0.473056  0.616257  1\n9999 -0.602927 -0.021368  0.885519  0\n\n[10000 rows x 11 columns]\n            x1        x2        x3        x4        x5        x6        x7  \\\n0    -0.514226  0.730010 -0.730391  0.970483  0.038063 -0.800808 -0.082006\n1    -0.725537  0.482244 -0.823223  0.202119  0.484290 -0.139781 -0.341216\n2     0.608353 -0.071102 -0.775098 -0.391496  0.224127  0.082370 -0.341216\n3    -0.686642  0.160470  0.914477 -0.269052  0.224127 -0.547841 -0.341216\n4    -0.198111  0.212909  0.950474  0.775259 -0.590206 -0.840528 -0.742056\n...        ...       ...       ...       ...       ...       ...       ...\n9995 -0.367246 -0.296454  0.558596 -0.403504  0.542892  0.000142 -0.341216\n9996  0.010913  0.629268 -0.384093 -0.552787  0.542892 -0.100838  0.071673\n9997 -0.238097  0.904069 -0.344859 -0.687887 -0.103900  0.223052 -0.286633\n9998  0.453686 -0.375173  0.899238  0.908135 -0.590206  0.524051  0.347251\n9999 -0.776015 -0.772112  0.012110 -0.898067  0.182405 -0.500491  0.557853\n\n            x8        x9       x10\n0    -0.499206 -0.750112 -0.910640\n1    -0.652901  0.438065  0.830206\n2    -0.183506 -0.783842 -0.729929\n3    -0.269405 -0.974268 -0.800515\n4     0.800389  0.185542  0.183614\n...        ...       ...       ...\n9995 -0.470127 -0.247682 -0.552526\n9996  0.592903 -0.577123 -0.811461\n9997 -0.172245  0.713149 -0.184585\n9998 -0.558997  0.610076 -0.862191\n9999 -0.275658 -0.250420  0.518420\n\n[10000 rows x 10 columns]\n"}
+      <span className="ansi-cyan-fg">{"(_run pid=3793086)"}</span>{" [2023-10-07 18:03:27.436] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=3800442)"}</span>{" 2023-10-07 18:03:27.686 [info] [default_brpc_retry_policy.cc:LogHttpDetail:29] cntl ErrorCode '112', http status code '200', response header '', error msg '[E111]Fail to connect Socket{id=0 addr=127.0.0.1:34547} (0x0x32463c0): Connection refused [R1][E112]Not connected to 127.0.0.1:34547 yet, server_id=0'\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=3800442)"}</span>{" 2023-10-07 18:03:27.686 [info] [default_brpc_retry_policy.cc:DoRetry:75] aggressive retry, sleep=1000000us and retry\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=3800442)"}</span>{" 2023-10-07 18:03:28.686 [info] [default_brpc_retry_policy.cc:LogHttpDetail:29] cntl ErrorCode '112', http status code '200', response header '', error msg '[E111]Fail to connect Socket{id=0 addr=127.0.0.1:34547} (0x0x32463c0): Connection refused [R1][E112]Not connected to 127.0.0.1:34547 yet, server_id=0 [R2][E112]Not connected to 127.0.0.1:34547 yet, server_id=0'\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=3800442)"}</span>{" 2023-10-07 18:03:28.686 [info] [default_brpc_retry_policy.cc:DoRetry:75] aggressive retry, sleep=1000000us and retry\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=3800441)"}</span>{" 2023-10-07 18:03:28.687 [info] [default_brpc_retry_policy.cc:DoRetry:69] not retry for reached rcp timeout, ErrorCode '1008', error msg '[E1008]Reached timeout=2000ms @127.0.0.1:57517'\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=3800442)"}</span>{" 2023-10-07 18:03:30.776 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=3800441)"}</span>{" 2023-10-07 18:03:30.794 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 63\n           x11       x12       x13       x14       x15       x16       x17  \\\n0     0.241531 -0.705729 -0.020094 -0.486932  0.851992  0.035219 -0.796096\n1    -0.402727  0.115744  0.468149 -0.697152  0.386395  0.712798  0.239583\n2     0.872675 -0.559321  0.390246  0.000472  0.225594 -0.639674  0.279511\n3    -0.644718 -0.409382  0.141747 -0.797517  0.314084 -0.802476  0.348878\n4    -0.949669 -0.940787 -0.951708  0.187475  0.272346  0.124419  0.853226\n...        ...       ...       ...       ...       ...       ...       ...\n9995 -0.031331 -0.078700 -0.020636 -0.575713  0.210120 -0.288943 -0.262945\n9996  0.047039  0.965614 -0.921435 -0.092970  0.205778  0.155392  0.922683\n9997  0.269438 -0.115586  0.928880  0.430016  0.269042 -0.331772  0.520971\n9998  0.999325  0.433372 -0.805999  0.311548  0.072405  0.973399 -0.123470\n9999 -0.203443  0.772931 -0.146181 -0.195646  0.274590  0.803816 -0.312047\n\n           x18       x19       x20  y\n0     0.810261  0.048303  0.937679  1\n1     0.312728  0.526637  0.589773  1\n2     0.039087 -0.753417  0.516735  0\n3    -0.855979  0.250944  0.979465  1\n4    -0.238805  0.243109 -0.121446  1\n...        ...       ...       ... ..\n9995 -0.847253  0.069960  0.786748  1\n9996 -0.502486 -0.076290 -0.604832  1\n9997 -0.424209  0.434947  0.998955  1\n9998  0.914291 -0.473056  0.616257  1\n9999 -0.602927 -0.021368  0.885519  0\n\n[10000 rows x 11 columns]\n            x1        x2        x3        x4        x5        x6        x7  \\\n0    -0.514226  0.730010 -0.730391  0.970483  0.038063 -0.800808 -0.082006\n1    -0.725537  0.482244 -0.823223  0.202119  0.484290 -0.139781 -0.341216\n2     0.608353 -0.071102 -0.775098 -0.391496  0.224127  0.082370 -0.341216\n3    -0.686642  0.160470  0.914477 -0.269052  0.224127 -0.547841 -0.341216\n4    -0.198111  0.212909  0.950474  0.775259 -0.590206 -0.840528 -0.742056\n...        ...       ...       ...       ...       ...       ...       ...\n9995 -0.367246 -0.296454  0.558596 -0.403504  0.542892  0.000142 -0.341216\n9996  0.010913  0.629268 -0.384093 -0.552787  0.542892 -0.100838  0.071673\n9997 -0.238097  0.904069 -0.344859 -0.687887 -0.103900  0.223052 -0.286633\n9998  0.453686 -0.375173  0.899238  0.908135 -0.590206  0.524051  0.347251\n9999 -0.776015 -0.772112  0.012110 -0.898067  0.182405 -0.500491  0.557853\n\n            x8        x9       x10\n0    -0.499206 -0.750112 -0.910640\n1    -0.652901  0.438065  0.830206\n2    -0.183506 -0.783842 -0.729929\n3    -0.269405 -0.974268 -0.800515\n4     0.800389  0.185542  0.183614\n...        ...       ...       ...\n9995 -0.470127 -0.247682 -0.552526\n9996  0.592903 -0.577123 -0.811461\n9997 -0.172245  0.713149 -0.184585\n9998 -0.558997  0.610076 -0.862191\n9999 -0.275658 -0.250420  0.518420\n\n[10000 rows x 10 columns]\n"}
     </pre>
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -109,7 +115,7 @@ Sometimes we may need the iv values. Releasing bin ivs will potentially leak lab
 
 We will demonstrate how to share the feature ivs.
 
-Recall that the woe\_rules is a dictionary `{PYU: PYUObject}`, where each `PYUObject` itself is a dictionary of the following type:
+Recall that the bin\_rules is a dictionary `{PYU: PYUObject}`, where each `PYUObject` itself is a dictionary of the following type:
 
 ```none
 {
@@ -121,8 +127,8 @@ Recall that the woe\_rules is a dictionary `{PYU: PYUObject}`, where each `PYUOb
             "split_points": list[float], # left-open right-close split points
             "total_counts": list[int], # total samples count in each bins.
             "else_counts": int, # np.nan samples count
-            "woes": list[float], # woe values for each bins.
-            "else_woe": float, # woe value for np.nan samples.
+            "filling_values": list[float], # woe values for each bins.
+            "else_filling_value": float, # woe value for np.nan samples.
         },
         # ... others feature
     ],
@@ -147,7 +153,7 @@ Recall that the woe\_rules is a dictionary `{PYU: PYUObject}`, where each `PYUOb
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
     ```python
     # alice is label holder
-    dict_pyu_object = woe_rules[alice]
+    dict_pyu_object = bin_rules[alice]
 
 
     def extract_name_and_feature_iv(list_of_feature_iv_info):
