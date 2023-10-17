@@ -818,27 +818,10 @@ PYU->SPU 数据转换
 
     # NOTE: Reveal is only used for demo only!!
     print(f"orig ds in alice:\n {sf.reveal(train_ds_v2.partitions[alice].data)}")
-    train_ds_v2.partitions[alice].data = alice(replace)(
-        train_ds_v2.partitions[alice].data, col_maps
-    )
-    train_ds_v2.partitions[bob].data = bob(replace)(
-        train_ds_v2.partitions[bob].data, col_maps
-    )
-    train_ds_v2.partitions[carol].data = carol(replace)(
-        train_ds_v2.partitions[carol].data, col_maps
-    )
+    train_ds_v2 = train_ds_v2.apply_func(replace, col_maps=col_maps)
 
     print(f"orig ds in alice:\n {sf.reveal(train_ds_v2.partitions[alice].data)}")
-
-    test_ds_v2.partitions[alice].data = alice(replace)(
-        test_ds_v2.partitions[alice].data, col_maps
-    )
-    test_ds_v2.partitions[bob].data = bob(replace)(
-        test_ds_v2.partitions[bob].data, col_maps
-    )
-    test_ds_v2.partitions[carol].data = carol(replace)(
-        test_ds_v2.partitions[carol].data, col_maps
-    )
+    test_ds_v2 = test_ds_v2.apply_func(replace, col_maps=col_maps)
     ```
   </Notebook.CodeArea>
 

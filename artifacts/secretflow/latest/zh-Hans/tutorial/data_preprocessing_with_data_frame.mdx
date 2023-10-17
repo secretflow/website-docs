@@ -17,7 +17,7 @@
 > 💡 在使用预处理之前，您可以需要先了解隐语 [DataFrame](../user_guide/preprocessing/DataFrame.mdx) 。
 
 <Notebook.Cell>
-  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
     ```python
     import secretflow as sf
 
@@ -31,6 +31,12 @@
     alice = sf.PYU('alice')
     bob = sf.PYU('bob')
     ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"The version of SecretFlow: 1.2.0.dev20231007\n"}
+    </pre>
   </Notebook.CodeArea>
 </Notebook.Cell>
 
@@ -307,7 +313,7 @@ DataFrame提供了fillna方法，可以和pandas一样对缺失值进行填充�
 
   <Notebook.CodeArea prompt="" stderr={false} type="output">
     <pre>
-      {"Columns:  Index(['target_setosa', 'target_versicolor', 'target_virginica'], dtype='object')\nMin:\n target_setosa        0.0\ntarget_versicolor    0.0\ntarget_virginica     0.0\ndtype: float64\nMax:\n target_setosa        1.0\ntarget_versicolor    1.0\ntarget_virginica     1.0\ndtype: float64\n"}
+      {"Columns:  ['target_setosa', 'target_versicolor', 'target_virginica']\nMin:\n target_setosa        0.0\ntarget_versicolor    0.0\ntarget_virginica     0.0\ndtype: float64\nMax:\n target_setosa        1.0\ntarget_versicolor    1.0\ntarget_virginica     1.0\ndtype: float64\n"}
     </pre>
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -336,7 +342,7 @@ DataFrame提供了fillna方法，可以和pandas一样对缺失值进行填充�
 
   <Notebook.CodeArea prompt="" stderr={false} type="output">
     <pre>
-      {"Columns:  Index(['target'], dtype='object')\nMin:\n target    0\ndtype: int64\nMax:\n target    2\ndtype: int64\n"}
+      {"Columns:  ['target']\nMin:\n target    0\ndtype: int64\nMax:\n target    2\ndtype: int64\n"}
     </pre>
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -373,12 +379,12 @@ DataFrame提供了fillna方法，可以和pandas一样对缺失值进行填充�
 
 #### WOE编码
 
-隐语提供了 <cite>VertWoeBinning</cite> ，可以对特征按照数量或者chimerge方法进行分桶，并计算每个分桶的WOE和IV值。<strong>VertWOESubstitution</strong> 可以把特征值替换成WOE值。
+隐语提供了 <cite>VertWoeBinning</cite> ，可以对特征按照数量或者chimerge方法进行分桶，并计算每个分桶的WOE和IV值。<strong>VertBinSubstitution</strong> 可以把特征值替换成WOE值。
 
 下面是一个对特征进行WOE编码的例子。
 
 <Notebook.Cell>
-  <Notebook.CodeArea prompt="[14]:" stderr={false} type="input">
+  <Notebook.CodeArea prompt="[12]:" stderr={false} type="input">
     ```python
     # woe binning use SPU or HEU device to protect label
     spu = sf.SPU(sf.utils.testing.cluster_def(['alice', 'bob']))
@@ -394,7 +400,7 @@ DataFrame提供了fillna方法，可以和pandas一样对缺失值进行填充�
     from secretflow.preprocessing.binning.vert_woe_binning import VertWoeBinning
 
     binning = VertWoeBinning(spu)
-    woe_rules = binning.binning(
+    bin_rules = binning.binning(
         vdf,
         binning_method="quantile",
         bin_num=5,
@@ -402,13 +408,13 @@ DataFrame提供了fillna方法，可以和pandas一样对缺失值进行填充�
         label_name="y",
     )
 
-    print(f"woe_rules for alice:\n {sf.reveal(woe_rules[alice])}")
-    print(f"woe_rules for bob:\n {sf.reveal(woe_rules[bob])}")
+    print(f"bin_rules for alice:\n {sf.reveal(bin_rules[alice])}")
+    print(f"bin_rules for bob:\n {sf.reveal(bin_rules[bob])}")
 
-    from secretflow.preprocessing.binning.vert_woe_substitution import VertWOESubstitution
+    from secretflow.preprocessing.binning.vert_bin_substitution import VertBinSubstitution
 
-    woe_sub = VertWOESubstitution()
-    sub_data = woe_sub.substitution(vdf, woe_rules)
+    woe_sub = VertBinSubstitution()
+    sub_data = woe_sub.substitution(vdf, bin_rules)
 
     print(f"substituted ds in alice:\n {sf.reveal(sub_data.partitions[alice].data)}")
     print(f"substituted ds in bob:\n {sf.reveal(sub_data.partitions[bob].data)}")
@@ -417,7 +423,25 @@ DataFrame提供了fillna方法，可以和pandas一样对缺失值进行填充�
 
   <Notebook.CodeArea prompt="" stderr={false} type="output">
     <pre>
-      {"orig ds in alice:\n             x1        x2        x3\n0    -0.514226  0.730010 -0.730391\n1    -0.725537  0.482244 -0.823223\n2     0.608353 -0.071102 -0.775098\n3    -0.686642  0.160470  0.914477\n4    -0.198111  0.212909  0.950474\n...        ...       ...       ...\n9995 -0.367246 -0.296454  0.558596\n9996  0.010913  0.629268 -0.384093\n9997 -0.238097  0.904069 -0.344859\n9998  0.453686 -0.375173  0.899238\n9999 -0.776015 -0.772112  0.012110\n\n[10000 rows x 3 columns]\norig ds in bob:\n            x18       x19       x20  y\n0     0.810261  0.048303  0.937679  1\n1     0.312728  0.526637  0.589773  1\n2     0.039087 -0.753417  0.516735  0\n3    -0.855979  0.250944  0.979465  1\n4    -0.238805  0.243109 -0.121446  1\n...        ...       ...       ... ..\n9995 -0.847253  0.069960  0.786748  1\n9996 -0.502486 -0.076290 -0.604832  1\n9997 -0.424209  0.434947  0.998955  1\n9998  0.914291 -0.473056  0.616257  1\n9999 -0.602927 -0.021368  0.885519  0\n\n[10000 rows x 4 columns]\nwoe_rules for alice:\n {'variables': [{'name': 'x1', 'type': 'numeric', 'split_points': [-0.6048731088638305, -0.2093792676925656, 0.1864844083786014, 0.59245548248291], 'woes': [0.13818949789069251, 0.1043626580338657, 0.012473718947119546, -0.08312553911263658, -0.16055365315128886], 'ivs': [0.003719895277030594, 0.0021358508878795324, 3.104792224414912e-05, 0.001402356358949689, 0.005298781871642081], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_woe': -0.7620562438001163, 'else_iv': 6.385923806287768e-05, 'else_counts': 0}, {'name': 'x2', 'type': 'numeric', 'split_points': [-0.6180597543716427, -0.21352910995483343, 0.18739376068115243, 0.5941788196563724], 'woes': [-0.5795513521445242, -0.17800092651085536, 0.02175062133493428, 0.32061945260518093, 0.5508555713857505], 'ivs': [0.07282166470764677, 0.006530977061248972, 9.424153452104671e-05, 0.019271267842100412, 0.05393057944296773], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_woe': -0.7620562438001163, 'else_iv': 6.385923806287768e-05, 'else_counts': 0}, {'name': 'x3', 'type': 'numeric', 'split_points': [-0.5902724504470824, -0.19980529546737677, 0.2072824716567998, 0.6102998018264773], 'woes': [-0.5371125119817587, -0.25762552591997334, -0.022037294110497735, 0.3445721198562295, 0.6304998785437507], 'ivs': [0.062290057806557865, 0.013846189451494859, 9.751520288052276e-05, 0.022140413942886045, 0.06928418076454097], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_woe': -0.7620562438001163, 'else_iv': 6.385923806287768e-05, 'else_counts': 0}]}\nwoe_rules for bob:\n {'variables': [{'name': 'x18', 'type': 'numeric', 'split_points': [-0.595701837539673, -0.18646149635314926, 0.20281808376312258, 0.5969645977020259], 'woes': [0.7644870924575128, 0.3796894156855692, 0.09717493242210018, -0.3856750302449858, -0.6258460389655672], 'ivs': [0.0984553650514661, 0.026672043182215357, 0.0018543743703697353, 0.031572379289703925, 0.08527363286990977], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_woe': -0.7620562438001163, 'else_iv': 6.385923806287768e-05, 'else_counts': 0}, {'name': 'x19', 'type': 'numeric', 'split_points': [-0.5988080263137814, -0.2046342611312865, 0.1958462238311768, 0.6044608354568479], 'woes': [-0.24268812281101115, -0.18886157950622262, 0.061543825157264156, 0.15773711862524092, 0.24528753075504478], 'ivs': [0.012260322787780317, 0.0073647296376464335, 0.0007489127774465146, 0.0048277504221347, 0.011464529974064627], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_woe': -0.7620562438001163, 'else_iv': 6.385923806287768e-05, 'else_counts': 0}, {'name': 'x20', 'type': 'numeric', 'split_points': [-0.6013513207435608, -0.2053116083145139, 0.19144065380096467, 0.5987063169479374], 'woes': [1.1083043875152403, 0.5598579367731444, 0.15773711862524092, -0.4618210945247346, -0.9083164208649596], 'ivs': [0.1887116758575296, 0.055586120695474514, 0.0048277504221347, 0.04568212645465593, 0.18279475271010598], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_woe': -0.7620562438001163, 'else_iv': 6.385923806287768e-05, 'else_counts': 0}]}\nsubstituted ds in alice:\n             x1        x2        x3\n0     0.104363  0.550856 -0.537113\n1     0.138189  0.320619 -0.537113\n2    -0.160554  0.021751 -0.537113\n3     0.138189  0.021751  0.630500\n4     0.012474  0.320619  0.630500\n...        ...       ...       ...\n9995  0.104363 -0.178001  0.344572\n9996  0.012474  0.550856 -0.257626\n9997  0.104363  0.550856 -0.257626\n9998 -0.083126 -0.178001  0.630500\n9999  0.138189 -0.579551 -0.022037\n\n[10000 rows x 3 columns]\nsubstituted ds in bob:\n            x18       x19       x20  y\n0    -0.625846  0.061544 -0.908316  1\n1    -0.385675  0.157737 -0.461821  1\n2     0.097175 -0.242688 -0.461821  0\n3     0.764487  0.157737 -0.908316  1\n4     0.379689  0.157737  0.157737  1\n...        ...       ...       ... ..\n9995  0.764487  0.061544 -0.908316  1\n9996  0.379689  0.061544  1.108304  1\n9997  0.379689  0.157737 -0.908316  1\n9998 -0.625846 -0.188862 -0.908316  1\n9999  0.764487  0.061544 -0.908316  0\n\n[10000 rows x 4 columns]\n"}
+      {"orig ds in alice:\n             x1        x2        x3\n0    -0.514226  0.730010 -0.730391\n1    -0.725537  0.482244 -0.823223\n2     0.608353 -0.071102 -0.775098\n3    -0.686642  0.160470  0.914477\n4    -0.198111  0.212909  0.950474\n...        ...       ...       ...\n9995 -0.367246 -0.296454  0.558596\n9996  0.010913  0.629268 -0.384093\n9997 -0.238097  0.904069 -0.344859\n9998  0.453686 -0.375173  0.899238\n9999 -0.776015 -0.772112  0.012110\n\n[10000 rows x 3 columns]\norig ds in bob:\n            x18       x19       x20  y\n0     0.810261  0.048303  0.937679  1\n1     0.312728  0.526637  0.589773  1\n2     0.039087 -0.753417  0.516735  0\n3    -0.855979  0.250944  0.979465  1\n4    -0.238805  0.243109 -0.121446  1\n...        ...       ...       ... ..\n9995 -0.847253  0.069960  0.786748  1\n9996 -0.502486 -0.076290 -0.604832  1\n9997 -0.424209  0.434947  0.998955  1\n9998  0.914291 -0.473056  0.616257  1\n9999 -0.602927 -0.021368  0.885519  0\n\n[10000 rows x 4 columns]\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime pid=3776105)"}</span>{" 2023-10-07 18:02:57.469 [info] [default_brpc_retry_policy.cc:DoRetry:52] socket error, sleep=1000000us and retry\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(_run pid=3770127)"}</span>{" [2023-10-07 18:02:57.670] [info] [thread_pool.cc:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=3776105)"}</span>{" 2023-10-07 18:02:58.469 [info] [default_brpc_retry_policy.cc:LogHttpDetail:29] cntl ErrorCode '112', http status code '200', response header '', error msg '[E111]Fail to connect Socket{id=0 addr=127.0.0.1:51263} (0x0x32ed440): Connection refused [R1][E112]Not connected to 127.0.0.1:51263 yet, server_id=0'\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=3776105)"}</span>{" 2023-10-07 18:02:58.469 [info] [default_brpc_retry_policy.cc:DoRetry:75] aggressive retry, sleep=1000000us and retry\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=3776107)"}</span>{" 2023-10-07 18:02:59.479 [info] [default_brpc_retry_policy.cc:DoRetry:69] not retry for reached rcp timeout, ErrorCode '1008', error msg '[E1008]Reached timeout=2000ms @127.0.0.1:44205'\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=3776105)"}</span>{" 2023-10-07 18:02:59.469 [info] [default_brpc_retry_policy.cc:LogHttpDetail:29] cntl ErrorCode '112', http status code '200', response header '', error msg '[E111]Fail to connect Socket{id=0 addr=127.0.0.1:51263} (0x0x32ed440): Connection refused [R1][E112]Not connected to 127.0.0.1:51263 yet, server_id=0 [R2][E112]Not connected to 127.0.0.1:51263 yet, server_id=0'\n"}<span className="ansi-cyan-fg">{"(SPURuntime pid=3776105)"}</span>{" 2023-10-07 18:02:59.470 [info] [default_brpc_retry_policy.cc:DoRetry:75] aggressive retry, sleep=1000000us and retry\n"}
+    </pre>
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      <span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=bob) pid=3776107)"}</span>{" 2023-10-07 18:03:01.500 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 63\n"}<span className="ansi-cyan-fg">{"(SPURuntime(device_id=None, party=alice) pid=3776105)"}</span>{" 2023-10-07 18:03:01.503 [info] [thread_pool.cc:ThreadPool:30] Create a fixed thread pool with size 63\nbin_rules for alice:\n {'variables': [{'name': 'x1', 'type': 'numeric', 'split_points': [-0.6048731088638305, -0.2093792676925656, 0.1864844083786014, 0.59245548248291], 'filling_values': [0.13818949789069251, 0.1043626580338657, 0.012473718947119546, -0.08312553911263658, -0.16055365315128886], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_filling_value': -0.7620562438001163, 'else_counts': 0}, {'name': 'x2', 'type': 'numeric', 'split_points': [-0.6180597543716427, -0.21352910995483343, 0.18739376068115243, 0.5941788196563724], 'filling_values': [-0.5795513521445242, -0.17800092651085536, 0.02175062133493428, 0.32061945260518093, 0.5508555713857505], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_filling_value': -0.7620562438001163, 'else_counts': 0}, {'name': 'x3', 'type': 'numeric', 'split_points': [-0.5902724504470824, -0.19980529546737677, 0.2072824716567998, 0.6102998018264773], 'filling_values': [-0.5371125119817587, -0.25762552591997334, -0.022037294110497735, 0.3445721198562295, 0.6304998785437507], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_filling_value': -0.7620562438001163, 'else_counts': 0}]}\nbin_rules for bob:\n {'variables': [{'name': 'x18', 'type': 'numeric', 'split_points': [-0.595701837539673, -0.18646149635314926, 0.20281808376312258, 0.5969645977020259], 'filling_values': [0.7644870924575128, 0.3796894156855692, 0.09717493242210018, -0.3856750302449858, -0.6258460389655672], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_filling_value': -0.7620562438001163, 'else_counts': 0}, {'name': 'x19', 'type': 'numeric', 'split_points': [-0.5988080263137814, -0.2046342611312865, 0.1958462238311768, 0.6044608354568479], 'filling_values': [-0.24268812281101115, -0.18886157950622262, 0.061543825157264156, 0.15773711862524092, 0.24528753075504478], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_filling_value': -0.7620562438001163, 'else_counts': 0}, {'name': 'x20', 'type': 'numeric', 'split_points': [-0.6013513207435608, -0.2053116083145139, 0.19144065380096467, 0.5987063169479374], 'filling_values': [1.1083043875152403, 0.5598579367731444, 0.15773711862524092, -0.4618210945247346, -0.9083164208649596], 'total_counts': [2000, 2000, 2000, 2000, 2000], 'else_filling_value': -0.7620562438001163, 'else_counts': 0}], 'feature_iv_info': [{'name': 'x18', 'ivs': (0.0984553650514661, 0.026672043182215357, 0.0018543743703697353, 0.031572379289703925, 0.08527363286990977), 'else_iv': 6.385923806287768e-05, 'feature_iv': 0.24382779476366487}, {'name': 'x19', 'ivs': (0.012260322787780317, 0.0073647296376464335, 0.0007489127774465146, 0.0048277504221347, 0.011464529974064627), 'else_iv': 6.385923806287768e-05, 'feature_iv': 0.03666624559907259}, {'name': 'x20', 'ivs': (0.1887116758575296, 0.055586120695474514, 0.0048277504221347, 0.04568212645465593, 0.18279475271010598), 'else_iv': 6.385923806287768e-05, 'feature_iv': 0.4776024261399007}, {'name': 'x1', 'ivs': (0.003719895277030594, 0.0021358508878795324, 3.104792224414912e-05, 0.001402356358949689, 0.005298781871642081), 'else_iv': 6.385923806287768e-05, 'feature_iv': 0.012587932317746046}, {'name': 'x2', 'ivs': (0.07282166470764677, 0.006530977061248972, 9.424153452104671e-05, 0.019271267842100412, 0.05393057944296773), 'else_iv': 6.385923806287768e-05, 'feature_iv': 0.15264873058848494}, {'name': 'x3', 'ivs': (0.062290057806557865, 0.013846189451494859, 9.751520288052276e-05, 0.022140413942886045, 0.06928418076454097), 'else_iv': 6.385923806287768e-05, 'feature_iv': 0.16765835716836025}]}\nsubstituted ds in alice:\n             x1        x2        x3\n0     0.104363  0.550856 -0.537113\n1     0.138189  0.320619 -0.537113\n2    -0.160554  0.021751 -0.537113\n3     0.138189  0.021751  0.630500\n4     0.012474  0.320619  0.630500\n...        ...       ...       ...\n9995  0.104363 -0.178001  0.344572\n9996  0.012474  0.550856 -0.257626\n9997  0.104363  0.550856 -0.257626\n9998 -0.083126 -0.178001  0.630500\n9999  0.138189 -0.579551 -0.022037\n\n[10000 rows x 3 columns]\nsubstituted ds in bob:\n            x18       x19       x20  y\n0    -0.625846  0.061544 -0.908316  1\n1    -0.385675  0.157737 -0.461821  1\n2     0.097175 -0.242688 -0.461821  0\n3     0.764487  0.157737 -0.908316  1\n4     0.379689  0.157737  0.157737  1\n...        ...       ...       ... ..\n9995  0.764487  0.061544 -0.908316  1\n9996  0.379689  0.061544  1.108304  1\n9997  0.379689  0.157737 -0.908316  1\n9998 -0.625846 -0.188862 -0.908316  1\n9999  0.764487  0.061544 -0.908316  0\n\n[10000 rows x 4 columns]\n"}
     </pre>
   </Notebook.CodeArea>
 </Notebook.Cell>

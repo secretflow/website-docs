@@ -53,8 +53,6 @@ sidebar:
       - items:
           - items:
               - items:
-                  - {id: source/secretflow.component.component.feature.mdx, label: secretflow.component.feature
-                      package, type: doc}
                   - items:
                       - items:
                           - {id: source/secretflow.component.ml.boost.component.ml.boost.sgb.mdx,
@@ -82,6 +80,15 @@ sidebar:
                     package, type: doc}
                 type: category
               - items:
+                  - items:
+                      - {id: source/secretflow.data.core.data.core.pandas.mdx, label: secretflow.data.core.pandas
+                          package, type: doc}
+                      - {id: source/secretflow.data.core.data.core.polars.mdx, label: secretflow.data.core.polars
+                          package, type: doc}
+                    label: secretflow.data.core package
+                    link: {id: source/secretflow.data.data.core.mdx, label: secretflow.data.core
+                        package, type: doc}
+                    type: category
                   - {id: source/secretflow.data.data.horizontal.mdx, label: secretflow.data.horizontal
                       package, type: doc}
                   - {id: source/secretflow.data.data.io.mdx, label: secretflow.data.io
@@ -90,15 +97,6 @@ sidebar:
                       package, type: doc}
                   - {id: source/secretflow.data.data.ndarray.mdx, label: secretflow.data.ndarray
                       package, type: doc}
-                  - items:
-                      - {id: source/secretflow.data.partition.data.partition.pandas.mdx,
-                        label: secretflow.data.partition.pandas package, type: doc}
-                      - {id: source/secretflow.data.partition.data.partition.polars.mdx,
-                        label: secretflow.data.partition.polars package, type: doc}
-                    label: secretflow.data.partition package
-                    link: {id: source/secretflow.data.data.partition.mdx, label: secretflow.data.partition
-                        package, type: doc}
-                    type: category
                   - {id: source/secretflow.data.data.vertical.mdx, label: secretflow.data.vertical
                       package, type: doc}
                 label: secretflow.data package
@@ -345,13 +343,6 @@ sidebar:
                     package, type: doc}
                 type: category
               - items:
-                  - {id: source/secretflow.protos.protos.component.mdx, label: secretflow.protos.component
-                      package, type: doc}
-                label: secretflow.protos package
-                link: {id: source/secretflow.protos.mdx, label: secretflow.protos
-                    package, type: doc}
-                type: category
-              - items:
                   - items:
                       - {id: source/secretflow.security.aggregation.security.aggregation.experiment.mdx,
                         label: secretflow.security.aggregation.experiment package,
@@ -385,6 +376,15 @@ sidebar:
                 label: secretflow.security package
                 link: {id: source/secretflow.security.mdx, label: secretflow.security
                     package, type: doc}
+                type: category
+              - items:
+                  - {id: source/secretflow.spec.spec.extend.mdx, label: secretflow.spec.extend
+                      package, type: doc}
+                  - {id: source/secretflow.spec.spec.v1.mdx, label: secretflow.spec.v1
+                      package, type: doc}
+                label: secretflow.spec package
+                link: {id: source/secretflow.spec.mdx, label: secretflow.spec package,
+                  type: doc}
                 type: category
               - items:
                   - {id: source/secretflow.stats.stats.core.mdx, label: secretflow.stats.core
@@ -499,12 +499,12 @@ sidebar:
     type: category
   - items:
       - items:
-          - {id: component/comp_spec.mdx, label: Component Specification, type: doc}
+          - {id: component/comp_spec.mdx, label: Extended Specification, type: doc}
           - {id: component/comp_list.mdx, label: SecretFlow Component List, type: doc}
         label: References
         type: category
       - items:
-          - {id: component/comp_spec_design.mdx, label: Design of Component Specification,
+          - {id: component/comp_spec_design.mdx, label: Notes on Extended Specification,
             type: doc}
           - {id: component/comp_guide.mdx, label: Guide of SecretFlow Components,
             type: doc}
