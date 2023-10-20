@@ -1,31 +1,59 @@
 sidebar:
   - items:
-      - {id: getting_started/scql_intro.mdx, label: SCQL Introduction, type: doc}
-      - {id: getting_started/quickstart.mdx, label: Quickstart, type: doc}
-      - {id: getting_started/how_to_set_ccl.mdx, label: CCL Setting Suggestions, type: doc}
-      - {id: getting_started/deployment.mdx, label: Deployment, type: doc}
-      - {id: getting_started/how_to_use_scql.mdx, label: How To Use SCQL, type: doc}
-    label: Getting started
-    link: {id: getting_started/index.mdx, label: Getting started, type: doc}
+      - {id: intro/tutorial.mdx, label: Quickstart tutorial, type: doc}
+    label: Introduction
+    link: {id: intro/index.mdx, label: Introduction, type: doc}
     type: category
   - items:
-      - {id: reference/scql_manual.mdx, label: SCQL Manual, type: doc}
-      - {id: reference/scql_operators_doc.mdx, label: SCQL Operators Specification,
+      - items:
+          - {id: topics/system/intro.mdx, label: SCQL System Overview, type: doc}
+          - {id: topics/system/usage.mdx, label: How To Use SCQL, type: doc}
+        label: SCQL System
+        type: category
+      - items:
+          - {id: topics/security/overview.mdx, label: Security overview, type: doc}
+        label: Security
+        type: category
+      - items:
+          - {id: topics/ccl/intro.mdx, label: SCQL CCL, type: doc}
+          - {id: topics/ccl/usage.mdx, label: CCL Setting Suggestions, type: doc}
+        label: CCL
+        type: category
+      - items:
+          - {id: topics/clients/overview.mdx, label: How To Integrate SCQL System,
+            type: doc}
+        label: Clients
+        type: category
+      - items:
+          - {id: topics/deployment/how-to-deploy-a-cluster.mdx, label: Deployment,
+            type: doc}
+        label: Deployment
+        type: category
+    label: Topics
+    link: {id: topics/index.mdx, label: Topics, type: doc}
+    type: category
+  - items:
+      - items:
+          - {id: reference/lang/manual.mdx, label: SCQL Language Manual, type: doc}
+          - {id: reference/lang/mysql-compatibility.mdx, label: MySQL Compatibility,
+            type: doc}
+        label: Language
+        type: category
+      - items:
+          - {id: reference/engine-config.mdx, label: SCQL System Config, type: doc}
+        label: System
+        type: category
+      - items:
+          - {id: reference/http-api.mdx, label: SCQL API, type: doc}
+        label: Clients
+        type: category
+      - items:
+          - {id: reference/operators.mdx, label: SCQL Operators Specification, type: doc}
+        label: Internal Reference
+        type: category
+      - {id: reference/implementation-status.mdx, label: SCQL Implementation Status,
         type: doc}
-      - {id: reference/scql_status.mdx, label: SCQL Implementation Status, type: doc}
-      - {id: reference/mysql_compatibility.mdx, label: MySQL Compatibility, type: doc}
-      - {id: reference/scql_security_statement.mdx, label: SCQL Security Statement,
-        type: doc}
-      - {id: reference/scql_ccl_intro.mdx, label: SCQL CCL, type: doc}
     label: Reference
     link: {id: reference/index.mdx, label: Reference, type: doc}
-    type: category
-  - items:
-      - {id: development/scql_api.mdx, label: SCQL API, type: doc}
-      - {id: development/integrate_scql_system.mdx, label: How To Integrate SCQL System,
-        type: doc}
-      - {id: development/scql_config_manual.mdx, label: SCQL Config Manual, type: doc}
-    label: Development
-    link: {id: development/index.mdx, label: Development, type: doc}
     type: category
 version: '1'

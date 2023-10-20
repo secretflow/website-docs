@@ -52,8 +52,6 @@ sidebar:
       - items:
           - items:
               - items:
-                  - {id: source/secretflow.component.component.feature.mdx, label: secretflow.component.feature
-                      package, type: doc}
                   - items:
                       - items:
                           - {id: source/secretflow.component.ml.boost.component.ml.boost.sgb.mdx,
@@ -81,6 +79,15 @@ sidebar:
                     package, type: doc}
                 type: category
               - items:
+                  - items:
+                      - {id: source/secretflow.data.core.data.core.pandas.mdx, label: secretflow.data.core.pandas
+                          package, type: doc}
+                      - {id: source/secretflow.data.core.data.core.polars.mdx, label: secretflow.data.core.polars
+                          package, type: doc}
+                    label: secretflow.data.core package
+                    link: {id: source/secretflow.data.data.core.mdx, label: secretflow.data.core
+                        package, type: doc}
+                    type: category
                   - {id: source/secretflow.data.data.horizontal.mdx, label: secretflow.data.horizontal
                       package, type: doc}
                   - {id: source/secretflow.data.data.io.mdx, label: secretflow.data.io
@@ -89,15 +96,6 @@ sidebar:
                       package, type: doc}
                   - {id: source/secretflow.data.data.ndarray.mdx, label: secretflow.data.ndarray
                       package, type: doc}
-                  - items:
-                      - {id: source/secretflow.data.partition.data.partition.pandas.mdx,
-                        label: secretflow.data.partition.pandas package, type: doc}
-                      - {id: source/secretflow.data.partition.data.partition.polars.mdx,
-                        label: secretflow.data.partition.polars package, type: doc}
-                    label: secretflow.data.partition package
-                    link: {id: source/secretflow.data.data.partition.mdx, label: secretflow.data.partition
-                        package, type: doc}
-                    type: category
                   - {id: source/secretflow.data.data.vertical.mdx, label: secretflow.data.vertical
                       package, type: doc}
                 label: secretflow.data package
@@ -344,15 +342,14 @@ sidebar:
                     package, type: doc}
                 type: category
               - items:
-                  - {id: source/secretflow.protos.protos.component.mdx, label: secretflow.protos.component
-                      package, type: doc}
-                label: secretflow.protos package
-                link: {id: source/secretflow.protos.mdx, label: secretflow.protos
-                    package, type: doc}
-                type: category
-              - items:
-                  - {id: source/secretflow.security.security.aggregation.mdx, label: secretflow.security.aggregation
-                      package, type: doc}
+                  - items:
+                      - {id: source/secretflow.security.aggregation.security.aggregation.experiment.mdx,
+                        label: secretflow.security.aggregation.experiment package,
+                        type: doc}
+                    label: secretflow.security.aggregation package
+                    link: {id: source/secretflow.security.security.aggregation.mdx,
+                      label: secretflow.security.aggregation package, type: doc}
+                    type: category
                   - {id: source/secretflow.security.security.compare.mdx, label: secretflow.security.compare
                       package, type: doc}
                   - items:
@@ -378,6 +375,15 @@ sidebar:
                 label: secretflow.security package
                 link: {id: source/secretflow.security.mdx, label: secretflow.security
                     package, type: doc}
+                type: category
+              - items:
+                  - {id: source/secretflow.spec.spec.extend.mdx, label: secretflow.spec.extend
+                      package, type: doc}
+                  - {id: source/secretflow.spec.spec.v1.mdx, label: secretflow.spec.v1
+                      package, type: doc}
+                label: secretflow.spec package
+                link: {id: source/secretflow.spec.mdx, label: secretflow.spec package,
+                  type: doc}
                 type: category
               - items:
                   - {id: source/secretflow.stats.stats.core.mdx, label: secretflow.stats.core
@@ -410,74 +416,126 @@ sidebar:
     link: {id: api/index.mdx, label: API文档, type: doc}
     type: category
   - items:
-      - {id: tutorial/FedDataFrameDataLoader.mdx, label: 在SecretFlow中加载csv数据, type: doc}
-      - {id: tutorial/FedNdarrayDataLoader.mdx, label: 在 SecretFlow 中加载 Numpy 数据,
-        type: doc}
-      - {id: tutorial/CustomDataLoaderTF.mdx, label: 在 SecretFlow 中使用自定义 DataBuilder（TensorFlow）,
-        type: doc}
-      - {id: tutorial/CustomDataLoaderTorch.mdx, label: 在 SecretFlow 中使用自定义 DataBuilder（Torch）,
-        type: doc}
-      - {id: tutorial/CustomDataLoaderOnSL.mdx, label: 在 SecretFlow 中使用 DataBuilder
-          进行 SLModel 学习, type: doc}
-      - {id: tutorial/data_preprocessing_with_data_frame.mdx, label: 数据预处理, type: doc}
-      - {id: tutorial/WeightOfEvidenceEncoding.mdx, label: WOE编码, type: doc}
-      - {id: tutorial/spu_basics.mdx, label: SPU基础, type: doc}
-      - {id: tutorial/lr_with_spu.mdx, label: 使用 SPU 进行逻辑回归, type: doc}
-      - {id: tutorial/nn_with_spu.mdx, label: SPU 训练神经网络, type: doc}
-      - {id: tutorial/gpt2_with_spu.mdx, label: 使用 SPU 基于 GPT-2 生成文本, type: doc}
-      - {id: tutorial/numpy_with_spu.mdx, label: 在SPU中使用NumPy实现隐私保护的科学计算, type: doc}
-      - {id: tutorial/gpt2_with_puma.mdx, label: 基于Puma框架的GPT2安全推理, type: doc}
-      - {id: tutorial/teeu.mdx, label: TEEU 上手指南, type: doc}
-      - {id: tutorial/teeu_xgboost.mdx, label: TEE示例：XGBoost, type: doc}
-      - {id: tutorial/PSI_On_SPU.mdx, label: SPU隐私求交, type: doc}
-      - {id: tutorial/Federate_Learning_for_Image_Classification.mdx, label: 水平联邦：图像分类,
-        type: doc}
-      - {id: tutorial/Federated_Learning_with_Pytorch_backend.mdx, label: 使用Pytorch后端来进行联邦学习,
-        type: doc}
-      - {id: tutorial/Federated_Xgboost.mdx, label: 水平联邦XGBoost, type: doc}
-      - {id: tutorial/SecureBoost.mdx, label: 垂直联邦XGB (SecureBoost), type: doc}
-      - {id: tutorial/Split_Learning_for_bank_marketing.mdx, label: 拆分学习：银行营销, type: doc}
-      - {id: tutorial/split_learning_gnn.mdx, label: 图神经网络拆分学习, type: doc}
-      - {id: tutorial/mix_lr.mdx, label: 混合联邦——逻辑回归, type: doc}
-      - {id: tutorial/sl_rec_deepfm.mdx, label: SplitREC：在隐语中使用DeepFM算法, type: doc}
-      - {id: tutorial/risk_control_scenario.mdx, label: 隐语SecretFlow金融风控全链路能力展示, type: doc}
-      - {id: tutorial/practical_case_walkthrough_using_sf_with_spu.mdx, label: 隐语SecretFlow实际场景MPC算法开发实践,
-        type: doc}
-      - {id: tutorial/GPU_check.mdx, label: GPU检查, type: doc}
+      - items:
+          - {id: tutorial/FedDataFrameDataLoader.mdx, label: 在SecretFlow中加载csv数据,
+            type: doc}
+          - {id: tutorial/FedNdarrayDataLoader.mdx, label: 在 SecretFlow 中加载 Numpy
+              数据, type: doc}
+          - {id: tutorial/CustomDataLoaderTF.mdx, label: 在 SecretFlow 中使用自定义 DataBuilder（TensorFlow）,
+            type: doc}
+          - {id: tutorial/CustomDataLoaderTorch.mdx, label: 在 SecretFlow 中使用自定义 DataBuilder（Torch）,
+            type: doc}
+          - {id: tutorial/CustomDataLoaderOnSL.mdx, label: 在 SecretFlow 中使用 DataBuilder
+              进行 SLModel 学习, type: doc}
+        label: IO
+        type: category
+      - items:
+          - {id: tutorial/data_preprocessing_with_data_frame.mdx, label: 数据预处理, type: doc}
+        label: DataFrame
+        type: category
+      - items:
+          - {id: tutorial/WeightOfEvidenceEncoding.mdx, label: WOE编码, type: doc}
+        label: WOE
+        type: category
+      - items:
+          - {id: tutorial/spu_basics.mdx, label: SPU基础, type: doc}
+          - {id: tutorial/lr_with_spu.mdx, label: 使用 SPU 进行逻辑回归, type: doc}
+          - {id: tutorial/nn_with_spu.mdx, label: SPU 训练神经网络, type: doc}
+          - {id: tutorial/gpt2_with_spu.mdx, label: 使用 SPU 基于 GPT-2 生成文本, type: doc}
+          - {id: tutorial/numpy_with_spu.mdx, label: 在SPU中使用NumPy实现隐私保护的科学计算, type: doc}
+          - {id: tutorial/gpt2_with_puma.mdx, label: 基于Puma框架的GPT2安全推理, type: doc}
+        label: SPU
+        type: category
+      - items:
+          - {id: tutorial/teeu.mdx, label: TEEU 上手指南, type: doc}
+          - {id: tutorial/teeu_xgboost.mdx, label: TEE示例：XGBoost, type: doc}
+        label: TEEU
+        type: category
+      - items:
+          - {id: tutorial/PSI_On_SPU.mdx, label: SPU隐私求交, type: doc}
+        label: PSI
+        type: category
+      - items:
+          - {id: tutorial/Federate_Learning_for_Image_Classification.mdx, label: 水平联邦：图像分类,
+            type: doc}
+          - {id: tutorial/Federated_Learning_with_Pytorch_backend.mdx, label: 使用Pytorch后端来进行联邦学习,
+            type: doc}
+          - {id: tutorial/Federated_Xgboost.mdx, label: 水平联邦XGBoost, type: doc}
+          - {id: tutorial/SecureBoost.mdx, label: 垂直联邦XGB (SecureBoost), type: doc}
+          - {id: tutorial/Split_Learning_for_bank_marketing.mdx, label: 拆分学习：银行营销,
+            type: doc}
+          - {id: tutorial/split_learning_gnn.mdx, label: 图神经网络拆分学习, type: doc}
+          - {id: tutorial/mix_lr.mdx, label: 混合联邦——逻辑回归, type: doc}
+          - {id: tutorial/sl_rec_deepfm.mdx, label: SplitREC：在隐语中使用DeepFM算法, type: doc}
+        label: 联邦学习
+        type: category
+      - items:
+          - {id: tutorial/risk_control_scenario.mdx, label: 隐语SecretFlow金融风控全链路能力展示,
+            type: doc}
+        label: 场景方案
+        type: category
+      - items:
+          - {id: tutorial/practical_case_walkthrough_using_sf_with_spu.mdx, label: 隐语SecretFlow实际场景MPC算法开发实践,
+            type: doc}
+        label: 培训资料
+        type: category
+      - items:
+          - {id: tutorial/GPU_check.mdx, label: GPU检查, type: doc}
+        label: 其他
+        type: category
     label: 教程
     link: {id: tutorial/index.mdx, label: 教程, type: doc}
     type: category
   - items:
-      - {id: component/comp_spec.mdx, label: 组件规范, type: doc}
-      - {id: component/comp_list.mdx, label: SecretFlow组件列表, type: doc}
-      - {id: component/comp_spec_design.mdx, label: 组件规范的设计, type: doc}
-      - {id: component/comp_guide.mdx, label: SecretFlow 组件指南, type: doc}
+      - items:
+          - {id: component/comp_spec.mdx, label: 扩展标准, type: doc}
+          - {id: component/comp_list.mdx, label: SecretFlow 组件列表, type: doc}
+        label: 参考资料
+        type: category
+      - items:
+          - {id: component/comp_spec_design.mdx, label: 扩展标准注释, type: doc}
+          - {id: component/comp_guide.mdx, label: SecretFlow 组件指南, type: doc}
+        label: 文档
+        type: category
     label: 组件
     link: {id: component/index.mdx, label: 组件, type: doc}
     type: category
   - items:
-      - {href: https://www.yuque.com/secret-flow/admin/exgixt72drdvdsy3, label: 隐私计算技术路线介绍及对比,
-        type: link}
-      - {id: developer/design/architecture.mdx, label: 架构, type: doc}
-      - {id: developer/design/spu.mdx, label: SPU (Secure Processing Unit), type: doc}
-      - {id: developer/design/heu.mdx, label: HEU 设备, type: doc}
-      - {id: developer/design/teeu.mdx, label: TEEU 设备, type: doc}
-      - {id: developer/design/flmodel.mdx, label: FLModel设计文档, type: doc}
-      - {id: developer/design/strategy.mdx, label: Strategy框架设计, type: doc}
-      - {id: developer/design/programming_in_secretflow.mdx, label: 隐语的编程思想, type: doc}
-      - {id: developer/algorithm/secure_aggregation.mdx, label: 安全聚合, type: doc}
-      - {id: developer/algorithm/mix_lr.mdx, label: 混合切分联邦逻辑回归, type: doc}
-      - {id: developer/algorithm/federated_learning/fed_prox.mdx, label: 联邦策略：FedProx,
-        type: doc}
-      - {id: developer/algorithm/federated_learning/fed_scr.mdx, label: 联邦策略：FedSCR,
-        type: doc}
-      - {id: developer/algorithm/federated_learning/fed_stc.mdx, label: 联邦策略：FedSTC,
-        type: doc}
-      - {id: developer/algorithm/differential_privacy/GlobalDP.mdx, label: 差分隐私：联邦学习中的Global
-          DP, type: doc}
-      - {id: developer/benchmark/psi_benchmark.mdx, label: 隐语PSI Benchmark白皮书, type: doc}
-      - {id: developer/benchmark/ubpsi_benchmark.mdx, label: 隐语非平衡(Unbalanced) PSI
-          Benchmark白皮书, type: doc}
+      - items:
+          - {href: https://www.yuque.com/secret-flow/admin/exgixt72drdvdsy3, label: 隐私计算技术路线介绍及对比,
+            type: link}
+        label: 背景材料
+        type: category
+      - items:
+          - {id: developer/design/architecture.mdx, label: 架构, type: doc}
+          - {id: developer/design/spu.mdx, label: SPU (Secure Processing Unit), type: doc}
+          - {id: developer/design/heu.mdx, label: HEU 设备, type: doc}
+          - {id: developer/design/teeu.mdx, label: TEEU 设备, type: doc}
+          - {id: developer/design/flmodel.mdx, label: FLModel设计文档, type: doc}
+          - {id: developer/design/strategy.mdx, label: Strategy框架设计, type: doc}
+          - {id: developer/design/programming_in_secretflow.mdx, label: 隐语的编程思想, type: doc}
+        label: 设计文档
+        type: category
+      - items:
+          - {id: developer/algorithm/secure_aggregation.mdx, label: 安全聚合, type: doc}
+          - {id: developer/algorithm/mix_lr.mdx, label: 混合切分联邦逻辑回归, type: doc}
+          - {id: developer/algorithm/federated_learning/fed_prox.mdx, label: 联邦策略：FedProx,
+            type: doc}
+          - {id: developer/algorithm/federated_learning/fed_scr.mdx, label: 联邦策略：FedSCR,
+            type: doc}
+          - {id: developer/algorithm/federated_learning/fed_stc.mdx, label: 联邦策略：FedSTC,
+            type: doc}
+          - {id: developer/algorithm/differential_privacy/GlobalDP.mdx, label: 差分隐私：联邦学习中的Global
+              DP, type: doc}
+        label: 算法
+        type: category
+      - items:
+          - {id: developer/benchmark/psi_benchmark.mdx, label: 隐语PSI Benchmark白皮书,
+            type: doc}
+          - {id: developer/benchmark/ubpsi_benchmark.mdx, label: 隐语非平衡(Unbalanced)
+              PSI Benchmark白皮书, type: doc}
+        label: Benchmark
+        type: category
     label: 开发者
     link: {id: developer/index.mdx, label: 开发者, type: doc}
     type: category

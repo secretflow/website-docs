@@ -2,31 +2,48 @@
 
 # 组件
 
-<Container type="note">
-  当前组件规范和 SecretFlow 组件列表均有可能发生变化。
-</Container>
+隐语组件基于两个标准。首先我们遵守 [隐语开放标准](https://www.secretflow.org.cn/docs/spec/latest) 。并且我们通过扩展标准定义了集群定义和其他数据类型，请查看 [扩展标准](comp_spec.mdx) 。扩展标准仅适用于隐语，并不适用于隐语生态下的其他隐私保护应用。对于扩展标准的详细解释在 [扩展标准注释](comp_spec_design.mdx) 。
 
-组件规范是 SecretFlow 生态系统提出的一种协议。它主要包括数据、组件和节点执行协议。从逻辑上讲，如果您使用组件规范包装任何程序，它将被 Kuscia(SecretFlow 技术栈的部署和调度系统) 和 SecretFlow 平台 <sup>:target{#id2}[1](#f1)</sup> (用户界面和控制面板) 认可。简而言之，对于系统开发人员，如果您使用组件规范包装应用程序，您可以轻松地利用其他开源 SecretFlow 项目。
+我们将一些常用的SecretFlow 应用程序包装为组件。SecretFlow 组件列表不是最终版本，我们正在不断更新列表。完整的组件列表在 [SecretFlow 组件列表](comp_list.mdx) 。
 
-基于组件规范，我们将一些常用的 SecretFlow 应用程序包装起来。SecretFlow 组件列表不是最终版本，我们正在及时更新列表。现在，您可以使用组件 API 或 CLI 运行 SecretFlow 应用程序，而不必编写 Python 程序。
+现在除了在Python程序中引入lib, 还还可以使用组件API或者CLI调用隐语程序，请查阅 [SecretFlow 组件指南](comp_guide.mdx) 。
 
-除了 SecretFlow，我们还将使用组件规范包装其他应用，包括 SCQL 和 TECC。
+:target{#migration-to-secretflow-open-specification}
 
-对于不熟悉 [组件规范](comp_spec.mdx) 的开发人员，建议首先查看 [组件规范的设计](comp_spec_design.mdx) 。
+## 迁移至 [隐语开放标准](https://www.secretflow.org.cn/docs/spec/latest)
 
-之后，请查看 [SecretFlow组件列表](comp_list.mdx) 以及 [SecretFlow 组件指南](comp_guide.mdx) 中的相关指南。
+引入 <strong>隐语开放标准</strong> 导致了一些不兼容的改动，包括
 
-<p className="sidebar-rubric">
-  脚注
-</p>
+:target{#comp-proto}
 
-<Footnote label="1" backrefs={["id2"]} id="f1">
-  产品名称未定。
-</Footnote>
+### comp.proto
+
+1. <em>comp.proto</em> 重命名为 <em>component.proto</em>
+2. 在 message <em>AttrType</em> 中， <em>AT\_UNDEFINED</em> 替换为 <em>ATTR\_TYPE\_UNSPECIFIED</em>
+3. 在 message <em>Attribute</em> 中， <em>has\_lower\_bound</em> 重命名为 <em>lower\_bound\_enabled</em>， <em>has\_upper\_bound</em> 重命名为 <em>upper\_bound\_enabled</em>
+4. 在 message <em>IoDef.TableAttrDef</em> 中， <em>attrs</em> 重命名为 <em>extra\_attrs</em>
+
+:target{#data-proto}
+
+### data.proto
+
+1. 在 message <em>SystemInfo</em>, <em>app\_name</em> 重命名为 <em>app</em>， <em>secretflow</em> (SFClusterDesc) 替换为 <em>app\_meta</em> (Any)
+2. Message <em>StorageConfig</em> 迁移至 <em>cluster.proto</em>
+3. 在 message <em>IndividualTable</em> 和 <em>VerticalTable</em>， <em>num\_lines</em> 重命名为 <em>line\_count</em> 。
+4. 在 message <em>DistData</em>， <em>sys\_info</em> 重命名为 <em>system\_info</em> 。
+
+我们对带来的不便感到抱歉。
 
 :target{#announcement}
 
 ## 公告
+
+:target{#october-2023}
+
+### October, 2023
+
+1. 我们正式发布了 [隐语开放标准](https://www.secretflow.org.cn/docs/spec/latest) ， 包含了所有隐私计算应用共享的部分。
+2. 剩余部分被称为 <strong>扩展标准</strong> 。
 
 :target{#july-2023}
 
@@ -41,8 +58,8 @@
     参考资料
   </p>
 
-  - [组件规范](comp_spec.mdx)
-  - [SecretFlow组件列表](comp_list.mdx)
+  - [扩展标准](comp_spec.mdx)
+  - [SecretFlow 组件列表](comp_list.mdx)
 </TableOfContents>
 
 <TableOfContents>
@@ -52,6 +69,6 @@
     文档
   </p>
 
-  - [组件规范的设计](comp_spec_design.mdx)
+  - [扩展标准注释](comp_spec_design.mdx)
   - [SecretFlow 组件指南](comp_guide.mdx)
 </TableOfContents>
