@@ -10,3 +10,5 @@ autodocsumm
 matplotlib
 secretflow-doctools
 sphinx-intl
+# FIXME:
+polars
