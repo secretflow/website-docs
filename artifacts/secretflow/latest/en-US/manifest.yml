@@ -36,6 +36,55 @@ sidebar:
                 label: Split Learning, type: doc}
               - {id: user_guide/federated_learning/vertical_federated_learning/tree.mdx,
                 label: Vertically Federated XGB (SecureBoost), type: doc}
+              - items:
+                  - items:
+                      - {id: 
+                          user_guide/federated_learning/vertical_federated_learning/SplitRec/effectiveness/mmoe_tf.mdx,
+                        label: SplitRec：在隐语中使用拆分 MMoe 算法（Tensorflow 后端）, type: doc}
+                      - {id: 
+                          user_guide/federated_learning/vertical_federated_learning/SplitRec/effectiveness/BST_TF.mdx,
+                        label: SplitRec：在隐语中使用拆分 BST 算法（Tensorflow 后端）, type: doc}
+                      - {id: 
+                          user_guide/federated_learning/vertical_federated_learning/SplitRec/effectiveness/BST_Torch.mdx,
+                        label: SplitRec：在隐语中使用拆分 BST 算法（Torch 后端）, type: doc}
+                      - {id: 
+                          user_guide/federated_learning/vertical_federated_learning/SplitRec/effectiveness/sl_rec_deepfm.mdx,
+                        label: 'SplitREC: Using DeepFM Algorithm in SecretFlow', type: doc}
+                    label: Effectiveness
+                    link: {id: 
+                        user_guide/federated_learning/vertical_federated_learning/SplitRec/effectiveness/index.mdx,
+                      label: Effectiveness, type: doc}
+                    type: category
+                  - items:
+                      - {id: 
+                          user_guide/federated_learning/vertical_federated_learning/SplitRec/efficiency/sl_compressor.mdx,
+                        label: SplitRec：在隐语拆分学习中使用通信压缩, type: doc}
+                      - {id: 
+                          user_guide/federated_learning/vertical_federated_learning/SplitRec/efficiency/sl_pipeline.mdx,
+                        label: SplitRec：在隐语拆分学习中使用流水线并行, type: doc}
+                    label: Efficiency
+                    link: {id: 
+                        user_guide/federated_learning/vertical_federated_learning/SplitRec/efficiency/index.mdx,
+                      label: Efficiency, type: doc}
+                    type: category
+                  - items:
+                      - {id: 
+                          user_guide/federated_learning/vertical_federated_learning/SplitRec/security/feature_inference_attack.mdx,
+                        label: SplitRec：在隐语拆分学习中使用 FeatureInferenceAttack, type: doc}
+                      - {id: 
+                          user_guide/federated_learning/vertical_federated_learning/SplitRec/security/label_inference_attack.mdx,
+                        label: SplitRec：在隐语拆分学习中使用 LabelInferenceAttack, type: doc}
+                    label: Security
+                    link: {id: 
+                        user_guide/federated_learning/vertical_federated_learning/SplitRec/security/index.mdx,
+                      label: Security, type: doc}
+                    type: category
+                label: 'SplitRec: When Split Learning in Secretflow meets Recommandation
+                  System'
+                link: {id: user_guide/federated_learning/vertical_federated_learning/SplitRec/index.mdx,
+                  label: 'SplitRec: When Split Learning in Secretflow meets Recommandation
+                    System', type: doc}
+                type: category
             label: Vertical Federated Learning
             link: {id: user_guide/federated_learning/vertical_federated_learning/index.mdx,
               label: Vertical Federated Learning, type: doc}
@@ -89,6 +138,8 @@ sidebar:
                     link: {id: source/secretflow.data.data.core.mdx, label: secretflow.data.core
                         package, type: doc}
                     type: category
+                  - {id: source/secretflow.data.data.groupby.mdx, label: secretflow.data.groupby
+                      package, type: doc}
                   - {id: source/secretflow.data.data.horizontal.mdx, label: secretflow.data.horizontal
                       package, type: doc}
                   - {id: source/secretflow.data.data.io.mdx, label: secretflow.data.io
@@ -476,8 +527,30 @@ sidebar:
               Neural Network, type: doc}
           - {id: tutorial/mix_lr.mdx, label: Mix Federated Learning - Logistic Regression,
             type: doc}
-          - {id: tutorial/sl_rec_deepfm.mdx, label: 'SplitREC: Using DeepFM Algorithm
-              in SecretFlow', type: doc}
+          - {id: 
+              user_guide/federated_learning/vertical_federated_learning/SplitRec/effectiveness/sl_rec_deepfm.mdx,
+            label: 'SplitREC: Using DeepFM Algorithm in SecretFlow', type: doc}
+          - {id: 
+              user_guide/federated_learning/vertical_federated_learning/SplitRec/effectiveness/BST_TF.mdx,
+            label: SplitRec：在隐语中使用拆分 BST 算法（Tensorflow 后端）, type: doc}
+          - {id: 
+              user_guide/federated_learning/vertical_federated_learning/SplitRec/effectiveness/BST_Torch.mdx,
+            label: SplitRec：在隐语中使用拆分 BST 算法（Torch 后端）, type: doc}
+          - {id: 
+              user_guide/federated_learning/vertical_federated_learning/SplitRec/effectiveness/mmoe_tf.mdx,
+            label: SplitRec：在隐语中使用拆分 MMoe 算法（Tensorflow 后端）, type: doc}
+          - {id: 
+              user_guide/federated_learning/vertical_federated_learning/SplitRec/efficiency/sl_compressor.mdx,
+            label: SplitRec：在隐语拆分学习中使用通信压缩, type: doc}
+          - {id: 
+              user_guide/federated_learning/vertical_federated_learning/SplitRec/efficiency/sl_pipeline.mdx,
+            label: SplitRec：在隐语拆分学习中使用流水线并行, type: doc}
+          - {id: 
+              user_guide/federated_learning/vertical_federated_learning/SplitRec/security/feature_inference_attack.mdx,
+            label: SplitRec：在隐语拆分学习中使用 FeatureInferenceAttack, type: doc}
+          - {id: 
+              user_guide/federated_learning/vertical_federated_learning/SplitRec/security/label_inference_attack.mdx,
+            label: SplitRec：在隐语拆分学习中使用 LabelInferenceAttack, type: doc}
         label: Federated Learning
         type: category
       - items:

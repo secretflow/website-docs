@@ -22,7 +22,7 @@ such as consumer features, financial features and user portraits, etc. However, 
 
 The DeepFM algorithm combines the strengths of FM and neural networks, can improve low-dimensional and high-dimensional features at the same time. Compared with the Wide\&Deep model, DeepFM algorithm also eliminates the feature engineering part.
 
-![deepfm\_algo](../_assets/deepfm_algo.png)
+![deepfm\_algo](../../../../../_assets/deepfm_algo.png)
 
 From the overall structure, This model can be divided into two parts, namely the FM part and the Deep part. The input of these two parts is the same, and there is no distinction like the Wide & Deep model. The Deep part is used to train the high-dimensional correlations of these features, while the FM model calculates the two-dimensional cross information between features through the hidden vector v.
 
@@ -137,7 +137,7 @@ It can be seen from the derivation of the formula that each participant only nee
   \- The dimension of (2) is `batchsize*K`, the information on the feature dimension has been eliminated, and only the sum information on the FM vector dimension is retained (usually dim=4)
 </LineBlock>
 
-![deepfm\_path](../_assets/deepfm_plan.jpg):target{#SecretFlow-encapsulation}
+![deepfm\_path](../../../../../_assets/deepfm_plan.jpg):target{#SecretFlow-encapsulation}
 
 ## SecretFlow encapsulation
 
