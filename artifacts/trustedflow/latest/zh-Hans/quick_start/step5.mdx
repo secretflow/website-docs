@@ -84,7 +84,7 @@ vote_invite:
 正确填写之后，执行下列命令，可以得到文件data-export.json。
 
 ```none
-cms_util generate-data-export-cert --config-file=expor.yaml --dest-file=data-export.json
+cms_util generate-data-export-cert --config-file=export.yaml --dest-file=data-export.json
 ```
 
 data-export.json的部分内容展示如下。 这里需要关注的是`vote_request.body`，这个其实是把上面`vote_request`的内容（不包含私钥和签名部分）转换成了json并且进行了base64编码。(如果您有兴趣可以用base64进行解码进行查看)
@@ -118,9 +118,9 @@ data-export.json的部分内容展示如下。 这里需要关注的是`vote_req
 
 首先，bob需要把以下内容复制到一个空文件，假设文件叫做sign.yaml。该文件说明如下：
 
-- \`vote\_request\_signature\`\`: 上一步alice得到的数据导出请求的内容，拷贝到这里。记住，请替换为您实际得到的内容。
+- `vote_request_signature`: 上一步alice得到的数据导出请求的内容，拷贝到这里。记住，请替换为您实际得到的内容。
 - `action`: `APPROVED`表示同意alice的请求，无需修改。
-- \`private\_key\_file\`\`: bob自己的私钥，用于签名。
+- `private_key_file`: bob自己的私钥，用于签名。
 
 ```yaml
 vote_request_signature: "eyJ2b3RlX3JlcXVlc3RfaWQiOiBudWxsLCAidHlwZSI6ICJURUVfRE9XTkxPQUQiLCAiaW5pdGlhdG9yIjogbnVsbCwgInZvdGVfY291bnRlciI6ICIiLCAidm90ZXJzIjogW251bGxdLCAiZXhlY3V0b3JzIjogW251bGxdLCAiYXBwcm92ZWRfdGhyZXNob2xkIjogMSwgImFwcHJvdmVkX2FjdGlvbiI6ICJ0ZWUvZG93bmxvYWQsbW9kZWxfdXVpZCIsICJyZWplY3RlZF9hY3Rpb24iOiAiIn0"
@@ -174,7 +174,7 @@ vote_invite:
 接着执行命令，执行下列命令，可以得到更新后的文件data-export.json。
 
 ```none
-cms_util generate-data-export-cert --config-file=expor.yaml --dest-file=data-export.json
+cms_util generate-data-export-cert --config-file=export.yaml --dest-file=data-export.json
 ```
 
 :target{id="2.4-alice获取数据密钥并解密"}
