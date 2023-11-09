@@ -24,6 +24,7 @@ jobs:
           - kuscia
           - secretpad
           - spec
+          - trustedflow
 
     steps:
       - uses: actions/checkout@v3
