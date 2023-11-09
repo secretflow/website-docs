@@ -13,7 +13,7 @@ author = "SecretFlow authors"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["myst_parser", "secretflow_doctools"]
+extensions = ["myst_parser", "nbsphinx", "secretflow_doctools"]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
