@@ -2,7 +2,7 @@
 
 # 步骤四：（仅carol）运行可信APP
 
-这里我们假设alice和bob已经把第二步加密得到的文件传给了carol（TrustedFlow不提供传输网络，机构之间应该自行建设安全的传输链路）。
+这里我们假设alice和bob已经把第二步加密得到的文件传给了carol（机构之间应该自行通过安全的传输链路进行传输）。
 
 :target{#直接使用breast-cancer数据集建模}
 
@@ -309,7 +309,7 @@ TrustedFlow提供了多种可信APP，详细列表参见[可信APP](../architect
 #### 1. 启动可信APP容器
 
 ```bash
-docker run -it --name teeapps-sim --network=host secretflow/teeapps-sim:0.1.0b0 bash
+docker run -it --name teeapps-sim --network=host secretflow/teeapps-sim-ubuntu20.04:latest bash
 ```
 
 :target{id="2.-把alice和bob的加密数据文件放入容器内"}
@@ -583,7 +583,7 @@ score,label,id
 #### 1. 启动可信APP容器
 
 ```bash
-docker run -it --name teeapps-sgx --network=host -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provision:/dev/sgx/provision --privileged=true secretflow/teeapps-sgx:2.0.0.dev20231025 bash
+docker run -it --name teeapps-sgx --network=host -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provision:/dev/sgx/provision --privileged=true secretflow/teeapps-sgx-ubuntu20.04:latest bash
 ```
 
 :target{id="2.-修改-PCCS-配置"}
@@ -765,7 +765,7 @@ cd /home/teeapp/occlum/occlum_instance
 occlum run /bin/main --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/psi_task.json
 ```
 
-求交结果是加密的，对应的加密文件位于/host/testdata/breast\_cancer/join\_table（您可以在psi.json中找到对应的配置项）。
+求交结果是加密的，对应的加密文件位于/host/testdata/breast\_cancer/join\_table（您可以在psi.json中找到对应的配置项）。注意，由于occlum使用`host`指代其当前运行所在目录，所以文件实际存放在当前目录的`testdata/breast_cancer/join_table`。
 
 （可选）如果您感兴趣，可以按照步骤五导出数据的说明导出该密文文件。，您获得的明文结果会是一张包含一列id、10列特征以及1列标签值，包含569个样本。您会发现内容和前面提到的通过sklearn下载得到的breast\_cancer数据集内容是一样的。
 
@@ -785,7 +785,7 @@ id,mean radius,mean texture,mean perimeter,mean area,mean smoothness,mean compac
 
 2. 拆分数据集
 
-继续执行命令。拆分后得到训练（80%）和测试（20%）两份数据集，存放位置为/host/testdata/breast\_cancer/train\_table和/host/testdata/breast\_cancer/test\_table。
+继续执行命令。拆分后得到训练（80%）和测试（20%）两份数据集，存放位置为testdata/breast\_cancer/train\_table和testdata/breast\_cancer/test\_table。
 
 （可选）同样地，您同样可以按照步骤五中的方法获取数据密钥对其进行解密，与明文拆分的结果进行比较，两者预期是一致的。
 
@@ -795,7 +795,7 @@ occlum run /bin/main --enable_capsule_tls=false --entry_task_config_path=/host/i
 
 3. XGBoost训练
 
-继续执行命令。计算结果为一个加密的xgb树模型，存放位置为/host/testdata/breast\_cancer/xgb\_model。
+继续执行命令。计算结果为一个加密的xgb树模型，存放位置为testdata/breast\_cancer/xgb\_model。
 
 ```bash
 occlum run /bin/main --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/xgb_task.json
@@ -805,7 +805,7 @@ occlum run /bin/main --enable_capsule_tls=false --entry_task_config_path=/host/i
 
 4. XGBoost预测
 
-继续执行命令。计算结果为预测结果，包含以下列：score-预测结果、label-原始的标签、id：样本ID，文件存放位置为/host/testdata/breast\_cancer/xgb\_model。
+继续执行命令。计算结果为预测结果，包含以下列：score-预测结果、label-原始的标签、id：样本ID，文件存放位置为testdata/breast\_cancer/xgb\_model。
 
 ```bash
 occlum run /bin/main --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/xgb_predict_task.json
