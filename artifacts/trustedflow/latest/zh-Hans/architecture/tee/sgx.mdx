@@ -29,7 +29,7 @@ SGX最重要的核心概念是Enclave（飞地），Enclave可以被视为进程
 
 根据场景的不同，您可以选择用MRENCLAVE或者MRSIGNER来唯一确认Enclave的身份，通常情况下应该使用MRENCLAVE。若您可以信任某个机构，则可以使用MRSIGNER，从而减缓使用中可能遇到的潜在问题，比如代码频繁升级带来的困扰。
 
-:target{#id1}
+:target{#remote-attestation}
 
 ## 远程认证
 
@@ -49,11 +49,11 @@ ECDSA配合 Intel SGX DCAP（Intel Software Guard Extensions Data Center Attesta
 
 （[图片来源](https://download.01.org/intel-sgx/sgx-dcap/1.10/linux/docs/SGX_DCAP_Caching_Service_Design_Guide.pdf)）
 
-:target{#pccs}
+:target{#how-to-deploy-pccs-service}
 
 ### 如何部署PCCS服务
 
-:target{#id2}
+:target{#pccs}
 
 #### 情形一：使用云厂商自带的PCCS服务
 
@@ -62,7 +62,7 @@ ECDSA配合 Intel SGX DCAP（Intel Software Guard Extensions Data Center Attesta
 
 具体可以查阅对应云厂商的官方文档。
 
-:target{#id3}
+:target{#id1}
 
 #### 自行搭建PCCS服务
 
