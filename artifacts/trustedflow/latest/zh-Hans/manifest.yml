@@ -1,5 +1,13 @@
 sidebar:
-  - {id: quick_start/index.mdx, label: 快速上手, type: doc}
+  - items:
+      - {id: quick_start/step1.mdx, label: 步骤一：（仅 carol）前置部署, type: doc}
+      - {id: quick_start/step2.mdx, label: 步骤二：（仅alice和bob）数据加密, type: doc}
+      - {id: quick_start/step3.mdx, label: 步骤三：（仅alice和bob）数据授权, type: doc}
+      - {id: quick_start/step4.mdx, label: 步骤四：（仅carol）运行可信APP, type: doc}
+      - {id: quick_start/step5.mdx, label: 步骤五：（可选）获取结果, type: doc}
+    label: 快速上手
+    link: {id: quick_start/index.mdx, label: 快速上手, type: doc}
+    type: category
   - items:
       - {id: architecture/principle.mdx, label: TrustedFlow原理, type: doc}
       - {id: architecture/policy.mdx, label: 授权策略, type: doc}

@@ -1,0 +1,163 @@
+:target{#步骤三：（仅alice和bob）数据授权}
+
+# 步骤三：（仅alice和bob）数据授权
+
+这一步alice和bob需要对数据的使用进行授权，比如允许与哪些参与方的指定数据进行联合计算、允许执行的代码等，TrustedFlow称之授权策略（policy）。TrustedFlow提供了一套语法用于表述授权策略，您可以阅读[授权策略](../architecture/policy.mdx)了解更多。
+
+我们继续以breast cancer数据集为例，alice和bob期望联合双方的数据依次进行求交、数据集拆分、树模型（XGBoost）建模、树模型（XGBoost）预测、二分类评估。为了达成这一目标，alice和bob需要分别对各自的数据进行授权。该步骤的内容alice和bob均需要分别执行。
+
+需要授权的policy包含几个方面： - 授权的机构ID - 授权的算法 - 授权的数据列 - 授权的一些约束（可选）
+
+:target{#选项一：仿真模式}
+
+## 选项一：仿真模式
+
+1. 编写授权策略
+
+我们需要在cli.yaml里编写授权策略。
+
+alice的授权示例写法如下，该策略表达了以下含义：
+
+- `data_uuid`和`grantee_party_ids`：alice允许carol使用breast\_cancer\_alice这份数据。
+- `columns`: 允许使用数据的这些列：id、mean radius、mean texture、mean perimeter、mean area、mean smoothness。
+- `op_constraints_name`: 允许执行以下计算：数据求教（OP\_PSI）、数据拆分（OP\_DATASET\_SPLIT）、XGB训练（OP\_XGB）、XGB预测（OP\_XGB\_PREDICT）、二分类评估（OP\_BICLASSIFIER\_EVALUATION）。关于算子的更详细说明，可以阅读[可信应用](../architecture/apps/index.mdx)。
+
+下面的配置还需要您根据实际情况进行完善，包含：
+
+- grantee\_party\_ids：请填写真实的carol机构ID（如何生成机构ID，可以阅读步骤二[第三步](step2.mdx#第三步：上传数据密钥)中的仿真模式。
+
+```yaml
+register_data_policy:
+  # 授权范围，一般是项目空间维度
+  scope: default
+  data_uuid: breast_cancer_alice
+  grantee_party_ids:
+    -
+      - carol的机构ID
+  columns:
+    -
+      - id
+      - mean radius
+      - mean texture
+      - mean perimeter
+      - mean area
+      - mean smoothness
+  op_constraints_name:
+    -
+      - OP_PSI
+      - OP_DATASET_SPLIT
+      - OP_XGB
+      - OP_PREDICT
+      - OP_BICLASSIFIER_EVALUATION
+```
+
+同理bob也需要修改自己的cli.yaml，需要记得修改`data_uuid`的值为`breast_cancer_bob`。
+
+2. 提交授权策略
+
+执行以下命令，提交授权策略到CapsuleManager。
+
+```bash
+cms register-data-policy
+```
+
+:target{#选项二：SGX模式}
+
+## 选项二：SGX模式
+
+:target{#第一步：获得可信APP的度量值}
+
+### 第一步：获得可信APP的度量值
+
+与仿真模式相比，SGX模式额外需要获取可信APP的mrenclave，前文已经涉及到相关概念，相信到此时您已经对mrenclave不再陌生。
+
+1. 启动可信APP容器
+
+```bash
+docker run -it --name teeapps-sgx --network=host -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provision:/dev/sgx/provision --privileged=true secretflow/teeapps-sgx:0.1.0b0 bash
+```
+
+2. 配置PCCS地址 修改文件/home/teeapp/occlum/occlum\_instance/image/etc/kubetee/unified\_attestation.json中的`PCCS_URL`为carol的PCCS服务地址（您应该向carol获取此信息）。
+3. 构建可信APP 您首先需要生成私钥，然后使用以下命令构建occlum。生成私钥可以参考下列脚本，生成的私钥保存在当前目录的private\_key.pem。请妥善保存您的私钥，不要泄露给其他人。
+
+```bash
+openssl genrsa -3 -out private_key.pem 3072
+```
+
+生成公私钥后，使用私钥构建occlum。
+
+```bash
+occlum build -f --sign-key private_key.pem
+```
+
+4. 获取mrenclave
+
+执行下列命令可以获得可信APP的mrenclave，输出内容为一串十六进制字符串，您可以保存下来，后续步骤会使用到。
+
+```bash
+occlum print mrenclave | tr a-z A-Z
+```
+
+:target{#第二步：数据授权}
+
+### 第二步：数据授权
+
+1. 编写授权策略
+
+我们需要在cli.yaml里编写授权策略。
+
+alice的授权示例写法如下，该策略表达了以下含义：
+
+- `data_uuid`和`grantee_party_ids`：alice允许carol使用breast\_cancer\_alice这份数据。
+- `columns`: 允许使用数据的这些列：id、mean radius、mean texture、mean perimeter、mean area、mean smoothness。
+- `op_constraints_name`: 允许执行以下计算：数据求教（OP\_PSI）、数据拆分（OP\_DATASET\_SPLIT）、XGB训练（OP\_XGB）、XGB预测（OP\_XGB\_PREDICT）、二分类评估（OP\_BICLASSIFIER\_EVALUATION）。关于算子的更详细说明，可以阅读[可信应用](../architecture/apps/index.mdx)。
+- `global_constraints`: 限制可信APP的mrenclave。
+
+下面的配置还需要您根据实际情况进行完善，包含：
+
+- grantee\_party\_ids：请填写真实的carol机构ID（如何生成机构ID，可以阅读步骤二[第三步](step2.mdx#第三步：上传数据密钥)中的仿真模式。
+- r.env.tee.mr\_enclave: 填写上一步所获得的可信APP mrenclave。
+
+```yaml
+register_data_policy:
+  # 授权范围，一般是项目空间维度
+  scope: default
+  data_uuid: breast_cancer_alice
+  grantee_party_ids:
+    -
+      - carol的机构ID
+  columns:
+    -
+      - id
+      - mean radius
+      - mean texture
+      - mean perimeter
+      - mean area
+      - mean smoothness
+  global_constraints:
+    -
+      - r.env.tee.mr_enclave=="xxxx"
+  op_constraints_name:
+    -
+      - OP_PSI
+      - OP_DATASET_SPLIT
+      - OP_XGB
+      - OP_PREDICT
+      - OP_BICLASSIFIER_EVALUATION
+```
+
+同理bob也需要修改自己的cli.yaml，需要记得修改`data_uuid`的值为`breast_cancer_bob`。
+
+2. 提交授权策略
+
+执行以下命令，提交授权策略到CapsuleManager。
+
+```bash
+cms register-data-policy
+```
+
+:target{#（可选）自定义授权策略}
+
+## （可选）自定义授权策略
+
+在快速上手的示例之外，您可以探索更多的授权策略，根据自己的需求对数据进行授权，参见[授权策略](../architecture/policy.mdx)。
