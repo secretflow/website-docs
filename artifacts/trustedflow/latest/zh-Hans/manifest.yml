@@ -1,0 +1,40 @@
+sidebar:
+  - {id: quick_start/index.mdx, label: 快速上手, type: doc}
+  - items:
+      - {id: architecture/principle.mdx, label: TrustedFlow原理, type: doc}
+      - {id: architecture/policy.mdx, label: 授权策略, type: doc}
+      - {id: architecture/data_lineage.mdx, label: 数据血缘, type: doc}
+      - items:
+          - {id: architecture/apps/intersect.mdx, label: 求交, type: doc}
+          - {id: architecture/apps/woe_binning.mdx, label: WOE分箱, type: doc}
+          - {id: architecture/apps/woe_substitution.mdx, label: WOE转换, type: doc}
+          - {id: architecture/apps/split.mdx, label: 随机分割, type: doc}
+          - {id: architecture/apps/feature_filter.mdx, label: 特征过滤, type: doc}
+          - {id: architecture/apps/corr.mdx, label: 相关系数矩阵, type: doc}
+          - {id: architecture/apps/data_describe.mdx, label: 全表统计, type: doc}
+          - {id: architecture/apps/vif.mdx, label: VIF, type: doc}
+          - {id: architecture/apps/xgb_train.mdx, label: XGBoost训练, type: doc}
+          - {id: architecture/apps/lr_train.mdx, label: LR训练, type: doc}
+          - {id: architecture/apps/xgb_predict.mdx, label: XGBoost离线预测, type: doc}
+          - {id: architecture/apps/lr_predict.mdx, label: LR预测, type: doc}
+          - {id: architecture/apps/binary_evaluation.mdx, label: 二分类评估, type: doc}
+          - {id: architecture/apps/prediction_bias_eval.mdx, label: 预测偏差评估, type: doc}
+        label: 可信APP
+        link: {id: architecture/apps/index.mdx, label: 可信APP, type: doc}
+        type: category
+      - items:
+          - {id: architecture/tee/sgx.mdx, label: Intel SGX, type: doc}
+        label: 可信执行环境简介
+        link: {id: architecture/tee/index.mdx, label: 可信执行环境简介, type: doc}
+        type: category
+    label: 核心功能
+    link: {id: architecture/index.mdx, label: 核心功能, type: doc}
+    type: category
+  - items:
+      - {id: advanced_topic/cross_domain_controll_in_tee.mdx, label: 基于TrustedFlow的数据要素跨域管控,
+        type: doc}
+      - {id: advanced_topic/roadmap.mdx, label: 路线图, type: doc}
+    label: 高阶话题
+    link: {id: advanced_topic/index.mdx, label: 高阶话题, type: doc}
+    type: category
+version: '1'
