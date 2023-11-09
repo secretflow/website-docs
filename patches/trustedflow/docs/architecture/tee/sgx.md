@@ -13,6 +13,7 @@ SGX最重要的核心概念是Enclave（飞地），Enclave可以被视为进程
 
 ![sgx](../../images/sgx.png)
 
+{#enclave-mrenclave-mrsigner}
 ### Enclave身份标识 - MRENCLAVE 和 MRSIGNER
 
 每个Enclave都具有两个与其绑定的身份标识。
@@ -23,7 +24,7 @@ SGX最重要的核心概念是Enclave（飞地），Enclave可以被视为进程
 
 根据场景的不同，您可以选择用MRENCLAVE或者MRSIGNER来唯一确认Enclave的身份，通常情况下应该使用MRENCLAVE。若您可以信任某个机构，则可以使用MRSIGNER，从而减缓使用中可能遇到的潜在问题，比如代码频繁升级带来的困扰。
 
-
+{#remote-attestation}
 ## 远程认证
 
 远程认证提供了一种机制，允许远程用户验证远程进程中软件的真实性。SGX的远程认证可以对以下内容进行验证：
@@ -44,6 +45,7 @@ ECDSA配合 Intel SGX DCAP（Intel Software Guard Extensions Data Center Attesta
 
 （[图片来源](https://download.01.org/intel-sgx/sgx-dcap/1.10/linux/docs/SGX_DCAP_Caching_Service_Design_Guide.pdf)）
 
+{#how-to-deploy-pccs-service}
 ### 如何部署PCCS服务
 
 #### 情形一：使用云厂商自带的PCCS服务

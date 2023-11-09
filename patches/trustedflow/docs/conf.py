@@ -54,14 +54,37 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/secretflow/spec",
+            "url": "https://github.com/secretflow/trustedflow",
             "icon": "fab fa-github-square",
             "type": "fontawesome",
         },
     ],
     "logo": {
-        "text": "Secretflow Open Specification",
+        "text": "TrustedFlow",
     },
     "show_nav_level": 4,
     "language_switch_button": True,
 }
+
+# Enable all MyST features
+myst_gfm_only = False
+# Enable anchors for heading level h1 through h6
+myst_heading_anchors = 6
+
+myst_enable_extensions = [
+    "amsmath",
+    "colon_fence",
+    "deflist",
+    "dollarmath",
+    "fieldlist",
+    "html_admonition",
+    "html_image",
+    "linkify",
+    "replacements",
+    "smartquotes",
+    "strikethrough",
+    "substitution",
+    "tasklist",
+    "attrs_inline",
+    "attrs_block",
+]

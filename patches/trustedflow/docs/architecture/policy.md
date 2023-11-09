@@ -17,14 +17,14 @@ constraint本质上是描述“访问控制”这件事，比如允许对数据�
 constraint支持对以下元信息进行限制。具体语法上，每一条constraint的元素都是以`r.`作为开头。（TrustedFlow采用了[casbin](https://github.com/casbin/casbin)作为底层的访问控制实现）
 
 #### mr_enclave
-限制代码的MRENCLAVE，关于MRENCLAVE的说明参见 [Enclave](tee/sgx#enclave) 。
+限制代码的MRENCLAVE，关于MRENCLAVE的说明参见 [Enclave](tee/sgx.md#enclave) 。
 
 ```bash
 r.env.tee.mr_encalve == "mrenclave of the enclave"
 ```
 
 #### mr_signer
-限制代码的MRSIGNER，关于MRSIGNER的说明参见 [Enclave](tee/sgx#enclave) 。
+限制代码的MRSIGNER，关于MRSIGNER的说明参见 [Enclave](tee/sgx.md#enclave) 。
 
 ```bash
 r.env.tee.mr_signer == "mrsigner of the enclave"
