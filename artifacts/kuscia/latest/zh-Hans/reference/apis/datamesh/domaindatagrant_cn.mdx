@@ -1,10 +1,11 @@
-:target{#domaindata}
+:target{#domaindatagrant}
 
-# DomainData
+# DomainDataGrant
 
-DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 侧的管理 DomainData
-的能力。请参考 [DomainData](../../concepts/domaindata_cn.mdx)。
-你可以从 [这里](https://github.com/secretflow/kuscia/blob/main/proto/api/v1alpha1/datamesh/domaindata.proto) 找到对应的 protobuf 文件。
+DomainDataGrant 表示被 Kuscia 管理的数据对象的授权，Data Mesh API 提供了从 Domain 侧的管理 DomainDataGrant
+的能力。
+请参考 [DomainDataGrant](../../concepts/domaindatagrant_cn.mdx)。
+你可以从 [这里](https://github.com/secretflow/kuscia/blob/main/proto/api/v1alpha1/datamesh/domaindatagrant.proto) 找到对应的 protobuf 文件。
 
 :target{#id1}
 
@@ -34,73 +35,73 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
   <tbody>
     <tr>
       <td>
-        [CreateDomainData](#create-domain-data)
+        [CreateDomainDataGrant](#create-domain-data-grant)
       </td>
 
       <td>
-        CreateDomainDataRequest
+        CreateDomainDataGrantRequest
       </td>
 
       <td>
-        CreateDomainDataResponse
+        CreateDomainDataGrantResponse
       </td>
 
       <td>
-        创建数据对象
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        [UpdateDomainData](#update-domain-data)
-      </td>
-
-      <td>
-        UpdateDomainDataRequest
-      </td>
-
-      <td>
-        UpdateDomainDataResponse
-      </td>
-
-      <td>
-        更新数据对象
+        创建数据对象授权
       </td>
     </tr>
 
     <tr>
       <td>
-        [DeleteDomainData](#delete-domain-data)
+        [UpdateDomainDataGrant](#update-domain-data-grant)
       </td>
 
       <td>
-        DeleteDomainDataRequest
+        UpdateDomainDataGrantRequest
       </td>
 
       <td>
-        DeleteDomainDataResponse
+        UpdateDomainDataGrantResponse
       </td>
 
       <td>
-        删除数据对象
+        更新数据对象授权
       </td>
     </tr>
 
     <tr>
       <td>
-        [QueryDomainData](#query-domain-data)
+        [DeleteDomainDataGrant](#delete-domain-data-grant)
       </td>
 
       <td>
-        QueryDomainDataRequest
+        DeleteDomainDataGrantRequest
       </td>
 
       <td>
-        QueryDomainDataResponse
+        DeleteDomainDataGrantResponse
       </td>
 
       <td>
-        查询数据对象
+        删除数据对象授权
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [QueryDomainDataGrant](#query-domain-data-grant)
+      </td>
+
+      <td>
+        QueryDomainDataGrantRequest
+      </td>
+
+      <td>
+        QueryDomainDataGrantResponse
+      </td>
+
+      <td>
+        查询数据对象授权
       </td>
     </tr>
   </tbody>
@@ -110,19 +111,19 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
 
 ## 接口详情
 
-:target{#create-domain-data}
+:target{#create-domain-data-grant}
 
-### 创建数据对象
+### 创建数据对象授权
 
 :target{#http}
 
 #### HTTP路径
 
-/api/v1/datamesh/domaindata/create
+/api/v1/datamesh/domaindatagrant/create
 
-:target{#create-domain-data-request}
+:target{#create-domain-data-grant-request}
 
-#### 请求（CreateDomainDataRequest）
+#### 请求（CreateDomainDataGrantRequest）
 
 <table>
   <thead>
@@ -166,6 +167,24 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
 
     <tr>
       <td>
+        domaindatagrant\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        数据对象授权ID，如果不填，则会由 datamesh 自动生成，并在 response 中返回。如果填写，则会使用填写的值，请注意需满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
         domaindata\_id
       </td>
 
@@ -174,17 +193,17 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        可选
+        必填
       </td>
 
       <td>
-        数据对象ID，满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
+        数据对象ID
       </td>
     </tr>
 
     <tr>
       <td>
-        name
+        grant\_domain
       </td>
 
       <td>
@@ -196,53 +215,35 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        名称
+        被授权节点ID
       </td>
     </tr>
 
     <tr>
       <td>
-        type
+        limit
       </td>
 
       <td>
-        string
+        [GrantLimit](#grant-limit-entity)
       </td>
 
       <td>
-        必填
+        选填
       </td>
 
       <td>
-        类型，\[table,model,rule,report,unknown]，大小写敏感
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        relative\_uri
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        授权限制条件
       </td>
     </tr>
 
     <tr>
       <td>
-        datasource\_id
+        description
       </td>
 
       <td>
-        string
+        map\<string, string>
       </td>
 
       <td>
@@ -250,87 +251,15 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        数据源ID，不填写则使用默认数据源，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        attributes
-      </td>
-
-      <td>
-        map\<string,string>
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        partition
-      </td>
-
-      <td>
-        [Partition](#partition)
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        暂不支持
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        columns
-      </td>
-
-      <td>
-        [DataColumn](#data-column) array
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        列信息
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        vendor
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        来源，用于查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        自定义描述
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#create-domain-data-response}
+:target{#create-domain-data-grant-response}
 
-#### 响应（CreateDomainDataResponse）
+#### 响应（CreateDomainDataGrantResponse）
 
 <table>
   <thead>
@@ -378,7 +307,7 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        CreateDomainDataResponseData
+        CreateDomainDataGrantResponseData
       </td>
 
       <td>
@@ -392,7 +321,7 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
 
     <tr>
       <td>
-        data.domaindata\_id
+        data.domaindatagrant\_id
       </td>
 
       <td>
@@ -404,25 +333,25 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        数据对象ID
+        数据对象授权ID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#update-domain-data}
+:target{#update-domain-data-grant}
 
-### 更新数据对象
+### 更新数据对象授权
 
 :target{#id3}
 
 #### HTTP路径
 
-/api/v1/datamesh/domaindata/update
+/api/v1/datamesh/domaindatagrant/update
 
-:target{#updatedomaindatarequest}
+:target{#updatedomaindatagrantrequest}
 
-#### 请求（UpdateDomainDataRequest）
+#### 请求（UpdateDomainDataGrantRequest）
 
 <table>
   <thead>
@@ -466,6 +395,24 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
 
     <tr>
       <td>
+        domaindatagrant\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        数据对象授权ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
         domaindata\_id
       </td>
 
@@ -484,7 +431,7 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
 
     <tr>
       <td>
-        name
+        grant\_domain
       </td>
 
       <td>
@@ -496,53 +443,35 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        名称
+        被授权节点ID
       </td>
     </tr>
 
     <tr>
       <td>
-        type
+        limit
       </td>
 
       <td>
-        string
+        [GrantLimit](#grant-limit-entity)
       </td>
 
       <td>
-        必填
+        选填
       </td>
 
       <td>
-        类型，\[table,model,rule,report,unknown]，大小写敏感
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        relative\_uri
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        授权限制条件
       </td>
     </tr>
 
     <tr>
       <td>
-        datasource\_id
+        description
       </td>
 
       <td>
-        string
+        map\<string, string>
       </td>
 
       <td>
@@ -550,87 +479,15 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        数据源ID，不填写则使用默认数据源，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        attributes
-      </td>
-
-      <td>
-        map\<string,string>
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        partition
-      </td>
-
-      <td>
-        [Partition](#partition)
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        暂不支持
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        columns
-      </td>
-
-      <td>
-        [DataColumn](#data-column)\[]
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        列信息
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        vendor
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        来源，用于批量查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        自定义描述
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#updatedomaindataresponse}
+:target{#updatedomaindatagrantresponse}
 
-#### 响应（UpdateDomainDataResponse）
+#### 响应（UpdateDomainDataGrantResponse）
 
 <table>
   <thead>
@@ -674,19 +531,19 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
   </tbody>
 </table>
 
-:target{#delete-domain-data}
+:target{#delete-domain-data-grant}
 
-### 删除数据对象
+### 删除数据对象授权
 
 :target{#id4}
 
 #### HTTP路径
 
-/api/v1/datamesh/domaindata/delete
+/api/v1/datamesh/domaindatagrant/delete
 
-:target{#deletedomaindatarequest}
+:target{#deletedomaindatagrantrequest}
 
-#### 请求（DeleteDomainDataRequest）
+#### 请求（DeleteDomainDataGrantRequest）
 
 <table>
   <thead>
@@ -730,7 +587,7 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
 
     <tr>
       <td>
-        domaindata\_id
+        domaindatagrant\_id
       </td>
 
       <td>
@@ -742,15 +599,15 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        数据对象ID
+        数据对象授权ID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#deletedomaindataresponse}
+:target{#deletedomaindatagrantresponse}
 
-#### 响应（DeleteDomainDataResponse）
+#### 响应（DeleteDomainDataGrantResponse）
 
 <table>
   <thead>
@@ -794,19 +651,19 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
   </tbody>
 </table>
 
-:target{#query-domain-data}
+:target{#query-domain-data-grant}
 
-### 查询数据对象
+### 查询数据对象授权
 
 :target{#id5}
 
 #### HTTP路径
 
-/api/v1/datamesh/domaindata/query
+/api/v1/datamesh/domaindatagrant/query
 
-:target{#querydomaindatarequest}
+:target{#querydomaingrantrequest}
 
-#### 请求（QueryDomainDataRequest）
+#### 请求（QueryDomainGrantRequest）
 
 <table>
   <thead>
@@ -850,7 +707,7 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
 
     <tr>
       <td>
-        domaindata\_id
+        domaindatagrant\_id
       </td>
 
       <td>
@@ -862,15 +719,15 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        查询内容
+        数据对象授权ID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#querydomaindataresponse}
+:target{#querydomaindatagrantresponse}
 
-#### 响应（QueryDomainDataResponse）
+#### 响应（QueryDomainDataGrantResponse）
 
 <table>
   <thead>
@@ -918,37 +775,7 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        [DomainData](#domain-data-entity)
-      </td>
-
-      <td>
-
-      </td>
-
-      <td>
-
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#id6}
-
-## 公共
-
-:target{#list-domain-data-request-data}
-
-### ListDomainDataRequestData
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        字段
-      </td>
-
-      <td>
-        类型
+        DomainDataGrantData
       </td>
 
       <td>
@@ -956,15 +783,13 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        描述
+        查询信息
       </td>
     </tr>
-  </thead>
 
-  <tbody>
     <tr>
       <td>
-        domain\_id
+        data.domaindatagrant\_id
       </td>
 
       <td>
@@ -976,77 +801,13 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        节点ID
+        数据对象授权ID
       </td>
     </tr>
 
     <tr>
       <td>
-        domaindata\_type
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        类型
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        domaindata\_vendor
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        来源
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#domain-data-entity}
-
-### DomainData
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        字段
-      </td>
-
-      <td>
-        类型
-      </td>
-
-      <td>
-        选填
-      </td>
-
-      <td>
-        描述
-      </td>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>
-        domaindata\_id
+        data.domaindata\_id
       </td>
 
       <td>
@@ -1064,7 +825,7 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
 
     <tr>
       <td>
-        name
+        data.grant\_domain
       </td>
 
       <td>
@@ -1076,13 +837,49 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        名称
+        被授权节点ID
       </td>
     </tr>
 
     <tr>
       <td>
-        type
+        data.limit
+      </td>
+
+      <td>
+        [GrantLimit](#grant-limit-entity)
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权限制条件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.description
+      </td>
+
+      <td>
+        map\<string, string>
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        自定义描述
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.author
       </td>
 
       <td>
@@ -1094,13 +891,13 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        类型，\[table,model,rule,report,unknown]，大小写敏感
+        数据授权方节点ID
       </td>
     </tr>
 
     <tr>
       <td>
-        relative\_uri
+        data.signature
       </td>
 
       <td>
@@ -1108,127 +905,23 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        必填
+        选填
       </td>
 
       <td>
-        相对数据源所在位置的路径，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        domain\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        节点ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        datasource\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        数据源ID，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        attributes
-      </td>
-
-      <td>
-        map\<string,string>
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        自定义属性，用作用户或应用算法组件为数据对象添加扩展信息，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        partition
-      </td>
-
-      <td>
-        [Partition](#partition)
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        暂不支持
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        columns
-      </td>
-
-      <td>
-        [DataColumn](#data-column)\[]
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        列信息
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        vendor
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        来源，用于批量查询接口筛选数据对象，参考 [ListDomainDataRequestData](#list-domain-data-request-data) 和 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        数据授权信息签名（由授权方私钥签名）
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#partition}
+:target{#id6}
 
-### Partition
+## 公共
+
+:target{#grant-limit-entity}
+
+### GrantLimit
 
 <table>
   <thead>
@@ -1254,55 +947,11 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
   <tbody>
     <tr>
       <td>
-        type
+        expiration\_time
       </td>
 
       <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        类型
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        fields
-      </td>
-
-      <td>
-        [DataColumn](#data-column)\[]
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        列信息
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#data-column}
-
-### DataColumn
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        字段
-      </td>
-
-      <td>
-        类型
+        int64
       </td>
 
       <td>
@@ -1310,15 +959,31 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        描述
+        授权过期时间，Unix 时间戳，精确到纳秒
       </td>
     </tr>
-  </thead>
 
-  <tbody>
     <tr>
       <td>
-        name
+        use\_count
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权使用次数
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        flow\_id
       </td>
 
       <td>
@@ -1326,17 +991,35 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        必填
+        选填
       </td>
 
       <td>
-        列名称
+        授权对应的任务流ID
       </td>
     </tr>
 
     <tr>
       <td>
-        type
+        components
+      </td>
+
+      <td>
+        string\[]
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权可用的组件ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        initiator
       </td>
 
       <td>
@@ -1344,17 +1027,17 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        必填
+        选填
       </td>
 
       <td>
-        类型，当前版本由应用算法组件定义和消费，参考 [<span>DomainData概念</span>](../../concepts/domaindata_cn.mdx)
+        授权指定的发起方
       </td>
     </tr>
 
     <tr>
       <td>
-        comment
+        input\_config
       </td>
 
       <td>
@@ -1362,11 +1045,11 @@ DomainData 表示被 Kuscia 管理的数据，Data Mesh API 提供了从 Domain 
       </td>
 
       <td>
-        可选
+        选填
       </td>
 
       <td>
-        列注释
+        授权指定的算子输入参数
       </td>
     </tr>
   </tbody>
