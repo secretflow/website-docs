@@ -1,6 +1,6 @@
 sidebar:
   - items:
-      - {id: quick_start/step1.mdx, label: 步骤一：（仅 carol）前置部署, type: doc}
+      - {id: quick_start/step1.mdx, label: 步骤一：（仅carol）前置部署, type: doc}
       - {id: quick_start/step2.mdx, label: 步骤二：（仅alice和bob）数据加密, type: doc}
       - {id: quick_start/step3.mdx, label: 步骤三：（仅alice和bob）数据授权, type: doc}
       - {id: quick_start/step4.mdx, label: 步骤四：（仅carol）运行可信APP, type: doc}

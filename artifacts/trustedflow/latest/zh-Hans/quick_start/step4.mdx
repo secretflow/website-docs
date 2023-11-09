@@ -331,7 +331,7 @@ docker cp bob.csv.enc teeapps-sim:/host/testdata/breast_cancer/bob.csv.enc
 
 ```bash
 .
-|-- README
+|-- README.md
 |-- biclassification_eval.json
 |-- convert.py
 |-- psi.json
@@ -590,7 +590,7 @@ docker run -it --name teeapps-sgx --network=host -v /dev/sgx_enclave:/dev/sgx/en
 
 #### 2. 修改 PCCS 配置
 
-> 提示：如果您还没有PCCS服务，则可以参考[部署PCCS](../architecture/tee/sgx.mdx#如何部署pccs服务)。
+> 提示：如果您还没有PCCS服务，则可以参考[部署PCCS](../architecture/tee/sgx.mdx#how-to-deploy-pccs-service)。
 
 1. 修改PCCS的配置文件/etc/sgx\_default\_qcnl.conf，把PCCS\_URL配置为PCCS的实际部署服务地址。
 
@@ -652,7 +652,7 @@ docker cp bob.csv.enc teeapps-sgx:/home/teeapp/occlum/occlum_instance/testdata/b
 
 ```bash
 .
-|-- README
+|-- README.md
 |-- biclassification_eval.json
 |-- convert.py
 |-- psi.json

@@ -1,40 +1,40 @@
-:target{#步骤一：（仅-carol）前置部署}
+:target{#步骤一：（仅carol）前置部署}
 
-# 步骤一：（仅 carol）前置部署
+# 步骤一：（仅carol）前置部署
 
-在体验 TrustedFlow 之前，carol 需要先部署 CapsuleManager。CapsuleManager 是 TrustedFlow 的核心模块之一，负责授权管理和密钥管理，CapsuleManager 被设计为运行在 TEE 上，机构可以对 CapsuleManager 的代码和环境进行远程认证。
+在体验TrustedFlow之前，carol需要先部署CapsuleManager。CapsuleManager是TrustedFlow的核心模块之一，负责授权管理和密钥管理，CapsuleManager被设计为运行在TEE上，机构可以对CapsuleManager的代码和环境进行远程认证。
 
-:target{#选项一：仿真模式部署-CapsuleManager}
+:target{#选项一：仿真模式部署CapsuleManager}
 
-## 选项一：仿真模式部署 CapsuleManager
+## 选项一：仿真模式部署CapsuleManager
 
 如果你希望使用仿真模式进行体验，则可以按下列说明进行。
 
-:target{#第一步：运行-CapsuleManager-镜像}
+:target{#第一步：运行CapsuleManager镜像}
 
-### 第一步：运行 CapsuleManager 镜像
+### 第一步：运行CapsuleManager镜像
 
 ```bash
 docker run -it secretflow/capsule-manager:anolis8-sim
 ```
 
-:target{#第二步：启动-CapsuleManager}
+:target{#第二步：启动CapsuleManager}
 
-### 第二步：启动 CapsuleManager
+### 第二步：启动CapsuleManager
 
-1. 默认的监听端口为 8888，您可以在启动时添加`--port xx`参数修改为其他端口号。
-2. CapsuleManager 默认启用 mTLS，关于如何配置 mTLS 可以参考[CapsuleManager mTLS](https://github.com/secretflow/capsule-manager/blob/master/README.md#mutual-tls)。
-3. 您可以添加启动参数`--enable_tls false`来关闭 mTLS 功能，注意关闭 mTLS 是不安全的，生产环境建议启动 mTLS。
+1. 默认的监听端口为8888，您可以在启动时添加`--port xx`参数修改为其他端口号。
+2. CapsuleManager默认启用mTLS，关于如何配置mTLS可以参考[CapsuleManager mTLS](https://github.com/secretflow/capsule-manager/blob/master/README.md#mutual-tls)。
+3. 您可以添加启动参数`--enable_tls false`来关闭mTLS功能，注意关闭mTLS是不安全的，生产环境建议启动mTLS。
 
 ```bash
 ./capsule-manager --plat sim
 ```
 
-:target{#选项二：在-SGX-机器上运行-CapsuleManager}
+:target{#选项二：在SGX机器上运行CapsuleManager}
 
-## 选项二：在 SGX 机器上运行 CapsuleManager
+## 选项二：在SGX机器上运行CapsuleManager
 
-如果您希望在 SGX 机器上运行，则可以按下列说明进行。
+如果您希望在SGX机器上运行，则可以按下列说明进行。
 
 :target{id="1.-运行镜像"}
 
@@ -48,9 +48,9 @@ docker run -it --net host -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provi
 
 ### 2. 修改 PCCS 配置
 
-> 提示：如果您还没有 PCCS 服务，则可以参考[部署 PCCS](../architecture/tee/sgx.mdx#如何部署pccs服务)。
+> 提示：如果您还没有PCCS服务，则可以参考[部署PCCS](../architecture/tee/sgx.mdx#how-to-deploy-pccs-service)。
 
-1. 修改 PCCS 的配置文件/etc/sgx\_default\_qcnl.conf，把 PCCS\_URL 配置为 PCCS 的实际部署服务地址。
+1. 修改PCCS的配置文件/etc/sgx\_default\_qcnl.conf，把PCCS\_URL配置为PCCS的实际部署服务地址。
 
 ```bash
 # PCCS server address
@@ -60,40 +60,40 @@ PCCS_URL=https://localhost:8081/sgx/certification/v3/
 USE_SECURE_CERT=FALSE
 ```
 
-2. 修改 occlum\_release/image/etc/kubetee/unified\_attestation.json，将 ua\_dcap\_pccs\_url 配置为实际的 PCCS 服务地址。
+2. 修改occlum\_release/image/etc/kubetee/unified\_attestation.json，将ua\_dcap\_pccs\_url配置为实际的PCCS服务地址。
 
 ```json
 {
-  "ua_ias_url": "",
-  "ua_ias_spid": "",
-  "ua_ias_apk_key": "",
-  "ua_dcap_lib_path": "",
-  "ua_dcap_pccs_url": "https://localhost:8081/sgx/certification/v3/",
-  "ua_uas_url": "",
-  "ua_uas_app_key": "",
-  "ua_uas_app_secret": ""
+    "ua_ias_url": "",
+    "ua_ias_spid": "",
+    "ua_ias_apk_key": "",
+    "ua_dcap_lib_path": "",
+    "ua_dcap_pccs_url": "https://localhost:8081/sgx/certification/v3/",
+    "ua_uas_url": "",
+    "ua_uas_app_key": "",
+    "ua_uas_app_secret": ""
 }
 ```
 
-3. 配置 TLS
+3. 配置TLS
 
-我们建议您启用 TLS，关于如何配置 mTLS 可以参考[CapsuleManager mTLS](https://github.com/secretflow/capsule-manager/blob/master/README#mutual-tls)。
+我们建议您启用TLS，关于如何配置mTLS可以参考[CapsuleManager mTLS](https://github.com/secretflow/capsule-manager/blob/master/README.md#mutual-tls)。
 
-如果您希望关闭 TLS，则可以修改 occlum\_release/config.yaml，配置成`enable_tls: false`则表示关闭 TLS。
+如果您希望关闭TLS，则可以修改occlum\_release/config.yaml，配置成`enable_tls: false`则表示关闭TLS。
 
-注意，使用 TLS 可以提升安全，建议您在生产环境中启用 TLS 功能。
+注意，使用TLS可以提升安全，建议您在生产环境中启用TLS功能。
 
-:target{id="4.-生成私钥后，使用私钥进行-build。"}
+:target{id="4.-生成私钥后，使用私钥进行build。"}
 
-### 4. 生成私钥后，使用私钥进行 build。
+### 4. 生成私钥后，使用私钥进行build。
 
-您首先需要生成私钥，然后使用以下命令构建 occlum。生成私钥可以参考下列脚本，生成的私钥保存在当前目录的 private\_key.pem。请妥善保存您的私钥，不要泄露给其他人。
+您首先需要生成私钥，然后使用以下命令构建occlum。生成私钥可以参考下列脚本，生成的私钥保存在当前目录的private\_key.pem。请妥善保存您的私钥，不要泄露给其他人。
 
 ```bash
 openssl genrsa -3 -out private_key.pem 3072
 ```
 
-生成公私钥后，使用私钥构建 occlum。
+生成公私钥后，使用私钥构建occlum。
 
 ```bash
 occlum build -f --sign-key private_key.pem
@@ -105,17 +105,17 @@ occlum build -f --sign-key private_key.pem
 
 执行下列命令启动服务。
 
-> 默认的监听端口为 8888，您可以在启动时添加`--port xx`参数修改为其他端口号，或者修改 config.yaml 文件中的`port`。
+> 默认的监听端口为8888，您可以在启动时添加`--port xx`参数修改为其他端口号，或者修改config.yaml文件中的`port`。
 
 ```bash
 occlum run /bin/auth-manager --config_path /host/config.yaml
 ```
 
-:target{id="6.-获取-CapsuleManager-的-mrenclave"}
+:target{id="6.-获取CapsuleManager的mrenclave"}
 
-### 6. 获取 CapsuleManager 的 mrenclave
+### 6. 获取CapsuleManager的mrenclave
 
-执行下列命令可以获得 CapsuleManager 的 mrenclave，mrenclave 是表征 CapsuleManager 代码、数据、运行环境等的度量值，详细解释见[Enclave](../architecture/tee/sgx.mdx#enclave)。
+执行下列命令可以获得CapsuleManager的mrenclave，mrenclave是表征CapsuleManager代码、数据、运行环境等的度量值，详细解释见[Enclave](../architecture/tee/sgx.mdx#enclave)。
 
 输出内容为一串十六进制字符串，您可以保存下来，后续步骤会使用到。
 
