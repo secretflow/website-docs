@@ -1,0 +1,894 @@
+:target{#步骤四：（仅carol）运行可信APP}
+
+# 步骤四：（仅carol）运行可信APP
+
+这里我们假设alice和bob已经把第二步加密得到的文件传给了carol（TrustedFlow不提供传输网络，机构之间应该自行建设安全的传输链路）。
+
+:target{#直接使用breast-cancer数据集建模}
+
+## 直接使用breast cancer数据集建模
+
+为了对比，我们先尝试直接用前文中提到的breast cancer数据集进行树模型建模（基于XGBoost）。后续我们再尝试使用TrustedFlow还原这个实验，我们会发现两者的效果是一样的。
+
+为了运行下列代码，您可能需要准备环境。
+
+- python 3.8或者更高版本。
+- 安装pandas、scikit-learn和xgboost。您可以通过下列命令完成安装。
+  ```bash
+  pip install pandas scikit-learn xgboost
+  ```
+
+:target{id="1.-加载数据集"}
+
+### 1. 加载数据集
+
+我们使用sklearn内置的breast cancer数据集。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[1]:" stderr={false} type="input">
+    ```python
+    import pandas
+    from sklearn.datasets import load_breast_cancer
+
+    breast_cancer_data = load_breast_cancer(as_frame=True)
+    features = ["mean radius",
+              "mean texture",
+              "mean perimeter",
+              "mean area",
+              "mean smoothness",
+              "mean compactness",
+              "mean concavity",
+              "mean concave points",
+              "mean symmetry",
+              "mean fractal dimension"]
+    df = pandas.DataFrame(breast_cancer_data.data, columns=features)
+    df['target'] = breast_cancer_data.target
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+查看数据集，可以看到df拥有10个特征，总样本数是569。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[2]:" stderr={false} type="input">
+    ```python
+    df
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.FancyOutput prompt="[2]:" type="output">
+    <div>
+      <style scoped={true}>
+        {"\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n"}
+      </style>
+
+      <table border={1} className="dataframe">
+        <thead>
+          <tr style={{"textAlign":"right"}}>
+            <th /><th>{"mean radius"}</th><th>{"mean texture"}</th><th>{"mean perimeter"}</th><th>{"mean area"}</th><th>{"mean smoothness"}</th><th>{"mean compactness"}</th><th>{"mean concavity"}</th><th>{"mean concave points"}</th><th>{"mean symmetry"}</th><th>{"mean fractal dimension"}</th><th>{"target"}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th>{"0"}</th><td>{"17.99"}</td><td>{"10.38"}</td><td>{"122.80"}</td><td>{"1001.0"}</td><td>{"0.11840"}</td><td>{"0.27760"}</td><td>{"0.30010"}</td><td>{"0.14710"}</td><td>{"0.2419"}</td><td>{"0.07871"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"1"}</th><td>{"20.57"}</td><td>{"17.77"}</td><td>{"132.90"}</td><td>{"1326.0"}</td><td>{"0.08474"}</td><td>{"0.07864"}</td><td>{"0.08690"}</td><td>{"0.07017"}</td><td>{"0.1812"}</td><td>{"0.05667"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"2"}</th><td>{"19.69"}</td><td>{"21.25"}</td><td>{"130.00"}</td><td>{"1203.0"}</td><td>{"0.10960"}</td><td>{"0.15990"}</td><td>{"0.19740"}</td><td>{"0.12790"}</td><td>{"0.2069"}</td><td>{"0.05999"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"3"}</th><td>{"11.42"}</td><td>{"20.38"}</td><td>{"77.58"}</td><td>{"386.1"}</td><td>{"0.14250"}</td><td>{"0.28390"}</td><td>{"0.24140"}</td><td>{"0.10520"}</td><td>{"0.2597"}</td><td>{"0.09744"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"4"}</th><td>{"20.29"}</td><td>{"14.34"}</td><td>{"135.10"}</td><td>{"1297.0"}</td><td>{"0.10030"}</td><td>{"0.13280"}</td><td>{"0.19800"}</td><td>{"0.10430"}</td><td>{"0.1809"}</td><td>{"0.05883"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"..."}</th><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td><td>{"..."}</td>
+          </tr>
+
+          <tr>
+            <th>{"564"}</th><td>{"21.56"}</td><td>{"22.39"}</td><td>{"142.00"}</td><td>{"1479.0"}</td><td>{"0.11100"}</td><td>{"0.11590"}</td><td>{"0.24390"}</td><td>{"0.13890"}</td><td>{"0.1726"}</td><td>{"0.05623"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"565"}</th><td>{"20.13"}</td><td>{"28.25"}</td><td>{"131.20"}</td><td>{"1261.0"}</td><td>{"0.09780"}</td><td>{"0.10340"}</td><td>{"0.14400"}</td><td>{"0.09791"}</td><td>{"0.1752"}</td><td>{"0.05533"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"566"}</th><td>{"16.60"}</td><td>{"28.08"}</td><td>{"108.30"}</td><td>{"858.1"}</td><td>{"0.08455"}</td><td>{"0.10230"}</td><td>{"0.09251"}</td><td>{"0.05302"}</td><td>{"0.1590"}</td><td>{"0.05648"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"567"}</th><td>{"20.60"}</td><td>{"29.33"}</td><td>{"140.10"}</td><td>{"1265.0"}</td><td>{"0.11780"}</td><td>{"0.27700"}</td><td>{"0.35140"}</td><td>{"0.15200"}</td><td>{"0.2397"}</td><td>{"0.07016"}</td><td>{"0"}</td>
+          </tr>
+
+          <tr>
+            <th>{"568"}</th><td>{"7.76"}</td><td>{"24.54"}</td><td>{"47.92"}</td><td>{"181.0"}</td><td>{"0.05263"}</td><td>{"0.04362"}</td><td>{"0.00000"}</td><td>{"0.00000"}</td><td>{"0.1587"}</td><td>{"0.05884"}</td><td>{"1"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>{"569 rows × 11 columns"}</p>
+    </div>
+  </Notebook.FancyOutput>
+</Notebook.Cell>
+
+:target{id="2.-拆分数据集"}
+
+### 2. 拆分数据集
+
+我们把数据集拆分为训练集（80%）和测试集（20%）。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[3]:" stderr={false} type="input">
+    ```python
+    from sklearn.model_selection import train_test_split
+
+    dataset_train, dataset_test = train_test_split(
+            df,
+            train_size=0.8,
+            random_state=1024,
+            shuffle=True,
+    )
+
+    x_train = dataset_train[features]
+    y_train = dataset_train["target"]
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="3.-训练模型"}
+
+### 3. 训练模型
+
+我们使用XGBoost的XGBClassifier进行模型训练。可以看到训练出来的模型包含100课树（n\_estimators=100），树的最大深度为6（max\_depth=6）。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[4]:" stderr={false} type="input">
+    ```python
+    import xgboost as xgb
+
+    param = {
+        "n_estimators": 100,
+        "max_depth": 6,
+        "max_leaves": 0,
+        "random_state": 42,
+        "learning_rate": 0.3,
+        "reg_lambda": 1,
+        "gamma": 0,
+        "colsample_bytree": 1,
+        "base_score": 0.5,
+        "min_child_weight": 1,
+        "reg_alpha": 0,
+        "subsample": 1,
+        "max_bin": 10,
+        "tree_method": "auto",
+        "booster": "gbtree"
+    }
+    model = xgb.XGBClassifier(**param, objective="binary:logistic")
+    model.fit(x_train, y_train)
+    print(model)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[11:46:30] WARNING: ../src/learner.cc:1115: Starting in XGBoost 1.3.0, the default evaluation metric used with the objective 'binary:logistic' was changed from 'error' to 'logloss'. Explicitly set eval_metric if you'd like to restore the old behavior.\nXGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,\n              colsample_bynode=1, colsample_bytree=1, enable_categorical=False,\n              gamma=0, gpu_id=-1, importance_type=None,\n              interaction_constraints='', learning_rate=0.3, max_bin=10,\n              max_delta_step=0, max_depth=6, max_leaves=0, min_child_weight=1,\n              missing=nan, monotone_constraints='()', n_estimators=100,\n              n_jobs=64, num_parallel_tree=1, predictor='auto', random_state=42,\n              reg_alpha=0, reg_lambda=1, scale_pos_weight=1, subsample=1,\n              tree_method='auto', validate_parameters=1, verbosity=None)\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+我们可以查看特征的重要性。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[5]:" stderr={false} type="input">
+    ```python
+    scores = model.get_booster().get_score(importance_type="weight")
+    print(f'Feature importance: ')
+    for feat, score in scores.items():
+        print(f'{feat}: {score}')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"Feature importance:\nmean radius: 23.0\nmean texture: 76.0\nmean perimeter: 15.0\nmean area: 70.0\nmean smoothness: 31.0\nmean compactness: 48.0\nmean concavity: 46.0\nmean concave points: 54.0\nmean symmetry: 38.0\nmean fractal dimension: 15.0\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+我们还可以保存并查看模型。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
+    ```python
+    model.save_model('xgb.json')
+    ```
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[8]:" stderr={false} type="input">
+    ```python
+    import json
+
+    with open('xgb.json') as f:
+        model_content = json.loads(f.read())
+    print(model_content['learner']['attributes'])
+    print(model_content['learner']['gradient_booster']['model']['gbtree_model_param'])
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"{'best_iteration': '99', 'best_ntree_limit': '100', 'scikit_learn': '{\"use_label_encoder\": true, \"n_estimators\": 100, \"objective\": \"binary:logistic\", \"max_depth\": 6, \"learning_rate\": 0.3, \"verbosity\": null, \"booster\": \"gbtree\", \"tree_method\": \"auto\", \"gamma\": 0, \"min_child_weight\": 1, \"max_delta_step\": null, \"subsample\": 1, \"colsample_bytree\": 1, \"colsample_bylevel\": null, \"colsample_bynode\": null, \"reg_alpha\": 0, \"reg_lambda\": 1, \"scale_pos_weight\": null, \"base_score\": 0.5, \"missing\": NaN, \"num_parallel_tree\": null, \"random_state\": 42, \"n_jobs\": null, \"monotone_constraints\": null, \"interaction_constraints\": null, \"importance_type\": null, \"gpu_id\": null, \"validate_parameters\": null, \"predictor\": null, \"enable_categorical\": false, \"kwargs\": {\"max_leaves\": 0, \"max_bin\": 10}, \"classes_\": [0, 1], \"n_classes_\": 2, \"_le\": {\"classes_\": [0, 1]}, \"_estimator_type\": \"classifier\"}'}\n{'num_trees': '100', 'size_leaf_vector': '0'}\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="4.-模型预测"}
+
+### 4. 模型预测
+
+我们使用模型对测试集进行预测。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    import numpy as np
+
+    x_test = dataset_test[features]
+    y_test = dataset_test["target"].to_numpy()
+    y_score = model.predict_proba(x_test)[:, 1]
+    y_pred = np.array([(1 if x >= 0.5 else 0) for x in y_score])
+
+    print(y_score)
+    print(y_pred)
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"[9.9944550e-01 2.1459084e-04 9.9984765e-01 9.9749255e-01 9.9647528e-01\n 9.9969363e-01 9.9941480e-01 6.3684699e-04 9.7209483e-01 9.9473464e-01\n 1.6540854e-03 2.3896262e-04 3.8317341e-04 9.9985218e-01 5.9765935e-01\n 4.5679703e-01 9.9990678e-01 9.9769336e-01 2.7916208e-03 3.7675821e-03\n 1.9103836e-04 9.9960858e-01 9.9962080e-01 9.9627030e-01 9.9977034e-01\n 9.9947768e-01 9.9964762e-01 1.2528183e-04 1.0330486e-01 5.0118339e-01\n 9.9775106e-01 9.9890268e-01 1.9544033e-04 9.9796677e-01 7.0530081e-01\n 9.9935633e-01 9.9767107e-01 1.8424608e-02 1.6954618e-04 2.7818105e-04\n 9.7751975e-01 9.9992776e-01 1.0048379e-01 9.9963486e-01 9.9878162e-01\n 3.8418157e-03 9.7013623e-01 9.9922204e-01 5.3013045e-01 9.9950826e-01\n 9.9253851e-01 9.9937493e-01 9.9905115e-01 9.9105459e-01 9.9971515e-01\n 9.9880552e-01 1.4384058e-03 6.0805246e-02 9.9963820e-01 9.9979657e-01\n 3.3138663e-01 9.9796212e-01 9.9971658e-01 9.9938118e-01 9.9913353e-01\n 1.5776281e-04 9.9951375e-01 9.9943417e-01 7.0775865e-04 9.9984276e-01\n 9.9962080e-01 9.9971837e-01 9.9354666e-01 7.0599091e-01 9.9972600e-01\n 9.9761689e-01 9.9931610e-01 9.9896085e-01 9.9977821e-01 7.8626734e-04\n 7.4145687e-03 4.9908675e-02 9.9551517e-01 9.9991488e-01 9.9699879e-01\n 9.9985933e-01 9.9922681e-01 9.9904543e-01 9.7297430e-01 9.9951780e-01\n 2.0591648e-04 9.5256639e-01 9.9960631e-01 9.9651462e-01 1.8664867e-04\n 1.6123910e-03 1.4846998e-02 7.9491258e-01 2.5027551e-04 7.5842893e-01\n 9.9955493e-01 9.9915183e-01 9.9892813e-01 2.4820265e-04 2.2480548e-04\n 9.9935180e-01 4.2976461e-02 9.9985719e-01 1.2770237e-03 9.9991488e-01\n 9.9252748e-01 9.8064673e-01 9.9844426e-01 9.9706692e-01]\n[1 0 1 1 1 1 1 0 1 1 0 0 0 1 1 0 1 1 0 0 0 1 1 1 1 1 1 0 0 1 1 1 0 1 1 1 1\n 0 0 0 1 1 0 1 1 0 1 1 1 1 1 1 1 1 1 1 0 0 1 1 0 1 1 1 1 0 1 1 0 1 1 1 1 1\n 1 1 1 1 1 0 0 0 1 1 1 1 1 1 1 1 0 1 1 1 0 0 0 1 0 1 1 1 1 0 0 1 0 1 0 1 1\n 1 1 1]\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{id="5.-评估预测结果"}
+
+### 5. 评估预测结果
+
+我们对预测结果进行评估，下列代码中计算了预测结果的AUC（Area Under Curve）、KS（Kolmogorov-Smirnov）和F1分数（F1 Score）。
+
+<Notebook.Cell>
+  <Notebook.CodeArea prompt="[ ]:" stderr={false} type="input">
+    ```python
+    from sklearn import metrics
+
+    auc = metrics.roc_auc_score(y_test, y_score)
+    f1 = metrics.f1_score(y_test, y_pred)
+    fprs, tprs, _ = metrics.roc_curve(y_test, y_score)
+    ks = max(tprs - fprs)
+    print(f'auc: {auc}')
+    print(f'f1: {f1}')
+    print(f'ks: {ks}')
+    ```
+  </Notebook.CodeArea>
+
+  <Notebook.CodeArea prompt="" stderr={false} type="output">
+    <pre>
+      {"auc: 0.9796419796419795\nf1: 0.9426751592356688\nks: 0.855036855036855\n"}
+    </pre>
+  </Notebook.CodeArea>
+</Notebook.Cell>
+
+:target{#使用TrustedFlow复现breast-cancer建模}
+
+## 使用TrustedFlow复现breast cancer建模
+
+TrustedFlow提供了多种可信APP，详细列表参见[可信APP](../architecture/apps/index.mdx)。
+
+上一步我们尝试了直接使用明文数据breast cancer进行树模型建模，接下来我们将使用TrustedFlow复现上述实验。
+
+为了复现上述实验，相对应的我们需要执行5个可信APP，分别是数据求交、数据集拆分、XGBoost训练、预测、二分类评估。
+
+:target{#选项一：仿真模式}
+
+### 选项一：仿真模式
+
+:target{id="1.-启动可信APP容器"}
+
+#### 1. 启动可信APP容器
+
+```bash
+docker run -it --name teeapps-sim --network=host secretflow/teeapps-sim:2.0.0.dev20231030 bash
+```
+
+:target{id="2.-把alice和bob的加密数据文件放入容器内"}
+
+#### 2. 把alice和bob的加密数据文件放入容器内
+
+在<strong>宿主机</strong>上执行下列命令。
+
+```bash
+docker cp alice.csv.enc teeapps-sim:/host/testdata/breast_cancer/alice.csv.enc
+docker cp bob.csv.enc teeapps-sim:/host/testdata/breast_cancer/bob.csv.enc
+```
+
+:target{id="3.-配置并生成任务执行配置文件"}
+
+#### 3. 配置并生成任务执行配置文件
+
+进入可信APP容器的/host/integration\_test目录，目录的文件列表如下：
+
+```bash
+.
+|-- README
+|-- biclassification_eval.json
+|-- convert.py
+|-- psi.json
+|-- requirement.txt
+|-- train_test_split.json
+|-- xgb.json
+`-- xgb_predict.json
+```
+
+可以看到已经预置了5个APP的任务配置文件，这些配置文件描述了APP执行的信息。
+
+- psi.json: 数据求交APP，详细说明可以参见[数据求交](../architecture/apps/intersect.mdx)。您需要修改以下内容：
+  - `"uri": "file://input/?id=alice_uuid&&uri=/host/testdata/breast_cancer/alice.csv.enc"`: 您需要修改`id=alice_uuid`为`id=breast_cancer_alice`，因为在步骤二中我们给alice的数据取名为`breast_cancer_alice`。
+  - `"uri": "file://input/?id=bob_uuid&&uri=/host/testdata/breast_cancer/bob.csv.enc"`: 您需要修改`id=bob_uuid`为`id=breast_cancer_bob`，因为在步骤二中我们给bob的数据取名为`breast_cancer_bob`。
+- train\_test\_split.json: 数据集拆分APP，详细说明可以参见[数据集拆分](../architecture/apps/split.mdx)。
+- xgb.json: XGBoost训练APP，详细说明可以参见[XGBoost训练](../architecture/apps/xgb_train.mdx)。
+- xgb\_predict.json: XGBoost预测APP，详细说明可以参见[XGBoost预测](../architecture/apps/xgb_predict.mdx)。
+- biclassification\_eval.json：二分类评估APP，详细说明可以参见[二分类评估](../architecture/apps/binary_evaluation.mdx)。
+
+在正式运行APP之前，carol需要对任务配置文件进行签名。
+
+<strong>为什么要进行签名？因为前面alice和bob只授权了carol对数据进行计算，所以carol需要通过签名的方式向可信APP证明其身份，可信APP只有在确认计算发起人身份与授权策略一致时才会执行。</strong>
+
+签名的方法如下：
+
+1. carol把自己的私钥和证书拷贝到容器中
+
+在<strong>宿主机</strong>上执行下列命令。
+
+```bash
+docker cp carol.key teeapps-sim:/host/integration_test/
+docker cp carol.crt teeapps-sim:/host/integration_test/
+```
+
+2. 对任务配置文件进行签名
+
+下列命令的作用是对psi.json进行签名，您还需要对train\_test\_split.json、xgb.json、xgb\_predict.json和biclassification\_eval.json进行同样的操作。
+
+命令说明：
+
+- `capsule_manager_endpoint`请填写实际CapsuleManager的服务地址。
+- `tee_task_config_path`是签名后的文件（本例中叫做`psi_task.json`）
+
+```bash
+pip install -r requirement.txt
+python convert.py --cert_path carol.crt --prikey_path carol.key --task_config_path psi.json --scope default --capsule_manager_endpoint {CapulseManager的地址} --tee_task_config_path psi_task.json
+```
+
+假设carol签名后得到的任务执行配置文件分别为
+
+```bash
+|-- biclassification_eval_task.json
+|-- psi_task.json
+|-- train_test_split_task.json
+|-- xgb_predict_task.json
+`-- xgb_task.json
+```
+
+3. （可选）检查生成的任务执行配置文件内容
+
+如果一切顺利，您将会得到形如以下例子的任务执行配置文件，文件说明如下。
+
+- `task_initiator_id`：表示carol的机构ID。
+- `task_initiator_certs`： carol的证书。
+- `task_body`：原任务配置文件的内容进行BASE64编码后的结果。
+- `signature`：对task\_body的签名，并对签名结果进行BASE64编码。
+
+```json
+{
+  "task_input_config": {
+    "tee_task_config": {
+      "task_initiator_id": "xxx",
+      "task_initiator_certs": [
+        "-----BEGIN CERTIFICATE-----\nxxxx\n-----END CERTIFICATE-----\n"
+      ],
+      "scope": "default",
+      "task_body": "xxx",
+      "signature": "xxx",
+      "sign_algorithm": "RS256",
+      "capsule_manager_endpoint": "xxxx"
+    }
+  }
+}
+```
+
+:target{id="4.-执行可信APP"}
+
+#### 4. 执行可信APP
+
+<strong>开启mtls</strong>
+
+如果CapsuleManager开启了mtls，那么可信APP需要配置证书并开启tls选项。 您需要将ca证书、客户端证书、客户端私钥拷贝到以下路径，注意目标路径以及目标文件名需要与以下命令中一致。
+
+```bash
+docker cp ca.crt teeapps-sim:/host/certs/ca.crt
+
+docker cp client.crt teeapps-sim:/host/certs/client.crt
+
+docker cp client.key teeapps-sim:/host/certs/client.key
+```
+
+并且将后续APP执行命令中的`--enable_capsule_tls=false` 改成 `--enable_capsule_tls=true`。
+
+1. 数据求交
+
+在可信APP容器中执行以下命令进行求交：
+
+```bash
+cd /home/teeapp/sim/teeapps
+./main --plat=sim --enable_console_logger=true --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/psi_task.json
+```
+
+求交结果是加密的，对应的加密文件位于/host/testdata/breast\_cancer/join\_table（您可以在psi.json中找到对应的配置项）。
+
+（可选）如果您感兴趣，可以按照步骤五导出数据的说明导出该密文文件。，您获得的明文结果会是一张包含一列id、10列特征以及1列标签值，包含569个样本。您会发现内容和前面提到的通过sklearn下载得到的breast\_cancer数据集内容是一样的。
+
+```bash
+id,mean radius,mean texture,mean perimeter,mean area,mean smoothness,mean compactness,mean concavity,mean concave points,mean symmetry,mean fractal dimension,target
+842302,17.99,10.38,122.8,1001.0,0.1184,0.2776,0.3001,0.1471,0.2419,0.07871,0
+842517,20.57,17.77,132.9,1326.0,0.08474,0.07864,0.0869,0.07017,0.1812,0.05667,0
+84300903,19.69,21.25,130.0,1203.0,0.1096,0.1599,0.1974,0.1279,0.2069,0.05999,0
+84348301,11.42,20.38,77.58,386.1,0.1425,0.2839,0.2414,0.1052,0.2597,0.09744,0
+84358402,20.29,14.34,135.1,1297.0,0.1003,0.1328,0.198,0.1043,0.1809,0.05883,0
+843786,12.45,15.7,82.57,477.1,0.1278,0.17,0.1578,0.08089,0.2087,0.07613,0
+844359,18.25,19.98,119.6,1040.0,0.09463,0.109,0.1127,0.074,0.1794,0.05742,0
+84458202,13.71,20.83,90.2,577.9,0.1189,0.1645,0.09366,0.05985,0.2196,0.07451,0
+844981,13.0,21.82,87.5,519.8,0.1273,0.1932,0.1859,0.09353,0.235,0.07389,0
+...
+```
+
+2. 拆分数据集
+
+继续执行命令。拆分后得到训练（80%）和测试（20%）两份数据集，存放位置为/host/testdata/breast\_cancer/train\_table和/host/testdata/breast\_cancer/test\_table。
+
+（可选）同样地，您同样可以按照步骤五中的方法获取数据密钥对其进行解密，与明文拆分的结果进行比较，两者预期是一致的。
+
+```none
+./main --plat=sim --enable_console_logger=true --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/train_test_split_task.json
+```
+
+3. XGBoost训练
+
+继续执行命令。计算结果为一个加密的xgb树模型，存放位置为/host/testdata/breast\_cancer/xgb\_model。
+
+```bash
+./main --plat=sim --enable_console_logger=true --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/xgb_task.json
+```
+
+（可选）同样地，您同样可以按照步骤五中的方法对模型进行解密，并参考前面直接明文建模的代码对模型进行查看，两者预期是一致的。
+
+4. XGBoost预测
+
+继续执行命令。计算结果为预测结果，包含以下列：score-预测结果、label-原始的标签、id：样本ID，文件存放位置为/host/testdata/breast\_cancer/xgb\_model。
+
+```bash
+./main --plat=sim --enable_console_logger=true --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/xgb_predict_task.json
+```
+
+（可选）同样地，您同样可以按照步骤五中的方法对预测结果进行解密，您将得到以下结果，与明文预测得到的结果是一致的。
+
+```bash
+score,label,id
+0.999446,True,8911834
+0.000215,False,8811842
+0.999848,True,911408
+0.997493,True,909220
+0.996475,True,862261
+0.999694,True,89511502
+0.999415,True,871149
+0.000637,False,9113538
+0.972095,True,925277
+0.994735,True,88249602
+...
+```
+
+5. 二分类评估
+
+继续执行命令，对预测结果进行评估。
+
+```bash
+./main --plat=sim --enable_console_logger=true --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/biclassification_eval_task.json
+```
+
+输出结果为一个二分类评估的结果，二分类结果为明文形式，内容包含：
+
+- summary\_report: 总结报告，包含total\_samples、positive\_samples、negative\_samples、auc、ks和f1\_score
+- eq\_frequent\_bin\_report: 等频分箱报告
+- eq\_range\_bin\_report: 等距分箱报告
+- head\_report: FPR = 0.001， 0.005， 0.01， 0.05， 0.1， 0.2 的精度报告，包含fpr、precision、recall和threshold
+
+您可以看到auc、f1和ks值与直接使用breast cancer数据集建模一致。
+
+部分内容展示如下：
+
+```json
+{
+  "name": "reports",
+  "tabs": [
+    {
+      "name": "SummaryReport",
+      "desc": "Summary Report for bi-classification evaluation.",
+      "divs": [
+        {
+          "children": [
+            {
+              "type": "descriptions",
+              "descriptions": {
+                "items": [
+                  {
+                    "name": "auc",
+                    "type": "float",
+                    "value": {
+                      "f": 0.979642
+                    }
+                  },
+                  {
+                    "name": "ks",
+                    "type": "float",
+                    "value": {
+                      "f": 0.85503685
+                    }
+                  },
+                  {
+                    "name": "f1_score",
+                    "type": "float",
+                    "value": {
+                      "f": 0.9426752
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+:target{#选项二：SGX模式}
+
+### 选项二：SGX模式
+
+若您使用SGX环境执行可信APP，可以按照下列说明进行。
+
+:target{#id9}
+
+#### 1. 启动可信APP容器
+
+```bash
+docker run -it --name teeapps-sgx --network=host -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provision:/dev/sgx/provision --privileged=true secretflow/teeapps-sgx:2.0.0.dev20231025 bash
+```
+
+:target{id="2.-修改-PCCS-配置"}
+
+#### 2. 修改 PCCS 配置
+
+> 提示：如果您还没有PCCS服务，则可以参考[部署PCCS](../architecture/tee/sgx.mdx#如何部署pccs服务)。
+
+1. 修改PCCS的配置文件/etc/sgx\_default\_qcnl.conf，把PCCS\_URL配置为PCCS的实际部署服务地址。
+
+```bash
+# PCCS server address
+PCCS_URL=https://localhost:8081/sgx/certification/v3/
+
+# To accept insecure HTTPS certificate, set this option to FALSE
+USE_SECURE_CERT=FALSE
+```
+
+2. 修改occlum\_release/image/etc/kubetee/unified\_attestation.json，将ua\_dcap\_pccs\_url配置为实际的PCCS服务地址。
+
+```json
+{
+    "ua_ias_url": "",
+    "ua_ias_spid": "",
+    "ua_ias_apk_key": "",
+    "ua_dcap_lib_path": "",
+    "ua_dcap_pccs_url": "https://localhost:8081/sgx/certification/v3/",
+    "ua_uas_url": "",
+    "ua_uas_app_key": "",
+    "ua_uas_app_secret": ""
+}
+```
+
+:target{id="3.-生成私钥后，使用私钥进行build。"}
+
+#### 3. 生成私钥后，使用私钥进行build。
+
+您首先需要生成私钥，该私钥仅用于构建occlum，然后使用以下命令构建occlum。生成私钥可以参考下列脚本，生成的私钥保存在当前目录的private\_key.pem。请妥善保存您的私钥，不要泄露给其他人。
+
+```bash
+openssl genrsa -3 -out private_key.pem 3072
+```
+
+生成公私钥后，使用私钥构建occlum。
+
+```bash
+occlum build -f --sign-key private_key.pem
+```
+
+:target{id="4.-把alice和bob的加密数据文件放入容器内"}
+
+#### 4. 把alice和bob的加密数据文件放入容器内
+
+在<strong>宿主机</strong>上执行下列命令。
+
+```bash
+docker cp alice.csv.enc teeapps-sgx:/home/teeapp/occlum/occlum_instance/testdata/breast_cancer/
+docker cp bob.csv.enc teeapps-sgx:/home/teeapp/occlum/occlum_instance/testdata/breast_cancer/
+```
+
+:target{id="4.-生成任务执行配置文件"}
+
+#### 4. 生成任务执行配置文件
+
+进入可信APP容器的/host/integration\_test目录，目录的文件列表如下：
+
+```bash
+.
+|-- README
+|-- biclassification_eval.json
+|-- convert.py
+|-- psi.json
+|-- requirement.txt
+|-- train_test_split.json
+|-- xgb.json
+`-- xgb_predict.json
+```
+
+可以看到已经预置了5个APP的任务配置文件，这些配置文件描述了APP执行的信息。
+
+- psi.json: 数据求交APP，详细说明可以参见[数据求交](../architecture/apps/intersect.mdx)。您需要修改以下内容：
+  - `"uri": "file://input/?id=alice_uuid&&uri=/host/testdata/breast_cancer/alice.csv.enc"`: 您需要修改`id=alice_uuid`为`id=breast_cancer_alice`，因为在步骤二中我们给alice的数据取名为`breast_cancer_alice`。
+  - `"uri": "file://input/?id=bob_uuid&&uri=/host/testdata/breast_cancer/bob.csv.enc"`: 您需要修改`id=bob_uuid`为`id=breast_cancer_bob`，因为在步骤二中我们给bob的数据取名为`breast_cancer_bob`。
+- train\_test\_split.json: 数据集拆分APP，详细说明可以参见[数据集拆分](../architecture/apps/split.mdx)。
+- xgb.json: XGBoost训练APP，详细说明可以参见[XGBoost训练](../architecture/apps/xgb_train.mdx)。
+- xgb\_predict.json: XGBoost预测APP，详细说明可以参见[XGBoost预测](../architecture/apps/xgb_predict.mdx)。
+- biclassification\_eval.json：二分类评估APP，详细说明可以参见[二分类评估](../architecture/apps/binary_evaluation.mdx)。
+
+在正式运行APP之前，carol需要对任务配置文件进行签名。
+
+<strong>为什么要进行签名？因为前面alice和bob只授权了carol对数据进行计算，所以carol需要通过签名的方式向可信APP证明其身份，可信APP只有在确认计算发起人身份与授权策略一致时才会执行。</strong>
+
+签名的方法如下：
+
+1. carol把自己的私钥和证书拷贝到容器中
+
+在<strong>宿主机</strong>上执行下列命令。
+
+```bash
+docker cp carol.key teeapps-sgx:/home/teeapp/occlum/occlum_instance/integration_test/
+docker cp carol.crt teeapps-sgx:/home/teeapp/occlum/occlum_instance/integration_test/
+```
+
+2. 对任务配置文件进行签名
+
+下列命令的作用是对psi.json进行签名，您还需要对train\_test\_split.json、xgb.json、xgb\_predict.json和biclassification\_eval.json进行同样的操作。
+
+命令说明：
+
+- `capsule_manager_endpoint`请填写实际CapsuleManager的服务地址。
+- `tee_task_config_path`是签名后的文件（本例中叫做`psi_task.json`）
+
+```bash
+pip install -r requirement.txt
+python convert.py --cert_path carol.crt --prikey_path carol.key --task_config_path psi.json --scope default --capsule_manager_endpoint {CapulseManager的地址} --tee_task_config_path psi_task.json
+```
+
+假设carol签名后得到的任务执行配置文件分别为
+
+```bash
+|-- biclassification_eval_task.json
+|-- psi_task.json
+|-- train_test_split_task.json
+|-- xgb_predict_task.json
+`-- xgb_task.json
+```
+
+3. （可选）检查生成的任务执行配置文件内容
+
+如果一切顺利，您将会得到形如以下例子的任务执行配置文件，文件说明如下。
+
+- `task_initiator_id`：表示carol的机构ID。
+- `task_initiator_certs`： carol的证书。
+- `task_body`：原任务配置文件的内容进行BASE64编码后的结果。
+- `signature`：对task\_body的签名，并对签名结果进行BASE64编码。
+
+```json
+{
+  "task_input_config": {
+    "tee_task_config": {
+      "task_initiator_id": "xxx",
+      "task_initiator_certs": [
+        "-----BEGIN CERTIFICATE-----\nxxxx\n-----END CERTIFICATE-----\n"
+      ],
+      "scope": "default",
+      "task_body": "xxx",
+      "signature": "xxx",
+      "sign_algorithm": "RS256",
+      "capsule_manager_endpoint": "xxxx"
+    }
+  }
+}
+```
+
+:target{id="46.-执行可信APP"}
+
+#### 46. 执行可信APP
+
+<strong>开启mtls</strong>
+
+如果CapsuleManager开启了mtls，那么可信APP需要配置证书并开启tls选项。 您需要将ca证书、客户端证书、客户端私钥拷贝到以下路径，注意目标路径以及目标文件名需要与以下命令中一致。
+
+```bash
+docker cp ca.crt teeapps-sgx:/home/teeapp/occlum/occlum_instance/certs/ca.crt
+
+docker cp client.crt teeapps-sgx:/home/teeapp/occlum/occlum_instance/certs/client.crt
+
+docker cp client.key teeapps-sgx:/home/teeapp/occlum/occlum_instance/certs/client.key
+```
+
+并且将后续APP执行命令中的`--enable_capsule_tls=false` 改成 `--enable_capsule_tls=true`。
+
+1. 数据求交
+
+在可信APP容器中执行以下命令进行求交：
+
+```bash
+cd /home/teeapp/occlum/occlum_instance
+occlum run /bin/main --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/psi_task.json
+```
+
+求交结果是加密的，对应的加密文件位于/host/testdata/breast\_cancer/join\_table（您可以在psi.json中找到对应的配置项）。
+
+（可选）如果您感兴趣，可以按照步骤五导出数据的说明导出该密文文件。，您获得的明文结果会是一张包含一列id、10列特征以及1列标签值，包含569个样本。您会发现内容和前面提到的通过sklearn下载得到的breast\_cancer数据集内容是一样的。
+
+```bash
+id,mean radius,mean texture,mean perimeter,mean area,mean smoothness,mean compactness,mean concavity,mean concave points,mean symmetry,mean fractal dimension,target
+842302,17.99,10.38,122.8,1001.0,0.1184,0.2776,0.3001,0.1471,0.2419,0.07871,0
+842517,20.57,17.77,132.9,1326.0,0.08474,0.07864,0.0869,0.07017,0.1812,0.05667,0
+84300903,19.69,21.25,130.0,1203.0,0.1096,0.1599,0.1974,0.1279,0.2069,0.05999,0
+84348301,11.42,20.38,77.58,386.1,0.1425,0.2839,0.2414,0.1052,0.2597,0.09744,0
+84358402,20.29,14.34,135.1,1297.0,0.1003,0.1328,0.198,0.1043,0.1809,0.05883,0
+843786,12.45,15.7,82.57,477.1,0.1278,0.17,0.1578,0.08089,0.2087,0.07613,0
+844359,18.25,19.98,119.6,1040.0,0.09463,0.109,0.1127,0.074,0.1794,0.05742,0
+84458202,13.71,20.83,90.2,577.9,0.1189,0.1645,0.09366,0.05985,0.2196,0.07451,0
+844981,13.0,21.82,87.5,519.8,0.1273,0.1932,0.1859,0.09353,0.235,0.07389,0
+...
+```
+
+2. 拆分数据集
+
+继续执行命令。拆分后得到训练（80%）和测试（20%）两份数据集，存放位置为/host/testdata/breast\_cancer/train\_table和/host/testdata/breast\_cancer/test\_table。
+
+（可选）同样地，您同样可以按照步骤五中的方法获取数据密钥对其进行解密，与明文拆分的结果进行比较，两者预期是一致的。
+
+```none
+occlum run /bin/main --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/train_test_split_task.json
+```
+
+3. XGBoost训练
+
+继续执行命令。计算结果为一个加密的xgb树模型，存放位置为/host/testdata/breast\_cancer/xgb\_model。
+
+```bash
+occlum run /bin/main --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/xgb_task.json
+```
+
+（可选）同样地，您同样可以按照步骤五中的方法对模型进行解密，并参考前面直接明文建模的代码对模型进行查看，两者预期是一致的。
+
+4. XGBoost预测
+
+继续执行命令。计算结果为预测结果，包含以下列：score-预测结果、label-原始的标签、id：样本ID，文件存放位置为/host/testdata/breast\_cancer/xgb\_model。
+
+```bash
+occlum run /bin/main --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/xgb_predict_task.json
+```
+
+（可选）同样地，您同样可以按照步骤五中的方法对预测结果进行解密，您将得到以下结果，与明文预测得到的结果是一致的。
+
+```bash
+score,label,id
+0.999446,True,8911834
+0.000215,False,8811842
+0.999848,True,911408
+0.997493,True,909220
+0.996475,True,862261
+0.999694,True,89511502
+0.999415,True,871149
+0.000637,False,9113538
+0.972095,True,925277
+0.994735,True,88249602
+...
+```
+
+5. 二分类评估
+
+继续执行命令，对预测结果进行评估。
+
+```bash
+occlum run /bin/main --enable_capsule_tls=false --entry_task_config_path=/host/integration_test/biclassification_eval_task.json
+```
+
+输出结果为一个二分类评估的结果，二分类结果为明文形式，内容包含：
+
+- summary\_report: 总结报告，包含total\_samples、positive\_samples、negative\_samples、auc、ks和f1\_score
+- eq\_frequent\_bin\_report: 等频分箱报告
+- eq\_range\_bin\_report: 等距分箱报告
+- head\_report: FPR = 0.001， 0.005， 0.01， 0.05， 0.1， 0.2 的精度报告，包含fpr、precision、recall和threshold
+
+您可以看到auc、f1和ks值与直接使用breast cancer数据集建模一致。
+
+部分内容展示如下：
+
+```json
+{
+  "name": "reports",
+  "tabs": [
+    {
+      "name": "SummaryReport",
+      "desc": "Summary Report for bi-classification evaluation.",
+      "divs": [
+        {
+          "children": [
+            {
+              "type": "descriptions",
+              "descriptions": {
+                "items": [
+                  {
+                    "name": "auc",
+                    "type": "float",
+                    "value": {
+                      "f": 0.979642
+                    }
+                  },
+                  {
+                    "name": "ks",
+                    "type": "float",
+                    "value": {
+                      "f": 0.85503685
+                    }
+                  },
+                  {
+                    "name": "f1_score",
+                    "type": "float",
+                    "value": {
+                      "f": 0.9426752
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```

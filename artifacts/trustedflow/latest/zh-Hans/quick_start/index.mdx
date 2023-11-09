@@ -49,4 +49,25 @@ openssl req -x509 -new -nodes -key alice.key -sha256 -days 3650 -out alice.crt
 
 ## 详细步骤
 
-<TableOfContents />
+<TableOfContents>
+
+
+  - [步骤一：（仅 carol）前置部署](step1.mdx)
+    - [选项一：仿真模式部署 CapsuleManager](step1.mdx#选项一：仿真模式部署-CapsuleManager)
+    - [选项二：在 SGX 机器上运行 CapsuleManager](step1.mdx#选项二：在-SGX-机器上运行-CapsuleManager)
+  - [步骤二：（仅alice和bob）数据加密](step2.mdx)
+    - [第一步：下载CLI工具](step2.mdx#第一步：下载CLI工具)
+    - [第二步：加密数据](step2.mdx#第二步：加密数据)
+    - [第三步：上传数据密钥](step2.mdx#第三步：上传数据密钥)
+    - [选项二：SGX模式](step2.mdx#选项二：SGX模式)
+  - [步骤三：（仅alice和bob）数据授权](step3.mdx)
+    - [选项一：仿真模式](step3.mdx#选项一：仿真模式)
+    - [选项二：SGX模式](step3.mdx#选项二：SGX模式)
+    - [（可选）自定义授权策略](step3.mdx#（可选）自定义授权策略)
+  - [步骤四：（仅carol）运行可信APP](step4.mdx)
+    - [直接使用breast cancer数据集建模](step4.mdx#直接使用breast-cancer数据集建模)
+    - [使用TrustedFlow复现breast cancer建模](step4.mdx#使用TrustedFlow复现breast-cancer建模)
+  - [步骤五：（可选）获取结果](step5.mdx)
+    - [数据导出流程原理](step5.mdx#数据导出流程原理)
+    - [数据导出示例](step5.mdx#数据导出示例)
+</TableOfContents>
