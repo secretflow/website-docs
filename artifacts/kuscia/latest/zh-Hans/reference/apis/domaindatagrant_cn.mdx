@@ -1,10 +1,9 @@
-:target{#domain}
+:target{#domaindatagrant}
 
-# Domain
+# DomainDataGrant
 
-在 Kuscia 中将隐私计算的节点称为 Domain，一个 Domain 中可以包含多个 K3s
-的工作节点（Node）。详情请参考 [Domain](../concepts/domain_cn.mdx) 。
-你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domain.proto) 找到对应的 protobuf 文件。
+DomainDataGrant 表示被 Kuscia 管理的数据授权对象。请参考 [DomainDataGrant](../concepts/domaindatagrant_cn.mdx)。
+你可以从 [这里](https://github.com/secretflow/kuscia/tree/main/proto/api/v1alpha1/kusciaapi/domaindatagrant.proto) 找到对应的 protobuf 文件。
 
 :target{#id1}
 
@@ -34,91 +33,91 @@
   <tbody>
     <tr>
       <td>
-        [CreateDomain](#create-domain)
+        [CreateDomainDataGrant](#create-domain-data-grant)
       </td>
 
       <td>
-        CreateDomainRequest
+        CreateDomainDataGrantRequest
       </td>
 
       <td>
-        CreateDomainResponse
+        CreateDomainDataGrantResponse
       </td>
 
       <td>
-        创建节点
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        [UpdateDomain](#update-domain)
-      </td>
-
-      <td>
-        UpdateDomainRequest
-      </td>
-
-      <td>
-        UpdateDomainResponse
-      </td>
-
-      <td>
-        更新节点
+        创建数据对象授权
       </td>
     </tr>
 
     <tr>
       <td>
-        [DeleteDomain](#delete-domain)
+        [UpdateDomainDataGrant](#update-domain-data-grant)
       </td>
 
       <td>
-        DeleteDomainRequest
+        UpdateDomainDataGrantRequest
       </td>
 
       <td>
-        DeleteDomainResponse
+        UpdateDomainDataGrantResponse
       </td>
 
       <td>
-        删除节点
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        [QueryDomain](#query-domain)
-      </td>
-
-      <td>
-        QueryDomainRequest
-      </td>
-
-      <td>
-        QueryDomainResponse
-      </td>
-
-      <td>
-        查询节点
+        更新数据对象授权
       </td>
     </tr>
 
     <tr>
       <td>
-        [BatchQueryDomain](#batch-query-domain)
+        [DeleteDomainDataGrant](#delete-domain-data-grant)
       </td>
 
       <td>
-        BatchQueryDomainRequest
+        DeleteDomainDataGrantRequest
       </td>
 
       <td>
-        BatchQueryDomainResponse
+        DeleteDomainDataGrantResponse
       </td>
 
       <td>
-        批量查询节点状态
+        删除数据对象授权
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [QueryDomainDataGrant](#query-domain-data-grant)
+      </td>
+
+      <td>
+        QueryDomainDataGrantRequest
+      </td>
+
+      <td>
+        QueryDomainDataGrantResponse
+      </td>
+
+      <td>
+        查询数据对象授权
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        [BatchQueryDomainDataGrant](#batch-query-domain-data-grant)
+      </td>
+
+      <td>
+        BatchQueryDomainDataGrantRequest
+      </td>
+
+      <td>
+        BatchQueryDomainDataGrantResponse
+      </td>
+
+      <td>
+        批量查询数据对象授权
       </td>
     </tr>
   </tbody>
@@ -128,19 +127,19 @@
 
 ## 接口详情
 
-:target{#create-domain}
+:target{#create-domain-data-grant}
 
-### 创建节点
+### 创建数据对象授权
 
 :target{#http}
 
 #### HTTP 路径
 
-/api/v1/domain/create
+/api/v1/domaindatagrant/create
 
-:target{#createdomainrequest}
+:target{#create-domain-data-grant-request}
 
-#### 请求（CreateDomainRequest）
+#### 请求（CreateDomainDataGrantRequest）
 
 <table>
   <thead>
@@ -184,6 +183,96 @@
 
     <tr>
       <td>
+        domaindatagrant\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        数据对象授权 ID，如果不填，则会由 kusciaapi 自动生成，并在 response 中返回。如果填写，则会使用填写的值，请注意需满足 [DNS 子域名规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domaindata\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        数据对象 ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        grant\_domain
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        被授权节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        limit
+      </td>
+
+      <td>
+        [GrantLimit](#grant-limit-entity)
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权限制条件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        description
+      </td>
+
+      <td>
+        map\<string, string>
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        自定义描述
+      </td>
+    </tr>
+
+    <tr>
+      <td>
         domain\_id
       </td>
 
@@ -196,69 +285,15 @@
       </td>
 
       <td>
-        节点 ID 需要符合 DNS 子域名规则要求，参考 [DomainId 规则要求](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        role
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        角色：\[“”, “partner”]，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        cert
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        BASE64 的计算节点证书，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        auth\_center
-      </td>
-
-      <td>
-        [AuthCenter](#auth-center)
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        节点到中心的授权模式
+        授权信息所有者节点ID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#createdomainresponse}
+:target{#create-domain-data-grant-response}
 
-#### 响应（CreateDomainResponse）
+#### 响应（CreateDomainDataGrantResponse）
 
 <table>
   <thead>
@@ -299,22 +334,58 @@
         状态信息
       </td>
     </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        CreateDomainDataGrantResponseData
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权信息结果
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data.domaindatagrant\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        数据对象授权 ID
+      </td>
+    </tr>
   </tbody>
 </table>
 
-:target{#update-domain}
+:target{#update-domain-data-grant}
 
-### 更新节点
+### 更新数据对象授权
 
 :target{#id3}
 
 #### HTTP 路径
 
-/api/v1/domain/update
+/api/v1/domaindatagrant/update
 
-:target{#updatedomainrequest}
+:target{#updatedomaindatagrantrequest}
 
-#### 请求（UpdateDomainRequest）
+#### 请求（UpdateDomainDataGrantRequest）
 
 <table>
   <thead>
@@ -358,6 +429,96 @@
 
     <tr>
       <td>
+        domaindatagrant\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        数据对象授权ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domaindata\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        数据对象ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        grant\_domain
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        被授权节点ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        limit
+      </td>
+
+      <td>
+        [GrantLimit](#grant-limit-entity)
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权限制条件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        description
+      </td>
+
+      <td>
+        map\<string, string>
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        自定义描述
+      </td>
+    </tr>
+
+    <tr>
+      <td>
         domain\_id
       </td>
 
@@ -370,51 +531,15 @@
       </td>
 
       <td>
-        节点 ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        role
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        角色：\[“”, “partner”]，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        cert
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        BASE64 的计算节点证书，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
+        授权信息所有者节点ID
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#updatedomainresponse}
+:target{#updatedomaindatagrantresponse}
 
-#### 响应（UpdateDomainResponse）
+#### 响应（UpdateDomainDataGrantResponse）
 
 <table>
   <thead>
@@ -458,19 +583,19 @@
   </tbody>
 </table>
 
-:target{#delete-domain}
+:target{#delete-domain-data-grant}
 
-### 删除节点
+### 删除数据对象授权
 
 :target{#id4}
 
 #### HTTP 路径
 
-/api/v1/domain/delete
+/api/v1/domaindatagrant/delete
 
-:target{#deletedomainrequest}
+:target{#deletedomaindatagrantrequest}
 
-#### 请求（DeleteDomainRequest）
+#### 请求（DeleteDomainDataGrantRequest）
 
 <table>
   <thead>
@@ -529,12 +654,30 @@
         节点 ID
       </td>
     </tr>
+
+    <tr>
+      <td>
+        domaindatagrant\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        数据对象授权 ID
+      </td>
+    </tr>
   </tbody>
 </table>
 
-:target{#deletedomainresponse}
+:target{#deletedomaindatagrantresponse}
 
-#### 响应（DeleteDomainResponse）
+#### 响应（DeleteDomainDataGrantResponse）
 
 <table>
   <thead>
@@ -578,19 +721,19 @@
   </tbody>
 </table>
 
-:target{#query-domain}
+:target{#query-domain-data-grant}
 
-### 查询节点
+### 查询数据对象授权
 
 :target{#id5}
 
 #### HTTP 路径
 
-/api/v1/domain/query
+/api/v1/domaindatagrant/query
 
-:target{#querydomainrequest}
+:target{#querydomaingrantrequest}
 
-#### 请求（QueryDomainRequest）
+#### 请求（QueryDomainGrantRequest）
 
 <table>
   <thead>
@@ -649,12 +792,30 @@
         节点 ID
       </td>
     </tr>
+
+    <tr>
+      <td>
+        domaindatagrant\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        数据对象授权 ID
+      </td>
+    </tr>
   </tbody>
 </table>
 
-:target{#querydomainresponse}
+:target{#querydomaingrantresponse}
 
-#### 响应（QueryDomainResponse）
+#### 响应（QueryDomainGrantResponse）
 
 <table>
   <thead>
@@ -702,61 +863,7 @@
       </td>
 
       <td>
-        QueryDomainResponseData
-      </td>
-
-      <td>
-
-      </td>
-
-      <td>
-
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.domain\_id
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        节点 ID
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.role
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        角色：\[“”, “partner”]，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.cert
-      </td>
-
-      <td>
-        string
+        [DomainDataGrant](#domain-data-grant-entity)
       </td>
 
       <td>
@@ -764,97 +871,25 @@
       </td>
 
       <td>
-        BASE64 的计算节点证书，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.annotations
-      </td>
-
-      <td>
-        map\[string]string
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        节点的额外信息，比如是否是内置节点等
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.auth\_center
-      </td>
-
-      <td>
-        [AuthCenter](#auth-center)
-      </td>
-
-      <td>
-        可选
-      </td>
-
-      <td>
-        节点到中心的授权模式
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.node\_statuses
-      </td>
-
-      <td>
-        [NodeStatus](#node-status)\[]
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        物理节点状态
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.deploy\_token\_statuses
-      </td>
-
-      <td>
-        [DeployTokenStatus](#deploy-token-status)\[]
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        部署令牌状态
+        授权信息
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#batch-query-domain}
+:target{#batch-query-domain-data-grant}
 
-### 批量查询节点状态
+### 批量查询数据对象授权
 
 :target{#id6}
 
 #### HTTP 路径
 
-/api/v1/domain/batchQuery
+/api/v1/domaindatagrant/batchQuery
 
-:target{#batchquerydomainrequest}
+:target{#batchquerydomaindatagrantrequest}
 
-#### 请求（BatchQueryDomainRequest）
+#### 请求（BatchQueryDomainDataGrantRequest）
 
 <table>
   <thead>
@@ -898,11 +933,11 @@
 
     <tr>
       <td>
-        domain\_ids
+        data
       </td>
 
       <td>
-        string\[]
+        [QueryDomainDataGrantRequestData](#query-domain-data-grant-request-data)\[]
       </td>
 
       <td>
@@ -910,15 +945,15 @@
       </td>
 
       <td>
-        待查询的节点 ID 列表
+        查询内容
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#batchquerydomainresponse}
+:target{#batchquerydomaindatagrantresponse}
 
-#### 响应（ BatchQueryDomainResponse）
+#### 响应（BatchQueryDomainDataGrantResponse）
 
 <table>
   <thead>
@@ -966,45 +1001,163 @@
       </td>
 
       <td>
-        BatchQueryDomainResponseData
+        [DomainDataGrant](#domain-data-grant-entity)\[]
       </td>
 
       <td>
-        必填
+        可选
       </td>
 
       <td>
-
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data.domains
-      </td>
-
-      <td>
-        [Domain](#domain-entity)\[]
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        节点列表
+        授权信息列表
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#id7}
+:target{#list-domain-data-grant}
 
 ## 公共
 
-:target{#domain-entity}
+:target{#grant-limit-entity}
 
-### Domain
+### GrantLimit
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        expiration\_time
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权过期时间，Unix 时间戳，精确到纳秒
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        use\_count
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权使用次数
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        flow\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权对应的任务流ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        components
+      </td>
+
+      <td>
+        repeated string
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权可用的组件ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        initiator
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权指定的发起方
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        input\_config
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权指定的算子输入参数
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#query-domain-data-grant-request-data}
+
+### QueryDomainDataGrantRequestData
 
 <table>
   <thead>
@@ -1048,7 +1201,7 @@
 
     <tr>
       <td>
-        role
+        domaindatagrant\_id
       </td>
 
       <td>
@@ -1060,13 +1213,277 @@
       </td>
 
       <td>
-        角色：\[“”, “partner”]，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
+        数据对象授权 ID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#domain-data-grant-entity}
+
+### DomainDataGrant
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        [DomainDataGrantData](#domain-data-grant-data-entity)
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        数据对象ID
       </td>
     </tr>
 
     <tr>
       <td>
-        cert
+        status
+      </td>
+
+      <td>
+        [DomainDataGrantStatus](#domain-data-grant-status-entity)
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        数据对象授权 ID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#domain-data-grant-data-entity}
+
+### DomainDataGrantData
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        domaindatagrant\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        数据对象授权 ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        author
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        数据对象授权方节点 ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domaindata\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        数据对象 ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        grant\_domain
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        被授权节点 ID
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        limit
+      </td>
+
+      <td>
+        [GrantLimit](#grant-limit-entity)
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        授权限制条件
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        description
+      </td>
+
+      <td>
+        map\<string, string>
+      </td>
+
+      <td>
+        可选
+      </td>
+
+      <td>
+        自定义描述
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        domain\_id
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        授权信息所有者节点 ID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#domain-data-grant-status-entity}
+
+### DomainDataGrantStatus
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        字段
+      </td>
+
+      <td>
+        类型
+      </td>
+
+      <td>
+        选填
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        phase
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        状态
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        message
       </td>
 
       <td>
@@ -1078,61 +1495,17 @@
       </td>
 
       <td>
-        BASE64 的计算节点证书，参考 [<span>Domain 概念</span>](../concepts/domain_cn.mdx)
+        状态描述信息
       </td>
     </tr>
 
     <tr>
       <td>
-        node\_statuses
+        records
       </td>
 
       <td>
-        [NodeStatus](#node-status)\[]
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        真实物理节点状态
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        deploy\_token\_statuses
-      </td>
-
-      <td>
-        [DeployTokenStatus](#deploy-token-status)\[]
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        部署令牌状态
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#node-status}
-
-### NodeStatus
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        字段
-      </td>
-
-      <td>
-        类型
+        UseRecord\[]
       </td>
 
       <td>
@@ -1140,117 +1513,17 @@
       </td>
 
       <td>
-        描述
-      </td>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>
-        name
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        节点名称
+        授权使用记录
       </td>
     </tr>
 
     <tr>
       <td>
-        status
+        records\[].use\_time
       </td>
 
       <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        节点状态
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        version
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        节点 Agent 版本
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        last\_heartbeat\_time
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        最后心跳时间，RFC3339 格式（e.g. 2006-01-02T15:04:05Z）
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        last\_transition\_time
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        最后更新时间，RFC3339 格式（e.g. 2006-01-02T15:04:05Z）
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#auth-center}
-
-### AuthCenter
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        字段
-      </td>
-
-      <td>
-        类型
+        int64
       </td>
 
       <td>
@@ -1258,63 +1531,17 @@
       </td>
 
       <td>
-        描述
+        读取授权信息时间，Unix 时间戳，精确到纳秒
       </td>
     </tr>
-  </thead>
 
-  <tbody>
     <tr>
       <td>
-        authentication\_type
+        records\[].grant\_domain
       </td>
 
       <td>
         string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        节点到中心授权类型，目前仅支持 Token
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        token\_gen\_method
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        节点到中心 Token 生成类型，目前仅支持 UID-RSA-GEN
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#deploy-token-status}
-
-### DeployTokenStatus
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        字段
-      </td>
-
-      <td>
-        类型
       </td>
 
       <td>
@@ -1322,15 +1549,13 @@
       </td>
 
       <td>
-        描述
+        被授权节点 ID
       </td>
     </tr>
-  </thead>
 
-  <tbody>
     <tr>
       <td>
-        token
+        records\[].component
       </td>
 
       <td>
@@ -1338,17 +1563,17 @@
       </td>
 
       <td>
-        必填
+        选填
       </td>
 
       <td>
-        部署令牌
+        使用授权的组件
       </td>
     </tr>
 
     <tr>
       <td>
-        state
+        records\[].output
       </td>
 
       <td>
@@ -1356,29 +1581,11 @@
       </td>
 
       <td>
-        必填
+        选填
       </td>
 
       <td>
-        部署令牌状态 used, unsed
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        last\_transition\_time
-      </td>
-
-      <td>
-        string
-      </td>
-
-      <td>
-        必填
-      </td>
-
-      <td>
-        最后更新时间，RFC3339 格式（e.g. 2006-01-02T15:04:05Z）
+        使用授权的任务输出
       </td>
     </tr>
   </tbody>
