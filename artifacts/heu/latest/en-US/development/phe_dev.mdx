@@ -187,7 +187,7 @@ The next step is to define data structures related to Key, their SPIs are as fol
 
     std::string ToString() const;
 
-    // Valid plaintext range: (max_int_, -max_int_)
+    // Valid plaintext range: [max_int_, -max_int_]
     const Plaintext &PlaintextBound() const &;
 
     yacl::Buffer Serialize() const;
