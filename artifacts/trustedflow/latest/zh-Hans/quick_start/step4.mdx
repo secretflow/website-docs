@@ -596,10 +596,10 @@ docker run -it --name teeapps-sgx --network=host -v /dev/sgx_enclave:/dev/sgx/en
 
 ```bash
 # PCCS server address
-PCCS_URL=https://localhost:8081/sgx/certification/v3/
+"pccs_url": "https://localhost:8081/sgx/certification/v4/"
 
 # To accept insecure HTTPS certificate, set this option to FALSE
-USE_SECURE_CERT=FALSE
+"use_secure_cert": false
 ```
 
 2. 修改occlum\_release/image/etc/kubetee/unified\_attestation.json，将ua\_dcap\_pccs\_url配置为实际的PCCS服务地址。

@@ -15,20 +15,28 @@
 ### 第一步：运行CapsuleManager镜像
 
 ```bash
-docker run -it secretflow/capsule-manager-sim:latest
+docker run -it secretflow/capsule-manager-sim-ubuntu20.04:latest bash
 ```
 
 :target{#第二步：启动CapsuleManager}
 
 ### 第二步：启动CapsuleManager
 
-1. 默认的监听端口为8888，您可以在启动时添加`--port xx`参数修改为其他端口号。
-2. CapsuleManager默认启用mTLS，关于如何配置mTLS可以参考[CapsuleManager mTLS](https://github.com/secretflow/capsule-manager/blob/master/README.md#mutual-tls)。
-3. 您可以添加启动参数`--enable_tls false`来关闭mTLS功能，注意关闭mTLS是不安全的，生产环境建议启动mTLS。
+CapsuleManager 默认会启用mTLS，关于如何配置mTLS可以参考[CapsuleManager mTLS](https://github.com/secretflow/capsule-manager/blob/master/README.md#mutual-tls)：
 
 ```bash
-./capsule-manager
+./capsule_manager --server-cert-key-path <SERVER_CERT_KEY_PATH> \
+                  --server-cert-path <SERVER_CERT_PATH>         \
+                  --client-ca-cert-path <CLIENT_CA_CERT_PATH>
 ```
+
+如果不希望开启mTLS，可以添加启动参数`--enable-tls false` 来<strong>关闭mTLS功能</strong>（注意关闭mTLS是不安全的，生产环境建议启动mTLS）：
+
+```bash
+./capsule_manager --enable-tls false
+```
+
+默认的监听端口为8888，您可以在启动时添加`--port xx`参数修改为其他端口号。
 
 :target{#选项二：在SGX机器上运行CapsuleManager}
 
@@ -41,7 +49,7 @@ docker run -it secretflow/capsule-manager-sim:latest
 ### 1. 运行镜像
 
 ```bash
-docker run -it --net host -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provision:/dev/sgx/provision --privileged=true secretflow/capsule-manager-occlum0.29.5-ubuntu20.04:latest
+docker run -it --net host -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provision:/dev/sgx/provision --privileged=true secretflow/capsule-manager-ubuntu20.04:latest
 ```
 
 :target{id="2.-修改-PCCS-配置"}
@@ -54,10 +62,10 @@ docker run -it --net host -v /dev/sgx_enclave:/dev/sgx/enclave -v /dev/sgx_provi
 
 ```bash
 # PCCS server address
-PCCS_URL=https://localhost:8081/sgx/certification/v3/
+"pccs_url": "https://localhost:8081/sgx/certification/v4/"
 
 # To accept insecure HTTPS certificate, set this option to FALSE
-USE_SECURE_CERT=FALSE
+"use_secure_cert": false
 ```
 
 2. 修改occlum\_release/image/etc/kubetee/unified\_attestation.json，将ua\_dcap\_pccs\_url配置为实际的PCCS服务地址。
@@ -90,7 +98,7 @@ USE_SECURE_CERT=FALSE
 您首先需要生成私钥，然后使用以下命令构建occlum。生成私钥可以参考下列脚本，生成的私钥保存在当前目录的private\_key.pem。请妥善保存您的私钥，不要泄露给其他人。
 
 ```bash
-openssl genrsa -3 -out private_key.pem 3072
+cd occlum_release && openssl genrsa -3 -out private_key.pem 3072
 ```
 
 生成公私钥后，使用私钥构建occlum。
@@ -108,7 +116,7 @@ occlum build -f --sign-key private_key.pem
 > 默认的监听端口为8888，您可以在启动时添加`--port xx`参数修改为其他端口号，或者修改config.yaml文件中的`port`。
 
 ```bash
-occlum run /bin/auth-manager --config_path /host/config.yaml
+occlum run /bin/capsule_manager --config_path /host/config.yaml
 ```
 
 :target{id="6.-获取CapsuleManager的mrenclave"}
