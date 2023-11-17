@@ -315,6 +315,114 @@
         所有参数应为同一类型
       </td>
     </tr>
+
+    <tr>
+      <td>
+        datetime
+      </td>
+
+      <td>
+        now
+      </td>
+
+      <td>
+        部分
+      </td>
+
+      <td>
+        无参数，受时区影响
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datetime
+      </td>
+
+      <td>
+        curdate
+      </td>
+
+      <td>
+        部分
+      </td>
+
+      <td>
+        无参数，受时区影响，不同的数据源可能有不同的结果
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datetime
+      </td>
+
+      <td>
+        last\_day
+      </td>
+
+      <td>
+        部分
+      </td>
+
+      <td>
+        参数必须是 datetime 或者 timestamp ，不支持 PostgreSQL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datetime
+      </td>
+
+      <td>
+        str\_to\_date, date\_format
+      </td>
+
+      <td>
+        部分
+      </td>
+
+      <td>
+        参数必须是 datetime 或者 timestamp ，不支持 PostgreSQL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datetime
+      </td>
+
+      <td>
+        adddate, subdate
+      </td>
+
+      <td>
+        部分
+      </td>
+
+      <td>
+        第一个参数必须是 datetime 或者 timestamp，第二个参数是间隔
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datetime
+      </td>
+
+      <td>
+        datediff
+      </td>
+
+      <td>
+        部分
+      </td>
+
+      <td>
+        参数必须是 datetime 或者 timestamp ，不支持 PostgreSQL 和 csv
+      </td>
+    </tr>
   </tbody>
 </table>
 

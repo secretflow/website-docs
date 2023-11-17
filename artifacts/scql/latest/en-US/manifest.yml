@@ -1,6 +1,7 @@
 sidebar:
   - items:
       - {id: intro/tutorial.mdx, label: Quickstart tutorial, type: doc}
+      - {id: intro/p2p-tutorial.mdx, label: P2P Quickstart Tutorial, type: doc}
     label: Introduction
     link: {id: intro/index.mdx, label: Introduction, type: doc}
     type: category
@@ -8,6 +9,7 @@ sidebar:
       - items:
           - {id: topics/system/intro.mdx, label: SCQL System Overview, type: doc}
           - {id: topics/system/usage.mdx, label: How To Use SCQL, type: doc}
+          - {id: topics/system/intro-p2p.mdx, label: SCQL P2P Overview, type: doc}
         label: SCQL System
         type: category
       - items:
@@ -25,8 +27,10 @@ sidebar:
         label: Clients
         type: category
       - items:
-          - {id: topics/deployment/how-to-deploy-a-cluster.mdx, label: Deployment,
-            type: doc}
+          - {id: topics/deployment/how-to-deploy-centralized-cluster.mdx, label: Deployment
+              with Trusted Third Party, type: doc}
+          - {id: topics/deployment/how-to-deploy-p2p-cluster.mdx, label: Deployment
+              in P2P Mode, type: doc}
         label: Deployment
         type: category
     label: Topics

@@ -82,7 +82,7 @@ SCQL supports frequently-used data types, as illustrated in the following table.
       <td />
 
       <td>
-        not supported yet, coming soon
+        Used for values that contain both date and time parts. SCQL retrieves and displays in ‘YYYY-MM-DD hh\:mm\:ss’ format
       </td>
     </tr>
 
@@ -94,7 +94,7 @@ SCQL supports frequently-used data types, as illustrated in the following table.
       <td />
 
       <td>
-        not supported yet, coming soon
+        Used for values that contain both date and time parts. SCQL retrieves in ‘YYYY-MM-DD hh\:mm\:ss’ format and displays in int64 value affected by time zone
       </td>
     </tr>
   </tbody>
@@ -259,6 +259,7 @@ SELECT [DISTINCT] select_expr [, select_expr] ...
 [FROM table_reference]
 [WHERE where_condition]
 [GROUP BY column]
+[into_option]
 
 select_expr:
     col_reference [AS alias]
@@ -311,6 +312,12 @@ predicate_expr:
 
 sub_select:
     '(' select_stmt ')'
+
+into_option:
+    INTO OUTFILE PARTY_CODE 'party_code' 'file_path' [export_options]
+
+export_options:
+    FIELDS TERMINATED BY 'terminal_character'
 ```
 
 :target{#functions-and-operators}

@@ -2,7 +2,7 @@
 
 # SCQL 系统配置
 
-本配置手册旨在帮助用户了解 SCQL 系统的各种配置项。 它可以分为两部分：SCDB 配置项和Engine 配置项。
+本配置手册旨在帮助用户了解 SCQL 系统的各种配置项。 它可以分为三部分：SCDB 配置项、 SCQLBroker 配置项和 Engine 配置项。
 
 :target{#scdb-configuration-options}
 
@@ -43,8 +43,7 @@ engine:
     spu: |
       {
         "protocol": "SEMI2K",
-        "field": "FM64",
-        "sigmoid_mode": "SIGMOID_REAL"
+        "field": "FM64"
       }
 party_auth:
   method: pubkey
@@ -84,7 +83,7 @@ party_auth:
       </td>
 
       <td>
-        SCQLEngine通知SCDB的回调URL
+        SCQLEngine 通知 SCDB 的回调 URL
       </td>
     </tr>
 
@@ -336,7 +335,7 @@ party_auth:
       </td>
 
       <td>
-        SCDB的数据库类型支持 MYSQL/SQLite3
+        SCDB 使用的数据库类型， 支持 MYSQL/SQLite3，推荐使用 MYSQL，SQLite3在并发下可能出问题
       </td>
     </tr>
 
@@ -653,11 +652,468 @@ engine:
 SCQL 的底层 MPC 协议由 SPU 控制，你可以通过更改 SPU 相关配置来选择不同的 MPC 协议， 更多信息请参考 [SPU 配置](https://www.secretflow.org.cn/docs/spu/en/reference/runtime_config.html) 。
 
 ```yaml
-spu:
-  protocol: SEMI2K
-  field: FM64
-  sigmoid_mode: SIGMOID_REAL
+spu: |
+{
+  "protocol": "SEMI2K",
+  "field": "FM64"
+}
 ```
+
+:target{#scqlbroker-configuration-options}
+
+## SCQLBroker 配置说明
+
+SCQLBroker 和 SCDB一样，使用 yaml 文件配置参数，两者的配置项也大体相同
+
+:target{#example-for-scqlbroker}
+
+### SCQLBroker 配置示例
+
+```yaml
+intra_server:
+  port: 8080
+inter_server:
+  host: 0.0.0.0
+  port: 8081
+  protocol: https
+  cert_file: ${your cert file path}
+  key_file: ${your key file path}
+log_level: debug
+party_code: alice
+party_info_file: "/home/admin/configs/party_info.json"
+private_pem_path: "/home/admin/configs/private_key.pem"
+intra_host: http://broker_alice:8080
+engines: ["engine_alice:8003"]
+engine:
+  timeout: 120s
+  protocol: http
+  content_type: application/json
+storage:
+  type: mysql
+  conn_str: "user_name:pass_word@tcp(127.0.0.1:3306)/db_name?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true"
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_idle_time: 2m
+  conn_max_lifetime: 5m
+```
+
+:target{#config-in-scqlbroker}
+
+### SCQLBroker 配置
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        名称
+      </td>
+
+      <td>
+        默认值
+      </td>
+
+      <td>
+        描述
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        intra\_server.host
+      </td>
+
+      <td>
+        127.0.0.1
+      </td>
+
+      <td>
+        SCQLBroker 监听 IntraServer 请求的 host，为了安全起见，默认 localhost
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        intra\_server.port
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        SCQLBroker 监听 IntraServer 请求的端口
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        intra\_server.protocol
+      </td>
+
+      <td>
+        http
+      </td>
+
+      <td>
+        IntraServer 传输协议，支持 HTTP/HTTPS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        intra\_server.cert\_file
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        启用 IntraServer HTTPS 的证书文件路径，支持 crt/pem 类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        intra\_server.key\_file
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        启用 IntraServer HTTPS 的私钥文件路径，支持 key/pem 类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inter\_server.host
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        SCQLBroker 监听 InterServer 请求的 host
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inter\_server.port
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        SCQLBroker 监听 InterServer 请求的端口
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inter\_server.protocol
+      </td>
+
+      <td>
+        http
+      </td>
+
+      <td>
+        InterServer 的传输协议，支持 HTTP/HTTPS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inter\_server.cert\_file
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        启用 InterServer HTTPS 的证书文件路径，支持 crt/pem 类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inter\_server.key\_file
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        启用 InterServer HTTPS 的私钥文件路径，支持 key/pem 类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inter\_timeout
+      </td>
+
+      <td>
+        5s
+      </td>
+
+      <td>
+        InterServer 的请求超时时间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        log\_level
+      </td>
+
+      <td>
+        info
+      </td>
+
+      <td>
+        日志等级
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party\_code
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        用于识别参与方的唯一标识
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party\_info\_file
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        存储参与方信息的文件路径，包括各参与方的 party code 、公钥和 InterServer 的 URL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        private\_pem\_path
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        party\_code 的私钥文件路径，将用于签署对其他 SCQLBrokers 的请求
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        intra\_host
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        SCQLEngine 通知 SCQLBroker 的回调 URL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engines
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        本地可用 SCQLEngine 的 URL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.timeout
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        SCQLBroker 向 SCQLEngine 发送消息的响应超时时间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.protocol
+      </td>
+
+      <td>
+        http
+      </td>
+
+      <td>
+        SCQLEngine 传输协议，支持 http/https
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.content\_type
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        从 SCQLBroker 向 SCQLEngine 实际发送的数据类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        security\_compromise.reveal\_group\_mark
+      </td>
+
+      <td>
+        false
+      </td>
+
+      <td>
+        是否在计算 group by 的时候泄露分组标记信息
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.type
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        SCQLBroker 使用的数据库类型， 支持 MYSQL/SQLite3，推荐使用 MYSQL，SQLite3在并发下可能出问题
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.conn\_str
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        数据库连接串
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.max\_idle\_conns
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        空闲连接池最大连接数
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.max\_open\_conns
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        数据库最大连接数
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.conn\_max\_idle\_time
+      </td>
+
+      <td>
+        \-1s
+      </td>
+
+      <td>
+        连接处于空闲状态的最长时间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.conn\_max\_lifetime
+      </td>
+
+      <td>
+        \-1s
+      </td>
+
+      <td>
+        可重复连接使用的最长时间
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#config-for-serverconfig}
+
+#### ServerConfig 配置
+
+SCQLBroker 通过IntraServer 接收域内请求，而通过 InterServer 接收不同 SCQLBroker 之间的请求。
+
+IntraServer 建议使用 localhost 或 LAN 地址以避免外部攻击，而 InterServer 建议启用 HTTPS 以提高安全性。
+
+:target{#reused-config}
+
+#### 复用的配置
+
+有关 SecurityCompromise 的更多信息，请参阅 [安全退让配置](#config-security-compromise-options)
+
+有关存储的更多信息，请参阅 [存储配置](#config-storage-options)
 
 :target{#scqlengine-configuration-options}
 
@@ -1279,7 +1735,7 @@ SCQLEngine 使用 Gflags 来管理配置项。
 
 #### 数据源配置
 
-SCQLEngine 支持多种数据源，包括 MySQL/SQLite3/PostgreSQL/CSVDB 。
+SCQLEngine 支持多种数据源，包括 MySQL/SQLite3/PostgreSQL/CSVDB/ArrowSQL 。
 
 `datasource_router` 是为了支持多数据源而设计的，目前仅支持 <cite>embed</cite> 方式配值数据源，其首先通过 `embed_router_conf` 来初始化，`embed_router_conf` 是一个 json 类型的字符串，一个典型的配置项如下所示：
 
@@ -1307,15 +1763,15 @@ SCQLEngine 支持多种数据源，包括 MySQL/SQLite3/PostgreSQL/CSVDB 。
 
 ##### Embed router
 
-embed\_router\_conf 中的 datasources 包含用于连接 MySQL/SQLite3/PostgreSQL/CSVDB 数据源的信息:
+embed\_router\_conf 中的 datasources 包含用于连接 MySQL/SQLite3/PostgreSQL/CSVDB/ArrowSQL 数据源的信息:
 
 > id：数据源的唯一ID。
 >
 > name：自定义描述，有助于区分数据源。
 >
-> kind：数据源类型，目前支持 MySQL/SQLite3/PostgreSQL/CSVDB。
+> kind：数据源类型，目前支持 MySQL/SQLite3/PostgreSQL/CSVDB/ArrowSQL 。
 >
-> connection\_str：用于连接 MySQL/SQLite3/PostgreSQL/CSVDB 数据库的连接串。
+> connection\_str：用于连接 MySQL/SQLite3/PostgreSQL/CSVDB/ArrowSQL 数据库的连接串。
 >
 > > <DefinitionList>
 > >   <dl>
@@ -1325,8 +1781,11 @@ embed\_router\_conf 中的 datasources 包含用于连接 MySQL/SQLite3/PostgreS
 > >
 > >     <dd>
 > >       \<str> == \<assignment> | \<assignment> ‘;’ \<str>
+> >
 > >       \<assignment> == \<name> ‘=’ \<value>
+> >
 > >       \<name> == ‘host’ | ‘port’ | ‘user’ | ‘password’ | ‘db’ | ‘compress’ | ‘auto-reconnect’ | ‘reset’ | ‘fail-readonly’
+> >
 > >       \<value> == \[\~;]\*
 > >     </dd>
 > >
@@ -1360,8 +1819,11 @@ embed\_router\_conf 中的 datasources 包含用于连接 MySQL/SQLite3/PostgreS
 > >
 > >     <dd>
 > >       \<str> == \<assignment> | \<assignment> ‘ ‘ \<str>
+> >
 > >       \<assignment> == \<name> ‘=’ \<value>
+> >
 > >       \<name> == ‘host’ | ‘port’ | ‘user’ | ‘password’ | ‘dbname’ | ‘connect\_timeout’
+> >
 > >       \<value> == \[\~;]\*
 > >     </dd>
 > >
@@ -1387,6 +1849,28 @@ embed\_router\_conf 中的 datasources 包含用于连接 MySQL/SQLite3/PostgreS
 > >
 > >     <dd>
 > >       “\{\\"db\_name\\":\\"csvdb\\",\\"tables\\":\[\{\\"table\_name\\":\\"staff\\",\\"data\_path\\":\\"test.csv\\",\\"columns\\":\[\{\\"column\_name\\":\\"id\\",\\"column\_type\\":\\"1\\"}]}]}”
+> >     </dd>
+> >
+> >     <dt>
+> >       <DefinitionList.Term><span>ArrowSQL 连接串格式：</span></DefinitionList.Term>
+> >     </dt>
+> >
+> >     <dd>
+> >       grpc+\<scheme>://host\:port
+> >
+> >       \<scheme> == ‘tcp’ | ‘tls’
+> >     </dd>
+> >
+> >     <dt>
+> >       <DefinitionList.Term><span>ArrowSQL 连接串示例：</span></DefinitionList.Term>
+> >     </dt>
+> >
+> >     <dd>
+> >       `grpc+tcp://127.0.0.1:6666`
+> >
+> >       <Container type="note">
+> >         作为 SCQLEngine 内嵌的数据源，ArrowSQL 依赖额外的 gRPC 服务，该服务需要提供相应的接口，用于执行 <cite>Arrow Flight SQL \<https\://arrow\.apache.org/docs/format/FlightSql.html></cite> 即时查询
+> >       </Container>
 > >     </dd>
 > >   </dl>
 > > </DefinitionList>

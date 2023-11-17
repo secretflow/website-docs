@@ -1,8 +1,8 @@
-:target{#deployment}
+:target{#deployment-with-trusted-third-party}
 
-# 部署
+# 包含可信第三方的部署
 
-本文描述了如何使用 Docker 部署一个 SCQL 系统，并且使用 scdbclient 进行查询，它与 [快速开始](../../intro/tutorial.mdx) 基本相同，只不过是部署在多台机器上。
+本文描述了如何使用 Docker 部署中心化模式的 SCQL 系统，并且使用 scdbclient 进行查询，它与 [快速开始](../../intro/tutorial.mdx) 基本相同，只不过是部署在多台机器上。
 
 在开始阅读这篇文档前，我们假设读者已经具备一定的 docker-compose 使用经验。如果您对 Docker Compose 不熟悉，请参阅 [Docker Compose 官方概述](https://docs.docker.com/compose/)，或者查看 [入门指南](https://docs.docker.com/compose/gettingstarted/)。
 
@@ -39,12 +39,12 @@ cd engine
 
 引擎中的数据库用于存储原始数据。在本文档中我们将使用 MySQL 作为数据库服务并模拟一个数据集，当然，如果您愿意，也可以使用您喜欢的数据库服务。
 
-要模拟一个数据集，你需要在你的工作区中创建一个名为 alice\_init.sql 的 SQL 初始化文件，该文件对应于 [alice\_init.sql](https://github.com/secretflow/scql/tree/main/examples/docker-compose/mysql/initdb/alice_init.sql)。对于 Bob 请使用 [bob\_init.sql](https://github.com/secretflow/scql/tree/main/examples/docker-compose/mysql/initdb/bob_init.sql)。
+要模拟一个数据集，你需要在你的工作区中创建一个名为 alice\_init.sql 的 SQL 初始化文件，该文件对应于 [alice\_init.sql](https://github.com/secretflow/scql/tree/main/examples/scdb-tutorial/mysql/initdb/alice_init.sql)。对于 Bob 请使用 [bob\_init.sql](https://github.com/secretflow/scql/tree/main/examples/scdb-tutorial/mysql/initdb/bob_init.sql)。
 
 此文件也可以在命令行使用 curl、wget 或其它类似工具获取。
 
 ```bash
-wget raw.githubusercontent.com/secretflow/scql/main/examples/docker-compose/mysql/initdb/alice_init.sql
+wget raw.githubusercontent.com/secretflow/scql/main/examples/scdb-tutorial/mysql/initdb/alice_init.sql
 ```
 
 :target{#set-engine-config}
@@ -56,20 +56,24 @@ wget raw.githubusercontent.com/secretflow/scql/main/examples/docker-compose/mysq
 ```bash
 --listen_port=8080
 --datasource_router=embed
---enable_scdb_authorization=true
---engine_credential=__ALICE_CREDENTIAL__
+--enable_scdb_authorization=false
 --server_enable_ssl=false
 --scdb_enable_ssl_as_client=false
 --peer_engine_enable_ssl_as_client=false
---embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"db=alice;user=root;password=testpass;host=mysql;auto-reconnect=true"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
+--embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"db=alice;user=root;password=__MYSQL_ROOT_PASSWORD__;host=mysql;auto-reconnect=true"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
+# party authentication flags
+--enable_self_auth=true
+--enable_peer_auth=true
+--private_key_pem_path=/home/admin/engine/conf/ed25519key.pem
+--authorized_profile_path=/home/admin/engine/conf/authorized_profile.json
 ```
 
 更多配置信息请查看 [引擎配置项](../../reference/engine-config.mdx#engine-config-options)
 
-<Container type="note">
+<Container type="note" id="replace-root-password">
   `embed_router_conf` 中指定的 `connection_str` 用于连接 [1.2 设置数据集](#set-dataset) 中设置的 alice 的数据库，对于 Bob，应该连接 bob 的数据库。
 
-  `__ALICE_CREDENTIAL__` 用于验证 SCDB，您需要用自己的凭据替换它，对于 Bob 同样如此。在我们的示例中，我们简单的将 Alice 的凭据设置为 `credential_alice`，将 Bob 的凭据设置为 `credential_bob`。
+  `__MYSQL_ROOT_PASSWORD__` 应替换为对应参与方选择的密码，后续文件请以同样的方式替换此占位符。
 </Container>
 
 :target{#create-docker-compose-file}
@@ -93,10 +97,12 @@ services:
       - __ALICE_PORT__:8080
     volumes:
       - ./gflags.conf:/home/admin/engine/conf/gflags.conf
+      - ./ed25519key.pem:/home/admin/engine/conf/ed25519key.pem
+      - ./authorized_profile.json:/home/admin/engine/conf/authorized_profile.json
   mysql:
     image: mysql:latest
     environment:
-      - MYSQL_ROOT_PASSWORD=testpass
+      - MYSQL_ROOT_PASSWORD=__MYSQL_ROOT_PASSWORD__
       - TZ=Asia/Shanghai
     healthcheck:
       retries: 10
@@ -118,19 +124,42 @@ services:
   `__ALICE_PORT__` 是 Engine 在宿主机上的监听端口，您需要替换为一个可访问的端口。这里我们将其指定为 8080
 
   <em>mysql</em> 容器通过 [1.2 设置数据集](#set-dataset) 设置的 `alice_init.sql` 进行初始化，对于 Bob 应该使用 `bob_init.sql`。如果您有自己的数据库服务，可以删除 <em>mysql</em> 容器
+
+  请勿忘记将 `__MYSQL_ROOT_PASSWORD__` 替换为与 [<span>前面</span>](#replace-root-password) 相同的密码
 </Container>
+
+:target{#prepare-party-auth-files}
+
+### 1.5 准备身份验证文件
+
+The party authentication flags are enabled in `gflags.conf`, so we need to generate private key and authorized\_profile.
+
+```bash
+# generate private key
+openssl genpkey -algorithm ed25519 -out ed25519key.pem
+# get public key corresponding to the private key, the output can be used to replace the __ALICE_PUBLIC_KEY__ in engine Bob's authorized_profile.json
+# for engine Bob,  the output can be used to replace the __BOB_PUBLIC_KEY__ in engine Alice's authorized_profile.json
+openssl pkey -in ed25519key.pem  -pubout -outform DER | base64
+# download authorized profile
+# for engine Bob, use command: wget https://raw.githubusercontent.com/secretflow/scql/main/examples/scdb-tutorial/engine/bob/conf/authorized_profile.json
+wget https://raw.githubusercontent.com/secretflow/scql/main/examples/scdb-tutorial/engine/alice/conf/authorized_profile.json
+```
+
+然后您需要将 authorized\_profile.json 中的 `__BOB_PUBLIC_KEY__` 替换为Bob的公钥。对于 Bob 的 Engine ，请替换 `__ALICE_PUBLIC_KEY__`
 
 :target{#start-engine-service}
 
-### 1.5 启动引擎
+### 1.6 启动引擎
 
 您工作区的文件应如下所示：
 
 ```bash
 └── engine
   ├── alice_init.sql
-  ├── gflags.conf
-  └── docker-compose.yaml
+  ├── authorized_profile.json
+  ├── docker-compose.yaml
+  ├── ed25519key.pem
+  └── gflags.conf
 ```
 
 然后您可以运行 docker compose up 来启动引擎服务
@@ -185,7 +214,7 @@ session_expire_check_time: 100ms
 log_level: debug
 storage:
   type: mysql
-  conn_str: "root:testpass@tcp(mysql:3306)/scdb?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true"
+  conn_str: "root:__MYSQL_ROOT_PASSWORD__@tcp(mysql:3306)/scdb?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true"
   max_idle_conns: 10
   max_open_conns: 100
   conn_max_idle_time: 2m
@@ -197,15 +226,20 @@ engine:
   spu: |
     {
       "protocol": "SEMI2K",
-      "field": "FM64",
-      "sigmoid_mode": "SIGMOID_REAL"
+      "field": "FM64"
     }
+party_auth:
+  method: pubkey
+  enable_timestamp_check: true
+  validity_period: 1m
 ```
 
 更多配置信息请查看 [SCDB 配置项](../../reference/engine-config.mdx#scdb-config-options)
 
 <Container type="note">
   `conn_str` 用于连接一个名为 SCDB 的数据库，该数据库将在 2.4 节中通过 docker-compose 完成部署。您也可以根据自己的需求来设置对应的数据库连接串
+
+  请勿忘记将 `__MYSQL_ROOT_PASSWORD__` 替换为与 [<span>前面</span>](#replace-root-password) 相同的密码
 </Container>
 
 :target{#id2}
@@ -232,7 +266,7 @@ services:
   mysql:
     image: mysql:latest
     environment:
-      - MYSQL_ROOT_PASSWORD=testpass
+      - MYSQL_ROOT_PASSWORD=__MYSQL_ROOT_PASSWORD__
       - MYSQL_DATABASE=scdb
       - TZ=Asia/Shanghai
     healthcheck:
@@ -251,6 +285,8 @@ services:
 
 <Container type="note">
   `__SCDB_PORT__` 是 SCDB 服务在宿主机上的监听端口。您需要用一个可访问的端口号替换它。这里设置为 8080。
+
+  请勿忘记将 `__MYSQL_ROOT_PASSWORD__` 替换为与 [<span>前面</span>](#replace-root-password) 相同的密码
 </Container>
 
 :target{#start-scdb-service}
@@ -314,7 +350,7 @@ go build -o scdbclient cmd/scdbclient/main.go
 
 :target{#set-client-config}
 
-### 配置客户端
+### 3.2 配置客户端
 
 创建一个名为 `users.json` 的 JSON 文件，内容如下：
 
@@ -367,4 +403,8 @@ root> show databases;
 
 <Container type="note">
   `__SCDB_URL__` 是 scdb 服务监听的 url（例如：[http://127.0.0.1:8080](http://127.0.0.1:8080)），您需要用 scdb 服务的 url 替换它。
+
+  由于 quickstart 的 SCQLEngine 监听 URL 与分布式部署不同，如果遇到类似以下错误，请使用 `alter user` query 指定正确的监听 URL ，如：30.30.30.30:8080
+
+  > \[fetch]err: Code: 300, message\:Post “http\://engine\_alice:8080/SCQLEngineService/RunExecutionPlan”: dial tcp engine\_alice:8080: connect: connection refused
 </Container>

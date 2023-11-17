@@ -82,7 +82,7 @@ SCQL 支持常用的数据类型，如下表所示。
       <td />
 
       <td>
-        暂不支持，即将推出
+        包含日期和时间两部分， SCQL 使用 ‘YYYY-MM-DD hh\:mm\:ss’ 格式识别及表示
       </td>
     </tr>
 
@@ -94,7 +94,7 @@ SCQL 支持常用的数据类型，如下表所示。
       <td />
 
       <td>
-        暂不支持，即将推出
+        包含日期和时间两部分， SCQL 使用 ‘YYYY-MM-DD hh\:mm\:ss’ 格式识别，但表示为受时区影响的 int64 值
       </td>
     </tr>
   </tbody>
@@ -258,6 +258,7 @@ SELECT [DISTINCT] select_expr [, select_expr] ...
 [FROM table_reference]
 [WHERE where_condition]
 [GROUP BY column]
+[into_option]
 
 select_expr:
     col_reference [AS alias]
@@ -310,6 +311,12 @@ predicate_expr:
 
 sub_select:
     '(' select_stmt ')'
+
+into_option:
+    INTO OUTFILE PARTY_CODE 'party_code' 'file_path' [export_options]
+
+export_options:
+    FIELDS TERMINATED BY 'terminal_character'
 ```
 
 :target{#functions-and-operators}

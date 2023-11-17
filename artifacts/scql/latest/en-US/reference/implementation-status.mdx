@@ -315,6 +315,114 @@
         all arguments should be of the same type
       </td>
     </tr>
+
+    <tr>
+      <td>
+        datetime
+      </td>
+
+      <td>
+        now
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        no arguments, affected by timezone
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datetime
+      </td>
+
+      <td>
+        curdate
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        no arguments, different datasource may have different result because of timezone
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datetime
+      </td>
+
+      <td>
+        last\_day
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        arguments must be datetime or timestamp, not supported by PostgreSQL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datetime
+      </td>
+
+      <td>
+        str\_to\_date, date\_format
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        arguments must be datetime or timestamp, not supported by PostgreSQL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datetime
+      </td>
+
+      <td>
+        adddate, subdate
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        the first argument must be datetime or timestamp, second argument is interval
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        datetime
+      </td>
+
+      <td>
+        datediff
+      </td>
+
+      <td>
+        partial
+      </td>
+
+      <td>
+        arguments must be datetime or timestamp, not supported by PostgreSQL and csv
+      </td>
+    </tr>
   </tbody>
 </table>
 
