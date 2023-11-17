@@ -1,8 +1,8 @@
-:target{#deployment}
+:target{#deployment-with-trusted-third-party}
 
-# Deployment
+# Deployment with Trusted Third Party
 
-This document describes how to deploy a SCQL system with docker, and use scdbclient to query, it’s basically same with [Quickstart tutorial](../../intro/tutorial.mdx), but deployed in multi-machine.
+This document describes how to deploy a SCQL system in centralized mode with docker, and use scdbclient to query, it’s basically same with [Quickstart tutorial](../../intro/tutorial.mdx), but deployed in multi-machine.
 
 Before start this doc, we assume that the reader has some experience using the docker-compose utility. If you are new to Docker Compose, please consider reviewing the [official Docker Compose overview](https://docs.docker.com/compose/), or checking out the [Getting Started guide](https://docs.docker.com/compose/gettingstarted/).
 
@@ -22,7 +22,7 @@ The deployment diagram of the SCQL system that we plan to deploy is shown as the
 
 ## Step 1: Deploy SCQLEngine
 
-Here we displayed how to deploy engine in party Alice, it’s same with party Bob.
+Here we present how to deploy engine in party Alice, it’s same with party Bob.
 
 :target{#create-a-workspace}
 
@@ -39,12 +39,12 @@ cd engine
 
 The database in Engine is use to storage the origin data. In this document we will use MySQL as the database service, and simulate a dataset. However, if you prefer, you can use your preferred database service.
 
-To simulate a dataset, you need create a sql init file named alice\_init.sql in your workspace, which corresponds to [alice\_init.sql](https://github.com/secretflow/scql/tree/main/examples/docker-compose/mysql/initdb/alice_init.sql). For Bob, please use [bob\_init.sql](https://github.com/secretflow/scql/tree/main/examples/docker-compose/mysql/initdb/bob_init.sql) instead.
+To simulate a dataset, you need create a sql init file named alice\_init.sql in your workspace, which corresponds to [alice\_init.sql](https://github.com/secretflow/scql/tree/main/examples/scdb-tutorial/mysql/initdb/alice_init.sql). For Bob, please use [bob\_init.sql](https://github.com/secretflow/scql/tree/main/examples/scdb-tutorial/mysql/initdb/bob_init.sql) instead.
 
 This file can also be obtained via the command-line with either curl, wget or another similar tool.
 
 ```bash
-wget raw.githubusercontent.com/secretflow/scql/main/examples/docker-compose/mysql/initdb/alice_init.sql
+wget raw.githubusercontent.com/secretflow/scql/main/examples/scdb-tutorial/mysql/initdb/alice_init.sql
 ```
 
 :target{#set-engine-config}
@@ -56,20 +56,24 @@ Create a file called `gflags.conf` in your workspace and paste the following cod
 ```bash
 --listen_port=8080
 --datasource_router=embed
---enable_scdb_authorization=true
---engine_credential=__ALICE_CREDENTIAL__
+--enable_scdb_authorization=false
 --server_enable_ssl=false
 --scdb_enable_ssl_as_client=false
 --peer_engine_enable_ssl_as_client=false
---embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"db=alice;user=root;password=testpass;host=mysql;auto-reconnect=true"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
+--embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"db=alice;user=root;password=__MYSQL_ROOT_PASSWORD__;host=mysql;auto-reconnect=true"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
+# party authentication flags
+--enable_self_auth=true
+--enable_peer_auth=true
+--private_key_pem_path=/home/admin/engine/conf/ed25519key.pem
+--authorized_profile_path=/home/admin/engine/conf/authorized_profile.json
 ```
 
 See [Engine configuration options](../../reference/engine-config.mdx#engine-config-options) for more config information
 
-<Container type="note">
+<Container type="note" id="replace-root-password">
   The `connection_str` specified in `embed_router_conf` is utilized to connect database named alice as set in [1.2 Set Dataset](#set-dataset), For Bob it should be set to connect database named bob.
 
-  `__ALICE_CREDENTIAL__` is used to authenticate SCDB, you need replace it with your own credential, same with Bob. In our example, we have simply set it as `credential_alice` for Alice, and `credential_bob` for Bob.
+  The `__MYSQL_ROOT_PASSWORD__` should be replaced with the password set by the corresponding party, and please replace this placeholder in the same way for subsequent files.
 </Container>
 
 :target{#create-docker-compose-file}
@@ -93,10 +97,12 @@ services:
       - __ALICE_PORT__:8080
     volumes:
       - ./gflags.conf:/home/admin/engine/conf/gflags.conf
+      - ./ed25519key.pem:/home/admin/engine/conf/ed25519key.pem
+      - ./authorized_profile.json:/home/admin/engine/conf/authorized_profile.json
   mysql:
     image: mysql:latest
     environment:
-      - MYSQL_ROOT_PASSWORD=testpass
+      - MYSQL_ROOT_PASSWORD=__MYSQL_ROOT_PASSWORD__
       - TZ=Asia/Shanghai
     healthcheck:
       retries: 10
@@ -118,19 +124,42 @@ services:
   `__ALICE_PORT__`  is the published port on the host machine which is used for engine service to listen on, you need to replace it with an accessible port number. In this case, we have designated it as `8080`
 
   Container <em>mysql</em> is init by `alice_init.sql` as set in [1.2 Set Dataset](#set-dataset) , it should be `bob_init.sql` for Bob. If you use your own database service, container <em>mysql</em> can be deleted
+
+  Please remember to replace `__MYSQL_ROOT_PASSWORD__` with the same password [<span>as before</span>](#replace-root-password)
 </Container>
+
+:target{#prepare-party-auth-files}
+
+### 1.5 Prepare Party Auth Files
+
+The party authentication flags are enabled in `gflags.conf`, so we need to generate private key and authorized\_profile.
+
+```bash
+# generate private key
+openssl genpkey -algorithm ed25519 -out ed25519key.pem
+# get public key corresponding to the private key, the output can be used to replace the __ALICE_PUBLIC_KEY__ in engine Bob's authorized_profile.json
+# for engine Bob,  the output can be used to replace the __BOB_PUBLIC_KEY__ in engine Alice's authorized_profile.json
+openssl pkey -in ed25519key.pem  -pubout -outform DER | base64
+# download authorized profile
+# for engine Bob, use command: wget https://raw.githubusercontent.com/secretflow/scql/main/examples/scdb-tutorial/engine/bob/conf/authorized_profile.json
+wget https://raw.githubusercontent.com/secretflow/scql/main/examples/scdb-tutorial/engine/alice/conf/authorized_profile.json
+```
+
+Then you need to replace `__BOB_PUBLIC_KEY__` in authorized\_profile.json with Bob’s public key. For engine Bob, please replace the `__ALICE_PUBLIC_KEY__`
 
 :target{#start-engine-service}
 
-### 1.5 Start Engine Service
+### 1.6 Start Engine Service
 
 The file your workspace should be as follows:
 
 ```bash
 └── engine
   ├── alice_init.sql
-  ├── gflags.conf
-  └── docker-compose.yaml
+  ├── authorized_profile.json
+  ├── docker-compose.yaml
+  ├── ed25519key.pem
+  └── gflags.conf
 ```
 
 Then you can start engine service by running docker compose up
@@ -185,7 +214,7 @@ session_expire_check_time: 100ms
 log_level: debug
 storage:
   type: mysql
-  conn_str: "root:testpass@tcp(mysql:3306)/scdb?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true"
+  conn_str: "root:__MYSQL_ROOT_PASSWORD__@tcp(mysql:3306)/scdb?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true"
   max_idle_conns: 10
   max_open_conns: 100
   conn_max_idle_time: 2m
@@ -197,15 +226,20 @@ engine:
   spu: |
     {
       "protocol": "SEMI2K",
-      "field": "FM64",
-      "sigmoid_mode": "SIGMOID_REAL"
+      "field": "FM64"
     }
+party_auth:
+  method: pubkey
+  enable_timestamp_check: true
+  validity_period: 1m
 ```
 
 See [SCDB configuration options](../../reference/engine-config.mdx#scdb-config-options) for more config information
 
 <Container type="note">
   `conn_str` is utilized to connect database named scdb which will be deployed in next step, if you prefer, you can also use your own database service.
+
+  Please remember to replace `__MYSQL_ROOT_PASSWORD__` with the same password  [<span>as before</span>](#replace-root-password)
 </Container>
 
 :target{#id2}
@@ -232,7 +266,7 @@ services:
   mysql:
     image: mysql:latest
     environment:
-      - MYSQL_ROOT_PASSWORD=testpass
+      - MYSQL_ROOT_PASSWORD=__MYSQL_ROOT_PASSWORD__
       - MYSQL_DATABASE=scdb
       - TZ=Asia/Shanghai
     healthcheck:
@@ -251,6 +285,8 @@ services:
 
 <Container type="note">
   `__SCDB_PORT__` is the published port on the host machine which is used for scdb service to listen on, you need to replace it with an accessible port number. Here, it’s set as 8080
+
+  Please remember to replace `__MYSQL_ROOT_PASSWORD__` with the same password  [<span>as before</span>](#replace-root-password)
 </Container>
 
 :target{#start-scdb-service}
@@ -367,4 +403,8 @@ root> show databases;
 
 <Container type="note">
   `__SCDB_URL__` is the url (eg\:http\://127.0.0.1:8080) where scdb service is listen on, you need to replace it with scdb service url.
+
+  Because the SCQLEngine listening URL of quickstart is different from that of distributed deployment, if you encounter an error similar to the following, please use the `alter user` query to specify the correct listening URL, like: 30.30.30.30:8080
+
+  > \[fetch]err: Code: 300, message\:Post “http\://engine\_alice:8080/SCQLEngineService/RunExecutionPlan”: dial tcp engine\_alice:8080: connect: connection refused
 </Container>

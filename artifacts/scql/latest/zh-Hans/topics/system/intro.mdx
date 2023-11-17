@@ -19,7 +19,11 @@
 
 ## 架构
 
-一个 SCQL 系统由一个 SCDB 服务器和多个 SCQLEngines 组成。
+SCQL 系统支持中心化和 P2P 两种部署模式。中心化模式依赖于可信第三方，但部署和配置过程更简单；P2P 则不需要依赖额外的可信第三方。
+
+后续介绍将以中心化部署模式进行，更多 P2P 模式的相关信息，请参考 [SCQL P2P 模式概述](intro-p2p.mdx)
+
+中心化模式下的 SCQL 系统由一个 SCDB 服务器和多个 SCQLEngines 组成。
 
 - SCDB 服务器负责将 SQL 查询翻译成明密文混合执行图，并将执行图下发给参与方的 SCQLEngine。
 - SCQLEngine 是一个明密文混合执行引擎，它与参与方协作运行执行图并将查询结果报告给 SCDB 服务器。SCQLEngine 是在最先进的 MPC 框架 [secretflow/spu](https://github.com/secretflow/spu) 的基础上实现的。

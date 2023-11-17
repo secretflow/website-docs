@@ -26,6 +26,8 @@ SCQL 构建在 MPC 框架 [secretflow/spu](https://github.com/secretflow/spu) �
 
 SCDB 是 SCQL 系统中的一个中心协调组件，负责将 query 转换成明密文混合的执行图，然后下发给部署在参与方的 SCQLEngines 执行。SCDB 负责生成执行图，是不能作恶的。建议把 SCDB 部署在可信第三方，打消数据参与方对 SCDB 节点作恶的担忧。
 
+如果可信第三方不存在，建议您在P2P模式下部署SCQL系统。 详细信息请参阅 [SCQL P2P 模式概述](../system/intro-p2p.mdx)
+
 :target{#risk-statement-and-suggestion-for-scql-result-inversion-attack}
 
 ## 针对 SCQL 的结果反推攻击风险说明及建议
