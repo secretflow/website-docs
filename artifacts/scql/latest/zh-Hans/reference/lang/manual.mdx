@@ -4,7 +4,7 @@
 
 :target{#scql-data-types}
 
-## SCQL 数据类型
+## <Target id="id1" />SCQL 数据类型
 
 SCQL 支持常用的数据类型，如下表所示。
 
@@ -102,13 +102,13 @@ SCQL 支持常用的数据类型，如下表所示。
 
 :target{#scql-statements}
 
-## SCQL 语句
+## <Target id="id2" />SCQL 语句
 
 SCQL 兼容大多数 MySQL 语法，这使得它易于使用。关于 SCQL 和 MySQL 之间的语法差异，请阅读 [与 MySQL 的兼容性](mysql-compatibility.mdx) 。
 
 :target{#create-drop-alter-user-statement}
 
-### CREATE/DROP/ALTER USER 语句
+### <Target id="create-user-stm" />CREATE/DROP/ALTER USER 语句
 
 ```SQL
 CREATE USER [IF NOT EXISTS] user PARTY_CODE party_code IDENTIFIED BY 'auth_string' [with_opt]
@@ -150,7 +150,7 @@ ALTER USER alice WITH ENDPOINT 'engine-alice-host:port'
 
 :target{#create-drop-database-statement}
 
-### CREATE/DROP DATABASE 语句
+### <Target id="create-database-stm" />CREATE/DROP DATABASE 语句
 
 ```SQL
 CREATE DATABASE [IF NOT EXISTS] database;
@@ -170,7 +170,7 @@ DROP DATABASE db_test;
 
 :target{#create-drop-table-statement}
 
-### CREATE/DROP TABLE 语句
+### <Target id="create-table" />CREATE/DROP TABLE 语句
 
 ```SQL
 CREATE TABLE [IF NOT EXISTS] tbl_name (
@@ -204,7 +204,7 @@ DROP TABLE db_test.ta;
 
 :target{#grant-revoke-statement}
 
-### GRANT/REVOKE 语句
+### <Target id="scql-grant-revoke" />GRANT/REVOKE 语句
 
 ```SQL
 GRANT

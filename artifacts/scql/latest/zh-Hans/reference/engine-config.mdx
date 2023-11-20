@@ -6,7 +6,7 @@
 
 :target{#scdb-configuration-options}
 
-## SCDB 配置说明
+## <Target id="scdb-config-options" />SCDB 配置说明
 
 在 SCDB 中配置参数以 yaml 文件形式提供。
 
@@ -539,7 +539,7 @@ party_auth:
 
 :target{#config-for-securitycompromise}
 
-#### 安全退让配置
+#### <Target id="config-security-compromise-options" />安全退让配置
 
 SCDB 提供了一些安全妥协选项，当安全风险可以接受时可以选择性地启用这些选项，以加快整体运行速度
 
@@ -555,7 +555,7 @@ security_compromise:
 
 :target{#config-for-storage}
 
-#### 存储配置
+#### <Target id="config-storage-options" />存储配置
 
 SCDB 中的数据库用于存储 SCQL 系统数据，如 CCL 和用户信息，目前 SCDB 支持 MySQL/SQLite3 。您可以通过配置项 `conn_str` 和 `type` 来连接不同的数据库。
 
@@ -629,7 +629,7 @@ SCDB 的审计日志是用来记录 SCDB 在执行 query 过程中所产生的�
 
 :target{#config-for-tls}
 
-#### TLS 配置
+#### <Target id="scdb-tls" />TLS 配置
 
 如果需要在 SCDB 中启用 TLS ，请参考以下配置。
 
@@ -661,7 +661,7 @@ spu: |
 
 :target{#scqlbroker-configuration-options}
 
-## SCQLBroker 配置说明
+## <Target id="config-broker-server-options" />SCQLBroker 配置说明
 
 SCQLBroker 和 SCDB一样，使用 yaml 文件配置参数，两者的配置项也大体相同
 
@@ -1117,7 +1117,7 @@ IntraServer 建议使用 localhost 或 LAN 地址以避免外部攻击，而 Int
 
 :target{#scqlengine-configuration-options}
 
-## SCQLEngine 配置说明
+## <Target id="engine-config-options" />SCQLEngine 配置说明
 
 SCQLEngine 使用 Gflags 来管理配置项。
 
@@ -1733,7 +1733,7 @@ SCQLEngine 使用 Gflags 来管理配置项。
 
 :target{#config-for-datasource}
 
-#### 数据源配置
+#### <Target id="datasource-router" />数据源配置
 
 SCQLEngine 支持多种数据源，包括 MySQL/SQLite3/PostgreSQL/CSVDB/ArrowSQL 。
 
@@ -1900,7 +1900,7 @@ SCQLEngine 使用 Brpc 与 SCDB 以及其他的 SCQLEngine 进行通信，每个
 
 :target{#config-for-ssl}
 
-#### SSL配置
+#### <Target id="scqlengine-tls" />SSL配置
 
 如果要在 Engine 中启用 SSL，请添加 FLAGS，如下所示。 此外，可能需要配置 SCDB 与 TLS 一起运行，请参考 [SCDB 的 TLS 配置](#scdb-tls)。
 

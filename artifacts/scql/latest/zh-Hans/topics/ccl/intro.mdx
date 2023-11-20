@@ -46,7 +46,7 @@ CCL 的首要作用是，给数据 OWNER 提供约束自己数据如何被使用
 
 :target{#how-ccl-works}
 
-## How CCL Works?
+## <Target id="id1" />How CCL Works?
 
 Translator 把 query 翻译得到的 Logical Plan 和 CCL 作为输入，经过 CCL 推导构建出带 CCL 的 Logical Plan。Translator 将检查根节点即结果的CCL，仅当结果对 query 发起者的约束为 `PLAINTEXT` 时，才允许 query 继续执行，否则拒绝此 query 的执行。
 
