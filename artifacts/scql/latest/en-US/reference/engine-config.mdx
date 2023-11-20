@@ -6,7 +6,7 @@ This configuration manual is designed to help users understand the various confi
 
 :target{#scdb-configuration-options}
 
-## SCDB configuration options
+## <Target id="scdb-config-options" />SCDB configuration options
 
 In SCDB, configuration parameters are provided as yaml file.
 
@@ -539,7 +539,7 @@ party_auth:
 
 :target{#config-for-securitycompromise}
 
-#### Config for SecurityCompromise
+#### <Target id="config-security-compromise-options" />Config for SecurityCompromise
 
 SCDB provides some security compromise options, which can be selectively enabled when the security risk is acceptable to speed up the overall operation.
 
@@ -555,7 +555,7 @@ security_compromise:
 
 :target{#config-for-storage}
 
-#### Config for storage
+#### <Target id="config-storage-options" />Config for storage
 
 Database in SCDB is used to store the SCQL system data, such as CCL and user information, currently SCDB support MySQL/SQLite3. You can connect to a database by setting `conn_str` and `type` in the storage config.
 
@@ -630,7 +630,7 @@ When the audit log has reaches the maximum size ( set by `audit_max_size`), SCDB
 
 :target{#config-for-tls}
 
-#### Config for TLS
+#### <Target id="scdb-tls" />Config for TLS
 
 If you need to enable TLS in SCDB, please refer to the following configuration.
 
@@ -662,7 +662,7 @@ spu: |
 
 :target{#scqlbroker-configuration-options}
 
-## SCQLBroker configuration options
+## <Target id="config-broker-server-options" />SCQLBroker configuration options
 
 SCQLBroker, like SCDB, uses yaml files to configure parameters, The majority of their configuration items are the same.
 
@@ -1118,7 +1118,7 @@ For more about Storage, see [Config for storage](#config-storage-options)
 
 :target{#scqlengine-configuration-options}
 
-## SCQLEngine configuration options
+## <Target id="engine-config-options" />SCQLEngine configuration options
 
 SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
 
@@ -1734,7 +1734,7 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
 
 :target{#config-for-datasource}
 
-#### Config for datasource
+#### <Target id="datasource-router" />Config for datasource
 
 datasources(MySQL/SQLite3/PostgreSQL/CSVDB/ArrowSQL) are where the SCQLEngine gets its data from.
 
@@ -1902,7 +1902,7 @@ SCQLEngine uses <strong>Brpc</strong> to communicate with SCDB and other peer SC
 
 :target{#config-for-ssl}
 
-#### Config for SSL
+#### <Target id="scqlengine-tls" />Config for SSL
 
 If you want to enable SSL in SCQLEngine, add FLAGS as follows. Additionally, it may be necessary to configure SCDB work with TLS please refer [Config for TLS in SCDB](#scdb-tls).
 

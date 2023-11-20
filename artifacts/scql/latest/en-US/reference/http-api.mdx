@@ -7,11 +7,11 @@ Meanwhile, the asynchronous interface is recommended when the query may take a l
 
 :target{#asynchronous}
 
-## Asynchronous
+## <Target id="async-api" />Asynchronous
 
 :target{#public-submit-query}
 
-### public/submit\_query
+### <Target id="submit-query" />public/submit\_query
 
 Submit the query (DDL/DCL/DQL) to SCQL, SCQL will return a session ID immediately which can be used to fetch result, and processes the query in the background.
 
@@ -243,7 +243,7 @@ If you want execute <cite>show databases</cite>, the request and response messag
 
 :target{#public-fetch-result}
 
-### public/fetch\_result
+### <Target id="fetch-result" />public/fetch\_result
 
 Fetch result of the query submitted via the “submit\_query” method before, if the query is still running, It will return <cite>NOT\_READY</cite> status code.
 
@@ -482,7 +482,7 @@ If result is not ready, the response can be show as follows:
 
 :target{#asynchronous-send-result}
 
-### Asynchronous send result
+### <Target id="async-send-result" />Asynchronous send result
 
 Automatically send the result to the user by post the following message when the result is available. To accomplish this, [query\_result\_callback\_url](#callback-url) should be set.
 
@@ -584,11 +584,11 @@ Automatically send the result to the user by post the following message when the
 
 :target{#synchronous}
 
-## Synchronous
+## <Target id="sync-api" />Synchronous
 
 :target{#public-submit-and-get}
 
-### public/submit\_and\_get
+### <Target id="submit-and-get" />public/submit\_and\_get
 
 Submit a query to SCQL, SCQL will wait for all tasks to complete before returning the result to the use.
 
@@ -900,7 +900,7 @@ If successful, a response will be received like this:
 
 :target{#scdbcredential}
 
-### SCDBCredential
+### <Target id="scdb-credential" />SCDBCredential
 
 <table>
   <thead>

@@ -6,11 +6,11 @@ SCQL 支持两种类型的 API：同步和异步。同步接口适用于执行�
 
 :target{#asynchronous}
 
-## 异步接口
+## <Target id="async-api" />异步接口
 
 :target{#public-submit-query}
 
-### public/submit\_query
+### <Target id="submit-query" />public/submit\_query
 
 将 query（DDL/DML/DQL）提交给 SCQL，SCQL 将立即返回一个可用于获取结果的会话 ID，并在后台处理查询。
 
@@ -242,7 +242,7 @@ SCQL 支持两种类型的 API：同步和异步。同步接口适用于执行�
 
 :target{#public-fetch-result}
 
-### public/fetch\_result
+### <Target id="fetch-result" />public/fetch\_result
 
 通过 session ID 获取之前提交的 query 的结果，如果之前的提交的 query 还在运行中，返回 <cite>NOT\_READY</cite>。
 
@@ -481,7 +481,7 @@ SCQL 支持两种类型的 API：同步和异步。同步接口适用于执行�
 
 :target{#asynchronous-send-result}
 
-### 异步发送结果
+### <Target id="async-send-result" />异步发送结果
 
 如果用户配置了 [query\_result\_callback\_url](#callback-url)， SCDB 在获取到结果后会主动向用户发送消息，返回之前查询的结果。
 
@@ -583,11 +583,11 @@ SCQL 支持两种类型的 API：同步和异步。同步接口适用于执行�
 
 :target{#synchronous}
 
-## 同步接口
+## <Target id="sync-api" />同步接口
 
 :target{#public-submit-and-get}
 
-### public/submit\_and\_get
+### <Target id="submit-and-get" />public/submit\_and\_get
 
 向 SCQL 提交查询，SCQL 将等待所有任务完成后再将结果返回给用户。
 
@@ -899,7 +899,7 @@ SCQL 支持两种类型的 API：同步和异步。同步接口适用于执行�
 
 :target{#scdbcredential}
 
-### SCDBCredential
+### <Target id="scdb-credential" />SCDBCredential
 
 <table>
   <thead>
