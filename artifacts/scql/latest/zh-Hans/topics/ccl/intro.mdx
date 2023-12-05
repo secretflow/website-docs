@@ -64,7 +64,7 @@ Translator 把 query 翻译得到的 Logical Plan 和 CCL 作为输入，经过 
 
 <strong>Join</strong>
 
-当 JOIN keys 的 CCL constraint 均为 `PLAINTEXT_AFTER_JOIN` 或 `PLAINTEXT` 时，则 JOIN keys 的交集的 CCL constraint 类型为 `PLAINTEXT`。
+当 JOIN keys 的 CCL constraint 均为 `PLAINTEXT_AFTER_JOIN` 或 `PLAINTEXT` 时，则对于 <strong>InnerJoin</strong> ， JOIN keys 交集结果的 CCL 变为 `PLAINTEXT` ，对于 <strong>LeftOuterJoin</strong> ，只有右 JOIN key 的交集结果的 CCL 变为 `PLAINTEXT` ， 对于 <strong>RightOuterJoin</strong> ，则是左 JOIN key 的交集结果变为 `PLAINTEXT` 。
 
 <strong>Group By</strong>
 

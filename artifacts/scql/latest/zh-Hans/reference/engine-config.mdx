@@ -22,7 +22,7 @@ query_result_callback_timeout: 200ms
 session_expire_time: 1h
 session_expire_check_time: 100ms
 password_check: true
-log_level: debug
+log_level: info
 enable_audit_logger: true
 audit:
   audit_log_file: audit/audit.log
@@ -89,7 +89,7 @@ party_auth:
 
     <tr>
       <td>
-        端口
+        port
       </td>
 
       <td>
@@ -103,7 +103,7 @@ party_auth:
 
     <tr>
       <td>
-        协议
+        protocol
       </td>
 
       <td>
@@ -541,10 +541,10 @@ party_auth:
 
 #### <Target id="config-security-compromise-options" />安全退让配置
 
-SCDB 提供了一些安全妥协选项，当安全风险可以接受时可以选择性地启用这些选项，以加快整体运行速度
+SCQL 提供了一些安全妥协选项，当安全风险可以接受时可以选择性地启用这些选项，以加快整体运行速度
 
 1\. reveal\_group\_mark:
-default disable, if enabled, SCDB will expose grouping information(size of each group) when calculating group-by-aggregation, thereby avoiding the overhead caused by pre-shuffle.  `risk`: group size will be leaked, which is equivalent to the result of count(\*)
+default disable, if enabled, SCQL will expose grouping information(size of each group) when calculating group-by-aggregation, thereby avoiding the overhead caused by pre-shuffle.  `risk`: group size will be leaked, which is equivalent to the result of count(\*)
 
 典型的配置如下：
 
@@ -557,7 +557,7 @@ security_compromise:
 
 #### <Target id="config-storage-options" />存储配置
 
-SCDB 中的数据库用于存储 SCQL 系统数据，如 CCL 和用户信息，目前 SCDB 支持 MySQL/SQLite3 。您可以通过配置项 `conn_str` 和 `type` 来连接不同的数据库。
+数据库用于存储 SCQL 系统数据，如 CCL 和用户信息，目前 SCDB 支持 MySQL/SQLite3 。您可以通过配置项 `conn_str` 和 `type` 来连接不同的数据库。
 
 <DefinitionList>
   <dl>
@@ -643,6 +643,10 @@ engine:
   protocol: https
 ```
 
+<Container type="note">
+  默认情况下，自签的 CA 文件可能不受信任，请参阅 [故障排除](https://github.com/secretflow/scql/tree/main/test-tools#trouble-shooting) 获取帮助。
+</Container>
+
 除此之外，用户还需要设置 [SCQLEngine 的 SSL 配置](#scqlengine-tls)，以保证 SCDB 和 SCQLEngine 能正常工作。
 
 :target{#config-for-spu}
@@ -678,16 +682,20 @@ inter_server:
   protocol: https
   cert_file: ${your cert file path}
   key_file: ${your key file path}
-log_level: debug
+log_level: info
 party_code: alice
+session_expire_time: 24h
+session_expire_check_time: 1m
 party_info_file: "/home/admin/configs/party_info.json"
 private_pem_path: "/home/admin/configs/private_key.pem"
 intra_host: http://broker_alice:8080
-engines: ["engine_alice:8003"]
 engine:
   timeout: 120s
   protocol: http
   content_type: application/json
+  uris:
+    - for_peer: alice_for_peer:8003
+      for_self: alice_for_self:8003
 storage:
   type: mysql
   conn_str: "user_name:pass_word@tcp(127.0.0.1:3306)/db_name?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true"
@@ -945,20 +953,6 @@ storage:
 
     <tr>
       <td>
-        engines
-      </td>
-
-      <td>
-        无
-      </td>
-
-      <td>
-        本地可用 SCQLEngine 的 URL
-      </td>
-    </tr>
-
-    <tr>
-      <td>
         engine.timeout
       </td>
 
@@ -996,6 +990,20 @@ storage:
 
       <td>
         从 SCQLBroker 向 SCQLEngine 实际发送的数据类型
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.uris
+      </td>
+
+      <td>
+        无
+      </td>
+
+      <td>
+        本地 SCQLEngines 的 URI，其中 <strong>for\_peer</strong> 为其它参与方的 SCQLEngines 提供服务， <strong>for\_self</strong> 则为 SCQLBroker 提供服务，如果 <strong>for\_self</strong> 为空，则默认使用 <strong>for\_peer</strong> 来代替
       </td>
     </tr>
 
@@ -1096,6 +1104,34 @@ storage:
         可重复连接使用的最长时间
       </td>
     </tr>
+
+    <tr>
+      <td>
+        session\_expire\_time
+      </td>
+
+      <td>
+        24h
+      </td>
+
+      <td>
+        任务的超时时间
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        session\_expire\_check\_time
+      </td>
+
+      <td>
+        1m
+      </td>
+
+      <td>
+        检查会话是否超时的间隔
+      </td>
+    </tr>
   </tbody>
 </table>
 
@@ -1106,6 +1142,29 @@ storage:
 SCQLBroker 通过IntraServer 接收域内请求，而通过 InterServer 接收不同 SCQLBroker 之间的请求。
 
 IntraServer 建议使用 localhost 或 LAN 地址以避免外部攻击，而 InterServer 建议启用 HTTPS 以提高安全性。
+
+:target{#broker-tls}
+
+请参考以下配置为 InterServer 启用 HTTPS ：（IntraServer 类似）
+
+```yaml
+inter_server:
+  host: 0.0.0.0
+  port: 8081
+  protocol: https
+  cert_file: ${your cert file path}
+  key_file: ${your key file path}
+```
+
+<Container type="note">
+  默认情况下，自签的 CA 文件可能不受信任，请参阅 [故障排除](https://github.com/secretflow/scql/tree/main/test-tools#trouble-shooting) 获取帮助。
+
+  请将 <strong>party\_info.json</strong> 中的 endpoints 从 http 更改为 https
+
+  我们在 [p2p examples](https://github.com/secretflow/scql/blob/main/examples/p2p-tutorial/README.md) 中启用了 HTTPS，相关配置的初始化过程也许能提供一些帮助
+</Container>
+
+除此之外，用户还需要设置 [SCQLEngine 的 SSL 配置](#scqlengine-tls)，以保证 SCQLEngine 能正常工作。
 
 :target{#reused-config}
 
@@ -1136,6 +1195,8 @@ SCQLEngine 使用 Gflags 来管理配置项。
 :target{#config-in-scqlengine}
 
 ### SCQLEngine 配置项
+
+SCQLEngine 根据部署方式可以与 SCDB 、 SCQLBroker 等上层模块协作。配置项中使用 `Driver` 来表示这些上层模块。
 
 <table>
   <thead>
@@ -1353,7 +1414,7 @@ SCQLEngine 使用 Gflags 来管理配置项。
 
     <tr>
       <td>
-        scdb\_protocol
+        driver\_protocol
       </td>
 
       <td>
@@ -1361,13 +1422,13 @@ SCQLEngine 使用 Gflags 来管理配置项。
       </td>
 
       <td>
-        SCQLEngine 与 SCDB 之间的 rpc 协议
+        SCQLEngine 与 Driver 之间的 rpc 协议
       </td>
     </tr>
 
     <tr>
       <td>
-        scdb\_connection\_type
+        driver\_connection\_type
       </td>
 
       <td>
@@ -1375,13 +1436,13 @@ SCQLEngine 使用 Gflags 来管理配置项。
       </td>
 
       <td>
-        SCQLEngine 与 SCDB 之间的 rpc 连接类型
+        SCQLEngine 与 Driver 之间的 rpc 连接类型
       </td>
     </tr>
 
     <tr>
       <td>
-        scdb\_timeout\_ms
+        driver\_timeout\_ms
       </td>
 
       <td>
@@ -1389,13 +1450,13 @@ SCQLEngine 使用 Gflags 来管理配置项。
       </td>
 
       <td>
-        SCQLEngine 与 SCDB 之间的 rpc 超时时间，单位：ms
+        SCQLEngine 与 Driver 之间的 rpc 超时时间，单位：ms
       </td>
     </tr>
 
     <tr>
       <td>
-        scdb\_max\_retry
+        driver\_max\_retry
       </td>
 
       <td>
@@ -1403,13 +1464,13 @@ SCQLEngine 使用 Gflags 来管理配置项。
       </td>
 
       <td>
-        SCQLEngine 和 SCDB 之间的 rpc 最大重试次数（不包括第一个 rpc）
+        SCQLEngine 和 Driver 之间的 rpc 最大重试次数（不包括第一个 rpc）
       </td>
     </tr>
 
     <tr>
       <td>
-        scdb\_enable\_ssl\_as\_client
+        driver\_enable\_ssl\_as\_client
       </td>
 
       <td>
@@ -1417,13 +1478,13 @@ SCQLEngine 使用 Gflags 来管理配置项。
       </td>
 
       <td>
-        作为客户端，向 SCDB 发送消息时是否启用 ssl 加密
+        作为客户端，向 Driver 发送消息时是否启用 ssl 加密
       </td>
     </tr>
 
     <tr>
       <td>
-        scdb\_enable\_ssl\_client\_verification
+        driver\_enable\_ssl\_client\_verification
       </td>
 
       <td>
@@ -1431,13 +1492,13 @@ SCQLEngine 使用 Gflags 来管理配置项。
       </td>
 
       <td>
-        作为客户端，是否验证 SCDB 的证书
+        作为客户端，是否验证 Driver 的证书
       </td>
     </tr>
 
     <tr>
       <td>
-        scdb\_ssl\_client\_ca\_certificate
+        driver\_ssl\_client\_ca\_certificate
       </td>
 
       <td>
@@ -1445,7 +1506,7 @@ SCQLEngine 使用 Gflags 来管理配置项。
       </td>
 
       <td>
-        可信 CA 文件，作为客户端时，用于验证 SCDB 的证书
+        可信 CA 文件，作为客户端时，用于验证 Driver 的证书
       </td>
     </tr>
 
@@ -1501,7 +1562,7 @@ SCQLEngine 使用 Gflags 来管理配置项。
       </td>
 
       <td>
-        SCQLEngine 与 SCDB 之间的空闲连接关闭延迟（单位：秒）
+        SCQLEngine 与 Driver 之间的空闲连接关闭延迟（单位：秒）
       </td>
     </tr>
 
@@ -1577,7 +1638,7 @@ SCQLEngine 使用 Gflags 来管理配置项。
 
     <tr>
       <td>
-        enable\_scdb\_authorization
+        enable\_driver\_authorization
       </td>
 
       <td>
@@ -1585,7 +1646,7 @@ SCQLEngine 使用 Gflags 来管理配置项。
       </td>
 
       <td>
-        是否启动 SCDB 身份认证
+        是否启动 Driver 身份认证
       </td>
     </tr>
 
@@ -1599,7 +1660,7 @@ SCQLEngine 使用 Gflags 来管理配置项。
       </td>
 
       <td>
-        用于验证 SCDB 的凭证
+        用于验证 Driver 的凭证
       </td>
     </tr>
 
@@ -1613,7 +1674,7 @@ SCQLEngine 使用 Gflags 来管理配置项。
       </td>
 
       <td>
-        SCQLEngine 与 SCDB 之间的会话过期时间，单位：秒
+        SCQLEngine 与 Driver 之间的会话过期时间，单位：秒
       </td>
     </tr>
 
@@ -1891,7 +1952,7 @@ embed\_router 的规则支持通配符 `*` ，当给定一个 <em>database\_name
 
 #### Brpc 服务器配置
 
-SCQLEngine 使用 Brpc 与 SCDB 以及其他的 SCQLEngine 进行通信，每个 SCQLEngine 都会在 local-host\:listen\_port 上启动 Brpc 服务以接收来自外部的数据。如果要启用 Brpc 内置服务，请添加 FLAGS：
+SCQLEngine 使用 Brpc 与 Driver 以及其他的 SCQLEngine 进行通信，每个 SCQLEngine 都会在 local-host\:listen\_port 上启动 Brpc 服务以接收来自外部的数据。如果要启用 Brpc 内置服务，请添加 FLAGS：
 
 ```default
 --enable_builtin_service=true
@@ -1902,21 +1963,23 @@ SCQLEngine 使用 Brpc 与 SCDB 以及其他的 SCQLEngine 进行通信，每个
 
 #### <Target id="scqlengine-tls" />SSL配置
 
-如果要在 Engine 中启用 SSL，请添加 FLAGS，如下所示。 此外，可能需要配置 SCDB 与 TLS 一起运行，请参考 [SCDB 的 TLS 配置](#scdb-tls)。
+如果要在 SCQLEngine 中启用 SSL，请添加 FLAGS，如下所示。 此外，也可能需要配置 Driver 在 TLS 下运行，请参考 [SCDB 的 TLS 配置](#scdb-tls) 或 [SCQLBroker 的 TLS 配置](#broker-tls) 。
 
 ```default
 --server_enable_ssl=true
 --server_ssl_certificate=${file path of cert}
 --server_ssl_private_key=${file path of key}
+# set peer_engine_enable_ssl_as_client to true when peer SCQLEngine has https enabled
 --peer_engine_enable_ssl_as_client=true
---scdb_enable_ssl_as_client=true
+# set driver_enable_ssl_as_client to true when the Driver has https enabled (SCDB or SCQLBroker's IntraServer)
+--driver_enable_ssl_as_client=true
 ```
 
-:target{#id1}
+:target{#id2}
 
 #### 审计日志配置
 
-SCQLEngine 的审计日志是用来记录 SCQLEngine 在执行 SCDB 下发任务过程中所产生的一系列事件，和 SCDB 一样，它也有两种类型：基础审计日志和详补充审计日志
+SCQLEngine 的审计日志是用来记录 SCQLEngine 在执行 Driver 下发任务过程中所产生的一系列事件，和 Driver 一样，它也有两种类型：基础审计日志和详补充审计日志
 
 > 基础审计日志是用来记录 SCQLEngine 在执行任务过程中所产生的一系列事件的基本信息。补充审计日志信息，则是用来记录这些事件一些额外的信息。更多信息请参考 [engine\_audit](https://github.com/secretflow/scql/blob/main/engine/audit/audit.proto) 。
 
@@ -1928,4 +1991,4 @@ SCQLEngine 会在每天 24:00:00 对当天的审计日志进行归档，归档�
 
 #### 参与方身份验证配置
 
-安全起见，SCQLEngine 默认启用参与方身份验证。 SCQLEngine 将检查 SCDB 请求中自身的公钥是否与 `private_key_pem_path` 中的本地公钥匹配，并且其他参与者的公钥也与 `authorized_profile_path` 中的公钥匹配。
+安全起见，SCQLEngine 默认启用参与方身份验证。 SCQLEngine 将检查 Driver 请求中自身的公钥是否与 `private_key_pem_path` 中的本地公钥匹配，并且其他参与者的公钥也与 `authorized_profile_path` 中的公钥匹配。

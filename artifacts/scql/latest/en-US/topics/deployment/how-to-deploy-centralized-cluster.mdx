@@ -2,7 +2,7 @@
 
 # Deployment with Trusted Third Party
 
-This document describes how to deploy a SCQL system in centralized mode with docker, and use scdbclient to query, it’s basically same with [Quickstart tutorial](../../intro/tutorial.mdx), but deployed in multi-machine.
+This document describes how to deploy a SCQL system in centralized mode with docker, and use scdbclient to query, it’s basically same with [Centralized Deployment Quickstart Tutorial](../../intro/tutorial.mdx), but deployed in multi-machine.
 
 Before start this doc, we assume that the reader has some experience using the docker-compose utility. If you are new to Docker Compose, please consider reviewing the [official Docker Compose overview](https://docs.docker.com/compose/), or checking out the [Getting Started guide](https://docs.docker.com/compose/gettingstarted/).
 
@@ -56,9 +56,9 @@ Create a file called `gflags.conf` in your workspace and paste the following cod
 ```bash
 --listen_port=8080
 --datasource_router=embed
---enable_scdb_authorization=false
+--enable_driver_authorization=false
 --server_enable_ssl=false
---scdb_enable_ssl_as_client=false
+--driver_enable_ssl_as_client=false
 --peer_engine_enable_ssl_as_client=false
 --embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"db=alice;user=root;password=__MYSQL_ROOT_PASSWORD__;host=mysql;auto-reconnect=true"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
 # party authentication flags
@@ -209,8 +209,8 @@ scdb_host: scdb:8080
 port: 8080
 protocol: http
 query_result_callback_timeout: 3m
-session_expire_time: 3m
-session_expire_check_time: 100ms
+session_expire_time: 24h
+session_expire_check_time: 1m
 log_level: debug
 storage:
   type: mysql
@@ -381,7 +381,7 @@ Create a json file named as `users.json` as follows:
 
 ### 3.3 Submit Query
 
-You can start to use scdbclient to submit queries to SCDBServer and fetch the query results back. it’s same as what you can do in [Quickstart tutorial](../../intro/tutorial.mdx)
+You can start to use scdbclient to submit queries to SCDBServer and fetch the query results back. it’s same as what you can do in [Centralized Deployment Quickstart Tutorial](../../intro/tutorial.mdx)
 
 ```bash
 # use scdbclient to connect to scdbserver

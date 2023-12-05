@@ -2,7 +2,7 @@
 
 # 包含可信第三方的部署
 
-本文描述了如何使用 Docker 部署中心化模式的 SCQL 系统，并且使用 scdbclient 进行查询，它与 [快速开始](../../intro/tutorial.mdx) 基本相同，只不过是部署在多台机器上。
+本文描述了如何使用 Docker 部署中心化模式的 SCQL 系统，并且使用 scdbclient 进行查询，它与 [基于中心化部署架构的快速开始](../../intro/tutorial.mdx) 基本相同，只不过是部署在多台机器上。
 
 在开始阅读这篇文档前，我们假设读者已经具备一定的 docker-compose 使用经验。如果您对 Docker Compose 不熟悉，请参阅 [Docker Compose 官方概述](https://docs.docker.com/compose/)，或者查看 [入门指南](https://docs.docker.com/compose/gettingstarted/)。
 
@@ -56,9 +56,9 @@ wget raw.githubusercontent.com/secretflow/scql/main/examples/scdb-tutorial/mysql
 ```bash
 --listen_port=8080
 --datasource_router=embed
---enable_scdb_authorization=false
+--enable_driver_authorization=false
 --server_enable_ssl=false
---scdb_enable_ssl_as_client=false
+--driver_enable_ssl_as_client=false
 --peer_engine_enable_ssl_as_client=false
 --embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"db=alice;user=root;password=__MYSQL_ROOT_PASSWORD__;host=mysql;auto-reconnect=true"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
 # party authentication flags
@@ -209,8 +209,8 @@ scdb_host: scdb:8080
 port: 8080
 protocol: http
 query_result_callback_timeout: 3m
-session_expire_time: 3m
-session_expire_check_time: 100ms
+session_expire_time: 24h
+session_expire_check_time: 1m
 log_level: debug
 storage:
   type: mysql
@@ -381,7 +381,7 @@ go build -o scdbclient cmd/scdbclient/main.go
 
 ### 3.3 提交查询
 
-您可以开始使用 scdbclient 向 SCDBServer 提交查询并获取查询结果。您可以与在 [快速开始](../../intro/tutorial.mdx) 中执行的操作相同
+您可以开始使用 scdbclient 向 SCDBServer 提交查询并获取查询结果。您可以与在 [基于中心化部署架构的快速开始](../../intro/tutorial.mdx) 中执行的操作相同
 
 ```bash
 # use scdbclient to connect to scdbserver
