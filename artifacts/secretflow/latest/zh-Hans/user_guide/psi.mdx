@@ -203,7 +203,7 @@ Boyle 等人设计了一系列满足特定相关性的高效PCG协议, 例如: v
 
 ### 基于ecdh-OPRF的PSI协议
 
-:target{#id27}[\[RA18\]](#ra18) 第3章介绍了一种非平衡的PSI协议(基于ecdh-OPRF)，该协议是 :target{#id28}[\[BBCD+11\]](#bbcd-11) 对 :target{#id29}[\[JL10\]](#jl10) 恶意PSI协议进行简化得到semi-honest协议。协议分成两个阶段：离线预处理阶段和在线阶段。[\[RA18\]](#ra18) 中引入了一些优化方法减少离线预处理阶段的计算和通信量。secretflow中实现了\[RA18]\_ 第3章中的基本协议。
+:target{#id27}[\[RA18\]](#ra18) 第3章介绍了一种非平衡的PSI协议(基于ecdh-OPRF)，该协议是 :target{#id28}[\[BBCD+11\]](#bbcd-11) 对 :target{#id29}[\[JL10\]](#jl10) 恶意PSI协议进行简化得到semi-honest协议。协议分成两个阶段：离线预处理阶段和在线阶段。:target{#id4}[\[RA18\]](#ra18) 中引入了一些优化方法减少离线预处理阶段的计算和通信量。secretflow中实现了\[RA18]\_ 第3章中的基本协议。
 
 不经意伪随机函数(Oblivious Pseudorandom Function OPRF)是一个两方协议,客户端和服务端通过执行协议计算伪随机函数(Pseudorandom Function PRF)的结果。RFC 草案 :target{#id30}[\[draft-irtf-cfrg-voprf-10\]](#draft-irtf-cfrg-voprf-10) 基于素数阶群，给出了OPRF, VOPRF, and POPRF 的构造方案。
 

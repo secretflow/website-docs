@@ -120,14 +120,23 @@ sidebar:
                     link: {id: source/secretflow.component.component.ml.mdx, label: secretflow.component.ml
                         package, type: doc}
                     type: category
-                  - {id: source/secretflow.component.component.preprocessing.mdx,
-                    label: secretflow.component.preprocessing package, type: doc}
+                  - items:
+                      - {id: source/secretflow.component.preprocessing.component.preprocessing.core.mdx,
+                        label: secretflow.component.preprocessing.core package, type: doc}
+                    label: secretflow.component.preprocessing package
+                    link: {id: source/secretflow.component.component.preprocessing.mdx,
+                      label: secretflow.component.preprocessing package, type: doc}
+                    type: category
                   - {id: source/secretflow.component.component.stats.mdx, label: secretflow.component.stats
                       package, type: doc}
+                  - {id: source/secretflow.component.component.test_framework.mdx,
+                    label: secretflow.component.test_framework package, type: doc}
                 label: secretflow.component package
                 link: {id: source/secretflow.component.mdx, label: secretflow.component
                     package, type: doc}
                 type: category
+              - {id: source/secretflow.compute.mdx, label: secretflow.compute package,
+                type: doc}
               - items:
                   - items:
                       - {id: source/secretflow.data.core.data.core.pandas.mdx, label: secretflow.data.core.pandas
@@ -165,6 +174,45 @@ sidebar:
                 type: category
               - {id: source/secretflow.distributed.mdx, label: secretflow.distributed
                   package, type: doc}
+              - items:
+                  - items:
+                      - {id: source/secretflow.ic.handler.ic.handler.algo.mdx, label: secretflow.ic.handler.algo
+                          package, type: doc}
+                      - {id: source/secretflow.ic.handler.ic.handler.protocol_family.mdx,
+                        label: secretflow.ic.handler.protocol_family package, type: doc}
+                    label: secretflow.ic.handler package
+                    link: {id: source/secretflow.ic.ic.handler.mdx, label: secretflow.ic.handler
+                        package, type: doc}
+                    type: category
+                  - items:
+                      - {id: source/secretflow.ic.proto.ic.proto.common.mdx, label: secretflow.ic.proto.common
+                          package, type: doc}
+                      - items:
+                          - {id: source/secretflow.ic.proto.handshake.ic.proto.handshake.algos.mdx,
+                            label: secretflow.ic.proto.handshake.algos package, type: doc}
+                          - {id: source/secretflow.ic.proto.handshake.ic.proto.handshake.protocol_family.mdx,
+                            label: secretflow.ic.proto.handshake.protocol_family package,
+                            type: doc}
+                        label: secretflow.ic.proto.handshake package
+                        link: {id: source/secretflow.ic.proto.ic.proto.handshake.mdx,
+                          label: secretflow.ic.proto.handshake package, type: doc}
+                        type: category
+                      - {id: source/secretflow.ic.proto.ic.proto.runtime.mdx, label: secretflow.ic.proto.runtime
+                          package, type: doc}
+                    label: secretflow.ic.proto package
+                    link: {id: source/secretflow.ic.ic.proto.mdx, label: secretflow.ic.proto
+                        package, type: doc}
+                    type: category
+                  - {id: source/secretflow.ic.ic.proxy.mdx, label: secretflow.ic.proxy
+                      package, type: doc}
+                  - {id: source/secretflow.ic.ic.remote.mdx, label: secretflow.ic.remote
+                      package, type: doc}
+                  - {id: source/secretflow.ic.ic.runner.mdx, label: secretflow.ic.runner
+                      package, type: doc}
+                label: secretflow.ic package
+                link: {id: source/secretflow.ic.mdx, label: secretflow.ic package,
+                  type: doc}
+                type: category
               - {id: source/secretflow.kuscia.mdx, label: secretflow.kuscia package,
                 type: doc}
               - items:
@@ -307,6 +355,13 @@ sidebar:
                       - {id: source/secretflow.ml.nn.ml.nn.applications.mdx, label: secretflow.ml.nn.applications
                           package, type: doc}
                       - items:
+                          - {id: source/secretflow.ml.nn.callbacks.ml.nn.callbacks.tune.mdx,
+                            label: secretflow.ml.nn.callbacks.tune package, type: doc}
+                        label: secretflow.ml.nn.callbacks package
+                        link: {id: source/secretflow.ml.nn.ml.nn.callbacks.mdx, label: secretflow.ml.nn.callbacks
+                            package, type: doc}
+                        type: category
+                      - items:
                           - items:
                               - items:
                                   - {id: 
@@ -338,13 +393,8 @@ sidebar:
                       - items:
                           - {id: source/secretflow.ml.nn.sl.ml.nn.sl.agglayer.mdx,
                             label: secretflow.ml.nn.sl.agglayer package, type: doc}
-                          - items:
-                              - {id: source/secretflow.ml.nn.sl.attack.ml.nn.sl.attack.torch.mdx,
-                                label: secretflow.ml.nn.sl.attack.torch package, type: doc}
-                            label: secretflow.ml.nn.sl.attack package
-                            link: {id: source/secretflow.ml.nn.sl.ml.nn.sl.attack.mdx,
-                              label: secretflow.ml.nn.sl.attack package, type: doc}
-                            type: category
+                          - {id: source/secretflow.ml.nn.sl.ml.nn.sl.attacks.mdx,
+                            label: secretflow.ml.nn.sl.attacks package, type: doc}
                           - items:
                               - items:
                                   - {id: 
@@ -445,6 +495,19 @@ sidebar:
                   type: doc}
                 type: category
               - items:
+                  - {id: source/secretflow.tune.tune.core.mdx, label: secretflow.tune.core
+                      package, type: doc}
+                  - {id: source/secretflow.tune.tune.schedular.mdx, label: secretflow.tune.schedular
+                      package, type: doc}
+                  - {id: source/secretflow.tune.tune.search.mdx, label: secretflow.tune.search
+                      package, type: doc}
+                  - {id: source/secretflow.tune.tune.trainable.mdx, label: secretflow.tune.trainable
+                      package, type: doc}
+                label: secretflow.tune package
+                link: {id: source/secretflow.tune.mdx, label: secretflow.tune package,
+                  type: doc}
+                type: category
+              - items:
                   - {id: source/secretflow.utils.utils.compressor.mdx, label: secretflow.utils.compressor
                       package, type: doc}
                   - items:
@@ -527,6 +590,10 @@ sidebar:
               Neural Network, type: doc}
           - {id: tutorial/mix_lr.mdx, label: Mix Federated Learning - Logistic Regression,
             type: doc}
+          - {id: tutorial/Pytorch-finetune-alexnet.mdx, label: 基于 PyTorch 的预训练模型在隐语联邦学习环境下的微调,
+            type: doc}
+          - {id: tutorial/tensorflow-finetune-inception-v3.mdx, label: 基于 Keras Applications
+              的预训练模型在隐语联邦学习环境下的微调, type: doc}
           - {id: 
               user_guide/federated_learning/vertical_federated_learning/SplitRec/effectiveness/sl_rec_deepfm.mdx,
             label: 'SplitREC: Using DeepFM Algorithm in SecretFlow', type: doc}

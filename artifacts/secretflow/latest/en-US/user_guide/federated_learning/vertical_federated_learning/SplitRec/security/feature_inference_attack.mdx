@@ -196,6 +196,7 @@ loss 函数定义如下：
     import torch.nn as nn
     from secretflow.ml.nn.utils import BaseModule
 
+
     class SLBaseNet(BaseModule):
         def __init__(self):
             super(SLBaseNet, self).__init__()
@@ -368,9 +369,9 @@ loss 函数定义如下：
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
     ```python
-    from secretflow.ml.nn.sl.attack.torch.feature_inference_attack import (
+    from secretflow.ml.nn.sl.attacks.fia_torch import (
         FeatureInferenceAttack,
-        SaveModelCallback,
+        # SaveModelCallback,
     )
 
 
@@ -408,19 +409,21 @@ loss 函数定义如下：
 
         return attacker_builder
 
+
     # in Algorithm 2 line 9, attacker will inference v_hat so attacker should get the whole federated model(which maybe unrealistic)
     # victim bob will call this callback_builder to save base model first, then attacker alice loads this victim's model from the same path
-    def create_victim_callback_builder(model_save_path):
-        def builder():
-            cb = SaveModelCallback(model_save_path)
-            return cb
+    # def create_victim_callback_builder(model_save_path):
+    #     def builder():
+    #         cb = SaveModelCallback(model_save_path)
+    #         return cb
 
-        return builder
+    #     return builder
 
 
     batch_size = 64
     import os
     import shutil
+
     fia_path = './model_saved'
     if os.path.exists(fia_path):
         shutil.rmtree(fia_path)
@@ -428,17 +431,17 @@ loss 函数定义如下：
     model_save_path = fia_path + '/sl_model_victim'
     generator_save_path = fia_path + '/generator'
 
-    callback_dict = {
-        alice: create_attacker_builder(
-            model_save_path,
-            bob_mean,
-            pred_fea,
-            pred_label,
-            batch_size,
-            generator_save_path,
-        ),
-        bob: create_victim_callback_builder(model_save_path),
-    }
+    # callback_dict = {
+    #     alice: create_attacker_builder(
+    #         model_save_path,
+    #         bob_mean,
+    #         pred_fea,
+    #         pred_label,
+    #         batch_size,
+    #         generator_save_path,
+    #     ),
+    #     bob: create_victim_callback_builder(model_save_path),
+    # }
     ```
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -459,7 +462,7 @@ loss 函数定义如下：
         shuffle=False,
         random_seed=1234,
         dataset_builder=None,
-        callbacks=callback_dict,
+        # callbacks=callback_dict, # 暂时注释掉，callback完成后恢复 @caibei
     )
     ```
   </Notebook.CodeArea>

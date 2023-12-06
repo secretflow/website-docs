@@ -148,6 +148,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
 
         # encode movie_id
         from sklearn.preprocessing import LabelEncoder
+
         le = LabelEncoder()
         le.fit(movies['movie_id'].unique())
         movies['movie_id'] = (
@@ -314,6 +315,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
         test_data_bob.to_csv(
             gen_data_path + "/test_data_bob.csv", index=False, sep="|", encoding='utf-8'
         )
+
 
     generate_data()
     ```
@@ -540,9 +542,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
         optim_fn=optim_fn,
         metrics=[
             metric_wrapper(Accuracy, task="multiclass", num_classes=2, average='micro'),
-            metric_wrapper(
-                Precision, task="multiclass", num_classes=2, average='micro'
-            ),
+            metric_wrapper(Precision, task="multiclass", num_classes=2, average='micro'),
             metric_wrapper(AUROC, task="binary"),
         ],
     )
@@ -553,9 +553,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
         optim_fn=optim_fn,
         metrics=[
             metric_wrapper(Accuracy, task="multiclass", num_classes=2, average='micro'),
-            metric_wrapper(
-                Precision, task="multiclass", num_classes=2, average='micro'
-            ),
+            metric_wrapper(Precision, task="multiclass", num_classes=2, average='micro'),
             metric_wrapper(AUROC, task="binary"),
         ],
     )
@@ -566,9 +564,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
         optim_fn=optim_fn,
         metrics=[
             metric_wrapper(Accuracy, task="multiclass", num_classes=2, average='micro'),
-            metric_wrapper(
-                Precision, task="multiclass", num_classes=2, average='micro'
-            ),
+            metric_wrapper(Precision, task="multiclass", num_classes=2, average='micro'),
             metric_wrapper(AUROC, task="multiclass", num_classes=2),
         ],
     )
