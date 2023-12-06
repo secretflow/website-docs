@@ -1,0 +1,253 @@
+:target{#getting-started}
+
+# Getting started
+
+Welcome to SecretFlow PSI Library. There are multiple methods to use PSI/PIR.
+
+- C++ binaries, you could build the binary or with release docker image.
+- Python packages
+  > - [SPU](https://pypi.org/project/spu/) warps the library as Python bindings. You could call PSI/PIR with spu.
+  > - [SecretFlow](https://pypi.org/project/secretflow/) warps spu further.
+- Applications
+  > - [SCQL](https://www.secretflow.org.cn/docs/scql/latest/zh-Hans) integrates this library to do JOIN operations.
+  > - [SecretPad](https://www.secretflow.org.cn/docs/quickstart/mvp-platform) provides PSI component.
+  > - [Easy PSI](https://www.secretflow.org.cn/docs/quickstart/easy-psi) provides most functionality of this library to users.
+
+For PSI, we have a developing v2 PSI.
+
+<table>
+  <thead>
+    <tr>
+      <td />
+
+      <td>
+        PSI v1 APIs
+      </td>
+
+      <td>
+        PSI v2 APIs
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        Supported Protocols
+      </td>
+
+      <td>
+        ECDH, BC22, KKRT, ECDH\_OPRF\_UB, DP\_PSI, RR22
+      </td>
+
+      <td>
+        ECDH, KKRT, RR22
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        CSV parser
+      </td>
+
+      <td>
+        Support a subset of csv files.
+      </td>
+
+      <td>
+        Apache Arrow, support all legal csv files.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Recovery after failure
+      </td>
+
+      <td>
+        Unsupported
+      </td>
+
+      <td>
+        Supported
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Inner join
+      </td>
+
+      <td>
+        Unsupported at library level
+      </td>
+
+      <td>
+        Supported natively
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Release Docker
+      </td>
+
+      <td>
+        Not provided
+      </td>
+
+      <td>
+        Provided
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Python Binding
+      </td>
+
+      <td>
+        with SPU
+      </td>
+
+      <td>
+        Not provided
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#installation}
+
+## Installation
+
+:target{#c-binaries}
+
+### C++ binaries
+
+:target{#release-docker}
+
+#### Release Docker
+
+Please check official release docker image at [dockerhub](https://hub.docker.com/r/secretflow/psi-anolis8). We also have mirrors at Alibaba Cloud: secretflow-registry.cn-hangzhou.cr.aliyuncs.com/secretflow/psi-anolis8.
+
+:target{#building-from-source}
+
+#### Building from Source
+
+Please see [Building](#building).
+
+:target{#python-packages}
+
+### Python packages
+
+:target{#id1}
+
+#### SPU
+
+Please check [SPU Installation Guidelines](https://www.secretflow.org.cn/docs/spu/latest/en-US/getting_started/install).
+
+:target{#id2}
+
+#### SecretFlow
+
+Please check [SecretFlow Installation page](https://www.secretflow.org.cn/docs/secretflow/latest/en-US/getting_started/installation).
+
+:target{#applications}
+
+### Applications
+
+:target{#id3}
+
+#### SCQL
+
+Please check [SCQL Quickstart tutorial](https://www.secretflow.org.cn/docs/scql/latest/en-US/intro/tutorial).
+
+:target{#id4}
+
+#### SecretPad
+
+Please check [SecretPad handbook](https://www.secretflow.org.cn/docs/quickstart/mvp-platform).
+
+:target{#id5}
+
+#### Easy PSI
+
+Please check [Easy PSI handbook](https://www.secretflow.org.cn/docs/quickstart/easy-psi).
+
+:target{#building}
+
+## <Target id="id6" />Building
+
+:target{#system-setup}
+
+### System Setup
+
+:target{#dev-docker}
+
+#### Dev Docker
+
+We use the same dev docker from secretflow/ubuntu-base-ci:
+
+```default
+## start container
+docker run -d -it --name psi-dev-$(whoami) \
+     --mount type=bind,source="$(pwd)",target=/home/admin/dev/ \
+     -w /home/admin/dev \
+     --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+     --cap-add=NET_ADMIN \
+     --privileged=true \
+     --entrypoint="bash" \
+     secretflow/ubuntu-base-ci:latest
+
+
+# attach to build container
+docker exec -it psi-dev-$(whoami) bash
+```
+
+:target{#linux}
+
+#### Linux
+
+You need to install:
+
+- gcc>=11.2
+- cmake>=3.26
+- ninja
+- nasm>=2.15
+- python>=3.8
+- bazel==6.2.1
+- golang
+- xxd
+- lld
+
+:target{#build-unittest}
+
+### Build & UnitTest
+
+We use bazel for building and testing:
+
+```default
+# build as debug
+bazel build //... -c dbg
+
+# build as release
+bazel build //... -c opt
+
+# test
+bazel test //...
+```
+
+:target{#reporting-an-issue}
+
+## Reporting an Issue
+
+Please create an issue at [Github Issues](https://github.com/secretflow/psi/issues).
+
+We will look into issues and get back to you soon.
+
+:target{#frequently-asked-questions-faq}
+
+## Frequently Asked Questions (FAQ)
+
+We will collect some popular questions from users and update this part promptly.

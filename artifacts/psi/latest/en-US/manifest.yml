@@ -1,0 +1,23 @@
+sidebar:
+  - {id: getting_started.mdx, label: Getting started, type: doc}
+  - items:
+      - {id: user_guide/psi.mdx, label: PSI v1 QuickStart, type: doc}
+      - {id: user_guide/psi_v2.mdx, label: PSI v2 QuickStart, type: doc}
+      - {id: user_guide/pir.mdx, label: PIR QuickStart, type: doc}
+    label: User Guide
+    link: {id: user_guide/index.mdx, label: User Guide, type: doc}
+    type: category
+  - items:
+      - {id: reference/psi_config.mdx, label: PSI v1 Configuration, type: doc}
+      - {id: reference/psi_v2_config.mdx, label: PSI v2 Configuration, type: doc}
+    label: API reference
+    link: {id: reference/index.mdx, label: API reference, type: doc}
+    type: category
+  - items:
+      - {id: development/psi_protocol_intro.mdx, label: PSI Protocols Introduction,
+        type: doc}
+    label: Development
+    link: {id: development/index.mdx, label: Development, type: doc}
+    type: category
+  - {id: whatsnew.mdx, label: Release notes, type: doc}
+version: '1'
