@@ -25,6 +25,7 @@ jobs:
           - secretpad
           - spec
           - trustedflow
+          - psi
 
     steps:
       - uses: actions/checkout@v3
@@ -96,7 +97,9 @@ jobs:
         with:
           add-paths: |
             artifacts/${{ matrix.project }}/latest
-          commit-message: 'chore(${{ matrix.project }}): Update docs to ${{ steps.get-project-sha.outputs.sha }}'
+          commit-message:
+            'chore(${{ matrix.project }}): Update docs to ${{
+            steps.get-project-sha.outputs.sha }}'
           branch: 'docs/${{ matrix.project }}'
           delete-branch: true
           title: 'chore(${{ matrix.project }}): Update docs'
@@ -113,6 +116,8 @@ jobs:
 
       - name: 'Enable auto-merge'
         if: ${{ steps.create-pull-request.outputs.pull-request-url != '' }}
-        run: gh pr merge ${{ steps.create-pull-request.outputs.pull-request-url }} --auto --squash --delete-branch
+        run:
+          gh pr merge ${{ steps.create-pull-request.outputs.pull-request-url }}
+          --auto --squash --delete-branch
         env:
           GH_TOKEN: ${{ github.token }}
