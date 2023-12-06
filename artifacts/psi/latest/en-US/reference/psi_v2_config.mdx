@@ -1,0 +1,2601 @@
+:target{#psi-v2-configuration}
+
+# PSI v2 Configuration
+
+:target{#table-of-contents}
+
+## Table of Contents
+
+- Messages
+  - [DebugOptions](#debugoptions)
+  - [EcdhConfig](#ecdhconfig)
+  - [InnerJoinConfig](#innerjoinconfig)
+  - [InputConfig](#inputconfig)
+  - [InternalRecoveryRecord](#internalrecoveryrecord)
+  - [KkrtConfig](#kkrtconfig)
+  - [OutputConfig](#outputconfig)
+  - [ProtocolConfig](#protocolconfig)
+  - [PsiConfig](#psiconfig)
+  - [PsiReport](#psireport)
+  - [RecoveryCheckpoint](#recoverycheckpoint)
+  - [RecoveryConfig](#recoveryconfig)
+  - [Rr22Config](#rr22config)
+  - [Table](#table)
+  - [Table.Row](#table-row)
+- Enums
+  - [IoType](#iotype)
+  - [Protocol](#protocol)
+  - [PsiConfig.AdvancedJoinType](#psiconfig-advancedjointype)
+  - [RecoveryCheckpoint.Stage](#recoverycheckpoint-stage)
+  - [Role](#role)
+- Messages
+  - [ContextDescProto](#contextdescproto)
+  - [PartyProto](#partyproto)
+  - [RetryOptionsProto](#retryoptionsproto)
+  - [SSLOptionsProto](#ssloptionsproto)
+- [Scalar Value Types](#scalar-value-types)
+
+:target{#messages}
+
+## Messages
+
+:target{#debugoptions}
+
+### DebugOptions
+
+Logging level for default logger.
+Default to info.
+Supports:
+
+- trace: SPDLOG\_LEVEL\_TRACE
+- debug: SPDLOG\_LEVEL\_DEBUG
+- info: SPDLOG\_LEVEL\_INFO
+- warn: SPDLOG\_LEVEL\_WARN
+- err: SPDLOG\_LEVEL\_ERROR
+- critical: SPDLOG\_LEVEL\_CRITICAL
+- off: SPDLOG\_LEVEL\_OFF
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        logging\_level
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        trace\_path
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        The path of trace. Deafult to /tmp/psi.trace
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ecdhconfig}
+
+### EcdhConfig
+
+Configs for ECDH protocol.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        curve
+      </td>
+
+      <td>
+        [<span> psi.psi.CurveType</span>](#psipsicurvetype)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#innerjoinconfig}
+
+### InnerJoinConfig
+
+Internal usage only at this moment.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_path
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Path of origin input.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        role
+      </td>
+
+      <td>
+        [ Role](#role)
+      </td>
+
+      <td>
+        The role of party,
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        keys
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        Keys for PSI.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        sorted\_input\_path
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Path of sorted input depending on keys.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        unique\_input\_keys\_cnt\_path
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Path of unique keys and cnt
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        self\_intersection\_cnt\_path
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Path of PSI output with unique\_input\_keys\_cnt\_path as input.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        peer\_intersection\_cnt\_path
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Path of received peer intersection count.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        output\_path
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        The path of output for inner join.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#inputconfig}
+
+### InputConfig
+
+Input configuration.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        [ IoType](#iotype)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        path
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Required for FILE.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        raw
+      </td>
+
+      <td>
+        [ Table](#table)
+      </td>
+
+      <td>
+        Required for RAW.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#internalrecoveryrecord}
+
+### InternalRecoveryRecord
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        stage
+      </td>
+
+      <td>
+        [ RecoveryCheckpoint.Stage](#recoverycheckpoint-stage)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ecdh\_dual\_masked\_item\_peer\_count
+      </td>
+
+      <td>
+        [<span> uint64</span>](#uint64)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parsed\_bucket\_count
+      </td>
+
+      <td>
+        [<span> uint64</span>](#uint64)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#kkrtconfig}
+
+### KkrtConfig
+
+Configs for KKRT protocol
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        bucket\_size
+      </td>
+
+      <td>
+        [<span> uint64</span>](#uint64)
+      </td>
+
+      <td>
+        Since the total input may not fit in memory, the input may be splitted into buckets. bucket\_size indicate the number of items in each bucket. If the memory of host is limited, you should set a smaller bucket size. Otherwise, you should use a larger one. If not set, use default value: 1 \<\< 20.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#outputconfig}
+
+### OutputConfig
+
+Output configuration.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        input\_type\_followed
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        If true, type of output would be the same as input type. And type would be ngelected.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        type
+      </td>
+
+      <td>
+        [ IoType](#iotype)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        path
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Required for FILE.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#protocolconfig}
+
+### ProtocolConfig
+
+Any items related to PSI protocols.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        protocol
+      </td>
+
+      <td>
+        [ Protocol](#protocol)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        role
+      </td>
+
+      <td>
+        [ Role](#role)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        broadcast\_result
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        Reveal result to sender.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ecdh\_config
+      </td>
+
+      <td>
+        [ EcdhConfig](#ecdhconfig)
+      </td>
+
+      <td>
+        For ECDH protocol.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        kkrt\_config
+      </td>
+
+      <td>
+        [ KkrtConfig](#kkrtconfig)
+      </td>
+
+      <td>
+        For KKRT protocol.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        rr22\_config
+      </td>
+
+      <td>
+        [ Rr22Config](#rr22config)
+      </td>
+
+      <td>
+        For RR22 protocol.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#psiconfig}
+
+### PsiConfig
+
+The top level of Configs.
+run(PsiConfig)->PsiReport
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        protocol\_config
+      </td>
+
+      <td>
+        [ ProtocolConfig](#protocolconfig)
+      </td>
+
+      <td>
+        Configs for protocols.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        input\_config
+      </td>
+
+      <td>
+        [ InputConfig](#inputconfig)
+      </td>
+
+      <td>
+        Configs for input.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        output\_config
+      </td>
+
+      <td>
+        [ OutputConfig](#outputconfig)
+      </td>
+
+      <td>
+        Configs for output.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        link\_config
+      </td>
+
+      <td>
+        [<span> yacl.link.ContextDescProto</span>](#yacllinkcontextdescproto)
+      </td>
+
+      <td>
+        Configs for network.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        self\_link\_party
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        keys
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        keys for intersection.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        debug\_options
+      </td>
+
+      <td>
+        [ DebugOptions](#debugoptions)
+      </td>
+
+      <td>
+        Logging level.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        check\_duplicates
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        If true, a precheck of duplicated items will be conducted. An early exception would be throw before PSI.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        output\_difference
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        It true, output defference instead of intersection.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        sort\_output
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        It true, output is sorted according to keys in InputConfig.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        recovery\_config
+      </td>
+
+      <td>
+        [ RecoveryConfig](#recoveryconfig)
+      </td>
+
+      <td>
+        Configs for recovery.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        advanced\_join\_type
+      </td>
+
+      <td>
+        [ PsiConfig.AdvancedJoinType](#psiconfig-advancedjointype)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        left\_side
+      </td>
+
+      <td>
+        [ Role](#role)
+      </td>
+
+      <td>
+        Required if advanced\_join\_type is ADVANCED\_JOIN\_TYPE\_INNER\_JOIN.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        check\_hash\_digest
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        Check if hash digest of keys from parties are equal to determine whether to early-stop.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#psireport}
+
+### PsiReport
+
+Execution Report.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        original\_count
+      </td>
+
+      <td>
+        [<span> int64</span>](#int64)
+      </td>
+
+      <td>
+        The data count of input.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        intersection\_count
+      </td>
+
+      <td>
+        [<span> int64</span>](#int64)
+      </td>
+
+      <td>
+        The count of intersection. Get `-1` when self party can not get result.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        output
+      </td>
+
+      <td>
+        [ Table](#table)
+      </td>
+
+      <td>
+        Maybe used if output type is RAW.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#recoverycheckpoint}
+
+### RecoveryCheckpoint
+
+Save some critical information for future recovery.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        stage
+      </td>
+
+      <td>
+        [ RecoveryCheckpoint.Stage](#recoverycheckpoint-stage)
+      </td>
+
+      <td>
+        Stage of PSI.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        config
+      </td>
+
+      <td>
+        [ PsiConfig](#psiconfig)
+      </td>
+
+      <td>
+        A copy of origin PSI config.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        input\_hash\_digest
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Hash digest of input keys.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ecdh\_dual\_masked\_item\_self\_count
+      </td>
+
+      <td>
+        [<span> uint64</span>](#uint64)
+      </td>
+
+      <td>
+        Saved dual masked item count from self originally. PROTOCOL\_ECDH only.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ecdh\_dual\_masked\_item\_peer\_count
+      </td>
+
+      <td>
+        [<span> uint64</span>](#uint64)
+      </td>
+
+      <td>
+        Saved dual masked item count from peer originally. PROTOCOL\_ECDH only.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parsed\_bucket\_count
+      </td>
+
+      <td>
+        [<span> uint64</span>](#uint64)
+      </td>
+
+      <td>
+        Saved parsed bucket count. PROTOCOL\_KKRT and PROTOCOL\_RR22 only.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#recoveryconfig}
+
+### RecoveryConfig
+
+Configuration for recovery.
+If a PSI task failed unexpectedly, e.g. network failures and restart, the
+task can resume to the latest checkpoint to save time.
+However, enabling recovery would due in extra disk IOs and disk space
+occupation.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        enabled
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        folder
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Stores status and checkpoint files.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#rr22config}
+
+### Rr22Config
+
+Configs for RR22 protocol.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        bucket\_size
+      </td>
+
+      <td>
+        [<span> uint64</span>](#uint64)
+      </td>
+
+      <td>
+        Since the total input may not fit in memory, the input may be splitted into buckets. bucket\_size indicate the number of items in each bucket. If the memory of host is limited, you should set a smaller bucket size. Otherwise, you should use a larger one. If not set, use default value: 1 \<\< 20.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        low\_comm\_mode
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#table}
+
+### Table
+
+Stores input or output data.
+For IoType::IO\_TYPE\_MEM\_RAW.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        header
+      </td>
+
+      <td>
+        [ Table.Row](#table-row)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        data
+      </td>
+
+      <td>
+        [repeated Table.Row](#table-row)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#table-row}
+
+### Table.Row
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        values
+      </td>
+
+      <td>
+        [<span>repeated string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#enums}
+
+## Enums
+
+:target{#iotype}
+
+### IoType
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        IO\_TYPE\_UNSPECIFIED
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        IO\_TYPE\_FILE\_CSV
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Local csv file.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        IO\_TYPE\_MEM\_RAW
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        With Table pb msg.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#protocol}
+
+### Protocol
+
+PSI protocols.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        PROTOCOL\_UNSPECIFIED
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PROTOCOL\_ECDH
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        \[Mea86]C. Meadows, “A More Efficient Cryptographic Matchmaking Protocol for Use in the Absence of a Continuously Available Third Party,” 1986 IEEE Symposium on Security and Privacy, Oakland, CA, USA, 1986, pp. 134-134, doi: 10.1109/SP.1986.10022.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PROTOCOL\_KKRT
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        Efficient Batched Oblivious PRF with Applications to Private Set Intersection [https://eprint.iacr.org/2016/799.pdf](https://eprint.iacr.org/2016/799.pdf)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PROTOCOL\_RR22
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        Blazing Fast PSI [https://eprint.iacr.org/2022/320.pdf](https://eprint.iacr.org/2022/320.pdf)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#psiconfig-advancedjointype}
+
+### PsiConfig.AdvancedJoinType
+
+Advanced modes which allow duplicate keys.
+Advanced mode: Inner Join
+If selected, check\_duplicates is invalid.
+If selected, both parties could have duplicate keys.
+
+```default
+e.g. If input of receiver is
+| key1 | value1|
+|------|-------|
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| y    | 4     |
+and input of sender is
+| key2 | value2|
+|------|-------|
+| x    | a     |
+| x    | b     |
+| z    | c     |
+
+After inner join.
+The ourput of receiver is:
+| key1 | value1|
+|------|-------|
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+The output of sender is
+| key2 | value2|
+|------|-------|
+| x    | a     |
+| x    | b     |
+| x    | a     |
+| x    | b     |
+| x    | a     |
+| x    | b     |
+```
+
+Advanced mode: Left Join
+If selected, check\_duplicates is invalid.
+If selected, both parties could have duplicate keys.
+
+```default
+e.g. If input of left side is
+| key1 | value1|
+|------|-------|
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| y    | 4     |
+and input of right side is
+| key2 | value2|
+|------|-------|
+| x    | a     |
+| x    | b     |
+| z    | c     |
+
+After inner join.
+The ourput of left side is:
+| key1 | value1|
+|------|-------|
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| y    | 4     |
+The output of right side is
+| key2 | value2|
+|------|-------|
+| x    | a     |
+| x    | b     |
+| x    | a     |
+| x    | b     |
+| x    | a     |
+| x    | b     |
+| n/a  | n/a   |
+```
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        ADVANCED\_JOIN\_TYPE\_UNSPECIFIED
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ADVANCED\_JOIN\_TYPE\_INNER\_JOIN
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ADVANCED\_JOIN\_TYPE\_LEFT\_JOIN
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#recoverycheckpoint-stage}
+
+### RecoveryCheckpoint.Stage
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        STAGE\_UNSPECIFIED
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        STAGE\_INIT\_END
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        STAGE\_PRE\_PROCESS\_END
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        STAGE\_ONLINE\_START
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        STAGE\_ONLINE\_END
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        STAGE\_POST\_PROCESS\_END
+      </td>
+
+      <td>
+        5
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#role}
+
+### Role
+
+Role of parties.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Number
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        ROLE\_UNSPECIFIED
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ROLE\_RECEIVER
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        receiver In 2P symmetric PSI, receiver would always receive the result.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ROLE\_SENDER
+      </td>
+
+      <td>
+        2
+      </td>
+
+      <td>
+        sender In 2P symmetric PSI, sender is the other participant apart from receiver.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id1}
+
+## Messages
+
+:target{#contextdescproto}
+
+### ContextDescProto
+
+Configuration for link config.
+
+NOTE for ‘recv time’
+
+‘recv time’ is the max time that a party will wait for a given event.
+for example:
+
+```default
+begin recv                 end recv
+|--------|-------recv-time----------|------------------| alice's timeline
+
+                        begin send     end send
+|-----busy-work-------------|-------------|------------| bob's timeline
+```
+
+in above case, when alice begins recv for a specific event, bob is still
+busy doing its job, when alice’s wait time exceed wait\_timeout\_ms, it raise
+exception, although bob now is starting to send data.
+
+so for long time work(that one party may wait for the others for very long
+time), this value should be changed accordingly.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        id
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        the UUID of this communication. optional
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        parties
+      </td>
+
+      <td>
+        [repeated PartyProto](#partyproto)
+      </td>
+
+      <td>
+        party description, describes the world.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        connect\_retry\_times
+      </td>
+
+      <td>
+        [<span> uint32</span>](#uint32)
+      </td>
+
+      <td>
+        connect to mesh retry time.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        connect\_retry\_interval\_ms
+      </td>
+
+      <td>
+        [<span> uint32</span>](#uint32)
+      </td>
+
+      <td>
+        connect to mesh retry interval.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        recv\_timeout\_ms
+      </td>
+
+      <td>
+        [<span> uint64</span>](#uint64)
+      </td>
+
+      <td>
+        recv timeout in milliseconds.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        http\_max\_payload\_size
+      </td>
+
+      <td>
+        [<span> uint32</span>](#uint32)
+      </td>
+
+      <td>
+        http max payload size, if a single http request size is greater than this limit, it will be unpacked into small chunks then reassembled. This field does affect performance. Please choose wisely.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        http\_timeout\_ms
+      </td>
+
+      <td>
+        [<span> uint32</span>](#uint32)
+      </td>
+
+      <td>
+        a single http request timetout.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        throttle\_window\_size
+      </td>
+
+      <td>
+        [<span> uint32</span>](#uint32)
+      </td>
+
+      <td>
+        throttle window size for channel. if there are more than limited size messages are flying, `SendAsync` will block until messages are processed or throw exception after wait for `recv_timeout_ms`
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        brpc\_channel\_protocol
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        BRPC client channel protocol.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        brpc\_channel\_connection\_type
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        BRPC client channel connection type.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_ssl
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        ssl options for link channel.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        client\_ssl\_opts
+      </td>
+
+      <td>
+        [ SSLOptionsProto](#ssloptionsproto)
+      </td>
+
+      <td>
+        ssl configs for channel this config is ignored if enable\_ssl == false;
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        server\_ssl\_opts
+      </td>
+
+      <td>
+        [ SSLOptionsProto](#ssloptionsproto)
+      </td>
+
+      <td>
+        ssl configs for service this config is ignored if enable\_ssl == false;
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        chunk\_parallel\_send\_size
+      </td>
+
+      <td>
+        [<span> uint32</span>](#uint32)
+      </td>
+
+      <td>
+        chunk parallel send size for channel. if need chunked send when send message, the max paralleled send size is chunk\_parallel\_send\_size
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        retry\_opts
+      </td>
+
+      <td>
+        [ RetryOptionsProto](#retryoptionsproto)
+      </td>
+
+      <td>
+        retry options
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#partyproto}
+
+### PartyProto
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        id
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        host
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#retryoptionsproto}
+
+### RetryOptionsProto
+
+Retry options.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        max\_retry
+      </td>
+
+      <td>
+        [<span> uint32</span>](#uint32)
+      </td>
+
+      <td>
+        max retry count default 3
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        retry\_interval\_ms
+      </td>
+
+      <td>
+        [<span> uint32</span>](#uint32)
+      </td>
+
+      <td>
+        time between retries at first retry default 1 second
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        retry\_interval\_incr\_ms
+      </td>
+
+      <td>
+        [<span> uint32</span>](#uint32)
+      </td>
+
+      <td>
+        The amount of time to increase the interval between retries default 2s
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        max\_retry\_interval\_ms
+      </td>
+
+      <td>
+        [<span> uint32</span>](#uint32)
+      </td>
+
+      <td>
+        The maximum interval between retries default 10s
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        error\_codes
+      </td>
+
+      <td>
+        [<span>repeated uint32</span>](#uint32)
+      </td>
+
+      <td>
+        retry on these brpc error codes, if empty, retry on all codes
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        http\_codes
+      </td>
+
+      <td>
+        [<span>repeated uint32</span>](#uint32)
+      </td>
+
+      <td>
+        retry on these http codes, if empty, retry on all http codes
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        aggressive\_retry
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        do aggressive retry， this means that retries will be made on additional error codes
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#ssloptionsproto}
+
+### SSLOptionsProto
+
+SSL options.
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Field
+      </td>
+
+      <td>
+        Type
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        certificate\_path
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Certificate file path
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        private\_key\_path
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Private key file path
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        verify\_depth
+      </td>
+
+      <td>
+        [<span> int32</span>](#int32)
+      </td>
+
+      <td>
+        Set the maximum depth of the certificate chain for verification If 0, turn off the verification
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ca\_file\_path
+      </td>
+
+      <td>
+        [<span> string</span>](#string)
+      </td>
+
+      <td>
+        Set the trusted CA file to verify the peer’s certificate If empty, use the system default CA files
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#id2}
+
+## Enums
+
+:target{#scalar-value-types}
+
+## Scalar Value Types
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        .proto Type
+      </td>
+
+      <td>
+        Notes
+      </td>
+
+      <td>
+        C++ Type
+      </td>
+
+      <td>
+        Java Type
+      </td>
+
+      <td>
+        Python Type
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        <div><h4 id="double" /></div><a name="double" /> double
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        double
+      </td>
+
+      <td>
+        double
+      </td>
+
+      <td>
+        float
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="float" /></div><a name="float" /> float
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        float
+      </td>
+
+      <td>
+        float
+      </td>
+
+      <td>
+        float
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="int32" /></div><a name="int32" /> int32
+      </td>
+
+      <td>
+        Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="int64" /></div><a name="int64" /> int64
+      </td>
+
+      <td>
+        Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="uint32" /></div><a name="uint32" /> uint32
+      </td>
+
+      <td>
+        Uses variable-length encoding.
+      </td>
+
+      <td>
+        uint32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="uint64" /></div><a name="uint64" /> uint64
+      </td>
+
+      <td>
+        Uses variable-length encoding.
+      </td>
+
+      <td>
+        uint64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="sint32" /></div><a name="sint32" /> sint32
+      </td>
+
+      <td>
+        Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="sint64" /></div><a name="sint64" /> sint64
+      </td>
+
+      <td>
+        Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="fixed32" /></div><a name="fixed32" /> fixed32
+      </td>
+
+      <td>
+        Always four bytes. More efficient than uint32 if values are often greater than 2^28.
+      </td>
+
+      <td>
+        uint32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="fixed64" /></div><a name="fixed64" /> fixed64
+      </td>
+
+      <td>
+        Always eight bytes. More efficient than uint64 if values are often greater than 2^56.
+      </td>
+
+      <td>
+        uint64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="sfixed32" /></div><a name="sfixed32" /> sfixed32
+      </td>
+
+      <td>
+        Always four bytes.
+      </td>
+
+      <td>
+        int32
+      </td>
+
+      <td>
+        int
+      </td>
+
+      <td>
+        int
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="sfixed64" /></div><a name="sfixed64" /> sfixed64
+      </td>
+
+      <td>
+        Always eight bytes.
+      </td>
+
+      <td>
+        int64
+      </td>
+
+      <td>
+        long
+      </td>
+
+      <td>
+        int/long
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="bool" /></div><a name="bool" /> bool
+      </td>
+
+      <td>
+
+      </td>
+
+      <td>
+        bool
+      </td>
+
+      <td>
+        boolean
+      </td>
+
+      <td>
+        boolean
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="string" /></div><a name="string" /> string
+      </td>
+
+      <td>
+        A string must always contain UTF-8 encoded or 7-bit ASCII text.
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        String
+      </td>
+
+      <td>
+        str/unicode
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div><h4 id="bytes" /></div><a name="bytes" /> bytes
+      </td>
+
+      <td>
+        May contain any arbitrary sequence of bytes.
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        ByteString
+      </td>
+
+      <td>
+        str
+      </td>
+    </tr>
+  </tbody>
+</table>
