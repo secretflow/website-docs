@@ -35,7 +35,18 @@ sidebar:
         label: Kuscia API
         link: {id: reference/apis/index.mdx, label: Kuscia API, type: doc}
         type: category
-      - {id: reference/faq_cn.mdx, label: 常见问题, type: doc}
+      - items:
+          - {id: reference/troubleshoot/wslstartdocker.mdx, label: 使用 WSL 注意事项, type: doc}
+          - {id: reference/troubleshoot/deployfailed.mdx, label: 部署失败, type: doc}
+          - {id: reference/troubleshoot/networkauthorizationcheck.mdx, label: 授权错误排查,
+            type: doc}
+          - {id: reference/troubleshoot/runjobfailed.mdx, label: 作业运行失败, type: doc}
+          - {id: reference/troubleshoot/FATEdeployfailed.mdx, label: FATE 部署失败, type: doc}
+          - {id: reference/troubleshoot/FATErunjobfailed.mdx, label: FATE 作业运行失败,
+            type: doc}
+        label: 常见问题
+        link: {id: reference/troubleshoot/index.mdx, label: 常见问题, type: doc}
+        type: category
     label: 参考手册
     link: {id: reference/index.mdx, label: 参考手册, type: doc}
     type: category
@@ -45,6 +56,7 @@ sidebar:
       - {id: deployment/operation_cn.mdx, label: 运维操作, type: doc}
       - {id: deployment/networkrequirements.mdx, label: 网络要求, type: doc}
       - {id: deployment/logdescription.mdx, label: 日志说明, type: doc}
+      - {id: deployment/kuscia_config_cn.mdx, label: Kuscia 配置文件, type: doc}
     label: 部署
     link: {id: deployment/index.mdx, label: 部署, type: doc}
     type: category
