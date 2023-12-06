@@ -1,8 +1,8 @@
-:target{#deployment-in-p2p-mode}
+:target{#p2p-deployment}
 
 # P2P 模式部署
 
-本文档介绍了如何使用 docker 以 P2P 模式部署 SCQL 系统，并使用 brokerctl 进行查询。它与 [P2P 快速开始](../../intro/p2p-tutorial.mdx) 基本相同，但部署在多机上。
+本文档介绍了如何使用 docker 以 P2P 模式部署 SCQL 系统，并使用 brokerctl 进行查询。它与 [快速开始](../../intro/p2p-tutorial.mdx) 基本相同，但部署在多机上。
 
 在开始阅读这篇文档前，我们假设读者已经具备一定的 docker-compose 使用经验。如果您对 Docker Compose 不熟悉，请参阅 [Docker Compose 官方概述](https://docs.docker.com/compose/)，或者查看 [入门指南](https://docs.docker.com/compose/gettingstarted/)。
 
@@ -66,7 +66,8 @@ inter_server:
   port: 8081
 log_level: debug
 party_code: alice
-engines: ["engine:8003"]
+session_expire_time: 24h
+session_expire_check_time: 1m
 party_info_file: "/home/admin/configs/party_info.json"
 private_pem_path: "/home/admin/configs/ed25519key.pem"
 intra_host: broker:8080
@@ -74,6 +75,9 @@ engine:
   timeout: 120s
   protocol: http
   content_type: application/json
+  uris:
+    - for_peer: __ENGINE_URL__
+      for_self: engine:8003
 storage:
   type: mysql
   conn_str: "root:__MYSQL_ROOT_PASSWORD__@tcp(mysql:3306)/brokeralice?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true"
@@ -85,6 +89,8 @@ storage:
 
 <Container type="note" id="replace-p2p-password">
   对于 Bob，<strong>party\_code</strong> 应该是 `bob`，而 <strong>conn\_str</strong> 中的 `brokeralice` 应该替换为 `brokerbob`。
+
+  将 `__ENGINE_URL__` 替换为 <strong>机器的对外 host/ip + 引擎对外端口</strong>，如： [http://30.30.30.30:8003](http://30.30.30.30:8003)
 
   `__MYSQL_ROOT_PASSWORD__` 应替换为对应参与方选择的密码，后续文件请以同样的方式替换此占位符。
 </Container>
@@ -100,16 +106,14 @@ storage:
 ```bash
 --listen_port=8003
 --datasource_router=embed
---enable_scdb_authorization=false
+--enable_driver_authorization=false
 --server_enable_ssl=false
---scdb_enable_ssl_as_client=false
+--driver_enable_ssl_as_client=false
 --peer_engine_enable_ssl_as_client=false
 --embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"db=alice;user=root;password=__MYSQL_ROOT_PASSWORD__;host=mysql;auto-reconnect=true"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
 # party authentication flags
---enable_self_auth=true
---enable_peer_auth=true
---private_key_pem_path=/home/admin/engine/conf/ed25519key.pem
---authorized_profile_path=/home/admin/engine/conf/authorized_profile.json
+--enable_self_auth=false
+--enable_peer_auth=false
 ```
 
 <Container type="note">
@@ -130,7 +134,7 @@ storage:
 version: '3.8'
 services:
   broker:
-    image: scql:latest
+    image: secretflow/scql:latest
     command:
       - /home/admin/bin/broker
       - -config=/home/admin/configs/config.yml
@@ -148,13 +152,11 @@ services:
     command:
       - /home/admin/bin/scqlengine
       - --flagfile=/home/admin/engine/conf/gflags.conf
-    image: scql:latest
+    image: secretflow/scql:latest
     ports:
       - __ENGINE_PORT__:8003
     volumes:
       - ./gflags.conf:/home/admin/engine/conf/gflags.conf
-      - ./ed25519key.pem:/home/admin/engine/conf/ed25519key.pem
-      - ./authorized_profile.json:/home/admin/engine/conf/authorized_profile.json
   mysql:
     image: mysql:latest
     environment:
@@ -178,7 +180,7 @@ services:
 ```
 
 <Container type="note">
-  `__INTRA_PORT__`, `__INTER_PORT__` 和 `__ENGINE_PORT__` 作为监听端口，您需要替换为可访问的端口，这里我们指定为 `8080`, `8081` 和 `8003`
+  `__INTRA_PORT__`, `__INTER_PORT__` 和 `__ENGINE_PORT__` 作为监听端口，您需要替换为可访问的端口，尤其注意 `__ENGINE_PORT__` 需要和 [<span>\_\_ENGINE\_URL\_\_</span>](#replace-p2p-password) 中的端口保持一致，这里我们指定为 `8080`, `8081` 和 `8003`
 
   请勿忘记将 `__MYSQL_ROOT_PASSWORD__` 替换为与 [<span>前面</span>](#replace-p2p-password) 相同的密码
 
@@ -221,15 +223,12 @@ services:
 ```bash
 # generate private key
 openssl genpkey -algorithm ed25519 -out ed25519key.pem
-# get public key corresponding to the private key, the output can be used to replace the __ALICE_PUBLIC_KEY__ in engine Bob's authorized_profile.json
-# for engine Bob,  the output can be used to replace the __BOB_PUBLIC_KEY__ in engine Alice's authorized_profile.json
+# get public key corresponding to the private key, the output can be used to replace the __ALICE_PUBLIC_KEY__ in party_info.json
+# for engine Bob,  the output can be used to replace the __BOB_PUBLIC_KEY__ in party_info.json
 openssl pkey -in ed25519key.pem  -pubout -outform DER | base64
-# download authorized profile
-# for engine Bob, use command: wget https://raw.githubusercontent.com/secretflow/scql/main/examples/p2p-tutorial/engine/bob/conf/authorized_profile.json
-wget https://raw.githubusercontent.com/secretflow/scql/main/examples/p2p-tutorial/engine/alice/conf/authorized_profile.json
 ```
 
-然后您需要将 party\_info.json 和 authorized\_profile.json 中的 `__XXX_PUBLIC_KEY__` 占位符替换为相应的真实公钥。
+然后您需要将 party\_info.json 中的 `__XXX_PUBLIC_KEY__` 占位符替换为相应的真实公钥。
 
 :target{#start-services}
 
@@ -240,7 +239,6 @@ wget https://raw.githubusercontent.com/secretflow/scql/main/examples/p2p-tutoria
 ```bash
 └── scql-p2p
   ├── alice_init.sql
-  ├── authorized_profile.json
   ├── broker_init_alice.sql
   ├── config.yml
   ├── docker-compose.yaml
@@ -308,7 +306,7 @@ go build -o brokerctl cmd/brokerctl/main.go
 
 ### 3.2 提交查询
 
-您可以开始使用 brokerctl 向 SCQLBroker 提交请求并获取结果。这与您在 [P2P 快速开始](../../intro/p2p-tutorial.mdx) 中可以执行的操作类似。
+您可以开始使用 brokerctl 向 SCQLBroker 提交请求并获取结果。这与您在 [快速开始](../../intro/p2p-tutorial.mdx) 中可以执行的操作类似。
 
 ```bash
 # create project demo in alice

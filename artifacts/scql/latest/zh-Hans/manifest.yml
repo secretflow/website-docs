@@ -1,7 +1,7 @@
 sidebar:
   - items:
-      - {id: intro/tutorial.mdx, label: 快速开始, type: doc}
-      - {id: intro/p2p-tutorial.mdx, label: P2P 快速开始, type: doc}
+      - {id: intro/p2p-tutorial.mdx, label: 快速开始, type: doc}
+      - {id: intro/tutorial.mdx, label: 基于中心化部署架构的快速开始, type: doc}
     label: 介绍
     link: {id: intro/index.mdx, label: 介绍, type: doc}
     type: category

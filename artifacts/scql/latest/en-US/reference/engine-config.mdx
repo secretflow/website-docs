@@ -22,7 +22,7 @@ query_result_callback_timeout: 200ms
 session_expire_time: 1h
 session_expire_check_time: 100ms
 password_check: true
-log_level: debug
+log_level: info
 enable_audit_logger: true
 audit:
   audit_log_file: audit/audit.log
@@ -541,10 +541,10 @@ party_auth:
 
 #### <Target id="config-security-compromise-options" />Config for SecurityCompromise
 
-SCDB provides some security compromise options, which can be selectively enabled when the security risk is acceptable to speed up the overall operation.
+SCQL provides some security compromise options, which can be selectively enabled when the security risk is acceptable to speed up the overall operation.
 
 1\. reveal\_group\_mark:
-default disable, if enabled, SCDB will expose grouping information(size of each group) when calculating group-by-aggregation, thereby avoiding the overhead caused by pre-shuffle.  `risk`: group size will be leaked, which is equivalent to the result of count(\*)
+default disable, if enabled, SCQL will expose grouping information(size of each group) when calculating group-by-aggregation, thereby avoiding the overhead caused by pre-shuffle.  `risk`: group size will be leaked, which is equivalent to the result of count(\*)
 
 A typical config of security\_compromise can be like:
 
@@ -557,7 +557,7 @@ security_compromise:
 
 #### <Target id="config-storage-options" />Config for storage
 
-Database in SCDB is used to store the SCQL system data, such as CCL and user information, currently SCDB support MySQL/SQLite3. You can connect to a database by setting `conn_str` and `type` in the storage config.
+Database is used to store the SCQL system data, such as CCL and user information, currently support MySQL/SQLite3. You can connect to a database by setting `conn_str` and `type` in the storage config.
 
 <DefinitionList>
   <dl>
@@ -644,6 +644,10 @@ engine:
   protocol: https
 ```
 
+<Container type="note">
+  Self-signed CA files may not be trusted by default, please refer to [Trouble shooting](https://github.com/secretflow/scql/tree/main/test-tools#trouble-shooting) for help.
+</Container>
+
 Additionally, it is necessary to configure the SCQLEngine to work with SSL, please refer [Config for SSL in SCQLEngine](#scqlengine-tls).
 
 :target{#config-for-spu}
@@ -679,16 +683,20 @@ inter_server:
   protocol: https
   cert_file: ${your cert file path}
   key_file: ${your key file path}
-log_level: debug
+log_level: info
 party_code: alice
+session_expire_time: 24h
+session_expire_check_time: 1m
 party_info_file: "/home/admin/configs/party_info.json"
 private_pem_path: "/home/admin/configs/private_key.pem"
 intra_host: http://broker_alice:8080
-engines: ["engine_alice:8003"]
 engine:
   timeout: 120s
   protocol: http
   content_type: application/json
+  uris:
+    - for_peer: alice_for_peer:8003
+      for_self: alice_for_self:8003
 storage:
   type: mysql
   conn_str: "user_name:pass_word@tcp(127.0.0.1:3306)/db_name?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true"
@@ -946,20 +954,6 @@ storage:
 
     <tr>
       <td>
-        engines
-      </td>
-
-      <td>
-        none
-      </td>
-
-      <td>
-        The URLs for local available SCQLEngines
-      </td>
-    </tr>
-
-    <tr>
-      <td>
         engine.timeout
       </td>
 
@@ -997,6 +991,21 @@ storage:
 
       <td>
         The original media type in post body from SCQLBroker to SCQLEngine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.uris
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The URIs for local SCQLEngines, which using <strong>for\_peer</strong> to serve peer engines and <strong>for\_self</strong> to serve the SCQLBroker,
+        if <strong>for\_self</strong> is empty, <strong>for\_peer</strong> is used instead
       </td>
     </tr>
 
@@ -1097,6 +1106,34 @@ storage:
         Maximum amount of time a connection may be reused
       </td>
     </tr>
+
+    <tr>
+      <td>
+        session\_expire\_time
+      </td>
+
+      <td>
+        24h
+      </td>
+
+      <td>
+        Maximum lifespan of a job
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        session\_expire\_check\_time
+      </td>
+
+      <td>
+        1m
+      </td>
+
+      <td>
+        The interval checking whether session is timeout
+      </td>
+    </tr>
   </tbody>
 </table>
 
@@ -1107,6 +1144,29 @@ storage:
 SCQLBroker accept intra-domain requests through IntraServer, while accept requests between different SCQLBrokers through InterServer.
 
 IntraServer is recommended to use localhost host or LAN address to avoid external attacks, while InterServer is recommended to enable HTTPS to improve security.
+
+:target{#broker-tls}
+
+Please refer to the following configuration to enable HTTPS for InterServer: (similar to IntraServer)
+
+```yaml
+inter_server:
+  host: 0.0.0.0
+  port: 8081
+  protocol: https
+  cert_file: ${your cert file path}
+  key_file: ${your key file path}
+```
+
+<Container type="note">
+  Self-signed CA files may not be trusted by default, please refer to [Trouble shooting](https://github.com/secretflow/scql/tree/main/test-tools#trouble-shooting) for help.
+
+  Please change the endpoints in <strong>party\_info.json</strong> from http to https.
+
+  We have enabled HTTPS in the [p2p examples](https://github.com/secretflow/scql/blob/main/examples/p2p-tutorial/README.md), and the initialization process of related configurations may provide some help.
+</Container>
+
+For SCQLEngine to work with SSL, please refer [Config for SSL in SCQLEngine](#scqlengine-tls).
 
 :target{#reused-config}
 
@@ -1137,6 +1197,8 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
 :target{#config-in-scqlengine}
 
 ### Config in SCQLEngine
+
+SCQLEngine can cooperate with upper-layer modules such as SCDB and SCQLBroker according to the deployment mode. `Driver` is used in the configuration items to represent these upper-layer modules.
 
 <table>
   <thead>
@@ -1354,7 +1416,7 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
 
     <tr>
       <td>
-        scdb\_protocol
+        driver\_protocol
       </td>
 
       <td>
@@ -1362,13 +1424,13 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
       </td>
 
       <td>
-        The rpc protocol between engine and SCDB
+        The rpc protocol between engine and Driver
       </td>
     </tr>
 
     <tr>
       <td>
-        scdb\_connection\_type
+        driver\_connection\_type
       </td>
 
       <td>
@@ -1376,13 +1438,13 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
       </td>
 
       <td>
-        The rpc connection type between engine and SCDB
+        The rpc connection type between engine and Driver
       </td>
     </tr>
 
     <tr>
       <td>
-        scdb\_timeout\_ms
+        driver\_timeout\_ms
       </td>
 
       <td>
@@ -1390,13 +1452,13 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
       </td>
 
       <td>
-        The rpc timeout between engine and SCDB, unit: ms
+        The rpc timeout between engine and Driver, unit: ms
       </td>
     </tr>
 
     <tr>
       <td>
-        scdb\_max\_retry
+        driver\_max\_retry
       </td>
 
       <td>
@@ -1404,13 +1466,13 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
       </td>
 
       <td>
-        Rpc max retries(not including the first rpc) between engine and SCDB
+        Rpc max retries(not including the first rpc) between engine and Driver
       </td>
     </tr>
 
     <tr>
       <td>
-        scdb\_enable\_ssl\_as\_client
+        driver\_enable\_ssl\_as\_client
       </td>
 
       <td>
@@ -1418,13 +1480,13 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
       </td>
 
       <td>
-        Whether enable ssl encryption when send message to SCDB
+        Whether enable ssl encryption when send message to Driver
       </td>
     </tr>
 
     <tr>
       <td>
-        scdb\_enable\_ssl\_client\_verification
+        driver\_enable\_ssl\_client\_verification
       </td>
 
       <td>
@@ -1432,13 +1494,13 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
       </td>
 
       <td>
-        Whether enable certificate verification when send message to SCDB
+        Whether enable certificate verification when send message to Driver
       </td>
     </tr>
 
     <tr>
       <td>
-        scdb\_ssl\_client\_ca\_certificate
+        driver\_ssl\_client\_ca\_certificate
       </td>
 
       <td>
@@ -1446,7 +1508,7 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
       </td>
 
       <td>
-        The trusted CA file to verify certificate when send message to SCDB
+        The trusted CA file to verify certificate when send message to Driver
       </td>
     </tr>
 
@@ -1502,7 +1564,7 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
       </td>
 
       <td>
-        Idle connection close delay in seconds between the engine and SCDB, unit: s
+        Idle connection close delay in seconds between the engine and Driver, unit: s
       </td>
     </tr>
 
@@ -1578,7 +1640,7 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
 
     <tr>
       <td>
-        enable\_scdb\_authorization
+        enable\_driver\_authorization
       </td>
 
       <td>
@@ -1586,7 +1648,7 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
       </td>
 
       <td>
-        Whether to authenticate the identity of SCDB
+        Whether to authenticate the identity of Driver
       </td>
     </tr>
 
@@ -1600,7 +1662,7 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
       </td>
 
       <td>
-        Credential used to authenticate SCDB
+        Credential used to authenticate Driver
       </td>
     </tr>
 
@@ -1614,7 +1676,7 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
       </td>
 
       <td>
-        Expiration duration of a session between engine and SCDB, unit: s
+        Expiration duration of a session between engine and Driver, unit: s
       </td>
     </tr>
 
@@ -1893,7 +1955,7 @@ Once found, SCQLEngine will try to connect database with datasource’s informat
 
 #### Config for Brpc server
 
-SCQLEngine uses <strong>Brpc</strong> to communicate with SCDB and other peer SCQLEngines, each SCQLEngine will start a Brpc service on <em>local-host\:listen\_port</em> to receive data from outside. If you want to enable Brpc builtin services, add FLAGS:
+SCQLEngine uses <strong>Brpc</strong> to communicate with Driver and other peer SCQLEngines, each SCQLEngine will start a Brpc service on <em>local-host\:listen\_port</em> to receive data from outside. If you want to enable Brpc builtin services, add FLAGS:
 
 ```default
 --enable_builtin_service=true
@@ -1904,21 +1966,23 @@ SCQLEngine uses <strong>Brpc</strong> to communicate with SCDB and other peer SC
 
 #### <Target id="scqlengine-tls" />Config for SSL
 
-If you want to enable SSL in SCQLEngine, add FLAGS as follows. Additionally, it may be necessary to configure SCDB work with TLS please refer [Config for TLS in SCDB](#scdb-tls).
+If you want to enable SSL in SCQLEngine, add FLAGS as follows. Additionally, it may be necessary to configure the Driver to work with TLS, please refer [TLS in SCDB](#scdb-tls) or [TLS in SCQLBroker](#broker-tls).
 
 ```default
 --server_enable_ssl=true
 --server_ssl_certificate=${file path of cert}
 --server_ssl_private_key=${file path of key}
+# set peer_engine_enable_ssl_as_client to true when peer SCQLEngine has https enabled
 --peer_engine_enable_ssl_as_client=true
---scdb_enable_ssl_as_client=true
+# set driver_enable_ssl_as_client to true when the Driver has https enabled (SCDB or SCQLBroker's IntraServer)
+--driver_enable_ssl_as_client=true
 ```
 
-:target{#id1}
+:target{#id2}
 
 #### Config for audit
 
-The audit log in SCQLEngine is used to record the SCQLEngine activities during the execution of tasks from SCDB. Just like the audit in SCDB, it also can be divided into two types: common audit log and detail audit log.
+The audit log in SCQLEngine is used to record the SCQLEngine activities during the execution of tasks from Driver. Just like the audit in Driver, it also can be divided into two types: common audit log and detail audit log.
 
 > The common audit is used to record some basic information about a task, while the detail audit is used to record more detailed information of the task. See [engine\_audit](https://github.com/secretflow/scql/blob/main/engine/audit/audit.proto) for more information
 
@@ -1931,4 +1995,4 @@ The log file is rotated in every 24:00:00 in local time, and the filename is gen
 
 #### Config for party authentication
 
-For security, SCQLEngine enables party authentication by default. SCQLEngine will check it’s public key in the SCDB request matches the local public key in `private_key_pem_path`, and that the other participant’s public key also matches the one in `authorized_profile_path`.
+For security, SCQLEngine enables party authentication by default. SCQLEngine will check it’s public key in the Driver request matches the local public key in `private_key_pem_path`, and that the other participant’s public key also matches the one in `authorized_profile_path`.
