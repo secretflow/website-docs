@@ -28,9 +28,9 @@
   ![lia2](../../../../../_assets/lia2.png)
 </LineBlock>
 
-其中 loss 的计算公式如下 ![lia3](../../../../../_assets/lia3.png)
+其中 loss 的计算公式如下
 
-![lia4](../../../../../_assets/lia4.png):target{#Active-Label-Inference-Attack-with-the-Malicious-Local-Optimizer}
+![lia3](../../../../../_assets/lia3.png)![lia4](../../../../../_assets/lia4.png):target{#Active-Label-Inference-Attack-with-the-Malicious-Local-Optimizer}
 
 ### Active Label Inference Attack with the Malicious Local Optimizer
 
@@ -120,7 +120,9 @@
 
     data_file_path = './data_download'
     batch_size = 128
-    train_dataset = datasets.CIFAR10(data_file_path, True, transform=transforms.ToTensor(), download=True)
+    train_dataset = datasets.CIFAR10(
+        data_file_path, True, transform=transforms.ToTensor(), download=True
+    )
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=False)
 
     train_np = np.array(train_loader.dataset)
@@ -348,12 +350,8 @@
         loss_fn=loss_fn,
         optim_fn=optim_fn,
         metrics=[
-            metric_wrapper(
-                Accuracy, task="multiclass", num_classes=10, average='micro'
-            ),
-            metric_wrapper(
-                Precision, task="multiclass", num_classes=10, average='micro'
-            ),
+            metric_wrapper(Accuracy, task="multiclass", num_classes=10, average='micro'),
+            metric_wrapper(Precision, task="multiclass", num_classes=10, average='micro'),
         ],
     )
 
@@ -362,12 +360,8 @@
         loss_fn=loss_fn,
         optim_fn=optim_fn,
         metrics=[
-            metric_wrapper(
-                Accuracy, task="multiclass", num_classes=10, average='micro'
-            ),
-            metric_wrapper(
-                Precision, task="multiclass", num_classes=10, average='micro'
-            ),
+            metric_wrapper(Accuracy, task="multiclass", num_classes=10, average='micro'),
+            metric_wrapper(Precision, task="multiclass", num_classes=10, average='micro'),
         ],
     )
 
@@ -671,7 +665,9 @@
 <Notebook.Cell>
   <Notebook.CodeArea prompt="[7]:" stderr={false} type="input">
     ```python
-    from secretflow.ml.nn.sl.attack.torch.label_inferece_attack import LabelInferenceAttacker
+    from secretflow.ml.nn.sl.attacks.lia_torch import (
+        LabelInferenceAttacker,
+    )
 
 
     def create_attacker_builder(file_path, batch_size, model_save_path):
@@ -724,7 +720,7 @@
         shuffle=False,
         random_seed=1234,
         dataset_builder=None,
-        callbacks=callback_dict,
+        # callbacks=callback_dict, # 暂时注释掉，callback完成后恢复 @caibei
     )
     print(history)
     ```

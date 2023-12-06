@@ -162,8 +162,8 @@ We can continue to use the loss function and optimizer defined in pytorch, the o
     from matplotlib import pyplot as plt
 
     # Draw accuracy values for training & validation
-    plt.plot(history.global_history['multiclassaccuracy'])
-    plt.plot(history.global_history['val_multiclassaccuracy'])
+    plt.plot(history["global_history"]['multiclassaccuracy'])
+    plt.plot(history["global_history"]['val_multiclassaccuracy'])
     plt.title('FLModel accuracy')
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')

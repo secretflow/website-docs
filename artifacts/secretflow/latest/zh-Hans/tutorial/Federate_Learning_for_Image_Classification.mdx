@@ -261,8 +261,8 @@ Alice 和 Bob 各自拥有一半的数据。
   <Notebook.CodeArea prompt="[15]:" stderr={false} type="input">
     ```python
     # Draw accuracy values for training & validation
-    plt.plot(history.global_history['accuracy'])
-    plt.plot(history.global_history['val_accuracy'])
+    plt.plot(history["global_history"]['accuracy'])
+    plt.plot(history["global_history"]['val_accuracy'])
     plt.title('FLModel accuracy')
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
@@ -270,8 +270,8 @@ Alice 和 Bob 各自拥有一半的数据。
     plt.show()
 
     # Draw loss for training & validation
-    plt.plot(history.global_history['loss'])
-    plt.plot(history.global_history['val_loss'])
+    plt.plot(history["global_history"]['loss'])
+    plt.plot(history["global_history"]['val_loss'])
     plt.title('FLModel loss')
     plt.ylabel('Loss')
     plt.xlabel('Epoch')

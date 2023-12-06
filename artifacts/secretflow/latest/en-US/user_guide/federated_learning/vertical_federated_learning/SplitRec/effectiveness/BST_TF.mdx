@@ -60,7 +60,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
 
   <Notebook.CodeArea prompt="" stderr={false} type="output">
     <pre>
-      {"The version of SecretFlow: 1.1.0.dev20230926\n"}
+      {"The version of SecretFlow: 1.2.0.dev20231106\n"}
     </pre>
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -302,6 +302,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
         with open(gen_data_path + '/vocabulary/item_id', 'w') as f:
             f.write('\n'.join(list(movies.movie_id.unique())))
 
+
     generate_data()
     ```
   </Notebook.CodeArea>
@@ -330,7 +331,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
 
   <Notebook.CodeArea prompt="" stderr={false} type="output">
     <pre>
-      {"user_id|sequence_movie_ids|target_movie_id|label\n1|3186,1721,1270,1022|2340|3.0\n1|2340,1836,3408,1207|2804|5.0\n1|1962,1028,2018,150|1097|4.0\n1|1097,914,1287,2797|1246|4.0\n1|1246,2762,661,2918|531|4.0\n1|531,3114,2791,1029|2321|3.0\n1|2321,1197,594,2398|1545|4.0\n1|1545,527,745,595|588|4.0\n1|588,1,2687,783|2294|4.0\n"}
+      {"user_id|sequence_movie_ids|target_movie_id|label\n1|3186,1721,1270,1022|2340|3.0\n1|2340,1836,3408,1207|2804|5.0\n1|2804,260,720,1193|919|4.0\n1|2028,3105,938,1035|1962|4.0\n1|1962,1028,2018,150|1097|4.0\n1|1097,914,1287,2797|1246|4.0\n1|1246,2762,661,2918|531|4.0\n1|531,3114,2791,1029|2321|3.0\n1|2321,1197,594,2398|1545|4.0\n"}
     </pre>
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -372,10 +373,6 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
         def _parse_bob(row_sample, label):
             import tensorflow as tf
 
-            row_sample["sequence_movie_ids"] = tf.strings.split(
-                row_sample["sequence_movie_ids"], ','
-            ).to_tensor()
-
             y_t = label["label"]
             y = tf.expand_dims(
                 tf.where(
@@ -403,6 +400,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
 
         return dataset_builder
 
+
     batch_size = 128
     epoch = 1
     data_builder_dict = {
@@ -413,7 +411,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
         bob: create_dataset_builder_bob(
             batch_size=batch_size,
             repeat_count=epoch,
-         ),
+        ),
     }
     ```
   </Notebook.CodeArea>
@@ -469,6 +467,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
             preprocess_layer = preprocess()
             model = BSTPlusBase(
                 preprocess_layer=preprocess_layer,
+                dnn_units_size=[32],
             )
             model.compile(
                 loss=tf.keras.losses.binary_crossentropy,
@@ -527,7 +526,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
                 # sequence input
                 inputs["sequence_movie_ids"] = tf.keras.Input(
                     name="sequence_movie_ids",
-                    shape=(seq_len,),
+                    shape=(1,),
                     dtype=tf.string,
                 )
 
@@ -542,7 +541,12 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
                     mask_token='[PAD]',  # note here!
                     name="item_index_lookup",
                 )
-                item_idx = item_lookup_layer(inputs["sequence_movie_ids"])
+
+                seq_split = tf.strings.split(inputs["sequence_movie_ids"], ',').to_tensor(
+                    '[PAD]', shape=[None, 1, 4]
+                )
+
+                item_idx = item_lookup_layer(seq_split)
                 outputs["sequence_idx"] = item_idx
 
                 target_item_idx = item_lookup_layer(inputs['target_movie_id'])
@@ -553,6 +557,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
             preprocess_layer = preprocess()
             model = BSTPlusBase(
                 preprocess_layer=preprocess_layer,
+                dnn_units_size=[32],
                 sequence_fea=["sequence_idx"],
                 target_fea="target_movie_id",
                 item_embedding_dims={"target_movie_id": item_embedding_dims},
@@ -614,6 +619,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
             preprocess_layer = preprocess()
             model = BSTBase(
                 preprocess_layer=preprocess_layer,
+                dnn_units_size=[32],
             )
             model.compile(
                 loss=tf.keras.losses.binary_crossentropy,
@@ -672,15 +678,19 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
                 # sequence input
                 inputs["sequence_movie_ids"] = tf.keras.Input(
                     name="sequence_movie_ids",
-                    shape=(seq_len,),
+                    shape=(1,),
                     dtype=tf.string,
+                )
+
+                seq_split = tf.strings.split(inputs["sequence_movie_ids"], ',').to_tensor(
+                    '[PAD]', shape=[None, 1, 4]
                 )
 
                 item_idx = layers.StringLookup(
                     vocabulary=fea_voc["item"],
                     mask_token='[PAD]',  # note here!
                     name="item_index_lookup",
-                )(inputs["sequence_movie_ids"])
+                )(seq_split)
                 outputs["sequence_idx"] = item_idx
 
                 return tf.keras.Model(inputs=inputs, outputs=outputs)
@@ -688,6 +698,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
             preprocess_layer = preprocess()
             model = BSTBase(
                 preprocess_layer=preprocess_layer,
+                dnn_units_size=[32],
                 sequence_fea=["sequence_idx"],
                 item_embedding_dims={"sequence_idx": item_embedding_dims},
                 seq_len={"sequence_idx": seq_len},
@@ -728,6 +739,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
             return model
 
         return create_model
+
 
     plus = True
     if plus:
@@ -805,7 +817,7 @@ Transformer layer 的输入是序列特征的 Embedding 和位置 Embedding 的�
 
   <Notebook.CodeArea prompt="" stderr={false} type="output">
     <pre>
-      {"{'train_loss': [0.64546186], 'train_auc_1': [0.65265113], 'train_precision_1': [0.6372045], 'train_recall_1': [0.82476777], 'val_loss': [0.61440396], 'val_auc_1': [0.7066779], 'val_precision_1': [0.6685109], 'val_recall_1': [0.8256919]}\n"}
+      {"{'train_loss': [0.6462614], 'train_auc_1': [0.6504742], 'train_precision_1': [0.6380548], 'train_recall_1': [0.81458145], 'val_loss': [0.6162347], 'val_auc_1': [0.7021257], 'val_precision_1': [0.67273873], 'val_recall_1': [0.81017286]}\n"}
     </pre>
   </Notebook.CodeArea>
 </Notebook.Cell>
