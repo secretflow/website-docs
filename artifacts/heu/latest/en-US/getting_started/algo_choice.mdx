@@ -225,7 +225,7 @@ Paillier’s algorithm was proposed by Pascal Paillier in 1999, see: [Algorithm 
 
 <strong>关于安全强度</strong>
 
-目前未有直接的文献表明 DCRA 密钥长度与安全比特位数之间的关联，一般认为的难度 DCRA \<= FACTORING（因数分解）\<= DLP in <InlineMath>$\mathbb{Z}^*_N$</InlineMath> <sup>:target{#id4}[1](#id6)</sup>，在 DLP（离散对数难题）中，2048 group size 对应 112 bits，3072 group size 对应 128 bits <sup>:target{#id5}[2](#id7)</sup>，因此 Paillier 的安全强度等效或略低于这个数值。
+目前未有直接的文献表明 DCRA 密钥长度与安全比特位数之间的关联，一般认为的难度 DCRA \<= FACTORING（因数分解）\<= DLP in <InlineMath>$\mathbb{Z}^*_N$</InlineMath> <sup id="id4">:target{#id4}[1](#id6)</sup>，在 DLP（离散对数难题）中，2048 group size 对应 112 bits，3072 group size 对应 128 bits <sup id="id5">:target{#id5}[2](#id7)</sup>，因此 Paillier 的安全强度等效或略低于这个数值。
 
 <Footnote label="1" backrefs={["id4"]} id="id6">
   European Network of Excellence in Cryptology II. [https://www.ecrypt.eu.org/ecrypt2/documents/D.MAYA.6.pdf](https://www.ecrypt.eu.org/ecrypt2/documents/D.MAYA.6.pdf)
@@ -599,9 +599,9 @@ The Okamoto-Uchiyama algorithm was proposed by Tatsuaki Okamoto and Shigenori Uc
 
 <strong>关于安全强度</strong>
 
-Paillier 的 <InlineMath>$n=pq$</InlineMath>，而 OU 的 <InlineMath>$n=p^2q$</InlineMath>，当 n 长度相同时两者安全强度是否相同，存在不同的观点。OU 的原始论文 <sup>:target{#id10}[3](#id13)</sup> 认为目前最快的因式分解算法是 Field sieve method，这种算法的复杂度只和 n 相关，因此只要对齐 n 就可以得到相同的安全强度。
+Paillier 的 <InlineMath>$n=pq$</InlineMath>，而 OU 的 <InlineMath>$n=p^2q$</InlineMath>，当 n 长度相同时两者安全强度是否相同，存在不同的观点。OU 的原始论文 <sup id="id10">:target{#id10}[3](#id13)</sup> 认为目前最快的因式分解算法是 Field sieve method，这种算法的复杂度只和 n 相关，因此只要对齐 n 就可以得到相同的安全强度。
 
-但也有一些 Paper 认为 OU 的 n 需要比 Paillier 多 500\~600 比特两者安全性才相等 <sup>:target{#id11}[4](#id14)</sup>，甚至还有文章 <sup>:target{#id12}[5](#id15)</sup> 说 n 的分解只与 p 相关。因此如果您特别在意安全性，请适当加大 OU 密钥长度。
+但也有一些 Paper 认为 OU 的 n 需要比 Paillier 多 500\~600 比特两者安全性才相等 <sup id="id11">:target{#id11}[4](#id14)</sup>，甚至还有文章 <sup id="id12">:target{#id12}[5](#id15)</sup> 说 n 的分解只与 p 相关。因此如果您特别在意安全性，请适当加大 OU 密钥长度。
 
 <Footnote label="3" backrefs={["id10"]} id="id13">
   Okamoto, T., & Uchiyama, S. (1998). A new public-key cryptosystem as secure as factoring. Lecture Notes in Computer Science (Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics), 1403, 308-318. [https://doi.org/10.1007/BFb0054135](https://doi.org/10.1007/BFb0054135)
@@ -763,7 +763,7 @@ Implementation of Paper based on:
 
 ### Introduction to Algorithmic Theory
 
-ElGamal 是一个基于 Diffie–Hellman 密钥交换的非对称加密算法，由 Taher Elgamal 在 1985 年提出 <sup>:target{#id20}[6](#id21)</sup>。原始的 ElGamal 具有乘法同态性质，其同态性来自于密文块 <InlineMath>$mh^r$</InlineMath>。
+ElGamal 是一个基于 Diffie–Hellman 密钥交换的非对称加密算法，由 Taher Elgamal 在 1985 年提出 <sup id="id20">:target{#id20}[6](#id21)</sup>。原始的 ElGamal 具有乘法同态性质，其同态性来自于密文块 <InlineMath>$mh^r$</InlineMath>。
 
 在之后的 Generalized ElGamal 算法中，整个密码体制被定义在循环群 G 上，其加密的安全性也取决于 G 上离散对数问题的困难性，为此，用于构建 Generalized ElGamal 的循环群 G 必须满足以下两项要求：
 
