@@ -86,8 +86,8 @@ todo_include_todos = True
 
 # global variables
 extlinks = {
-    "psi_doc_host": ("https://www.secretflow.org.cn/docs/psi/en-US/", "doc "),
-    "psi_code_host": ("https://github.com/secretflow", "code "),
+    "psi_doc_host": ("https://www.secretflow.org.cn/docs/psi/en-US/%s", "%s"),
+    "psi_code_host": ("https://github.com/secretflow%s", "%s in repo"),
 }
 
 html_favicon = "_static/favicon.ico"
