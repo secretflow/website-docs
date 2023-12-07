@@ -1,3 +1,12 @@
+---
+git_commit: cac7efa4d6e4909ff2bb8cdd021a1d6e6fb91ba5
+git_download_url: https://github.com/secretflow/heu/raw/cac7efa4d6e4909ff2bb8cdd021a1d6e6fb91ba5/docs/references/phe_api.rst
+git_origin_url: https://github.com/secretflow/heu/blob/cac7efa4d6e4909ff2bb8cdd021a1d6e6fb91ba5/docs/references/phe_api.rst
+git_owner: secretflow
+git_repo: heu
+git_timestamp: '2023-11-28T19:18:38+08:00'
+---
+
 :target{#phe}
 
 # PHE 模块
@@ -5,3 +14,893 @@
 <Container type="tip">
   请使用 `from heu import phe` 引入 phe 模块
 </Container>
+
+A high-performance partial homomorphic encryption library
+
+<Outline domain="py" objectType="class" target={"heu.phe.BatchFloatEncoder"} module={"heu.phe"} fullname={"BatchFloatEncoder"} description={"BatchFloatEncoder can encode two floating number into one plaintext"}>
+  <Outline.Signature fullname="BatchFloatEncoder" id="heu.phe.BatchFloatEncoder">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>BatchFloatEncoder</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    BatchFloatEncoder can encode two floating number into one plaintext
+
+    <Outline domain="py" objectType="method" target={"heu.phe.BatchFloatEncoder.decode"} module={"heu.phe"} fullname={"BatchFloatEncoder.decode"} description={"Decode plaintext and return two cleartexts"} parameters={["self", "plaintext"]}>
+      <Outline.Signature fullname="BatchFloatEncoder.decode" id="heu.phe.BatchFloatEncoder.decode">
+        <Outline.Name>decode</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.BatchFloatEncoder](#heu.phe.BatchFloatEncoder "heu.phe.BatchFloatEncoder")</span></Outline.Parameter>, <Outline.Parameter><span className="name">plaintext</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>tuple</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Decode plaintext and return two cleartexts
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.BatchFloatEncoder.encode"} module={"heu.phe"} fullname={"BatchFloatEncoder.encode"} description={"Batch encode two cleartexts into one plaintext"} parameters={["self", "cleartext_1", "cleartext_2"]}>
+      <Outline.Signature fullname="BatchFloatEncoder.encode" id="heu.phe.BatchFloatEncoder.encode">
+        <Outline.Name>encode</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.BatchFloatEncoder](#heu.phe.BatchFloatEncoder "heu.phe.BatchFloatEncoder")</span></Outline.Parameter>, <Outline.Parameter><span className="name">cleartext\_1</span><span>:</span><span>{" "}</span><span className="name">float</span></Outline.Parameter>, <Outline.Parameter><span className="name">cleartext\_2</span><span>:</span><span>{" "}</span><span className="name">float</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Batch encode two cleartexts into one plaintext
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.BatchFloatEncoderParams"} module={"heu.phe"} fullname={"BatchFloatEncoderParams"} description={"Store parameters for BatchFloatEncoder"}>
+  <Outline.Signature fullname="BatchFloatEncoderParams" id="heu.phe.BatchFloatEncoderParams">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>BatchFloatEncoderParams</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Store parameters for BatchFloatEncoder
+
+    <Outline domain="py" objectType="method" target={"heu.phe.BatchFloatEncoderParams.instance"} module={"heu.phe"} fullname={"BatchFloatEncoderParams.instance"} description={"Create BatchFloatEncoder instance"} parameters={["self", "schema"]}>
+      <Outline.Signature fullname="BatchFloatEncoderParams.instance" id="heu.phe.BatchFloatEncoderParams.instance">
+        <Outline.Name>instance</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.BatchFloatEncoderParams](#heu.phe.BatchFloatEncoderParams "heu.phe.BatchFloatEncoderParams")</span></Outline.Parameter>, <Outline.Parameter><span className="name">schema</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.SchemaType](#heu.phe.SchemaType "heu.phe.SchemaType")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::pylib::PyBatchFloatEncoder</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Create BatchFloatEncoder instance
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.BatchIntegerEncoder"} module={"heu.phe"} fullname={"BatchIntegerEncoder"} description={"BatchIntegerEncoder can encode two integers into one plaintext"}>
+  <Outline.Signature fullname="BatchIntegerEncoder" id="heu.phe.BatchIntegerEncoder">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>BatchIntegerEncoder</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    BatchIntegerEncoder can encode two integers into one plaintext
+
+    <Outline domain="py" objectType="method" target={"heu.phe.BatchIntegerEncoder.decode"} module={"heu.phe"} fullname={"BatchIntegerEncoder.decode"} description={"Decode plaintext and return two cleartexts"} parameters={["self", "plaintext"]}>
+      <Outline.Signature fullname="BatchIntegerEncoder.decode" id="heu.phe.BatchIntegerEncoder.decode">
+        <Outline.Name>decode</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.BatchIntegerEncoder](#heu.phe.BatchIntegerEncoder "heu.phe.BatchIntegerEncoder")</span></Outline.Parameter>, <Outline.Parameter><span className="name">plaintext</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>tuple</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Decode plaintext and return two cleartexts
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.BatchIntegerEncoder.encode"} module={"heu.phe"} fullname={"BatchIntegerEncoder.encode"} description={"Encode two int64 cleartexts into one plaintext"} parameters={["self", "cleartext_1", "cleartext_2"]}>
+      <Outline.Signature fullname="BatchIntegerEncoder.encode" id="heu.phe.BatchIntegerEncoder.encode">
+        <Outline.Name>encode</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.BatchIntegerEncoder](#heu.phe.BatchIntegerEncoder "heu.phe.BatchIntegerEncoder")</span></Outline.Parameter>, <Outline.Parameter><span className="name">cleartext\_1</span><span>:</span><span>{" "}</span><span className="name">int</span></Outline.Parameter>, <Outline.Parameter><span className="name">cleartext\_2</span><span>:</span><span>{" "}</span><span className="name">int</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Encode two int64 cleartexts into one plaintext
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.BatchIntegerEncoderParams"} module={"heu.phe"} fullname={"BatchIntegerEncoderParams"} description={"Store parameters for BatchIntegerEncoder"}>
+  <Outline.Signature fullname="BatchIntegerEncoderParams" id="heu.phe.BatchIntegerEncoderParams">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>BatchIntegerEncoderParams</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Store parameters for BatchIntegerEncoder
+
+    <Outline domain="py" objectType="method" target={"heu.phe.BatchIntegerEncoderParams.instance"} module={"heu.phe"} fullname={"BatchIntegerEncoderParams.instance"} description={"Create BatchIntegerEncoder instance"} parameters={["self", "schema"]}>
+      <Outline.Signature fullname="BatchIntegerEncoderParams.instance" id="heu.phe.BatchIntegerEncoderParams.instance">
+        <Outline.Name>instance</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.BatchIntegerEncoderParams](#heu.phe.BatchIntegerEncoderParams "heu.phe.BatchIntegerEncoderParams")</span></Outline.Parameter>, <Outline.Parameter><span className="name">schema</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.SchemaType](#heu.phe.SchemaType "heu.phe.SchemaType")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::pylib::PyBatchIntegerEncoder</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Create BatchIntegerEncoder instance
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.BigintDecoder"} module={"heu.phe"} fullname={"BigintDecoder"} description={"BigintDecoder is used to decode plaintext into Python integers."}>
+  <Outline.Signature fullname="BigintDecoder" id="heu.phe.BigintDecoder">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>BigintDecoder</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    BigintDecoder is used to decode plaintext into Python integers.
+
+    BigintEncoder is the most commonly used Encoder type. Creating an BigintEncoder instance depends on schema info, however, schema info is only needed for encoding, that is, decoding does not depend on schema. To make the BigintEncoder implicitly usable when decoding, we split out the decoding part called BigintDecoder, which does not rely on any initialization parameters and can create instances anywhere, making it easier to use
+
+    <Outline domain="py" objectType="method" target={"heu.phe.BigintDecoder.decode"} module={"heu.phe"} fullname={"BigintDecoder.decode"} description={"Decode plaintext to python int number"} parameters={["self", "plaintext"]}>
+      <Outline.Signature fullname="BigintDecoder.decode" id="heu.phe.BigintDecoder.decode">
+        <Outline.Name>decode</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.BigintDecoder](#heu.phe.BigintDecoder "heu.phe.BigintDecoder")</span></Outline.Parameter>, <Outline.Parameter><span className="name">plaintext</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>object</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Decode plaintext to python int number
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.BigintEncoder"} module={"heu.phe"} fullname={"BigintEncoder"} description={"Encode cleartext into plaintext."}>
+  <Outline.Signature fullname="BigintEncoder" id="heu.phe.BigintEncoder">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>BigintEncoder</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Encode cleartext into plaintext.
+
+    BigintEncoder supports arbitrary precision integers
+
+    <Outline domain="py" objectType="method" target={"heu.phe.BigintEncoder.encode"} module={"heu.phe"} fullname={"BigintEncoder.encode"} description={"Encode python int number into plaintext"} parameters={["self", "cleartext"]}>
+      <Outline.Signature fullname="BigintEncoder.encode" id="heu.phe.BigintEncoder.encode">
+        <Outline.Name>encode</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.BigintEncoder](#heu.phe.BigintEncoder "heu.phe.BigintEncoder")</span></Outline.Parameter>, <Outline.Parameter><span className="name">cleartext</span><span>:</span><span>{" "}</span><span className="name">int</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Encode python int number into plaintext
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.BigintEncoderParams"} module={"heu.phe"} fullname={"BigintEncoderParams"} description={"Create BigintEncoder instance"}>
+  <Outline.Signature fullname="BigintEncoderParams" id="heu.phe.BigintEncoderParams">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>BigintEncoderParams</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.phe.BigintEncoderParams.instance"} module={"heu.phe"} fullname={"BigintEncoderParams.instance"} description={"Create BigintEncoder instance"} parameters={["self", "schema"]}>
+      <Outline.Signature fullname="BigintEncoderParams.instance" id="heu.phe.BigintEncoderParams.instance">
+        <Outline.Name>instance</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.BigintEncoderParams](#heu.phe.BigintEncoderParams "heu.phe.BigintEncoderParams")</span></Outline.Parameter>, <Outline.Parameter><span className="name">schema</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.SchemaType](#heu.phe.SchemaType "heu.phe.SchemaType")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::pylib::PyBigintEncoder</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Create BigintEncoder instance
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.Ciphertext"} module={"heu.phe"} fullname={"Ciphertext"}>
+  <Outline.Signature fullname="Ciphertext" id="heu.phe.Ciphertext">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>Ciphertext</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content />
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.Decryptor"} module={"heu.phe"} fullname={"Decryptor"} description={"Decrypt ciphertext to plaintext"}>
+  <Outline.Signature fullname="Decryptor" id="heu.phe.Decryptor">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>Decryptor</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.phe.Decryptor.decrypt"} module={"heu.phe"} fullname={"Decryptor.decrypt"} description={"Decrypt ciphertext to plaintext"} parameters={["self", "ciphertext"]}>
+      <Outline.Signature fullname="Decryptor.decrypt" id="heu.phe.Decryptor.decrypt">
+        <Outline.Name>decrypt</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Decryptor](#heu.phe.Decryptor "heu.phe.Decryptor")</span></Outline.Parameter>, <Outline.Parameter><span className="name">ciphertext</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Ciphertext](#heu.phe.Ciphertext "heu.phe.Ciphertext")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Decrypt ciphertext to plaintext
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Decryptor.decrypt_in_range"} module={"heu.phe"} fullname={"Decryptor.decrypt_in_range"} description={"Decrypt ciphertext and make sure plaintext is in range (-2^range_bits, 2^range_bits). Range checking is used to block OU plaintext overflow attack, see HEU documentation for details.\nthrows an exception if plaintext is out of range."} parameters={["self", "ciphertext", "range_bits"]}>
+      <Outline.Signature fullname="Decryptor.decrypt_in_range" id="heu.phe.Decryptor.decrypt_in_range">
+        <Outline.Name>decrypt\_in\_range</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Decryptor](#heu.phe.Decryptor "heu.phe.Decryptor")</span></Outline.Parameter>, <Outline.Parameter><span className="name">ciphertext</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Ciphertext](#heu.phe.Ciphertext "heu.phe.Ciphertext")</span></Outline.Parameter>, <Outline.Parameter><span className="name">range\_bits</span><span>:</span><span>{" "}</span><span className="name">int</span><span>{" "}</span><span>=</span><span>{" "}</span><span>128</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Decrypt ciphertext and make sure plaintext is in range (-2^range\_bits, 2^range\_bits). Range checking is used to block OU plaintext overflow attack, see HEU documentation for details.
+        throws an exception if plaintext is out of range.
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Decryptor.decrypt_raw"} module={"heu.phe"} fullname={"Decryptor.decrypt_raw"} description={"Decrypt and decoding. The decoding behavior is similar to BigintEncoder"} parameters={["self", "ciphertext"]}>
+      <Outline.Signature fullname="Decryptor.decrypt_raw" id="heu.phe.Decryptor.decrypt_raw">
+        <Outline.Name>decrypt\_raw</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Decryptor](#heu.phe.Decryptor "heu.phe.Decryptor")</span></Outline.Parameter>, <Outline.Parameter><span className="name">ciphertext</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Ciphertext](#heu.phe.Ciphertext "heu.phe.Ciphertext")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>int</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Decrypt and decoding. The decoding behavior is similar to BigintEncoder
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.DestinationHeKit"} module={"heu.phe"} fullname={"DestinationHeKit"} description={"Get encryptor"}>
+  <Outline.Signature fullname="DestinationHeKit" id="heu.phe.DestinationHeKit">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>DestinationHeKit</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.phe.DestinationHeKit.encryptor"} module={"heu.phe"} fullname={"DestinationHeKit.encryptor"} description={"Get encryptor"} parameters={["self"]}>
+      <Outline.Signature fullname="DestinationHeKit.encryptor" id="heu.phe.DestinationHeKit.encryptor">
+        <Outline.Name>encryptor</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.DestinationHeKit](#heu.phe.DestinationHeKit "heu.phe.DestinationHeKit")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::lib::phe::Encryptor</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get encryptor
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.DestinationHeKit.evaluator"} module={"heu.phe"} fullname={"DestinationHeKit.evaluator"} description={"Get evaluator"} parameters={["self"]}>
+      <Outline.Signature fullname="DestinationHeKit.evaluator" id="heu.phe.DestinationHeKit.evaluator">
+        <Outline.Name>evaluator</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.DestinationHeKit](#heu.phe.DestinationHeKit "heu.phe.DestinationHeKit")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::lib::phe::Evaluator</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get evaluator
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.Encryptor"} module={"heu.phe"} fullname={"Encryptor"} description={"Encrypt plaintext to ciphertext"}>
+  <Outline.Signature fullname="Encryptor" id="heu.phe.Encryptor">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>Encryptor</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.phe.Encryptor.encrypt"} module={"heu.phe"} fullname={"Encryptor.encrypt"} description={"Encrypt plaintext to ciphertext"} parameters={["self", "plaintext"]}>
+      <Outline.Signature fullname="Encryptor.encrypt" id="heu.phe.Encryptor.encrypt">
+        <Outline.Name>encrypt</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Encryptor](#heu.phe.Encryptor "heu.phe.Encryptor")</span></Outline.Parameter>, <Outline.Parameter><span className="name">plaintext</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.Ciphertext](#heu.phe.Ciphertext "heu.phe.Ciphertext")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Encrypt plaintext to ciphertext
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Encryptor.encrypt_raw"} module={"heu.phe"} fullname={"Encryptor.encrypt_raw"} description={"Encode and encrypt an integer cleartext. The encoding behavior is similar to BigintEncoder"} parameters={["self", "cleartext"]}>
+      <Outline.Signature fullname="Encryptor.encrypt_raw" id="heu.phe.Encryptor.encrypt_raw">
+        <Outline.Name>encrypt\_raw</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Encryptor](#heu.phe.Encryptor "heu.phe.Encryptor")</span></Outline.Parameter>, <Outline.Parameter><span className="name">cleartext</span><span>:</span><span>{" "}</span><span className="name">int</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.Ciphertext](#heu.phe.Ciphertext "heu.phe.Ciphertext")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Encode and encrypt an integer cleartext. The encoding behavior is similar to BigintEncoder
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Encryptor.encrypt_with_audit"} module={"heu.phe"} fullname={"Encryptor.encrypt_with_audit"} description={"Encrypt and build audit string including plaintext/random/ciphertext"} parameters={["self", "plaintext"]}>
+      <Outline.Signature fullname="Encryptor.encrypt_with_audit" id="heu.phe.Encryptor.encrypt_with_audit">
+        <Outline.Name>encrypt\_with\_audit</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Encryptor](#heu.phe.Encryptor "heu.phe.Encryptor")</span></Outline.Parameter>, <Outline.Parameter><span className="name">plaintext</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>Tuple<span>\[</span>[heu.phe.Ciphertext](#heu.phe.Ciphertext "heu.phe.Ciphertext")<span>,</span><span>{" "}</span>str<span>]</span></Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Encrypt and build audit string including plaintext/random/ciphertext
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.Evaluator"} module={"heu.phe"} fullname={"Evaluator"} description={"Overloaded function."}>
+  <Outline.Signature fullname="Evaluator" id="heu.phe.Evaluator">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>Evaluator</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.phe.Evaluator.add"} module={"heu.phe"} fullname={"Evaluator.add"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.add" id="heu.phe.Evaluator.add">
+        <Outline.Name>add</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. add(self: heu.phe.Evaluator, arg0: heu.phe.Ciphertext, arg1: heu.phe.Plaintext) -> heu.phe.Ciphertext
+        2. add(self: heu.phe.Evaluator, arg0: heu.phe.Plaintext, arg1: heu.phe.Ciphertext) -> heu.phe.Ciphertext
+        3. add(self: heu.phe.Evaluator, arg0: heu.phe.Ciphertext, arg1: heu.phe.Ciphertext) -> heu.phe.Ciphertext
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Evaluator.add_inplace"} module={"heu.phe"} fullname={"Evaluator.add_inplace"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.add_inplace" id="heu.phe.Evaluator.add_inplace">
+        <Outline.Name>add\_inplace</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. add\_inplace(self: heu.phe.Evaluator, arg0: heu.phe.Ciphertext, arg1: heu.phe.Plaintext) -> None
+        2. add\_inplace(self: heu.phe.Evaluator, arg0: heu.phe.Ciphertext, arg1: heu.phe.Ciphertext) -> None
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Evaluator.mul"} module={"heu.phe"} fullname={"Evaluator.mul"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.mul" id="heu.phe.Evaluator.mul">
+        <Outline.Name>mul</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. mul(self: heu.phe.Evaluator, ciphertext: heu.phe.Ciphertext, times: int) -> heu.phe.Ciphertext
+        2. mul(self: heu.phe.Evaluator, ciphertext: int, times: heu.phe.Ciphertext) -> heu.phe.Ciphertext
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Evaluator.mul_inplace"} module={"heu.phe"} fullname={"Evaluator.mul_inplace"} description={"Overloaded function."} parameters={["self", "ciphertext", "times"]}>
+      <Outline.Signature fullname="Evaluator.mul_inplace" id="heu.phe.Evaluator.mul_inplace">
+        <Outline.Name>mul\_inplace</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Evaluator](#heu.phe.Evaluator "heu.phe.Evaluator")</span></Outline.Parameter>, <Outline.Parameter><span className="name">ciphertext</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Ciphertext](#heu.phe.Ciphertext "heu.phe.Ciphertext")</span></Outline.Parameter>, <Outline.Parameter><span className="name">times</span><span>:</span><span>{" "}</span><span className="name">int</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>None</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Evaluator.negate"} module={"heu.phe"} fullname={"Evaluator.negate"} description={"Overloaded function."} parameters={["self", "arg0"]}>
+      <Outline.Signature fullname="Evaluator.negate" id="heu.phe.Evaluator.negate">
+        <Outline.Name>negate</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Evaluator](#heu.phe.Evaluator "heu.phe.Evaluator")</span></Outline.Parameter>, <Outline.Parameter><span className="name">arg0</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Ciphertext](#heu.phe.Ciphertext "heu.phe.Ciphertext")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.Ciphertext](#heu.phe.Ciphertext "heu.phe.Ciphertext")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Evaluator.negate_inplace"} module={"heu.phe"} fullname={"Evaluator.negate_inplace"} description={"Overloaded function."} parameters={["self", "arg0"]}>
+      <Outline.Signature fullname="Evaluator.negate_inplace" id="heu.phe.Evaluator.negate_inplace">
+        <Outline.Name>negate\_inplace</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Evaluator](#heu.phe.Evaluator "heu.phe.Evaluator")</span></Outline.Parameter>, <Outline.Parameter><span className="name">arg0</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Ciphertext](#heu.phe.Ciphertext "heu.phe.Ciphertext")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>None</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Evaluator.sub"} module={"heu.phe"} fullname={"Evaluator.sub"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.sub" id="heu.phe.Evaluator.sub">
+        <Outline.Name>sub</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. sub(self: heu.phe.Evaluator, arg0: heu.phe.Ciphertext, arg1: heu.phe.Plaintext) -> heu.phe.Ciphertext
+        2. sub(self: heu.phe.Evaluator, arg0: heu.phe.Plaintext, arg1: heu.phe.Ciphertext) -> heu.phe.Ciphertext
+        3. sub(self: heu.phe.Evaluator, arg0: heu.phe.Ciphertext, arg1: heu.phe.Ciphertext) -> heu.phe.Ciphertext
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Evaluator.sub_inplace"} module={"heu.phe"} fullname={"Evaluator.sub_inplace"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.sub_inplace" id="heu.phe.Evaluator.sub_inplace">
+        <Outline.Name>sub\_inplace</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. sub\_inplace(self: heu.phe.Evaluator, arg0: heu.phe.Ciphertext, arg1: heu.phe.Plaintext) -> None
+        2. sub\_inplace(self: heu.phe.Evaluator, arg0: heu.phe.Ciphertext, arg1: heu.phe.Ciphertext) -> None
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.FloatEncoder"} module={"heu.phe"} fullname={"FloatEncoder"} description={"Encode cleartext into plaintext."}>
+  <Outline.Signature fullname="FloatEncoder" id="heu.phe.FloatEncoder">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>FloatEncoder</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Encode cleartext into plaintext.
+
+    The cleartext can be a floating point number
+
+    <Outline domain="py" objectType="method" target={"heu.phe.FloatEncoder.decode"} module={"heu.phe"} fullname={"FloatEncoder.decode"} description={"Decode plaintext to float number"} parameters={["self", "plaintext"]}>
+      <Outline.Signature fullname="FloatEncoder.decode" id="heu.phe.FloatEncoder.decode">
+        <Outline.Name>decode</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.FloatEncoder](#heu.phe.FloatEncoder "heu.phe.FloatEncoder")</span></Outline.Parameter>, <Outline.Parameter><span className="name">plaintext</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>float</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Decode plaintext to float number
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.FloatEncoder.encode"} module={"heu.phe"} fullname={"FloatEncoder.encode"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="FloatEncoder.encode" id="heu.phe.FloatEncoder.encode">
+        <Outline.Name>encode</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. encode(self: heu.phe.FloatEncoder, cleartext: float) -> heu.phe.Plaintext
+
+        Encode a float number into plaintext
+
+        2. encode(self: heu.phe.FloatEncoder, cleartext: int) -> heu.phe.Plaintext
+
+        Encode an int128 number into plaintext
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.FloatEncoderParams"} module={"heu.phe"} fullname={"FloatEncoderParams"} description={"Create FloatEncoder instance"}>
+  <Outline.Signature fullname="FloatEncoderParams" id="heu.phe.FloatEncoderParams">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>FloatEncoderParams</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.phe.FloatEncoderParams.instance"} module={"heu.phe"} fullname={"FloatEncoderParams.instance"} description={"Create FloatEncoder instance"} parameters={["self", "schema"]}>
+      <Outline.Signature fullname="FloatEncoderParams.instance" id="heu.phe.FloatEncoderParams.instance">
+        <Outline.Name>instance</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.FloatEncoderParams](#heu.phe.FloatEncoderParams "heu.phe.FloatEncoderParams")</span></Outline.Parameter>, <Outline.Parameter><span className="name">schema</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.SchemaType](#heu.phe.SchemaType "heu.phe.SchemaType")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::pylib::PyFloatEncoder</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Create FloatEncoder instance
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.HeKit"} module={"heu.phe"} fullname={"HeKit"} description={"Get decryptor"}>
+  <Outline.Signature fullname="HeKit" id="heu.phe.HeKit">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>HeKit</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.phe.HeKit.decryptor"} module={"heu.phe"} fullname={"HeKit.decryptor"} description={"Get decryptor"} parameters={["self"]}>
+      <Outline.Signature fullname="HeKit.decryptor" id="heu.phe.HeKit.decryptor">
+        <Outline.Name>decryptor</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.HeKit](#heu.phe.HeKit "heu.phe.HeKit")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::lib::phe::Decryptor</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get decryptor
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.HeKit.encryptor"} module={"heu.phe"} fullname={"HeKit.encryptor"} description={"Get encryptor"} parameters={["self"]}>
+      <Outline.Signature fullname="HeKit.encryptor" id="heu.phe.HeKit.encryptor">
+        <Outline.Name>encryptor</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.HeKit](#heu.phe.HeKit "heu.phe.HeKit")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::lib::phe::Encryptor</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get encryptor
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.HeKit.evaluator"} module={"heu.phe"} fullname={"HeKit.evaluator"} description={"Get evaluator"} parameters={["self"]}>
+      <Outline.Signature fullname="HeKit.evaluator" id="heu.phe.HeKit.evaluator">
+        <Outline.Name>evaluator</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.HeKit](#heu.phe.HeKit "heu.phe.HeKit")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::lib::phe::Evaluator</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get evaluator
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.HeKitPublicBase"} module={"heu.phe"} fullname={"HeKitPublicBase"} description={"Get an instance of BatchIntegerEncoder, equal to phe.BatchFloatEncoder(schema, scale, padding_size)"}>
+  <Outline.Signature fullname="HeKitPublicBase" id="heu.phe.HeKitPublicBase">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>HeKitPublicBase</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.phe.HeKitPublicBase.batch_float_encoder"} module={"heu.phe"} fullname={"HeKitPublicBase.batch_float_encoder"} description={"Get an instance of BatchIntegerEncoder, equal to phe.BatchFloatEncoder(schema, scale, padding_size)"} parameters={["self", "scale", "padding_bits"]}>
+      <Outline.Signature fullname="HeKitPublicBase.batch_float_encoder" id="heu.phe.HeKitPublicBase.batch_float_encoder">
+        <Outline.Name>batch\_float\_encoder</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.HeKitPublicBase](#heu.phe.HeKitPublicBase "heu.phe.HeKitPublicBase")</span></Outline.Parameter>, <Outline.Parameter><span className="name">scale</span><span>:</span><span>{" "}</span><span className="name">int</span><span>{" "}</span><span>=</span><span>{" "}</span><span>1000000</span></Outline.Parameter>, <Outline.Parameter><span className="name">padding\_bits</span><span>:</span><span>{" "}</span><span className="name">int</span><span>{" "}</span><span>=</span><span>{" "}</span><span>32</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::pylib::PyBatchFloatEncoder</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get an instance of BatchIntegerEncoder, equal to <cite>phe.BatchFloatEncoder(schema, scale, padding\_size)</cite>
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.HeKitPublicBase.batch_integer_encoder"} module={"heu.phe"} fullname={"HeKitPublicBase.batch_integer_encoder"} description={"Get an instance of BatchIntegerEncoder, equal to phe.BatchIntegerEncoder(schema, scale, padding_size)"} parameters={["self", "scale", "padding_bits"]}>
+      <Outline.Signature fullname="HeKitPublicBase.batch_integer_encoder" id="heu.phe.HeKitPublicBase.batch_integer_encoder">
+        <Outline.Name>batch\_integer\_encoder</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.HeKitPublicBase](#heu.phe.HeKitPublicBase "heu.phe.HeKitPublicBase")</span></Outline.Parameter>, <Outline.Parameter><span className="name">scale</span><span>:</span><span>{" "}</span><span className="name">int</span><span>{" "}</span><span>=</span><span>{" "}</span><span>1</span></Outline.Parameter>, <Outline.Parameter><span className="name">padding\_bits</span><span>:</span><span>{" "}</span><span className="name">int</span><span>{" "}</span><span>=</span><span>{" "}</span><span>32</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::pylib::PyBatchIntegerEncoder</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get an instance of BatchIntegerEncoder, equal to <cite>phe.BatchIntegerEncoder(schema, scale, padding\_size)</cite>
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.HeKitPublicBase.bigint_encoder"} module={"heu.phe"} fullname={"HeKitPublicBase.bigint_encoder"} description={"Get an instance of BigintEncoder, equal to phe.BigintEncoder(schema)"} parameters={["self"]}>
+      <Outline.Signature fullname="HeKitPublicBase.bigint_encoder" id="heu.phe.HeKitPublicBase.bigint_encoder">
+        <Outline.Name>bigint\_encoder</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.HeKitPublicBase](#heu.phe.HeKitPublicBase "heu.phe.HeKitPublicBase")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::pylib::PyBigintEncoder</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get an instance of BigintEncoder, equal to <cite>phe.BigintEncoder(schema)</cite>
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.HeKitPublicBase.float_encoder"} module={"heu.phe"} fullname={"HeKitPublicBase.float_encoder"} description={"Get an instance of FloatEncoder, equal to phe.FloatEncoder(schema, scale)"} parameters={["self", "scale"]}>
+      <Outline.Signature fullname="HeKitPublicBase.float_encoder" id="heu.phe.HeKitPublicBase.float_encoder">
+        <Outline.Name>float\_encoder</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.HeKitPublicBase](#heu.phe.HeKitPublicBase "heu.phe.HeKitPublicBase")</span></Outline.Parameter>, <Outline.Parameter><span className="name">scale</span><span>:</span><span>{" "}</span><span className="name">int</span><span>{" "}</span><span>=</span><span>{" "}</span><span>1000000</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::pylib::PyFloatEncoder</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get an instance of FloatEncoder, equal to <cite>phe.FloatEncoder(schema, scale)</cite>
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.HeKitPublicBase.get_schema"} module={"heu.phe"} fullname={"HeKitPublicBase.get_schema"} description={"Get schema type"} parameters={["self"]}>
+      <Outline.Signature fullname="HeKitPublicBase.get_schema" id="heu.phe.HeKitPublicBase.get_schema">
+        <Outline.Name>get\_schema</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.HeKitPublicBase](#heu.phe.HeKitPublicBase "heu.phe.HeKitPublicBase")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.SchemaType](#heu.phe.SchemaType "heu.phe.SchemaType")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get schema type
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.HeKitPublicBase.integer_encoder"} module={"heu.phe"} fullname={"HeKitPublicBase.integer_encoder"} description={"Get an instance of IntegerEncoder, equal to phe.IntegerEncoder(schema, scale)"} parameters={["self", "scale"]}>
+      <Outline.Signature fullname="HeKitPublicBase.integer_encoder" id="heu.phe.HeKitPublicBase.integer_encoder">
+        <Outline.Name>integer\_encoder</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.HeKitPublicBase](#heu.phe.HeKitPublicBase "heu.phe.HeKitPublicBase")</span></Outline.Parameter>, <Outline.Parameter><span className="name">scale</span><span>:</span><span>{" "}</span><span className="name">int</span><span>{" "}</span><span>=</span><span>{" "}</span><span>1000000</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::pylib::PyIntegerEncoder</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get an instance of IntegerEncoder, equal to <cite>phe.IntegerEncoder(schema, scale)</cite>
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.HeKitPublicBase.plaintext"} module={"heu.phe"} fullname={"HeKitPublicBase.plaintext"} description={"Create a plaintext from int without bit size limit, equal to heu.phe.Plaintext(schema, int_num)"} parameters={["self", "int_num"]}>
+      <Outline.Signature fullname="HeKitPublicBase.plaintext" id="heu.phe.HeKitPublicBase.plaintext">
+        <Outline.Name>plaintext</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.HeKitPublicBase](#heu.phe.HeKitPublicBase "heu.phe.HeKitPublicBase")</span></Outline.Parameter>, <Outline.Parameter><span className="name">int\_num</span><span>:</span><span>{" "}</span><span className="name">int</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Create a plaintext from int without bit size limit, equal to heu.phe.Plaintext(schema, int\_num)
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.HeKitPublicBase.public_key"} module={"heu.phe"} fullname={"HeKitPublicBase.public_key"} description={"Get public key"} parameters={["self"]}>
+      <Outline.Signature fullname="HeKitPublicBase.public_key" id="heu.phe.HeKitPublicBase.public_key">
+        <Outline.Name>public\_key</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.HeKitPublicBase](#heu.phe.HeKitPublicBase "heu.phe.HeKitPublicBase")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.PublicKey](#heu.phe.PublicKey "heu.phe.PublicKey")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get public key
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.HeKitSecretBase"} module={"heu.phe"} fullname={"HeKitSecretBase"} description={"Get secret key"}>
+  <Outline.Signature fullname="HeKitSecretBase" id="heu.phe.HeKitSecretBase">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>HeKitSecretBase</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.phe.HeKitSecretBase.secret_key"} module={"heu.phe"} fullname={"HeKitSecretBase.secret_key"} description={"Get secret key"} parameters={["self"]}>
+      <Outline.Signature fullname="HeKitSecretBase.secret_key" id="heu.phe.HeKitSecretBase.secret_key">
+        <Outline.Name>secret\_key</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.HeKitSecretBase](#heu.phe.HeKitSecretBase "heu.phe.HeKitSecretBase")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.SecretKey](#heu.phe.SecretKey "heu.phe.SecretKey")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get secret key
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.IntegerEncoder"} module={"heu.phe"} fullname={"IntegerEncoder"} description={"Encode cleartext into plaintext."}>
+  <Outline.Signature fullname="IntegerEncoder" id="heu.phe.IntegerEncoder">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>IntegerEncoder</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Encode cleartext into plaintext.
+
+    The cleartext must be an integer. If the cleartext is a floating-point number, the fractional part will be discarded.
+
+    <Outline domain="py" objectType="method" target={"heu.phe.IntegerEncoder.decode"} module={"heu.phe"} fullname={"IntegerEncoder.decode"} description={"Decode plaintext to int128 number"} parameters={["self", "plaintext"]}>
+      <Outline.Signature fullname="IntegerEncoder.decode" id="heu.phe.IntegerEncoder.decode">
+        <Outline.Name>decode</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.IntegerEncoder](#heu.phe.IntegerEncoder "heu.phe.IntegerEncoder")</span></Outline.Parameter>, <Outline.Parameter><span className="name">plaintext</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>object</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Decode plaintext to int128 number
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.IntegerEncoder.encode"} module={"heu.phe"} fullname={"IntegerEncoder.encode"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="IntegerEncoder.encode" id="heu.phe.IntegerEncoder.encode">
+        <Outline.Name>encode</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. encode(self: heu.phe.IntegerEncoder, cleartext: int) -> heu.phe.Plaintext
+
+        Encode an int128 number into plaintext
+
+        2. encode(self: heu.phe.IntegerEncoder, arg0: float) -> heu.phe.Plaintext
+
+        Encode the integer part of a floating point number. (discarding the fractional part)
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.IntegerEncoderParams"} module={"heu.phe"} fullname={"IntegerEncoderParams"} description={"Create IntegerEncoder instance"}>
+  <Outline.Signature fullname="IntegerEncoderParams" id="heu.phe.IntegerEncoderParams">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>IntegerEncoderParams</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.phe.IntegerEncoderParams.instance"} module={"heu.phe"} fullname={"IntegerEncoderParams.instance"} description={"Create IntegerEncoder instance"} parameters={["self", "schema"]}>
+      <Outline.Signature fullname="IntegerEncoderParams.instance" id="heu.phe.IntegerEncoderParams.instance">
+        <Outline.Name>instance</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.IntegerEncoderParams](#heu.phe.IntegerEncoderParams "heu.phe.IntegerEncoderParams")</span></Outline.Parameter>, <Outline.Parameter><span className="name">schema</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.SchemaType](#heu.phe.SchemaType "heu.phe.SchemaType")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::pylib::PyIntegerEncoder</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Create IntegerEncoder instance
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="exception" target={"heu.phe.PheRuntimeError"} module={"heu.phe"} fullname={"PheRuntimeError"}>
+  <Outline.Signature fullname="PheRuntimeError" id="heu.phe.PheRuntimeError">
+    <Outline.Keyword>exception<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>PheRuntimeError</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content />
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.Plaintext"} module={"heu.phe"} fullname={"Plaintext"} description={"Bit size of this plaintext"}>
+  <Outline.Signature fullname="Plaintext" id="heu.phe.Plaintext">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>Plaintext</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.phe.Plaintext.bit_count"} module={"heu.phe"} fullname={"Plaintext.bit_count"} description={"Bit size of this plaintext"} parameters={["self"]}>
+      <Outline.Signature fullname="Plaintext.bit_count" id="heu.phe.Plaintext.bit_count">
+        <Outline.Name>bit\_count</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>int</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Bit size of this plaintext
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Plaintext.is_compatible"} module={"heu.phe"} fullname={"Plaintext.is_compatible"} description={"Is this plaintext compatible with schema type \u2018x\u2019"} parameters={["self", "arg0"]}>
+      <Outline.Signature fullname="Plaintext.is_compatible" id="heu.phe.Plaintext.is_compatible">
+        <Outline.Name>is\_compatible</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</span></Outline.Parameter>, <Outline.Parameter><span className="name">arg0</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.SchemaType](#heu.phe.SchemaType "heu.phe.SchemaType")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>bool</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Is this plaintext compatible with schema type ‘x’
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.Plaintext.to_bytes"} module={"heu.phe"} fullname={"Plaintext.to_bytes"} description={"Return an array of bytes representing an integer."} parameters={["self", "length", "byteorder"]}>
+      <Outline.Signature fullname="Plaintext.to_bytes" id="heu.phe.Plaintext.to_bytes">
+        <Outline.Name>to\_bytes</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</span></Outline.Parameter>, <Outline.Parameter><span className="name">length</span><span>:</span><span>{" "}</span><span className="name">int</span></Outline.Parameter>, <Outline.Parameter><span className="name">byteorder</span><span>:</span><span>{" "}</span><span className="name">str</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>bytes</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Return an array of bytes representing an integer.
+
+        The byteorder argument determines the byte order used to represent the integer. If byteorder is “big”, the most significant byte is at the beginning of the byte array. If byteorder is “little”, the most significant byte is at the end of the byte array. To request the native byte order of the host system, use sys.byteorder as the byte order value.
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.PublicKey"} module={"heu.phe"} fullname={"PublicKey"} description={"deserialize matrix from bytes"}>
+  <Outline.Signature fullname="PublicKey" id="heu.phe.PublicKey">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>PublicKey</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.phe.PublicKey.load_from"} module={"heu.phe"} fullname={"PublicKey.load_from"} description={"deserialize matrix from bytes"} parameters={["bytes_buffer"]}>
+      <Outline.Signature fullname="PublicKey.load_from" id="heu.phe.PublicKey.load_from">
+        <Outline.Keyword>static<span>{" "}</span></Outline.Keyword><Outline.Name>load\_from</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">bytes\_buffer</span><span>:</span><span>{" "}</span><span className="name">bytes</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.PublicKey](#heu.phe.PublicKey "heu.phe.PublicKey")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        deserialize matrix from bytes
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.PublicKey.plaintext_bound"} module={"heu.phe"} fullname={"PublicKey.plaintext_bound"} description={"Get max_int, so valid plaintext range is [max_int_, -max_int_]"} parameters={["self"]}>
+      <Outline.Signature fullname="PublicKey.plaintext_bound" id="heu.phe.PublicKey.plaintext_bound">
+        <Outline.Name>plaintext\_bound</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.PublicKey](#heu.phe.PublicKey "heu.phe.PublicKey")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.Plaintext](#heu.phe.Plaintext "heu.phe.Plaintext")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get max\_int, so valid plaintext range is \[<del id="id2">max\_int\_</del>, -<del id="id4">max\_int\_</del>]
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.phe.PublicKey.serialize"} module={"heu.phe"} fullname={"PublicKey.serialize"} description={"serialize public key to bytes"} parameters={["self"]}>
+      <Outline.Signature fullname="PublicKey.serialize" id="heu.phe.PublicKey.serialize">
+        <Outline.Name>serialize</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.PublicKey](#heu.phe.PublicKey "heu.phe.PublicKey")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>bytes</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        serialize public key to bytes
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.SchemaType"} module={"heu.phe"} fullname={"SchemaType"} description={"Members:"}>
+  <Outline.Signature fullname="SchemaType" id="heu.phe.SchemaType">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>SchemaType</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Members:
+
+    Mock
+
+    OU
+
+    IPCL
+
+    ZPaillier
+
+    FPaillier
+
+    IcPaillier
+
+    ElGamal
+
+    DGK
+
+    DJ
+
+    <Outline domain="py" objectType="attribute" target={"heu.phe.SchemaType.DGK"} module={"heu.phe"} fullname={"SchemaType.DGK"} description={"Members:"}>
+      <Outline.Signature fullname="SchemaType.DGK" id="heu.phe.SchemaType.DGK">
+        <Outline.Name>DGK</Outline.Name><Outline.Keyword><span>{" "}</span><span>=</span><span>{" "}</span>\<SchemaType.DGK: 7></Outline.Keyword>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="attribute" target={"heu.phe.SchemaType.DJ"} module={"heu.phe"} fullname={"SchemaType.DJ"} description={"Members:"}>
+      <Outline.Signature fullname="SchemaType.DJ" id="heu.phe.SchemaType.DJ">
+        <Outline.Name>DJ</Outline.Name><Outline.Keyword><span>{" "}</span><span>=</span><span>{" "}</span>\<SchemaType.DJ: 8></Outline.Keyword>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="attribute" target={"heu.phe.SchemaType.ElGamal"} module={"heu.phe"} fullname={"SchemaType.ElGamal"} description={"Members:"}>
+      <Outline.Signature fullname="SchemaType.ElGamal" id="heu.phe.SchemaType.ElGamal">
+        <Outline.Name>ElGamal</Outline.Name><Outline.Keyword><span>{" "}</span><span>=</span><span>{" "}</span>\<SchemaType.ElGamal: 6></Outline.Keyword>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="attribute" target={"heu.phe.SchemaType.FPaillier"} module={"heu.phe"} fullname={"SchemaType.FPaillier"} description={"Members:"}>
+      <Outline.Signature fullname="SchemaType.FPaillier" id="heu.phe.SchemaType.FPaillier">
+        <Outline.Name>FPaillier</Outline.Name><Outline.Keyword><span>{" "}</span><span>=</span><span>{" "}</span>\<SchemaType.FPaillier: 4></Outline.Keyword>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="attribute" target={"heu.phe.SchemaType.IPCL"} module={"heu.phe"} fullname={"SchemaType.IPCL"} description={"Members:"}>
+      <Outline.Signature fullname="SchemaType.IPCL" id="heu.phe.SchemaType.IPCL">
+        <Outline.Name>IPCL</Outline.Name><Outline.Keyword><span>{" "}</span><span>=</span><span>{" "}</span>\<SchemaType.IPCL: 2></Outline.Keyword>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="attribute" target={"heu.phe.SchemaType.IcPaillier"} module={"heu.phe"} fullname={"SchemaType.IcPaillier"} description={"Members:"}>
+      <Outline.Signature fullname="SchemaType.IcPaillier" id="heu.phe.SchemaType.IcPaillier">
+        <Outline.Name>IcPaillier</Outline.Name><Outline.Keyword><span>{" "}</span><span>=</span><span>{" "}</span>\<SchemaType.IcPaillier: 5></Outline.Keyword>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="attribute" target={"heu.phe.SchemaType.Mock"} module={"heu.phe"} fullname={"SchemaType.Mock"} description={"Members:"}>
+      <Outline.Signature fullname="SchemaType.Mock" id="heu.phe.SchemaType.Mock">
+        <Outline.Name>Mock</Outline.Name><Outline.Keyword><span>{" "}</span><span>=</span><span>{" "}</span>\<SchemaType.Mock: 0></Outline.Keyword>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="attribute" target={"heu.phe.SchemaType.OU"} module={"heu.phe"} fullname={"SchemaType.OU"} description={"Members:"}>
+      <Outline.Signature fullname="SchemaType.OU" id="heu.phe.SchemaType.OU">
+        <Outline.Name>OU</Outline.Name><Outline.Keyword><span>{" "}</span><span>=</span><span>{" "}</span>\<SchemaType.OU: 1></Outline.Keyword>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="attribute" target={"heu.phe.SchemaType.ZPaillier"} module={"heu.phe"} fullname={"SchemaType.ZPaillier"} description={"Members:"}>
+      <Outline.Signature fullname="SchemaType.ZPaillier" id="heu.phe.SchemaType.ZPaillier">
+        <Outline.Name>ZPaillier</Outline.Name><Outline.Keyword><span>{" "}</span><span>=</span><span>{" "}</span>\<SchemaType.ZPaillier: 3></Outline.Keyword>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.phe.SchemaType.name"} module={"heu.phe"} fullname={"SchemaType.name"} description={"Members:"}>
+      <Outline.Signature fullname="SchemaType.name" id="heu.phe.SchemaType.name">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>name</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.phe.SchemaType.value"} module={"heu.phe"} fullname={"SchemaType.value"} description={"Members:"}>
+      <Outline.Signature fullname="SchemaType.value" id="heu.phe.SchemaType.value">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>value</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.phe.SecretKey"} module={"heu.phe"} fullname={"SecretKey"}>
+  <Outline.Signature fullname="SecretKey" id="heu.phe.SecretKey">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>SecretKey</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content />
+</Outline>
+
+<Outline domain="py" objectType="function" target={"heu.phe.parse_schema_type"} module={"heu.phe"} fullname={"parse_schema_type"} parameters={["arg0"]} description={"Parse schema string. (string -> SchemaType)"}>
+  <Outline.Signature fullname="parse_schema_type" id="heu.phe.parse_schema_type">
+    <Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>parse\_schema\_type</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">arg0</span><span>:</span><span>{" "}</span><span className="name">str</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.phe.SchemaType](#heu.phe.SchemaType "heu.phe.SchemaType")</Outline.ReturnType>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Parse schema string. (string -> SchemaType)
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="function" target={"heu.phe.setup"} module={"heu.phe"} fullname={"setup"} parameters={["args", "kwargs"]} description={"Overloaded function."}>
+  <Outline.Signature fullname="setup" id="heu.phe.setup">
+    <Outline.Prefix>heu.phe.</Outline.Prefix><Outline.Name>setup</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Overloaded function.
+
+    1. setup(schema\_type: heu.phe.SchemaType, key\_size: int) -> heu.phe.HeKit
+
+    Setup phe environment by schema type and key size
+
+    2. setup(schema\_string: str, key\_size: int) -> heu.phe.HeKit
+
+    Setup phe environment by schema string and key size
+
+    3. setup(schema\_type: heu.phe.SchemaType = \<SchemaType.ZPaillier: 3>) -> heu.phe.HeKit
+
+    Setup phe environment by schema type
+
+    4. setup(schema\_string: str = ‘z-paillier’) -> heu.phe.HeKit
+
+    Setup phe environment by schema string
+
+    5. setup(public\_key: heu.phe.PublicKey, secret\_key: heu.phe.SecretKey) -> heu.phe.HeKit
+
+    Setup phe environment by pre-generated pk and sk
+
+    6. setup(public\_key: heu.phe.PublicKey) -> heu.phe.DestinationHeKit
+
+    Setup phe environment by an already generated public key
+  </Outline.Content>
+</Outline>
