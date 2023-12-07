@@ -1,0 +1,114 @@
+---
+git_commit: 4fb9e56424b39c68b2c822c818cd2fbba5fee509
+git_download_url: https://github.com/secretflow/secretpad/raw/4fb9e56424b39c68b2c822c818cd2fbba5fee509/docs/deployment_experience/definition.md
+git_origin_url: https://github.com/secretflow/secretpad/blob/4fb9e56424b39c68b2c822c818cd2fbba5fee509/docs/deployment_experience/definition.md
+git_owner: secretflow
+git_repo: secretpad
+git_timestamp: '2023-11-30T14:17:13+08:00'
+---
+
+:target{#id1}
+
+# 相关名词解释
+
+:target{#id2}
+
+## 1、数据表
+
+<strong>一句话介绍</strong>：保存在节点上的数据文件及数据表结构信息
+
+<strong>详细描述</strong>
+
+一份数据表有与其对应的一份表结构（即schema）及对应数据地址信息（即数据的访问url，计算节点通过该url访问数据内容）。用户可在项目内使用此数据，但无法获得原始数据。
+
+:target{#id3}
+
+## 2、节点
+
+<strong>一句话介绍</strong>：可用于存储数据，可执行隐私计算协议或算法逻辑的计算机
+
+<strong>详细描述</strong>
+
+全称为“隐私计算节点”，计算方执行多方安全计算协议或算法逻辑的软件、计算机、虚拟计算机或集群。节点均部署在机构本地，通过节点实现机构原始数据连接及本地计算。
+
+:target{#id4}
+
+## 3、项目
+
+<strong>一句话介绍</strong>：多方数据主体共同在一个项目空间中进行隐私计算任务
+
+<strong>详细描述</strong>
+
+在隐私计算的数据应用中，以项目的形式对于成员、权限、节点、数据等要素做隔离。项目根据应用的类别，会有不同的类型。一个项目通常服务于某一个特定业务场景的联合数据应用。
+
+:target{#id5}
+
+## 4、组件
+
+<strong>一句话介绍</strong>：包含了特定算法和配置的可视化功能模块
+
+<strong>详细描述</strong>
+
+指的是可视化建模中用户可操作的功能模块，组件中封装了特定的算法功能，用户可配置组件的输入、输出，及组件中算法的配置。
+
+:target{#id6}
+
+## 5、训练流
+
+<strong>一句话介绍</strong>：多个算子组件通过连线组成的可视化计算过程
+
+<strong>详细描述</strong>
+
+画布模式下多个组件结合而成的基于安全协议的一系列计算过程，一个训练流可以有多个组件，产生多份结果。
+
+:target{#id7}
+
+## 6、结果
+
+<strong>一句话介绍</strong>：训练过程中产生的表、模型、规则文件内容
+
+<strong>详细描述</strong>
+
+输出的结果包括数据表（包括统计表）、模型、规则文件三类，不同的组件输出结果不同，可通过点击组件查看输出结果。
+
+:target{#id8}
+
+## 7、训练流模板
+
+<strong>一句话介绍</strong>：提前配置好的训练流，新建后可直接执行
+
+<strong>详细描述</strong>
+
+目前包括联合圈人、金融风控两个训练流模板，通过新建项目或者新建训练流时可选新建模板。
+
+:target{#id9}
+
+## 8、模型
+
+<strong>一句话介绍</strong>：经过训练，基于样本产出的模型文件
+
+<strong>详细描述</strong>
+
+模型研发是基于建模的样本，训练并保存模型的过程，多方安全计算场景下，模型研发产出的联合模型被拆分保存在参与训练的节点上。
+
+:target{#id10}
+
+## 9、规则
+
+<strong>一句话介绍</strong>：训练过程中产出的规则文件
+
+<strong>详细描述</strong>
+
+一些统计或者分析的规则文件，训练过程中可通过画布组件完成规则编辑和规则文件生成。
+
+:target{#id11}
+
+## 10、节点授权
+
+<strong>一句话介绍</strong>：不同的节点间需要相互授权后才能相互访问或发起任务
+
+<strong>详细描述</strong>
+
+用户视角，机构节点与机构节点之间需要授权；系统框架视角，机构节点和中心节点之间需要授权。
+
+<em>最后更新时间：2023/7/5 17:25:37</em>
