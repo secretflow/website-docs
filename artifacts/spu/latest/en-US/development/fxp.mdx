@@ -1,3 +1,12 @@
+---
+git_commit: 0883c15512c9e4d3e4ec7bbe27e038fd084a2eee
+git_download_url: https://github.com/secretflow/spu/raw/0883c15512c9e4d3e4ec7bbe27e038fd084a2eee/docs/development/fxp.ipynb
+git_origin_url: https://github.com/secretflow/spu/blob/0883c15512c9e4d3e4ec7bbe27e038fd084a2eee/docs/development/fxp.ipynb
+git_owner: secretflow
+git_repo: spu
+git_timestamp: '2023-12-01T19:50:19+08:00'
+---
+
 :target{#Pitfalls---Fxp-Arithmetic}
 
 # Pitfalls - Fxp Arithmetic
@@ -480,9 +489,7 @@ We recommend users to try some actions if you come across “strange” outputs:
 1. If <strong>huge error</strong> occurs(maybe even <strong>opposite sign</strong>):
    - It’s common that numerator is <strong>too large</strong>, which leads to overflow.
    - Try <strong>Larger</strong> field(`FM128`) first. Larger field can accommodate larger number when fxp is fixed, so overflow can be avoided. But it will drag down the efficiency of <strong>nearly all op</strong> dramatically.
-
 2. Else, if the gap is not very significant, you can try to modify another two parameters:
-
    1. Enlarging `fxp_fraction_bits`: it is an essential parameters for fixed-point arithmetic and will influence all the op associated with float-point. For fixed field, larger fxp can support more bits for fraction part which may give more precision. However, larger fxp will occupy the bits for integer part, and makes <strong>overflow</strong> easier.
    2. Enlarging `fxp_div_goldschmidt_iters`: the precision of Goldschmidt’s method depends on iter numbers. So if you eager to more precise output, you can enlarge this parameter. But it’s worthy to note that:
    - Larger this parameter, larger the cost of `Div` and all op containing it(like `Log` and `Tanh`).
