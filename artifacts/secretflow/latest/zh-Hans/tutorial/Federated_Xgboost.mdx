@@ -1,3 +1,12 @@
+---
+git_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
+git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/tutorial/Federated_Xgboost.ipynb
+git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/tutorial/Federated_Xgboost.ipynb
+git_owner: secretflow
+git_repo: secretflow
+git_timestamp: '2023-12-06T20:08:22+08:00'
+---
+
 :target{#水平联邦XGBoost}
 
 # 水平联邦XGBoost
@@ -83,16 +92,12 @@ XGBoost 是一个优化的分布式梯度提升库，旨在高效、灵活和便
 ### 那么，我们在SecretFlow中应该怎么做联邦XGBoost呢
 
 1. 使用基于迭代的federate binning方法联合各方数据计算全局分桶信息，作为candidate splits进入后续的建树流程。
-
 2. 数据输入到各个Client xgboost引擎中，计算G & H。
-
 3. 进行联邦建树流程
-
    1. 进行数据reassign，分配到待分裂的节点上；
    2. 根据之前计算好的binning分桶计算sum\_of\_grad 和sum\_of\_hess；
    3. 发送给server端，server端做secure aggregation，挑选分裂信息发送回client端；
    4. Clients更新本地模型；
-
 4. 完成训练，并保存模型。
 
 在 Secretflow 环境中创建 3 个实体 \[Alice, Bob, Charlie]， `Alice` 和 `Bob` 是客户端， `Charlie` 是服务器，那么你可以愉快地开始 `Federate Boosting` 。了。

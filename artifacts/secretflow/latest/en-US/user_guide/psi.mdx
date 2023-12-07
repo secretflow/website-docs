@@ -1,3 +1,12 @@
+---
+git_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
+git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/user_guide/psi.rst
+git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/user_guide/psi.rst
+git_owner: secretflow
+git_repo: secretflow
+git_timestamp: '2023-12-06T20:08:22+08:00'
+---
+
 :target{#private-set-intersection-psi}
 
 # Private Set Intersection(PSI)
@@ -254,13 +263,10 @@ built upon prime-order groups.
 </figure>
 
 - Offline Phase
-
   1. For each element <InlineMath>$y_i$</InlineMath> in its set, Bob applies PRF using
      private key <InlineMath>$\beta$</InlineMath>, i.e. computing <InlineMath>$H_2(y_i,{H_1(y_i)}^\beta)$</InlineMath> .
   2. Bob sends <InlineMath>${\,\{H_2(y_i,{H_1(y_i)}^\beta)\}\,}_{i=1}^{n_2}$</InlineMath> to Alice in shuffled order
-
 - Online Phase
-
   1. For each element <InlineMath>$x_i$</InlineMath> in its set, Alice applies the hash function and then exponentiates
      it using its blind key <InlineMath>$r_i$</InlineMath>, thus computing <InlineMath>${H_1(x_i)}^{r_i}$</InlineMath>. Alice sends
      <InlineMath>${\,\{\,{H_1(x_i)}^{r_i}\,\}\,}_{i=1}^{n_1}$</InlineMath> to Bob.

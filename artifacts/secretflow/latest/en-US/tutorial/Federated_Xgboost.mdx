@@ -1,3 +1,12 @@
+---
+git_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
+git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/tutorial/Federated_Xgboost.ipynb
+git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/tutorial/Federated_Xgboost.ipynb
+git_owner: secretflow
+git_repo: secretflow
+git_timestamp: '2023-12-06T20:08:22+08:00'
+---
+
 :target{#Horizontally-Federated-XGBoost}
 
 # Horizontally Federated XGBoost
@@ -83,16 +92,12 @@ official tutorial [XGBoost tutorials](https://xgboost.readthedocs.io/en/latest/t
 ### Then, How to do federated xgboost in secretflow?
 
 1. Use federate Binning method based on iteration to calculate the global bucket information combined with the data of all sides, which was used as the candidate to enter the subsequent construction procedure.
-
 2. The data is input into each Client XGBoost engine to calculate G & H.
-
 3. Train federated boosting model
-
    1. Data is reassigned to the node to be split.
    2. The sum of grad and the sum of hess are calculated according to the previously calculated binning buckets.
    3. Send the sum of grad and the sum of hess to server，server use secure aggregation to produce global summary，then choose best split point，Send best split info back to clients.
    4. Clients Updates local model.
-
 4. Finish training，and save model.
 
 Create 3 entities in the Secretflow environment \[Alice, Bob, Charlie]. Where `Alice` and `Bob` are clients, and `Charlie` is the server,then you can happily start `Federate Boosting`.
