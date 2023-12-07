@@ -1,3 +1,12 @@
+---
+git_commit: d6d2fb10ecdc79307ad7036be6a521fadb32e1f4
+git_download_url: https://github.com/secretflow/psi/raw/d6d2fb10ecdc79307ad7036be6a521fadb32e1f4/docs/development/psi_protocol_intro.rst
+git_origin_url: https://github.com/secretflow/psi/blob/d6d2fb10ecdc79307ad7036be6a521fadb32e1f4/docs/development/psi_protocol_intro.rst
+git_owner: secretflow
+git_repo: psi
+git_timestamp: '2023-12-06T18:39:16+08:00'
+---
+
 :target{#psi-protocols-introduction}
 
 # PSI Protocols Introduction
@@ -365,13 +374,10 @@ built upon prime-order groups.
 </figure>
 
 - Offline Phase
-
   1. For each element <InlineMath>$y_i$</InlineMath> in its set, Bob applies PRF using
      private key <InlineMath>$\beta$</InlineMath>, i.e. computing <InlineMath>$H_2(y_i,{H_1(y_i)}^\beta)$</InlineMath> .
   2. Bob sends <InlineMath>$\{\{H_2(y_i,{H_1(y_i)}^\beta)\}\}_{i=1}^{n_2}$</InlineMath> to Alice in shuffled order.
-
 - Online Phase
-
   1. For each element <InlineMath>$x_i$</InlineMath> in its set, Alice applies the hash function and then exponentiates
      it using its blind key <InlineMath>$r_i$</InlineMath>, thus computing <InlineMath>${H_1(x_i)}^{r_i}$</InlineMath>. Alice sends
      <InlineMath>$\{\{H_1(x_i)\}^{r_i}\}_{i=1}^{n_1}$</InlineMath> to Bob.
@@ -409,7 +415,6 @@ SecretFlow SPU wraps [APSI](https://github.com/microsoft/APSI) library, can be u
 </figure>
 
 - Setup Phase
-
   1. <strong>Choose ItemParams</strong>, TableParams, QueryParams, SEALParams.
   2. <strong>Sender’s OPRF</strong>: The sender samples a key <InlineMath>$\beta$</InlineMath> for the OPRF, updates its items set
      to <InlineMath>$\{\{H_2(s_i,{H_1(s_i)}^\beta)\}\}_{s_i\in S}$</InlineMath>.
@@ -422,9 +427,7 @@ SecretFlow SPU wraps [APSI](https://github.com/microsoft/APSI) library, can be u
        matching polynomial over <InlineMath>$\mathbb{F}_t$</InlineMath>.
      - <strong>Label Polynomial</strong>: If the sender has labels associated with its set, then for each bin bundle
        <InlineMath>$\mathcal{B}[i,j]$</InlineMath>, the sender interpolates the label polynomial over <InlineMath>$\mathbb{F}_t$</InlineMath>.
-
 - Intersection Phase
-
   1. Receiver Encrypt <InlineMath>$r_i \in R$</InlineMath>.
      - <strong>Receiver’s OPRF</strong>: Receiver and Sender run ecdh-OPRF protocol, get
        <InlineMath>$\{\{H_2(r_i,{H_1(r_i)}^\beta)\}\}_{r_i\in R}$</InlineMath>.
