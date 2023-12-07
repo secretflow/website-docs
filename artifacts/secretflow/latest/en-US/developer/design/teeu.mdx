@@ -1,3 +1,12 @@
+---
+git_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
+git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/developer/design/teeu.md
+git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/developer/design/teeu.md
+git_owner: secretflow
+git_repo: secretflow
+git_timestamp: '2023-12-06T20:08:22+08:00'
+---
+
 :target{#teeu}
 
 # TEEU
@@ -253,45 +262,28 @@ print(sf.reveal(avg_val))
 ```
 
 1. Lines 7-8 construct PYU instances of two participants, Alice and Bob.
-
 2. Line 10 constructs an instance of TEEU, which is held by the participant carol.
-
 3. Lines 12-13 Alice and Bob respectively generate a random numpy array, where the random generation occurs locally in Alice and Bob respectively.
-
 4. In lines 15-16, Alice and Bob respectively send their respective numpy arrays to teeu through the `to` method, allowing them to execute the average method. This step does the following:
-
    1. Data encryption
-
       1. Randomly generate encrypted data key and data id.
       2. Use the key to encrypt the data to obtain the data ciphertext.
       3. Use the private key to sign the data ciphertext, data id, etc. (use the private key of Alice/Bob)
-
    2. Authorization
-
       1. Generate authorization information, including data id, average method, TEEU measurement value (mr\_enclave), etc.
       2. Sign the authorization information (using Alice/Bob’s private key)
-
    3. Perform remote attestation on AuthManager
-
       1. Obtain the remote attestation report of AuthManager and verify it to ensure that AuthManager is running in a real and trusted SGX environment and the code has not been tampered with.
       2. Use the public key of AuthManager to encrypt and protect the data encryption key, authorization information, etc., and then send it to AuthManager
-
    4. Send the data ciphertext and data id to TEEU.
-
 5. On line 17, TEEU executes the average method, and the input parameter is a list composed of the numpy arrays of Alice and Bob. This step does the following:
-
    1. TEEU temporarily randomly generates a pair of public and private keys, and generates its own remote attestation report, and the public key is attached to the report.
-
    2. TEEU sends Report, average method, and data id corresponding to numpy array to AuthManager, requesting to obtain the data decryption key.
-
    3. AuthManager performs authorization check:
-
       1. First verify the report of the TEEU, and check that its metric value is consistent with the metric value in the authorization information.
       2. Check that the average method is consistent with the method in the authorization information.
       3. After the above two checks are passed, the data decryption key is encrypted with the public key of TEEU and returned to TEEU
-
    4. TEEU uses the decryption key to decrypt the numpy array to obtain the plaintext, and executes the average method to obtain the average value after aggregation.
-
    5. TEEU sends the execution result to Alice and Bob.
 
 :target{#how-to-install-and-use-new-python-libraries-in-occlum}

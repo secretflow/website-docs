@@ -1,3 +1,12 @@
+---
+git_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
+git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/developer/design/teeu.md
+git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/developer/design/teeu.md
+git_owner: secretflow
+git_repo: secretflow
+git_timestamp: '2023-12-06T20:08:22+08:00'
+---
+
 :target{#teeu}
 
 # TEEU 设备
@@ -238,45 +247,28 @@ print(sf.reveal(avg_val))
 ```
 
 1. 第7\~8行构造了两个参与方Alice和Bob的PYU实例。
-
 2. 第10行构造了TEEU的实例，TEEU有参与方carol持有。
-
 3. 第12-13行Alice和Bob分别生成了一个随机numpy array，这里的随机生成分别发生在Alice和Bob本地。
-
 4. 第15\~16行Alice和Bob分别把通过`to`方法把各自的numpy array发送给teeu，允许对其执行average方法。这一步做了以下事情：
-
    1. 数据加密
-
       1. 随机生成加密数据密钥和数据id。
       2. 使用密钥加密数据，得到数据密文。
       3. 使用私钥对数据密文、数据id等进行签名（使用Alice/Bob的私钥）
-
    2. 授权
-
       1. 生成授权信息，包括数据id、average方法、TEEU的度量值（mr\_enclave）等
       2. 对授权信息进行签名（使用Alice/Bob的私钥）
-
    3. 对AuthManager进行远程认证
-
       1. 通过远程认证，用户可以确保enclave运行环境是可靠的，且运行的代码未被篡改。
       2. 使用AuthManager的公钥对数据加密秘钥、授权信息等进行加密保护，并附带然后发送给AuthManager
-
    4. 把数据密文和数据id发送给TEEU。
-
 5. 第17行 TEEU 执行 average 方法，入参为Alice和Bob的numpy array构成的列表。这一步做了以下事情：
-
    1. TEEU临时随机生成一对公私钥，并且生成自己的远程认证报告，公钥附带在报告中。
-
    2. TEEU将 Report、average方法、numpy array对应的数据id发送给 AuthManager，请求获取数据解密密钥。
-
    3. AuthManager进行授权检查：
-
       1. 首先验证TEEU的Report，检查其度量值和授权信息中的度量值一致。
       2. 检查average方法和授权信息中的方法一致。
       3. 上面两部检查均通过后，则将数据解密密钥使用TEEU的公钥进行加密，并返回给TEEU
-
    4. TEEU使用解密密钥对numpy array进行解密，得到明文，并执行average方法，求得聚合后的平均值。
-
    5. TEEU将执行结果发送给Alice和Bob。
 
 :target{#how-to-install-and-use-new-python-libraries-in-occlum}

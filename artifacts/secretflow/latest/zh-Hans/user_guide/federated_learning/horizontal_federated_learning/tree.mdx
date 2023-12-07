@@ -1,3 +1,12 @@
+---
+git_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
+git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/user_guide/federated_learning/horizontal_federated_learning/tree.md
+git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/user_guide/federated_learning/horizontal_federated_learning/tree.md
+git_owner: secretflow
+git_repo: secretflow
+git_timestamp: '2023-12-06T20:08:22+08:00'
+---
+
 :target{#horizontally-federated-xgboost}
 
 # 水平联邦XGBoost
@@ -79,28 +88,19 @@
 数据输入：HdataFrame，XGBoost支持将Pandas.DataFrame直接转为DMatrix
 
 1. 使用federated binning来做全局联合分箱，计算等频分位点作为后续计算分割点的基础。
-
 2. 在服务端构造相同样本空间的mock数据，同步服务端和客户端的训练过程
-
 3. 迭代前处理回调
-
 4. 将数据输入到每个Client XGBoost引擎中计算g & h 启动homo\_boost任务； 构建FedBooster（迭代n次迭代进行树模型迭代）
-
    1. 迭代前处理回调
    2. 通过XGBoost引擎计算grad和hess； 通过 federated 构建树模型并将其添加到 Fedboost 模型中。 XGBoost 引擎和我们的联合树构建模块之间的交互点 - 标准 XGBoost 模型
    3. 处理callback\_after\_iteration（如 early stop，evaluation等）
-
 5. 将当前的g和h输入到 federate decision tree模块中，发起homo\_boost任务；构建FedBooster（迭代n个iteration做树模型迭代）
-
    1. 进行数据reassign，分配到待分裂的节点上
    2. 根据之前计算好的binning分桶计算sum\_of\_grad 和sum\_of\_hess
    3. 发送给server端，server端做secure aggregation，挑选分裂信息发送回client端
    4. 更新分裂，而后返回1
-
 6. 当前这棵树分裂完成后，返回树结构，各个client以及server端都会拥有完整的当前树结构，将树结构转为xgboost标准RegTree格式，加入到xgboost标准模型文件中
-
 7. 处理callback\_after\_iteration（如 early stop，evaluation等）
-
 8. xgboost.load\_model(刚刚生成好的标准模型文件)，进入下一次迭代
 
 :target{#sample-code}

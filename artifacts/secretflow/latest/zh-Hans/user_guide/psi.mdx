@@ -1,3 +1,12 @@
+---
+git_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
+git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/user_guide/psi.rst
+git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/user_guide/psi.rst
+git_owner: secretflow
+git_repo: secretflow
+git_timestamp: '2023-12-06T20:08:22+08:00'
+---
+
 :target{#private-set-intersection-psi}
 
 # 隐私集合求交
@@ -212,12 +221,9 @@ Boyle 等人设计了一系列满足特定相关性的高效PCG协议, 例如: v
 </figure>
 
 - 离线阶段
-
   1. Bob对数据集中元素  <InlineMath>$y_i$</InlineMath> 使用密钥 <InlineMath>$\beta$</InlineMath>，进行PRF运算， 得到 <InlineMath>$H_2(y_i,{H_1(y_i)}^\beta)$</InlineMath> 。
   2. Bob对集合 <InlineMath>${\,\{H_2(y_i,{H_1(y_i)}^\beta)\}\,}_{i=1}^{n_2}$</InlineMath> 打乱顺序后，发送给Alice。
-
 - 在线阶段
-
   1. Alice 对数据集中元素 <InlineMath>$x_i$</InlineMath> 进行Hash处理，并使用blind密钥 <InlineMath>$r_i$</InlineMath> 进行指数运算，得到 <InlineMath>${H_1(x_i)}^{r_i}$</InlineMath> ， Alice 发送   <InlineMath>${\,\{\,{H_1(x_i)}^{r_i}\,\}\,}_{i=1}^{n_1}$</InlineMath> 给 Bob。
   2. Bobs收到 <InlineMath>$H_1(x_i)^{r_i}$</InlineMath>，使用密钥 <InlineMath>$\beta$</InlineMath> 计算指数： <InlineMath>${H_1(x_i)}^{r_i\beta}$</InlineMath> 。Bob发送 <InlineMath>${\,\{\,{H_1(x_i)}^{\,{r_i}\,\beta}\,\}\,}_{i=1}^{n_1}$</InlineMath> 给Alice。
   3. Alice接收Bob的数据 <InlineMath>${\,\{\,{H_1(x_i)}^{r_i\beta}\}\,}_{i=1}^{n_1}$</InlineMath> 使用 <InlineMath>${r_i}^{-1}$</InlineMath> 进行unblind操作，得到 <InlineMath>${\,\{\,{H_1(x_i)}^\beta\}\,}_{i=1}^{n_1}$</InlineMath>, 计算OPRF <InlineMath>${\,\{H_2(x_i,{H_1(x_i)}^\beta)\}\,}_{i=1}^{n_1}$</InlineMath> 。
