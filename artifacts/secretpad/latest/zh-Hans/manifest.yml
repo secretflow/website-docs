@@ -4,4 +4,33 @@ sidebar:
     label: 开发
     link: {id: development/index.mdx, label: 开发, type: doc}
     type: category
+  - items:
+      - {id: deployment_experience/deployment_package.mdx, label: 什么是MVP部署包, type: doc}
+      - {id: deployment_experience/platform_installation_guidelines.mdx, label: 安装指引,
+        type: doc}
+      - {id: deployment_experience/node_installation_guidelines.mdx, label: 节点安装指引,
+        type: doc}
+      - {id: deployment_experience/pipeline_template.mdx, label: 方式一：使用训练流模板, type: doc}
+      - {id: deployment_experience/pipeline_custom.mdx, label: 方式二：自定义训练流, type: doc}
+      - {id: deployment_experience/menu_description.mdx, label: 功能菜单说明, type: doc}
+      - items:
+          - {id: deployment_experience/more_tutorials/new_components.mdx, label: 隐语SecretPad平台新增组件,
+            type: doc}
+        label: 更多教程
+        link: {id: deployment_experience/more_tutorials/index.mdx, label: 更多教程, type: doc}
+        type: category
+      - {id: deployment_experience/definition.mdx, label: 相关名词解释, type: doc}
+      - items:
+          - {id: deployment_experience/version_update/202309.mdx, label: 2023年9月更新记录,
+            type: doc}
+          - {id: deployment_experience/version_update/202308.mdx, label: 2023年8月更新记录,
+            type: doc}
+          - {id: deployment_experience/version_update/202307.mdx, label: 2023年7月更新记录,
+            type: doc}
+        label: 版本更新
+        link: {id: deployment_experience/version_update/index.mdx, label: 版本更新, type: doc}
+        type: category
+    label: 部署体验
+    link: {id: deployment_experience/index.mdx, label: 部署体验, type: doc}
+    type: category
 version: '1'

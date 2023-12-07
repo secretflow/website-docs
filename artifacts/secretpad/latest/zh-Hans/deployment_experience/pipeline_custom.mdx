@@ -1,0 +1,85 @@
+---
+git_commit: 4fb9e56424b39c68b2c822c818cd2fbba5fee509
+git_download_url: https://github.com/secretflow/secretpad/raw/4fb9e56424b39c68b2c822c818cd2fbba5fee509/docs/deployment_experience/pipeline_custom.md
+git_origin_url: https://github.com/secretflow/secretpad/blob/4fb9e56424b39c68b2c822c818cd2fbba5fee509/docs/deployment_experience/pipeline_custom.md
+git_owner: secretflow
+git_repo: secretpad
+git_timestamp: '2023-11-30T14:17:13+08:00'
+---
+
+:target{#id1}
+
+# 方式二：自定义训练流
+
+<video id="video" controls={true} preload="none">
+  <source id="mp4" src="https://secretflow-public.oss-cn-hangzhou.aliyuncs.com/tutorial-video/pipeline_custom.mp4" type="video/mp4" />
+</video>
+
+:target{#id2}
+
+# 一、自定义训练流全流程
+
+![Process1](../_assets/process2.jpeg)
+
+:target{#id3}
+
+# 二、详细步骤说明
+
+:target{#id4}
+
+## 第 1 步：进入工作台界面——点击新建项目
+
+![Step2.1](../_assets/step2-1.png)
+
+:target{#id5}
+
+## 第 2 步：输入项目名称——选择自定义训练流——点击下一步，进入训练流
+
+![Step2.2](../_assets/step2-2.png)
+
+:target{#id6}
+
+## 第 3 步：进入训练流——点击数据表
+
+![Step2.3](../_assets/step2-3.png)
+
+:target{#alicebob}
+
+## 第 4 步：跳转到节点管理中心，分别授权 Alice、Bob 数据表给项目使用
+
+![Step2.4](../_assets/step2-4.png)
+![Step2.4.2](../_assets/step2-4-2.png)
+
+:target{#id7}
+
+## 第 5 步：选择需要授权的项目、关联键（可关联两张表的唯一值）、标签列（非必填）
+
+![Step2.5](../_assets/step2-5.png)
+
+:target{#id8}
+
+## 第 6 步：授权完成后，回到之前的训练流界面——点击组件库，可拖拽组件到画布上进行流程搭建
+
+ps：搭建过程中，注意组件的连接方式是否正确
+
+![Step2.6](../_assets/step2-6.png)
+
+:target{#id9}
+
+## 第 7 步：点击组件“样本表”——选择数据表——保存配置
+
+![Step2.7](../_assets/step2-7.png)
+
+:target{#id10}
+
+## 第 8 步：流程搭建完成后——点击全部执行按钮，执行训练流
+
+![Step2.8](../_assets/step2-8.png)
+
+:target{#id11}
+
+## 第 9 步：移动鼠标到对应的组件面板——点击执行结果——查看并下载数据表
+
+![Step2.9](../_assets/step2-9.png)
+
+<em>最后更新时间：2023/7/26 14:39:58</em>
