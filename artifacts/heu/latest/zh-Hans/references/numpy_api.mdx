@@ -1,3 +1,12 @@
+---
+git_commit: cac7efa4d6e4909ff2bb8cdd021a1d6e6fb91ba5
+git_download_url: https://github.com/secretflow/heu/raw/cac7efa4d6e4909ff2bb8cdd021a1d6e6fb91ba5/docs/references/numpy_api.rst
+git_origin_url: https://github.com/secretflow/heu/blob/cac7efa4d6e4909ff2bb8cdd021a1d6e6fb91ba5/docs/references/numpy_api.rst
+git_owner: secretflow
+git_repo: heu
+git_timestamp: '2023-11-28T19:18:38+08:00'
+---
+
 :target{#numpy}
 
 # Numpy 模块
@@ -5,3 +14,1061 @@
 <Container type="tip">
   请使用 `from heu import numpy as hnp` 引入 phe 模块
 </Container>
+
+a numpy adapter for phe module which provides numpy-like api
+
+<Outline domain="py" objectType="class" target={"heu.numpy.CiphertextArray"} module={"heu.numpy"} fullname={"CiphertextArray"} description={"Get the number of cols"}>
+  <Outline.Signature fullname="CiphertextArray" id="heu.numpy.CiphertextArray">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>CiphertextArray</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="property" target={"heu.numpy.CiphertextArray.cols"} module={"heu.numpy"} fullname={"CiphertextArray.cols"} description={"Get the number of cols"}>
+      <Outline.Signature fullname="CiphertextArray.cols" id="heu.numpy.CiphertextArray.cols">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>cols</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get the number of cols
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.CiphertextArray.load_from"} module={"heu.numpy"} fullname={"CiphertextArray.load_from"} description={"deserialize matrix from bytes"} parameters={["bytes_buffer: bytes", "format: heu.numpy.MatrixSerializeFormat = <MatrixSerializeFormat.Best: 0>"]}>
+      <Outline.Signature fullname="CiphertextArray.load_from" id="heu.numpy.CiphertextArray.load_from">
+        <Outline.Keyword>static<span>{" "}</span></Outline.Keyword><Outline.Name>load\_from</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">bytes\_buffer: bytes</span></Outline.Parameter>, <Outline.Parameter><span className="name">format: heu.numpy.MatrixSerializeFormat = \<MatrixSerializeFormat.Best: 0></span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.numpy.CiphertextArray](#heu.numpy.CiphertextArray "heu.numpy.CiphertextArray")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        deserialize matrix from bytes
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.CiphertextArray.ndim"} module={"heu.numpy"} fullname={"CiphertextArray.ndim"} description={"The array\u2019s number of dimensions"}>
+      <Outline.Signature fullname="CiphertextArray.ndim" id="heu.numpy.CiphertextArray.ndim">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>ndim</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        The array’s number of dimensions
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.CiphertextArray.rows"} module={"heu.numpy"} fullname={"CiphertextArray.rows"} description={"Get the number of rows"}>
+      <Outline.Signature fullname="CiphertextArray.rows" id="heu.numpy.CiphertextArray.rows">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>rows</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get the number of rows
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.CiphertextArray.serialize"} module={"heu.numpy"} fullname={"CiphertextArray.serialize"} description={"serialize matrix to bytes"} parameters={["self: heu.numpy.CiphertextArray", "format: heu.numpy.MatrixSerializeFormat = <MatrixSerializeFormat.Best: 0>"]}>
+      <Outline.Signature fullname="CiphertextArray.serialize" id="heu.numpy.CiphertextArray.serialize">
+        <Outline.Name>serialize</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self: heu.numpy.CiphertextArray</span></Outline.Parameter>, <Outline.Parameter><span className="name">format: heu.numpy.MatrixSerializeFormat = \<MatrixSerializeFormat.Best: 0></span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>bytes</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        serialize matrix to bytes
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.CiphertextArray.shape"} module={"heu.numpy"} fullname={"CiphertextArray.shape"} description={"The array\u2019s shape"}>
+      <Outline.Signature fullname="CiphertextArray.shape" id="heu.numpy.CiphertextArray.shape">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>shape</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        The array’s shape
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.CiphertextArray.size"} module={"heu.numpy"} fullname={"CiphertextArray.size"} description={"Number of elements in the array"}>
+      <Outline.Signature fullname="CiphertextArray.size" id="heu.numpy.CiphertextArray.size">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>size</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Number of elements in the array
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.CiphertextArray.transpose"} module={"heu.numpy"} fullname={"CiphertextArray.transpose"} description={"Transpose the array"} parameters={["self"]}>
+      <Outline.Signature fullname="CiphertextArray.transpose" id="heu.numpy.CiphertextArray.transpose">
+        <Outline.Name>transpose</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.CiphertextArray](#heu.numpy.CiphertextArray "heu.numpy.CiphertextArray")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.numpy.CiphertextArray](#heu.numpy.CiphertextArray "heu.numpy.CiphertextArray")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Transpose the array
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.numpy.Decryptor"} module={"heu.numpy"} fullname={"Decryptor"} description={"Overloaded function."}>
+  <Outline.Signature fullname="Decryptor" id="heu.numpy.Decryptor">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>Decryptor</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.numpy.Decryptor.decrypt"} module={"heu.numpy"} fullname={"Decryptor.decrypt"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Decryptor.decrypt" id="heu.numpy.Decryptor.decrypt">
+        <Outline.Name>decrypt</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. decrypt(self: heu.numpy.Decryptor, ciphertext: heu.phe.Ciphertext) -> heu.phe.Plaintext
+
+        Decrypt ciphertext (scalar) to plaintext (scalar)
+
+        2. decrypt(self: heu.numpy.Decryptor, ciphertext\_array: heu.numpy.CiphertextArray) -> heu.numpy.PlaintextArray
+
+        Decrypt ciphertext array to plaintext array
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.Decryptor.decrypt_in_range"} module={"heu.numpy"} fullname={"Decryptor.decrypt_in_range"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Decryptor.decrypt_in_range" id="heu.numpy.Decryptor.decrypt_in_range">
+        <Outline.Name>decrypt\_in\_range</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. decrypt\_in\_range(self: heu.numpy.Decryptor, ciphertext: heu.phe.Ciphertext, range\_bits: int = 128) -> heu.phe.Plaintext
+
+        Decrypt ciphertext (scalar) and make sure plaintext is in range (-2^range\_bits, 2^range\_bits). Range checking is used to block OU plaintext overflow attack, see HEU documentation for details.
+        throws an exception if plaintext is out of range.
+
+        2. decrypt\_in\_range(self: heu.numpy.Decryptor, CMatrix: heu.numpy.CiphertextArray, range\_bits: int = 128) -> heu.numpy.PlaintextArray
+
+        Decrypt ciphertext array and make sure each plaintext is in range (-2^range\_bits, 2^range\_bits). Range checking is used to block OU plaintext overflow attack, see HEU documentation for details.
+        throws an exception if plaintext is out of range.
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.Decryptor.phe"} module={"heu.numpy"} fullname={"Decryptor.phe"} description={"Overloaded function."}>
+      <Outline.Signature fullname="Decryptor.phe" id="heu.numpy.Decryptor.phe">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>phe</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.numpy.DestinationHeKit"} module={"heu.numpy"} fullname={"DestinationHeKit"} description={"Overloaded function."}>
+  <Outline.Signature fullname="DestinationHeKit" id="heu.numpy.DestinationHeKit">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>DestinationHeKit</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.numpy.DestinationHeKit.array"} module={"heu.numpy"} fullname={"DestinationHeKit.array"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="DestinationHeKit.array" id="heu.numpy.DestinationHeKit.array">
+        <Outline.Name>array</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder\_params: heu.phe.BigintEncoderParams = BigintEncoderParams()) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyBigintEncoderParams
+
+        2. array(self: heu.phe.HeKitPublicBase, object: object, encoder\_params: heu.phe.BigintEncoderParams = BigintEncoderParams()) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyBigintEncoderParams
+
+        3. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder: heu.phe.BigintEncoder) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyBigintEncoder, same with hnp.array()
+
+        4. array(self: heu.phe.HeKitPublicBase, object: object, encoder: heu.phe.BigintEncoder) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyBigintEncoder, same with hnp.array()
+
+        5. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder\_params: heu.phe.IntegerEncoderParams) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyIntegerEncoderParams
+
+        6. array(self: heu.phe.HeKitPublicBase, object: object, encoder\_params: heu.phe.IntegerEncoderParams) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyIntegerEncoderParams
+
+        7. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder: heu.phe.IntegerEncoder) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyIntegerEncoder, same with hnp.array()
+
+        8. array(self: heu.phe.HeKitPublicBase, object: object, encoder: heu.phe.IntegerEncoder) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyIntegerEncoder, same with hnp.array()
+
+        9. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder\_params: heu.phe.FloatEncoderParams) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyFloatEncoderParams
+
+        10. array(self: heu.phe.HeKitPublicBase, object: object, encoder\_params: heu.phe.FloatEncoderParams) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyFloatEncoderParams
+
+        11. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder: heu.phe.FloatEncoder) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyFloatEncoder, same with hnp.array()
+
+        12. array(self: heu.phe.HeKitPublicBase, object: object, encoder: heu.phe.FloatEncoder) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyFloatEncoder, same with hnp.array()
+
+        13. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder\_params: heu.phe.BatchIntegerEncoderParams) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyBatchIntegerEncoderParams
+
+        14. array(self: heu.phe.HeKitPublicBase, object: object, encoder\_params: heu.phe.BatchIntegerEncoderParams) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyBatchIntegerEncoderParams
+
+        15. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder: heu.phe.BatchIntegerEncoder) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyBatchIntegerEncoder, same with hnp.array()
+
+        16. array(self: heu.phe.HeKitPublicBase, object: object, encoder: heu.phe.BatchIntegerEncoder) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyBatchIntegerEncoder, same with hnp.array()
+
+        17. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder\_params: heu.phe.BatchFloatEncoderParams) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyBatchFloatEncoderParams
+
+        18. array(self: heu.phe.HeKitPublicBase, object: object, encoder\_params: heu.phe.BatchFloatEncoderParams) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyBatchFloatEncoderParams
+
+        19. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder: heu.phe.BatchFloatEncoder) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyBatchFloatEncoder, same with hnp.array()
+
+        20. array(self: heu.phe.HeKitPublicBase, object: object, encoder: heu.phe.BatchFloatEncoder) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyBatchFloatEncoder, same with hnp.array()
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.DestinationHeKit.encryptor"} module={"heu.numpy"} fullname={"DestinationHeKit.encryptor"} description={"Get encryptor"} parameters={["self"]}>
+      <Outline.Signature fullname="DestinationHeKit.encryptor" id="heu.numpy.DestinationHeKit.encryptor">
+        <Outline.Name>encryptor</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.DestinationHeKit](#heu.numpy.DestinationHeKit "heu.numpy.DestinationHeKit")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::lib::numpy::Encryptor</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get encryptor
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.DestinationHeKit.evaluator"} module={"heu.numpy"} fullname={"DestinationHeKit.evaluator"} description={"Get evaluator"} parameters={["self"]}>
+      <Outline.Signature fullname="DestinationHeKit.evaluator" id="heu.numpy.DestinationHeKit.evaluator">
+        <Outline.Name>evaluator</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.DestinationHeKit](#heu.numpy.DestinationHeKit "heu.numpy.DestinationHeKit")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::lib::numpy::Evaluator</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get evaluator
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.numpy.Encryptor"} module={"heu.numpy"} fullname={"Encryptor"} description={"Overloaded function."}>
+  <Outline.Signature fullname="Encryptor" id="heu.numpy.Encryptor">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>Encryptor</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.numpy.Encryptor.encrypt"} module={"heu.numpy"} fullname={"Encryptor.encrypt"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Encryptor.encrypt" id="heu.numpy.Encryptor.encrypt">
+        <Outline.Name>encrypt</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. encrypt(self: heu.numpy.Encryptor, plaintext: heu.phe.Plaintext) -> heu.phe.Ciphertext
+
+        Encrypt plaintext (scalar) to ciphertext (scalar)
+
+        2. encrypt(self: heu.numpy.Encryptor, plaintext\_array: heu.numpy.PlaintextArray) -> heu.numpy.CiphertextArray
+
+        Encrypt plaintext array to ciphertext array
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.Encryptor.encrypt_with_audit"} module={"heu.numpy"} fullname={"Encryptor.encrypt_with_audit"} description={"Encrypt and build audit string including plaintext/random/ciphertext info"} parameters={["self", "arg0"]}>
+      <Outline.Signature fullname="Encryptor.encrypt_with_audit" id="heu.numpy.Encryptor.encrypt_with_audit">
+        <Outline.Name>encrypt\_with\_audit</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.Encryptor](#heu.numpy.Encryptor "heu.numpy.Encryptor")</span></Outline.Parameter>, <Outline.Parameter><span className="name">arg0</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.PlaintextArray](#heu.numpy.PlaintextArray "heu.numpy.PlaintextArray")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>Tuple<span>\[</span>[heu.numpy.CiphertextArray](#heu.numpy.CiphertextArray "heu.numpy.CiphertextArray")<span>,</span><span>{" "}</span>[heu.numpy.StringArray](#heu.numpy.StringArray "heu.numpy.StringArray")<span>]</span></Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Encrypt and build audit string including plaintext/random/ciphertext info
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.Encryptor.phe"} module={"heu.numpy"} fullname={"Encryptor.phe"} description={"Get the instance of phe.Encryptor for scalar encryption"}>
+      <Outline.Signature fullname="Encryptor.phe" id="heu.numpy.Encryptor.phe">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>phe</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get the instance of phe.Encryptor for scalar encryption
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.numpy.Evaluator"} module={"heu.numpy"} fullname={"Evaluator"} description={"Overloaded function."}>
+  <Outline.Signature fullname="Evaluator" id="heu.numpy.Evaluator">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>Evaluator</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.numpy.Evaluator.add"} module={"heu.numpy"} fullname={"Evaluator.add"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.add" id="heu.numpy.Evaluator.add">
+        <Outline.Name>add</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. add(self: heu.numpy.Evaluator, arg0: heu.numpy.CiphertextArray, arg1: heu.numpy.CiphertextArray) -> heu.numpy.CiphertextArray
+        2. add(self: heu.numpy.Evaluator, arg0: heu.numpy.CiphertextArray, arg1: heu.numpy.PlaintextArray) -> heu.numpy.CiphertextArray
+        3. add(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray, arg1: heu.numpy.CiphertextArray) -> heu.numpy.CiphertextArray
+        4. add(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray, arg1: heu.numpy.PlaintextArray) -> heu.numpy.PlaintextArray
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.Evaluator.batch_feature_wise_bucket_sum"} module={"heu.numpy"} fullname={"Evaluator.batch_feature_wise_bucket_sum"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.batch_feature_wise_bucket_sum" id="heu.numpy.Evaluator.batch_feature_wise_bucket_sum">
+        <Outline.Name>batch\_feature\_wise\_bucket\_sum</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. batch\_feature\_wise\_bucket\_sum(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray, arg1: List\[numpy.ndarray\[numpy.int8\[1, n]]], arg2: numpy.ndarray\[numpy.int8\[m, n], flags.c\_contiguous], arg3: int, arg4: bool) -> List\[heu.numpy.PlaintextArray]
+
+        Take elements in x according to order\_map to caculate the row sum
+        at each bin for each subgroup
+        (Plaintext)
+        e heu numpy evaluator
+        x dense matrix, rows are elements of bin sum
+        subgroup\_map a list of 1d py np ndarray (vector) acts as filters.
+        Its length should be equal to x.rows(), elements should be 0 or 1,
+        with 1 indicates in this subgroup.
+        order\_map a 2d py ndarray. It has shape x.rows() \* number of
+        features.order\_map(i, j) = k means row i feature j should be in
+        bin k of feature j.
+        bucket\_num int. The number of buckets for each bin.
+        cumsum bool. If apply cumulative sum to buckets for each feature.
+        return list of dense matrix\<T>, the row bin sum results.
+        Each element has shape (bucket\_num \* feature\_num, x.cols()).
+
+        2. batch\_feature\_wise\_bucket\_sum(self: heu.numpy.Evaluator, arg0: heu.numpy.CiphertextArray, arg1: List\[numpy.ndarray\[numpy.int8\[1, n]]], arg2: numpy.ndarray\[numpy.int8\[m, n], flags.c\_contiguous], arg3: int, arg4: bool) -> List\[heu.numpy.CiphertextArray]
+
+        Take elements in x according to order\_map to caculate the row sum
+        at each bin for each subgroup
+        (Ciphertext)
+        e heu numpy evaluator
+        x dense matrix, rows are elements of bin sum
+        subgroup\_map a list of 1d py np ndarray (vector) acts as filters.
+        Its length should be equal to x.rows(), elements should be 0 or 1,
+        with 1 indicates in this subgroup.
+        order\_map a 2d py ndarray. It has shape x.rows() \* number of
+        features.order\_map(i, j) = k means row i feature j should be in
+        bin k of feature j.
+        bucket\_num int. The number of buckets for each bin.
+        cumsum bool. If apply cumulative sum to buckets for each feature.
+        return list of dense matrix\<T>, the row bin sum results.
+        Each element has shape (bucket\_num \* feature\_num, x.cols()).
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.Evaluator.batch_select_sum"} module={"heu.numpy"} fullname={"Evaluator.batch_select_sum"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.batch_select_sum" id="heu.numpy.Evaluator.batch_select_sum">
+        <Outline.Name>batch\_select\_sum</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. batch\_select\_sum(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray, arg1: List\[object]) -> heu.numpy.PlaintextArray
+
+        Compute an array of sum of selected elements (Plaintext),
+        equivalent to \[x\[indices].sum() for indices in indices\_list] but
+        faster.
+
+        2. batch\_select\_sum(self: heu.numpy.Evaluator, arg0: heu.numpy.CiphertextArray, arg1: List\[object]) -> heu.numpy.CiphertextArray
+
+        Compute an array of sum of selected elements (Ciphertext),
+        equivalent to \[x\[indices].sum() for indices in indices\_list] but
+        faster.
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.Evaluator.feature_wise_bucket_sum"} module={"heu.numpy"} fullname={"Evaluator.feature_wise_bucket_sum"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.feature_wise_bucket_sum" id="heu.numpy.Evaluator.feature_wise_bucket_sum">
+        <Outline.Name>feature\_wise\_bucket\_sum</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. feature\_wise\_bucket\_sum(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray, arg1: numpy.ndarray\[numpy.int8\[1, n]], arg2: numpy.ndarray\[numpy.int8\[m, n], flags.c\_contiguous], arg3: int, arg4: bool) -> heu.numpy.PlaintextArray
+
+        Take elements in x according to order\_map to caculate the row sum
+        at each bin.
+        (Plaintext)
+        e heu numpy evaluator
+        x dense matrix, rows are elements of bin sum
+        subgroup\_map a 1d py np ndarray (vector) acts as a filter.
+        Its length should be equal to x.rows(), elements should be 0 or 1,
+        with 1 indicates in this subgroup.
+        order\_map a 2d py ndarray. It has shape x.rows() \* number of
+        features.order\_map(i, j) = k means row i feature j should be in
+        bin k of feature j.
+        bucket\_num int. The number of buckets for each bin.
+        cumsum bool. If apply cumulative sum to buckets for each feature.
+        return dense matrix\<T>, the row bin sum result. It has shape
+        (bucket\_num \* feature\_num, x.cols()).
+
+        2. feature\_wise\_bucket\_sum(self: heu.numpy.Evaluator, arg0: heu.numpy.CiphertextArray, arg1: numpy.ndarray\[numpy.int8\[1, n]], arg2: numpy.ndarray\[numpy.int8\[m, n], flags.c\_contiguous], arg3: int, arg4: bool) -> heu.numpy.CiphertextArray
+
+        Take elements in x according to order\_map to caculate the row sum
+        at each bin.
+        (Ciphertext)
+        e heu numpy evaluator
+        x dense matrix, rows are elements of bin sum
+        subgroup\_map a 1d py np ndarray (vector) acts as a filter.
+        Its length
+        should be equal to x.rows(), elements should be 0 or 1, with 1
+        indicates in this subgroup.
+        order\_map a 2d py ndarray. It has shape x.rows() \* number of
+        features.order\_map(i, j) = k means row i feature j should be in
+        bin k of feature j.
+        bucket\_num int. The number of buckets for each bin.
+        cumsum bool. If apply cumulative sum to buckets for each feature.
+        return dense matrix\<T>, the row bin sum result. It has shape
+        (bucket\_num \* feature\_num, x.cols()).
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.Evaluator.matmul"} module={"heu.numpy"} fullname={"Evaluator.matmul"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.matmul" id="heu.numpy.Evaluator.matmul">
+        <Outline.Name>matmul</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. matmul(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray, arg1: heu.numpy.PlaintextArray) -> heu.numpy.PlaintextArray
+        2. matmul(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray, arg1: heu.numpy.CiphertextArray) -> heu.numpy.CiphertextArray
+        3. matmul(self: heu.numpy.Evaluator, arg0: heu.numpy.CiphertextArray, arg1: heu.numpy.PlaintextArray) -> heu.numpy.CiphertextArray
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.Evaluator.mul"} module={"heu.numpy"} fullname={"Evaluator.mul"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.mul" id="heu.numpy.Evaluator.mul">
+        <Outline.Name>mul</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. mul(self: heu.numpy.Evaluator, arg0: heu.numpy.CiphertextArray, arg1: heu.numpy.PlaintextArray) -> heu.numpy.CiphertextArray
+        2. mul(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray, arg1: heu.numpy.CiphertextArray) -> heu.numpy.CiphertextArray
+        3. mul(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray, arg1: heu.numpy.PlaintextArray) -> heu.numpy.PlaintextArray
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.Evaluator.phe"} module={"heu.numpy"} fullname={"Evaluator.phe"} description={"Overloaded function."}>
+      <Outline.Signature fullname="Evaluator.phe" id="heu.numpy.Evaluator.phe">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>phe</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.Evaluator.select_sum"} module={"heu.numpy"} fullname={"Evaluator.select_sum"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.select_sum" id="heu.numpy.Evaluator.select_sum">
+        <Outline.Name>select\_sum</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. select\_sum(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray, arg1: object) -> heu.phe.Plaintext
+
+        Compute the sum of selected elements (Plaintext), equivalent to
+        x\[indices].sum() but faster.
+
+        2. select\_sum(self: heu.numpy.Evaluator, arg0: heu.numpy.CiphertextArray, arg1: object) -> heu.phe.Ciphertext
+
+        Compute the sum of selected elements (Ciphertext), equivalent to
+        x\[indices].sum() but faster.
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.Evaluator.sub"} module={"heu.numpy"} fullname={"Evaluator.sub"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.sub" id="heu.numpy.Evaluator.sub">
+        <Outline.Name>sub</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. sub(self: heu.numpy.Evaluator, arg0: heu.numpy.CiphertextArray, arg1: heu.numpy.CiphertextArray) -> heu.numpy.CiphertextArray
+        2. sub(self: heu.numpy.Evaluator, arg0: heu.numpy.CiphertextArray, arg1: heu.numpy.PlaintextArray) -> heu.numpy.CiphertextArray
+        3. sub(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray, arg1: heu.numpy.CiphertextArray) -> heu.numpy.CiphertextArray
+        4. sub(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray, arg1: heu.numpy.PlaintextArray) -> heu.numpy.PlaintextArray
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.Evaluator.sum"} module={"heu.numpy"} fullname={"Evaluator.sum"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="Evaluator.sum" id="heu.numpy.Evaluator.sum">
+        <Outline.Name>sum</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. sum(self: heu.numpy.Evaluator, arg0: heu.numpy.PlaintextArray) -> heu.phe.Plaintext
+        2. sum(self: heu.numpy.Evaluator, arg0: heu.numpy.CiphertextArray) -> heu.phe.Ciphertext
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.numpy.HeKit"} module={"heu.numpy"} fullname={"HeKit"} description={"Overloaded function."}>
+  <Outline.Signature fullname="HeKit" id="heu.numpy.HeKit">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>HeKit</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.numpy.HeKit.array"} module={"heu.numpy"} fullname={"HeKit.array"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="HeKit.array" id="heu.numpy.HeKit.array">
+        <Outline.Name>array</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder\_params: heu.phe.BigintEncoderParams = BigintEncoderParams()) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyBigintEncoderParams
+
+        2. array(self: heu.phe.HeKitPublicBase, object: object, encoder\_params: heu.phe.BigintEncoderParams = BigintEncoderParams()) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyBigintEncoderParams
+
+        3. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder: heu.phe.BigintEncoder) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyBigintEncoder, same with hnp.array()
+
+        4. array(self: heu.phe.HeKitPublicBase, object: object, encoder: heu.phe.BigintEncoder) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyBigintEncoder, same with hnp.array()
+
+        5. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder\_params: heu.phe.IntegerEncoderParams) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyIntegerEncoderParams
+
+        6. array(self: heu.phe.HeKitPublicBase, object: object, encoder\_params: heu.phe.IntegerEncoderParams) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyIntegerEncoderParams
+
+        7. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder: heu.phe.IntegerEncoder) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyIntegerEncoder, same with hnp.array()
+
+        8. array(self: heu.phe.HeKitPublicBase, object: object, encoder: heu.phe.IntegerEncoder) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyIntegerEncoder, same with hnp.array()
+
+        9. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder\_params: heu.phe.FloatEncoderParams) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyFloatEncoderParams
+
+        10. array(self: heu.phe.HeKitPublicBase, object: object, encoder\_params: heu.phe.FloatEncoderParams) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyFloatEncoderParams
+
+        11. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder: heu.phe.FloatEncoder) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyFloatEncoder, same with hnp.array()
+
+        12. array(self: heu.phe.HeKitPublicBase, object: object, encoder: heu.phe.FloatEncoder) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyFloatEncoder, same with hnp.array()
+
+        13. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder\_params: heu.phe.BatchIntegerEncoderParams) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyBatchIntegerEncoderParams
+
+        14. array(self: heu.phe.HeKitPublicBase, object: object, encoder\_params: heu.phe.BatchIntegerEncoderParams) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyBatchIntegerEncoderParams
+
+        15. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder: heu.phe.BatchIntegerEncoder) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyBatchIntegerEncoder, same with hnp.array()
+
+        16. array(self: heu.phe.HeKitPublicBase, object: object, encoder: heu.phe.BatchIntegerEncoder) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyBatchIntegerEncoder, same with hnp.array()
+
+        17. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder\_params: heu.phe.BatchFloatEncoderParams) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyBatchFloatEncoderParams
+
+        18. array(self: heu.phe.HeKitPublicBase, object: object, encoder\_params: heu.phe.BatchFloatEncoderParams) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyBatchFloatEncoderParams
+
+        19. array(self: heu.phe.HeKitPublicBase, ndarray: numpy.ndarray, encoder: heu.phe.BatchFloatEncoder) -> heu.numpy.PlaintextArray
+
+        Create and encode an array using heu::pylib::PyBatchFloatEncoder, same with hnp.array()
+
+        20. array(self: heu.phe.HeKitPublicBase, object: object, encoder: heu.phe.BatchFloatEncoder) -> heu.numpy.PlaintextArray
+
+        Encode a numpy ndarray using heu::pylib::PyBatchFloatEncoder, same with hnp.array()
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.HeKit.decryptor"} module={"heu.numpy"} fullname={"HeKit.decryptor"} description={"Get decryptor"} parameters={["self"]}>
+      <Outline.Signature fullname="HeKit.decryptor" id="heu.numpy.HeKit.decryptor">
+        <Outline.Name>decryptor</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.HeKit](#heu.numpy.HeKit "heu.numpy.HeKit")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::lib::numpy::Decryptor</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get decryptor
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.HeKit.encryptor"} module={"heu.numpy"} fullname={"HeKit.encryptor"} description={"Get encryptor"} parameters={["self"]}>
+      <Outline.Signature fullname="HeKit.encryptor" id="heu.numpy.HeKit.encryptor">
+        <Outline.Name>encryptor</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.HeKit](#heu.numpy.HeKit "heu.numpy.HeKit")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::lib::numpy::Encryptor</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get encryptor
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.HeKit.evaluator"} module={"heu.numpy"} fullname={"HeKit.evaluator"} description={"Get evaluator"} parameters={["self"]}>
+      <Outline.Signature fullname="HeKit.evaluator" id="heu.numpy.HeKit.evaluator">
+        <Outline.Name>evaluator</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.HeKit](#heu.numpy.HeKit "heu.numpy.HeKit")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>heu::lib::numpy::Evaluator</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get evaluator
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.numpy.MatrixSerializeFormat"} module={"heu.numpy"} fullname={"MatrixSerializeFormat"} description={"Members:"}>
+  <Outline.Signature fullname="MatrixSerializeFormat" id="heu.numpy.MatrixSerializeFormat">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>MatrixSerializeFormat</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Members:
+
+    Best
+
+    Interconnection
+
+    <Outline domain="py" objectType="attribute" target={"heu.numpy.MatrixSerializeFormat.Best"} module={"heu.numpy"} fullname={"MatrixSerializeFormat.Best"} description={"Members:"}>
+      <Outline.Signature fullname="MatrixSerializeFormat.Best" id="heu.numpy.MatrixSerializeFormat.Best">
+        <Outline.Name>Best</Outline.Name><Outline.Keyword><span>{" "}</span><span>=</span><span>{" "}</span>\<MatrixSerializeFormat.Best: 0></Outline.Keyword>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="attribute" target={"heu.numpy.MatrixSerializeFormat.Interconnection"} module={"heu.numpy"} fullname={"MatrixSerializeFormat.Interconnection"} description={"Members:"}>
+      <Outline.Signature fullname="MatrixSerializeFormat.Interconnection" id="heu.numpy.MatrixSerializeFormat.Interconnection">
+        <Outline.Name>Interconnection</Outline.Name><Outline.Keyword><span>{" "}</span><span>=</span><span>{" "}</span>\<MatrixSerializeFormat.Interconnection: 1></Outline.Keyword>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.MatrixSerializeFormat.name"} module={"heu.numpy"} fullname={"MatrixSerializeFormat.name"} description={"Members:"}>
+      <Outline.Signature fullname="MatrixSerializeFormat.name" id="heu.numpy.MatrixSerializeFormat.name">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>name</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.MatrixSerializeFormat.value"} module={"heu.numpy"} fullname={"MatrixSerializeFormat.value"} description={"Members:"}>
+      <Outline.Signature fullname="MatrixSerializeFormat.value" id="heu.numpy.MatrixSerializeFormat.value">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>value</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content />
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.numpy.PlaintextArray"} module={"heu.numpy"} fullname={"PlaintextArray"} description={"Get the number of cols"}>
+  <Outline.Signature fullname="PlaintextArray" id="heu.numpy.PlaintextArray">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>PlaintextArray</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="property" target={"heu.numpy.PlaintextArray.cols"} module={"heu.numpy"} fullname={"PlaintextArray.cols"} description={"Get the number of cols"}>
+      <Outline.Signature fullname="PlaintextArray.cols" id="heu.numpy.PlaintextArray.cols">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>cols</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get the number of cols
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.PlaintextArray.load_from"} module={"heu.numpy"} fullname={"PlaintextArray.load_from"} description={"deserialize matrix from bytes"} parameters={["bytes_buffer: bytes", "format: heu.numpy.MatrixSerializeFormat = <MatrixSerializeFormat.Best: 0>"]}>
+      <Outline.Signature fullname="PlaintextArray.load_from" id="heu.numpy.PlaintextArray.load_from">
+        <Outline.Keyword>static<span>{" "}</span></Outline.Keyword><Outline.Name>load\_from</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">bytes\_buffer: bytes</span></Outline.Parameter>, <Outline.Parameter><span className="name">format: heu.numpy.MatrixSerializeFormat = \<MatrixSerializeFormat.Best: 0></span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.numpy.PlaintextArray](#heu.numpy.PlaintextArray "heu.numpy.PlaintextArray")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        deserialize matrix from bytes
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.PlaintextArray.ndim"} module={"heu.numpy"} fullname={"PlaintextArray.ndim"} description={"The array\u2019s number of dimensions"}>
+      <Outline.Signature fullname="PlaintextArray.ndim" id="heu.numpy.PlaintextArray.ndim">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>ndim</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        The array’s number of dimensions
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.PlaintextArray.rows"} module={"heu.numpy"} fullname={"PlaintextArray.rows"} description={"Get the number of rows"}>
+      <Outline.Signature fullname="PlaintextArray.rows" id="heu.numpy.PlaintextArray.rows">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>rows</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get the number of rows
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.PlaintextArray.serialize"} module={"heu.numpy"} fullname={"PlaintextArray.serialize"} description={"serialize matrix to bytes"} parameters={["self: heu.numpy.PlaintextArray", "format: heu.numpy.MatrixSerializeFormat = <MatrixSerializeFormat.Best: 0>"]}>
+      <Outline.Signature fullname="PlaintextArray.serialize" id="heu.numpy.PlaintextArray.serialize">
+        <Outline.Name>serialize</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self: heu.numpy.PlaintextArray</span></Outline.Parameter>, <Outline.Parameter><span className="name">format: heu.numpy.MatrixSerializeFormat = \<MatrixSerializeFormat.Best: 0></span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>bytes</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        serialize matrix to bytes
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.PlaintextArray.shape"} module={"heu.numpy"} fullname={"PlaintextArray.shape"} description={"The array\u2019s shape"}>
+      <Outline.Signature fullname="PlaintextArray.shape" id="heu.numpy.PlaintextArray.shape">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>shape</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        The array’s shape
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.PlaintextArray.size"} module={"heu.numpy"} fullname={"PlaintextArray.size"} description={"Number of elements in the array"}>
+      <Outline.Signature fullname="PlaintextArray.size" id="heu.numpy.PlaintextArray.size">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>size</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Number of elements in the array
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.PlaintextArray.to_bytes"} module={"heu.numpy"} fullname={"PlaintextArray.to_bytes"} description={"Construct Python bytes containing the raw data bytes in the array."} parameters={["self", "bytes_per_int", "endian"]}>
+      <Outline.Signature fullname="PlaintextArray.to_bytes" id="heu.numpy.PlaintextArray.to_bytes">
+        <Outline.Name>to\_bytes</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.PlaintextArray](#heu.numpy.PlaintextArray "heu.numpy.PlaintextArray")</span></Outline.Parameter>, <Outline.Parameter><span className="name">bytes\_per\_int</span><span>:</span><span>{" "}</span><span className="name">int</span></Outline.Parameter>, <Outline.Parameter><span className="name">endian</span><span>:</span><span>{" "}</span><span className="name">str</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>bytes</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Construct Python bytes containing the raw data bytes in the array.
+
+        The endian argument determines the byte order used to represent an integer. To request the native byte order of the host system, use sys.byteorder as the byte order value.
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.PlaintextArray.to_numpy"} module={"heu.numpy"} fullname={"PlaintextArray.to_numpy"} description={"Overloaded function."} parameters={["args", "kwargs"]}>
+      <Outline.Signature fullname="PlaintextArray.to_numpy" id="heu.numpy.PlaintextArray.to_numpy">
+        <Outline.Name>to\_numpy</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Overloaded function.
+
+        1. to\_numpy(self: heu.numpy.PlaintextArray, encoder: heu.phe.BigintDecoder = BigintDecoder()) -> numpy.ndarray
+
+        Decode plaintext array to numpy ndarray with type ‘object’
+
+        2. to\_numpy(self: heu.numpy.PlaintextArray, encoder: heu.phe.IntegerEncoder) -> numpy.ndarray
+
+        Decode plaintext array to numpy ndarray with type ‘int64’
+
+        3. to\_numpy(self: heu.numpy.PlaintextArray, encoder: heu.phe.FloatEncoder) -> numpy.ndarray
+
+        Decode plaintext array to numpy ndarray with type ‘float64’
+
+        4. to\_numpy(self: heu.numpy.PlaintextArray, encoder: heu.phe.BatchIntegerEncoder) -> numpy.ndarray
+
+        Decode plaintext array to numpy ndarray with type ‘int64’
+
+        5. to\_numpy(self: heu.numpy.PlaintextArray, encoder: heu.phe.BatchFloatEncoder) -> numpy.ndarray
+
+        Decode plaintext array to numpy ndarray with type ‘float64’
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.PlaintextArray.transpose"} module={"heu.numpy"} fullname={"PlaintextArray.transpose"} description={"Transpose the array"} parameters={["self"]}>
+      <Outline.Signature fullname="PlaintextArray.transpose" id="heu.numpy.PlaintextArray.transpose">
+        <Outline.Name>transpose</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.PlaintextArray](#heu.numpy.PlaintextArray "heu.numpy.PlaintextArray")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.numpy.PlaintextArray](#heu.numpy.PlaintextArray "heu.numpy.PlaintextArray")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Transpose the array
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.numpy.Shape"} module={"heu.numpy"} fullname={"Shape"}>
+  <Outline.Signature fullname="Shape" id="heu.numpy.Shape">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>Shape</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content />
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.numpy.StringArray"} module={"heu.numpy"} fullname={"StringArray"} description={"Get the number of cols"}>
+  <Outline.Signature fullname="StringArray" id="heu.numpy.StringArray">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>StringArray</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="property" target={"heu.numpy.StringArray.cols"} module={"heu.numpy"} fullname={"StringArray.cols"} description={"Get the number of cols"}>
+      <Outline.Signature fullname="StringArray.cols" id="heu.numpy.StringArray.cols">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>cols</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get the number of cols
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.StringArray.load_from"} module={"heu.numpy"} fullname={"StringArray.load_from"} description={"deserialize matrix from bytes"} parameters={["bytes_buffer: bytes", "format: heu.numpy.MatrixSerializeFormat = <MatrixSerializeFormat.Best: 0>"]}>
+      <Outline.Signature fullname="StringArray.load_from" id="heu.numpy.StringArray.load_from">
+        <Outline.Keyword>static<span>{" "}</span></Outline.Keyword><Outline.Name>load\_from</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">bytes\_buffer: bytes</span></Outline.Parameter>, <Outline.Parameter><span className="name">format: heu.numpy.MatrixSerializeFormat = \<MatrixSerializeFormat.Best: 0></span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.numpy.StringArray](#heu.numpy.StringArray "heu.numpy.StringArray")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        deserialize matrix from bytes
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.StringArray.ndim"} module={"heu.numpy"} fullname={"StringArray.ndim"} description={"The array\u2019s number of dimensions"}>
+      <Outline.Signature fullname="StringArray.ndim" id="heu.numpy.StringArray.ndim">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>ndim</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        The array’s number of dimensions
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.StringArray.rows"} module={"heu.numpy"} fullname={"StringArray.rows"} description={"Get the number of rows"}>
+      <Outline.Signature fullname="StringArray.rows" id="heu.numpy.StringArray.rows">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>rows</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Get the number of rows
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.StringArray.serialize"} module={"heu.numpy"} fullname={"StringArray.serialize"} description={"serialize matrix to bytes"} parameters={["self: heu.numpy.StringArray", "format: heu.numpy.MatrixSerializeFormat = <MatrixSerializeFormat.Best: 0>"]}>
+      <Outline.Signature fullname="StringArray.serialize" id="heu.numpy.StringArray.serialize">
+        <Outline.Name>serialize</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self: heu.numpy.StringArray</span></Outline.Parameter>, <Outline.Parameter><span className="name">format: heu.numpy.MatrixSerializeFormat = \<MatrixSerializeFormat.Best: 0></span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>bytes</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        serialize matrix to bytes
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.StringArray.shape"} module={"heu.numpy"} fullname={"StringArray.shape"} description={"The array\u2019s shape"}>
+      <Outline.Signature fullname="StringArray.shape" id="heu.numpy.StringArray.shape">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>shape</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        The array’s shape
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="property" target={"heu.numpy.StringArray.size"} module={"heu.numpy"} fullname={"StringArray.size"} description={"Number of elements in the array"}>
+      <Outline.Signature fullname="StringArray.size" id="heu.numpy.StringArray.size">
+        <Outline.Keyword>property<span>{" "}</span></Outline.Keyword><Outline.Name>size</Outline.Name>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Number of elements in the array
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.StringArray.transpose"} module={"heu.numpy"} fullname={"StringArray.transpose"} description={"Transpose the array"} parameters={["self"]}>
+      <Outline.Signature fullname="StringArray.transpose" id="heu.numpy.StringArray.transpose">
+        <Outline.Name>transpose</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">self</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.StringArray](#heu.numpy.StringArray "heu.numpy.StringArray")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.numpy.StringArray](#heu.numpy.StringArray "heu.numpy.StringArray")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Transpose the array
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="function" target={"heu.numpy.array"} module={"heu.numpy"} fullname={"array"} parameters={["args", "kwargs"]} description={"Overloaded function."}>
+  <Outline.Signature fullname="array" id="heu.numpy.array">
+    <Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>array</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Overloaded function.
+
+    1. array(ndarray: numpy.ndarray, encoder: heu.phe.BigintEncoder) -> heu.numpy.PlaintextArray
+
+    Create and encode an array using heu::pylib::PyBigintEncoder
+
+    2. array(object: object, encoder: heu.phe.BigintEncoder) -> heu.numpy.PlaintextArray
+
+    Encode a numpy ndarray using heu::pylib::PyBigintEncoder
+
+    3. array(ndarray: numpy.ndarray, encoder: heu.phe.IntegerEncoder) -> heu.numpy.PlaintextArray
+
+    Create and encode an array using heu::pylib::PyIntegerEncoder
+
+    4. array(object: object, encoder: heu.phe.IntegerEncoder) -> heu.numpy.PlaintextArray
+
+    Encode a numpy ndarray using heu::pylib::PyIntegerEncoder
+
+    5. array(ndarray: numpy.ndarray, encoder: heu.phe.FloatEncoder) -> heu.numpy.PlaintextArray
+
+    Create and encode an array using heu::pylib::PyFloatEncoder
+
+    6. array(object: object, encoder: heu.phe.FloatEncoder) -> heu.numpy.PlaintextArray
+
+    Encode a numpy ndarray using heu::pylib::PyFloatEncoder
+
+    7. array(ndarray: numpy.ndarray, encoder: heu.phe.BatchIntegerEncoder) -> heu.numpy.PlaintextArray
+
+    Create and encode an array using heu::pylib::PyBatchIntegerEncoder
+
+    8. array(object: object, encoder: heu.phe.BatchIntegerEncoder) -> heu.numpy.PlaintextArray
+
+    Encode a numpy ndarray using heu::pylib::PyBatchIntegerEncoder
+
+    9. array(ndarray: numpy.ndarray, encoder: heu.phe.BatchFloatEncoder) -> heu.numpy.PlaintextArray
+
+    Create and encode an array using heu::pylib::PyBatchFloatEncoder
+
+    10. array(object: object, encoder: heu.phe.BatchFloatEncoder) -> heu.numpy.PlaintextArray
+
+    Encode a numpy ndarray using heu::pylib::PyBatchFloatEncoder
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="class" target={"heu.numpy.random"} module={"heu.numpy"} fullname={"random"} description={"Return a random integer array where each element is \u2018bits\u2019 bits long"}>
+  <Outline.Signature fullname="random" id="heu.numpy.random">
+    <Outline.Keyword>class<span>{" "}</span></Outline.Keyword><Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>random</Outline.Name>
+  </Outline.Signature>
+
+  <Outline.Content>
+    <Outline domain="py" objectType="method" target={"heu.numpy.random.randbits"} module={"heu.numpy"} fullname={"random.randbits"} description={"Return a random integer array where each element is \u2018bits\u2019 bits long"} parameters={["schema", "bits", "shape"]}>
+      <Outline.Signature fullname="random.randbits" id="heu.numpy.random.randbits">
+        <Outline.Keyword>static<span>{" "}</span></Outline.Keyword><Outline.Name>randbits</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">schema</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.SchemaType](phe_api.mdx#heu.phe.SchemaType "heu.phe.SchemaType")</span></Outline.Parameter>, <Outline.Parameter><span className="name">bits</span><span>:</span><span>{" "}</span><span className="name">int</span></Outline.Parameter>, <Outline.Parameter><span className="name">shape</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.Shape](#heu.numpy.Shape "heu.numpy.Shape")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.numpy.PlaintextArray](#heu.numpy.PlaintextArray "heu.numpy.PlaintextArray")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Return a random integer array where each element is ‘bits’ bits long
+      </Outline.Content>
+    </Outline>
+
+    <Outline domain="py" objectType="method" target={"heu.numpy.random.randint"} module={"heu.numpy"} fullname={"random.randint"} description={"Return a random integer array from the \u201cdiscrete uniform\u201d distribution in interval [min, max)"} parameters={["min", "max", "shape"]}>
+      <Outline.Signature fullname="random.randint" id="heu.numpy.random.randint">
+        <Outline.Keyword>static<span>{" "}</span></Outline.Keyword><Outline.Name>randint</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">min</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Plaintext](phe_api.mdx#heu.phe.Plaintext "heu.phe.Plaintext")</span></Outline.Parameter>, <Outline.Parameter><span className="name">max</span><span>:</span><span>{" "}</span><span className="name">[heu.phe.Plaintext](phe_api.mdx#heu.phe.Plaintext "heu.phe.Plaintext")</span></Outline.Parameter>, <Outline.Parameter><span className="name">shape</span><span>:</span><span>{" "}</span><span className="name">[heu.numpy.Shape](#heu.numpy.Shape "heu.numpy.Shape")</span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>[heu.numpy.PlaintextArray](#heu.numpy.PlaintextArray "heu.numpy.PlaintextArray")</Outline.ReturnType>
+      </Outline.Signature>
+
+      <Outline.Content>
+        Return a random integer array from the “discrete uniform” distribution in interval \[min, max)
+      </Outline.Content>
+    </Outline>
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="function" target={"heu.numpy.setup"} module={"heu.numpy"} fullname={"setup"} parameters={["args", "kwargs"]} description={"Overloaded function."}>
+  <Outline.Signature fullname="setup" id="heu.numpy.setup">
+    <Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>setup</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span>\*</span><span className="name">args</span></Outline.Parameter>, <Outline.Parameter><span>\*\*</span><span className="name">kwargs</span></Outline.Parameter><span>)</span></Outline.ParameterList>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Overloaded function.
+
+    1. setup(schema\_type: heu.phe.SchemaType, key\_size: int) -> heu.numpy.HeKit
+
+    Setup phe (numpy) environment by schema type and key size
+
+    2. setup(schema\_string: str, key\_size: int) -> heu.numpy.HeKit
+
+    Setup phe (numpy) environment by schema string and key size
+
+    3. setup(schema\_type: heu.phe.SchemaType = \<SchemaType.ZPaillier: 3>) -> heu.numpy.HeKit
+
+    Setup phe (numpy) environment by schema type
+
+    4. setup(schema\_string: str = ‘z-paillier’) -> heu.numpy.HeKit
+
+    Setup phe (numpy) environment by schema string
+
+    5. setup(public\_key: heu.phe.PublicKey) -> heu.numpy.DestinationHeKit
+
+    Setup phe (numpy) environment by an already generated public key
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="function" target={"heu.numpy.tree_predict"} module={"heu.numpy"} fullname={"tree_predict"} parameters={["arg0", "arg1", "arg2"]} description={"Compute tree predict based on split features and points, the tree is complete."}>
+  <Outline.Signature fullname="tree_predict" id="heu.numpy.tree_predict">
+    <Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>tree\_predict</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">arg0</span><span>:</span><span>{" "}</span><span className="name">numpy.ndarray<span>\[</span>numpy.float64<span>\[</span>m<span>,</span><span>{" "}</span>n<span>]</span><span>,</span><span>{" "}</span>flags.c\_contiguous<span>]</span></span></Outline.Parameter>, <Outline.Parameter><span className="name">arg1</span><span>:</span><span>{" "}</span><span className="name">List<span>\[</span>int<span>]</span></span></Outline.Parameter>, <Outline.Parameter><span className="name">arg2</span><span>:</span><span>{" "}</span><span className="name">List<span>\[</span>float<span>]</span></span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>numpy.ndarray<span>\[</span>numpy.int8<span>\[</span>m<span>,</span><span>{" "}</span>n<span>]</span><span>]</span></Outline.ReturnType>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Compute tree predict based on split features and points, the tree is complete.
+  </Outline.Content>
+</Outline>
+
+<Outline domain="py" objectType="function" target={"heu.numpy.tree_predict_with_indices"} module={"heu.numpy"} fullname={"tree_predict_with_indices"} parameters={["arg0", "arg1", "arg2", "arg3", "arg4"]} description={"Compute tree predict based on split features and points, the tree may be unbalanced."}>
+  <Outline.Signature fullname="tree_predict_with_indices" id="heu.numpy.tree_predict_with_indices">
+    <Outline.Prefix>heu.numpy.</Outline.Prefix><Outline.Name>tree\_predict\_with\_indices</Outline.Name><Outline.ParameterList><span>(</span><Outline.Parameter><span className="name">arg0</span><span>:</span><span>{" "}</span><span className="name">numpy.ndarray<span>\[</span>numpy.float64<span>\[</span>m<span>,</span><span>{" "}</span>n<span>]</span><span>,</span><span>{" "}</span>flags.c\_contiguous<span>]</span></span></Outline.Parameter>, <Outline.Parameter><span className="name">arg1</span><span>:</span><span>{" "}</span><span className="name">List<span>\[</span>int<span>]</span></span></Outline.Parameter>, <Outline.Parameter><span className="name">arg2</span><span>:</span><span>{" "}</span><span className="name">List<span>\[</span>float<span>]</span></span></Outline.Parameter>, <Outline.Parameter><span className="name">arg3</span><span>:</span><span>{" "}</span><span className="name">List<span>\[</span>int<span>]</span></span></Outline.Parameter>, <Outline.Parameter><span className="name">arg4</span><span>:</span><span>{" "}</span><span className="name">List<span>\[</span>int<span>]</span></span></Outline.Parameter><span>)</span></Outline.ParameterList><Outline.ReturnType><span>{" \u2192 "}</span>numpy.ndarray<span>\[</span>numpy.int8<span>\[</span>m<span>,</span><span>{" "}</span>n<span>]</span><span>]</span></Outline.ReturnType>
+  </Outline.Signature>
+
+  <Outline.Content>
+    Compute tree predict based on split features and points, the tree may be unbalanced.
+  </Outline.Content>
+</Outline>
