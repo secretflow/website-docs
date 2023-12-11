@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/kuscia/raw/3f51ec86d7b9c4f34fb14819559cb1ce251e5c75/docs/reference/apis/summary_cn.md
-git_last_modified_commit: c4523156169f0d0720d8b3523127447a6d098ad8
-git_last_modified_time: '2023-10-30T11:52:56+08:00'
-git_origin_url: https://github.com/secretflow/kuscia/blob/3f51ec86d7b9c4f34fb14819559cb1ce251e5c75/docs/reference/apis/summary_cn.md
+git_download_url: https://github.com/secretflow/kuscia/raw/f1d2ebf6f9a4acd68047fa40b5d06b4140206db7/docs/reference/apis/summary_cn.md
+git_last_modified_commit: c94d4c75e85d30c189172029469f0da9f489e143
+git_last_modified_time: '2023-12-08T20:51:13+08:00'
+git_origin_url: https://github.com/secretflow/kuscia/blob/f1d2ebf6f9a4acd68047fa40b5d06b4140206db7/docs/reference/apis/summary_cn.md
 git_owner: secretflow
 git_repo: kuscia
-git_revision_commit: 3f51ec86d7b9c4f34fb14819559cb1ce251e5c75
-git_revision_time: '2023-12-06T13:38:00+08:00'
+git_revision_commit: f1d2ebf6f9a4acd68047fa40b5d06b4140206db7
+git_revision_time: '2023-12-11T11:09:06+08:00'
 ---
 
 :target{#id1}
@@ -198,10 +198,10 @@ Status 携带请求响应的状态信息。
 Kuscia master 部署完成之后，会默认生成一个 kuscia API client 证书，你可以通过以下命令获取（以中心化组网模式为例）：
 
 ```shell
-docker cp ${USER}-kuscia-master:/home/kuscia/etc/certs/kusciaapi-client.key .
-docker cp ${USER}-kuscia-master:/home/kuscia/etc/certs/kusciaapi-client.crt .
-docker cp ${USER}-kuscia-master:/home/kuscia/etc/certs/ca.crt .
-docker cp ${USER}-kuscia-master:/home/kuscia/etc/certs/token .
+docker cp ${USER}-kuscia-master:/home/kuscia/var/tmp/kusciaapi-client.key .
+docker cp ${USER}-kuscia-master:/home/kuscia/var/tmp/kusciaapi-client.crt .
+docker cp ${USER}-kuscia-master:/home/kuscia/var/tmp/ca.crt .
+docker cp ${USER}-kuscia-master:/home/kuscia/var/tmp/token .
 ```
 
 :target{#grpc}
