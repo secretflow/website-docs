@@ -20,7 +20,7 @@ jobs:
           - [spu, main]
           - [heu, main]
           - [interconnection, main]
-          - [scql, 313796a288c55b3dde2392b0bb9052313dada0b8]
+          - [scql, 8f90675e4a85e1c76c0ac9a5720891911bc358d8]
           - [kuscia, main]
           - [secretpad, main]
           - [spec, main]
