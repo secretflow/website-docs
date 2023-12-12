@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/7563c4f7cbc5bee70fc80b346c91f5bf9fb93769/docs/topics/ccl/intro.rst
-git_last_modified_commit: bf5789bb37114a0f45d04d938337ec1af474a847
-git_last_modified_time: '2023-12-04T11:39:34+08:00'
-git_origin_url: https://github.com/secretflow/scql/blob/7563c4f7cbc5bee70fc80b346c91f5bf9fb93769/docs/topics/ccl/intro.rst
+git_download_url: https://github.com/secretflow/scql/raw/313796a288c55b3dde2392b0bb9052313dada0b8/docs/topics/ccl/intro.rst
+git_last_modified_commit: b839cf8f04f94a53d9df08aec25c28ac8e48ac10
+git_last_modified_time: '2023-10-12T02:10:46-05:00'
+git_origin_url: https://github.com/secretflow/scql/blob/313796a288c55b3dde2392b0bb9052313dada0b8/docs/topics/ccl/intro.rst
 git_owner: secretflow
 git_repo: scql
-git_revision_commit: 7563c4f7cbc5bee70fc80b346c91f5bf9fb93769
-git_revision_time: '2023-12-05T14:37:27+08:00'
+git_revision_commit: 313796a288c55b3dde2392b0bb9052313dada0b8
+git_revision_time: '2023-11-20T11:22:41+08:00'
 ---
 
 :target{#scql-ccl}
@@ -75,7 +75,7 @@ Translator 把 query 翻译得到的 Logical Plan 和 CCL 作为输入，经过 
 
 <strong>Join</strong>
 
-当 JOIN keys 的 CCL constraint 均为 `PLAINTEXT_AFTER_JOIN` 或 `PLAINTEXT` 时，则对于 <strong>InnerJoin</strong> ， JOIN keys 交集结果的 CCL 变为 `PLAINTEXT` ，对于 <strong>LeftOuterJoin</strong> ，只有右 JOIN key 的交集结果的 CCL 变为 `PLAINTEXT` ， 对于 <strong>RightOuterJoin</strong> ，则是左 JOIN key 的交集结果变为 `PLAINTEXT` 。
+当 JOIN keys 的 CCL constraint 均为 `PLAINTEXT_AFTER_JOIN` 或 `PLAINTEXT` 时，则 JOIN keys 的交集的 CCL constraint 类型为 `PLAINTEXT`。
 
 <strong>Group By</strong>
 
