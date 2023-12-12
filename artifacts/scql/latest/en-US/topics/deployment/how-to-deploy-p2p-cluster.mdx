@@ -1,19 +1,19 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/7563c4f7cbc5bee70fc80b346c91f5bf9fb93769/docs/topics/deployment/how-to-deploy-p2p-cluster.rst
-git_last_modified_commit: 7563c4f7cbc5bee70fc80b346c91f5bf9fb93769
-git_last_modified_time: '2023-12-05T14:37:27+08:00'
-git_origin_url: https://github.com/secretflow/scql/blob/7563c4f7cbc5bee70fc80b346c91f5bf9fb93769/docs/topics/deployment/how-to-deploy-p2p-cluster.rst
+git_download_url: https://github.com/secretflow/scql/raw/313796a288c55b3dde2392b0bb9052313dada0b8/docs/topics/deployment/how-to-deploy-p2p-cluster.rst
+git_last_modified_commit: 8f90675e4a85e1c76c0ac9a5720891911bc358d8
+git_last_modified_time: '2023-11-17T17:19:11+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/313796a288c55b3dde2392b0bb9052313dada0b8/docs/topics/deployment/how-to-deploy-p2p-cluster.rst
 git_owner: secretflow
 git_repo: scql
-git_revision_commit: 7563c4f7cbc5bee70fc80b346c91f5bf9fb93769
-git_revision_time: '2023-12-05T14:37:27+08:00'
+git_revision_commit: 313796a288c55b3dde2392b0bb9052313dada0b8
+git_revision_time: '2023-11-20T11:22:41+08:00'
 ---
 
-:target{#p2p-deployment}
+:target{#deployment-in-p2p-mode}
 
-# P2P Deployment
+# Deployment in P2P Mode
 
-This document describes how to deploy a SCQL system with docker in P2P mode and use brokerctl to query. It is basically the same as the [Quickstart Tutorial](../../intro/p2p-tutorial.mdx), but deployed on multi machines.
+This document describes how to deploy a SCQL system with docker in P2P mode and use brokerctl to query. It is basically the same as the [P2P Quickstart Tutorial](../../intro/p2p-tutorial.mdx), but deployed on multi machines.
 
 Before start this doc, we assume that the reader has some experience using the docker-compose utility. If you are new to Docker Compose, please consider reviewing the [official Docker Compose overview](https://docs.docker.com/compose/), or checking out the [Getting Started guide](https://docs.docker.com/compose/gettingstarted/).
 
@@ -77,8 +77,7 @@ inter_server:
   port: 8081
 log_level: debug
 party_code: alice
-session_expire_time: 24h
-session_expire_check_time: 1m
+engines: ["engine:8003"]
 party_info_file: "/home/admin/configs/party_info.json"
 private_pem_path: "/home/admin/configs/ed25519key.pem"
 intra_host: broker:8080
@@ -86,9 +85,6 @@ engine:
   timeout: 120s
   protocol: http
   content_type: application/json
-  uris:
-    - for_peer: __ENGINE_URL__
-      for_self: engine:8003
 storage:
   type: mysql
   conn_str: "root:__MYSQL_ROOT_PASSWORD__@tcp(mysql:3306)/brokeralice?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true"
@@ -100,8 +96,6 @@ storage:
 
 <Container type="note" id="replace-p2p-password">
   For Bob, the <strong>party\_code</strong> should be `bob`, and the `brokeralice` in <strong>conn\_str</strong> should be replaced by `brokerbob`.
-
-  The `__ENGINE_URL__` should be replaced by <strong>machine host/ip + engine published port</strong>, like: [http://30.30.30.30:8003](http://30.30.30.30:8003).
 
   The `__MYSQL_ROOT_PASSWORD__` should be replaced with the password set by the corresponding party, and please replace this placeholder in the same way for subsequent files.
 </Container>
@@ -117,14 +111,16 @@ Create a file called `gflags.conf` in your workspace and paste the following cod
 ```bash
 --listen_port=8003
 --datasource_router=embed
---enable_driver_authorization=false
+--enable_scdb_authorization=false
 --server_enable_ssl=false
---driver_enable_ssl_as_client=false
+--scdb_enable_ssl_as_client=false
 --peer_engine_enable_ssl_as_client=false
 --embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"db=alice;user=root;password=__MYSQL_ROOT_PASSWORD__;host=mysql;auto-reconnect=true"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
 # party authentication flags
---enable_self_auth=false
---enable_peer_auth=false
+--enable_self_auth=true
+--enable_peer_auth=true
+--private_key_pem_path=/home/admin/engine/conf/ed25519key.pem
+--authorized_profile_path=/home/admin/engine/conf/authorized_profile.json
 ```
 
 <Container type="note">
@@ -145,7 +141,7 @@ Create a file called `docker-compose.yaml` in your workspace and paste the follo
 version: '3.8'
 services:
   broker:
-    image: secretflow/scql:latest
+    image: scql:latest
     command:
       - /home/admin/bin/broker
       - -config=/home/admin/configs/config.yml
@@ -163,11 +159,13 @@ services:
     command:
       - /home/admin/bin/scqlengine
       - --flagfile=/home/admin/engine/conf/gflags.conf
-    image: secretflow/scql:latest
+    image: scql:latest
     ports:
       - __ENGINE_PORT__:8003
     volumes:
       - ./gflags.conf:/home/admin/engine/conf/gflags.conf
+      - ./ed25519key.pem:/home/admin/engine/conf/ed25519key.pem
+      - ./authorized_profile.json:/home/admin/engine/conf/authorized_profile.json
   mysql:
     image: mysql:latest
     environment:
@@ -191,7 +189,7 @@ services:
 ```
 
 <Container type="note">
-  `__INTRA_PORT__`, `__INTER_PORT__` and `__ENGINE_PORT__`  are published ports on the host machine, you should replace them with accessible port numbers, in particular, the `__ENGINE_PORT__` should be the same port in [<span>\_\_ENGINE\_URL\_\_</span>](#replace-p2p-password). In this case, we have designated them as `8080`, `8081` and `8003`
+  `__INTRA_PORT__`, `__INTER_PORT__` and `__ENGINE_PORT__`  are published ports on the host machine, you need to replace it with an accessible port number. In this case, we have designated them as `8080`, `8081` and `8003`
 
   Please remember to replace `__MYSQL_ROOT_PASSWORD__` with the same password [<span>as before</span>](#replace-p2p-password)
 
@@ -234,12 +232,15 @@ Create other files:
 ```bash
 # generate private key
 openssl genpkey -algorithm ed25519 -out ed25519key.pem
-# get public key corresponding to the private key, the output can be used to replace the __ALICE_PUBLIC_KEY__ in party_info.json
-# for engine Bob,  the output can be used to replace the __BOB_PUBLIC_KEY__ in party_info.json
+# get public key corresponding to the private key, the output can be used to replace the __ALICE_PUBLIC_KEY__ in engine Bob's authorized_profile.json
+# for engine Bob,  the output can be used to replace the __BOB_PUBLIC_KEY__ in engine Alice's authorized_profile.json
 openssl pkey -in ed25519key.pem  -pubout -outform DER | base64
+# download authorized profile
+# for engine Bob, use command: wget https://raw.githubusercontent.com/secretflow/scql/main/examples/p2p-tutorial/engine/bob/conf/authorized_profile.json
+wget https://raw.githubusercontent.com/secretflow/scql/main/examples/p2p-tutorial/engine/alice/conf/authorized_profile.json
 ```
 
-Then you need to replace `__XXX_PUBLIC_KEY__` in party\_info.json with corresponding public keys.
+Then you need to replace `__XXX_PUBLIC_KEY__` in party\_info.json and authorized\_profile.json with corresponding public keys.
 
 :target{#start-services}
 
@@ -250,6 +251,7 @@ The file your workspace should be as follows:
 ```bash
 └── scql-p2p
   ├── alice_init.sql
+  ├── authorized_profile.json
   ├── broker_init_alice.sql
   ├── config.yml
   ├── docker-compose.yaml
@@ -317,7 +319,7 @@ go build -o brokerctl cmd/brokerctl/main.go
 
 ### 3.2 Submit Query
 
-You can start to use brokerctl to submit requests to SCQLBroker and fetch the results back. it’s similar to what you can do in [Quickstart Tutorial](../../intro/p2p-tutorial.mdx).
+You can start to use brokerctl to submit requests to SCQLBroker and fetch the results back. it’s similar to what you can do in [P2P Quickstart Tutorial](../../intro/p2p-tutorial.mdx).
 
 ```bash
 # create project demo in alice

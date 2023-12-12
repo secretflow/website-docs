@@ -1,19 +1,19 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/7563c4f7cbc5bee70fc80b346c91f5bf9fb93769/docs/topics/deployment/how-to-deploy-centralized-cluster.rst
-git_last_modified_commit: bf5789bb37114a0f45d04d938337ec1af474a847
-git_last_modified_time: '2023-12-04T11:39:34+08:00'
-git_origin_url: https://github.com/secretflow/scql/blob/7563c4f7cbc5bee70fc80b346c91f5bf9fb93769/docs/topics/deployment/how-to-deploy-centralized-cluster.rst
+git_download_url: https://github.com/secretflow/scql/raw/313796a288c55b3dde2392b0bb9052313dada0b8/docs/topics/deployment/how-to-deploy-centralized-cluster.rst
+git_last_modified_commit: 8f90675e4a85e1c76c0ac9a5720891911bc358d8
+git_last_modified_time: '2023-11-17T17:19:11+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/313796a288c55b3dde2392b0bb9052313dada0b8/docs/topics/deployment/how-to-deploy-centralized-cluster.rst
 git_owner: secretflow
 git_repo: scql
-git_revision_commit: 7563c4f7cbc5bee70fc80b346c91f5bf9fb93769
-git_revision_time: '2023-12-05T14:37:27+08:00'
+git_revision_commit: 313796a288c55b3dde2392b0bb9052313dada0b8
+git_revision_time: '2023-11-20T11:22:41+08:00'
 ---
 
 :target{#deployment-with-trusted-third-party}
 
 # 包含可信第三方的部署
 
-本文描述了如何使用 Docker 部署中心化模式的 SCQL 系统，并且使用 scdbclient 进行查询，它与 [基于中心化部署架构的快速开始](../../intro/tutorial.mdx) 基本相同，只不过是部署在多台机器上。
+本文描述了如何使用 Docker 部署中心化模式的 SCQL 系统，并且使用 scdbclient 进行查询，它与 [快速开始](../../intro/tutorial.mdx) 基本相同，只不过是部署在多台机器上。
 
 在开始阅读这篇文档前，我们假设读者已经具备一定的 docker-compose 使用经验。如果您对 Docker Compose 不熟悉，请参阅 [Docker Compose 官方概述](https://docs.docker.com/compose/)，或者查看 [入门指南](https://docs.docker.com/compose/gettingstarted/)。
 
@@ -67,9 +67,9 @@ wget raw.githubusercontent.com/secretflow/scql/main/examples/scdb-tutorial/mysql
 ```bash
 --listen_port=8080
 --datasource_router=embed
---enable_driver_authorization=false
+--enable_scdb_authorization=false
 --server_enable_ssl=false
---driver_enable_ssl_as_client=false
+--scdb_enable_ssl_as_client=false
 --peer_engine_enable_ssl_as_client=false
 --embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"db=alice;user=root;password=__MYSQL_ROOT_PASSWORD__;host=mysql;auto-reconnect=true"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
 # party authentication flags
@@ -220,8 +220,8 @@ scdb_host: scdb:8080
 port: 8080
 protocol: http
 query_result_callback_timeout: 3m
-session_expire_time: 24h
-session_expire_check_time: 1m
+session_expire_time: 3m
+session_expire_check_time: 100ms
 log_level: debug
 storage:
   type: mysql
@@ -392,7 +392,7 @@ go build -o scdbclient cmd/scdbclient/main.go
 
 ### 3.3 提交查询
 
-您可以开始使用 scdbclient 向 SCDBServer 提交查询并获取查询结果。您可以与在 [基于中心化部署架构的快速开始](../../intro/tutorial.mdx) 中执行的操作相同
+您可以开始使用 scdbclient 向 SCDBServer 提交查询并获取查询结果。您可以与在 [快速开始](../../intro/tutorial.mdx) 中执行的操作相同
 
 ```bash
 # use scdbclient to connect to scdbserver

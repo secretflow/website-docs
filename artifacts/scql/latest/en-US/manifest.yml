@@ -1,8 +1,7 @@
 sidebar:
   - items:
-      - {id: intro/p2p-tutorial.mdx, label: Quickstart Tutorial, type: doc}
-      - {id: intro/tutorial.mdx, label: Centralized Deployment Quickstart Tutorial,
-        type: doc}
+      - {id: intro/tutorial.mdx, label: Quickstart tutorial, type: doc}
+      - {id: intro/p2p-tutorial.mdx, label: P2P Quickstart Tutorial, type: doc}
     label: Introduction
     link: {id: intro/index.mdx, label: Introduction, type: doc}
     type: category
@@ -30,8 +29,8 @@ sidebar:
       - items:
           - {id: topics/deployment/how-to-deploy-centralized-cluster.mdx, label: Deployment
               with Trusted Third Party, type: doc}
-          - {id: topics/deployment/how-to-deploy-p2p-cluster.mdx, label: P2P Deployment,
-            type: doc}
+          - {id: topics/deployment/how-to-deploy-p2p-cluster.mdx, label: Deployment
+              in P2P Mode, type: doc}
         label: Deployment
         type: category
     label: Topics

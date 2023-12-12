@@ -1,19 +1,19 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/7563c4f7cbc5bee70fc80b346c91f5bf9fb93769/docs/topics/deployment/how-to-deploy-centralized-cluster.rst
-git_last_modified_commit: bf5789bb37114a0f45d04d938337ec1af474a847
-git_last_modified_time: '2023-12-04T11:39:34+08:00'
-git_origin_url: https://github.com/secretflow/scql/blob/7563c4f7cbc5bee70fc80b346c91f5bf9fb93769/docs/topics/deployment/how-to-deploy-centralized-cluster.rst
+git_download_url: https://github.com/secretflow/scql/raw/313796a288c55b3dde2392b0bb9052313dada0b8/docs/topics/deployment/how-to-deploy-centralized-cluster.rst
+git_last_modified_commit: 8f90675e4a85e1c76c0ac9a5720891911bc358d8
+git_last_modified_time: '2023-11-17T17:19:11+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/313796a288c55b3dde2392b0bb9052313dada0b8/docs/topics/deployment/how-to-deploy-centralized-cluster.rst
 git_owner: secretflow
 git_repo: scql
-git_revision_commit: 7563c4f7cbc5bee70fc80b346c91f5bf9fb93769
-git_revision_time: '2023-12-05T14:37:27+08:00'
+git_revision_commit: 313796a288c55b3dde2392b0bb9052313dada0b8
+git_revision_time: '2023-11-20T11:22:41+08:00'
 ---
 
 :target{#deployment-with-trusted-third-party}
 
 # Deployment with Trusted Third Party
 
-This document describes how to deploy a SCQL system in centralized mode with docker, and use scdbclient to query, it’s basically same with [Centralized Deployment Quickstart Tutorial](../../intro/tutorial.mdx), but deployed in multi-machine.
+This document describes how to deploy a SCQL system in centralized mode with docker, and use scdbclient to query, it’s basically same with [Quickstart tutorial](../../intro/tutorial.mdx), but deployed in multi-machine.
 
 Before start this doc, we assume that the reader has some experience using the docker-compose utility. If you are new to Docker Compose, please consider reviewing the [official Docker Compose overview](https://docs.docker.com/compose/), or checking out the [Getting Started guide](https://docs.docker.com/compose/gettingstarted/).
 
@@ -67,9 +67,9 @@ Create a file called `gflags.conf` in your workspace and paste the following cod
 ```bash
 --listen_port=8080
 --datasource_router=embed
---enable_driver_authorization=false
+--enable_scdb_authorization=false
 --server_enable_ssl=false
---driver_enable_ssl_as_client=false
+--scdb_enable_ssl_as_client=false
 --peer_engine_enable_ssl_as_client=false
 --embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"db=alice;user=root;password=__MYSQL_ROOT_PASSWORD__;host=mysql;auto-reconnect=true"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
 # party authentication flags
@@ -220,8 +220,8 @@ scdb_host: scdb:8080
 port: 8080
 protocol: http
 query_result_callback_timeout: 3m
-session_expire_time: 24h
-session_expire_check_time: 1m
+session_expire_time: 3m
+session_expire_check_time: 100ms
 log_level: debug
 storage:
   type: mysql
@@ -392,7 +392,7 @@ Create a json file named as `users.json` as follows:
 
 ### 3.3 Submit Query
 
-You can start to use scdbclient to submit queries to SCDBServer and fetch the query results back. it’s same as what you can do in [Centralized Deployment Quickstart Tutorial](../../intro/tutorial.mdx)
+You can start to use scdbclient to submit queries to SCDBServer and fetch the query results back. it’s same as what you can do in [Quickstart tutorial](../../intro/tutorial.mdx)
 
 ```bash
 # use scdbclient to connect to scdbserver
