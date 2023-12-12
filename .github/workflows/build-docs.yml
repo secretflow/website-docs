@@ -16,16 +16,16 @@ jobs:
       fail-fast: false
       matrix:
         project:
-          - secretflow
-          - spu
-          - heu
-          - interconnection
-          - scql
-          - kuscia
-          - secretpad
-          - spec
-          - trustedflow
-          - psi
+          - [secretflow, main]
+          - [spu, main]
+          - [heu, main]
+          - [interconnection, main]
+          - [scql, 313796a288c55b3dde2392b0bb9052313dada0b8]
+          - [kuscia, main]
+          - [secretpad, main]
+          - [spec, main]
+          - [trustedflow, main]
+          - [psi, main]
 
     steps:
       - uses: actions/checkout@v3
@@ -37,30 +37,30 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v3
         with:
-          repository: secretflow/${{ matrix.project }}
+          repository: secretflow/${{ matrix.project[0] }}
           fetch-depth: 0
-          ref: main
-          path: ${{ github.workspace }}/build/${{ matrix.project }}
+          ref: ${{ matrix.project[1] }}
+          path: ${{ github.workspace }}/build/${{ matrix.project[0] }}
       - name: Patch config
         run: |
-          cp -rf ${{ github.workspace }}/patches/${{ matrix.project }}/* ${{ github.workspace }}/build/${{ matrix.project }}/
+          cp -rf ${{ github.workspace }}/patches/${{ matrix.project[0] }}/* ${{ github.workspace }}/build/${{ matrix.project[0] }}/
 
       - uses: actions/setup-python@v4
         with:
           python-version: '3.8.x'
           cache: 'pip'
           cache-dependency-path: |
-            build/${{ matrix.project }}/requirements.txt
-            build/${{ matrix.project }}/docs/requirements.txt
+            build/${{ matrix.project[0] }}/requirements.txt
+            build/${{ matrix.project[0] }}/docs/requirements.txt
 
       - name: Install Python dependencies
-        working-directory: build/${{ matrix.project }}
+        working-directory: build/${{ matrix.project[0] }}
         run: |
           python -m pip install --upgrade pip
 
       - name: "Get project's commit SHA"
         id: get-project-sha
-        working-directory: build/${{ matrix.project }}
+        working-directory: build/${{ matrix.project[0] }}
         run: |
           echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
@@ -72,16 +72,16 @@ jobs:
           rm pandoc.deb
 
       - name: 'Build docs'
-        working-directory: build/${{ matrix.project }}
+        working-directory: build/${{ matrix.project[0] }}
         run: ./build_docs.sh
 
       - name: 'Copy artifacts'
         run: |
-          rm -rf ${{ github.workspace }}/artifacts/${{ matrix.project }}
-          mkdir -p ${{ github.workspace }}/artifacts/${{ matrix.project }}/latest
+          rm -rf ${{ github.workspace }}/artifacts/${{ matrix.project[0] }}
+          mkdir -p ${{ github.workspace }}/artifacts/${{ matrix.project[0] }}/latest
           cp -rf \
-            ${{ github.workspace }}/build/${{ matrix.project }}/docs/_build/mdx/* \
-            ${{ github.workspace }}/artifacts/${{ matrix.project }}/latest/
+            ${{ github.workspace }}/build/${{ matrix.project[0] }}/docs/_build/mdx/* \
+            ${{ github.workspace }}/artifacts/${{ matrix.project[0] }}/latest/
 
       # Generate GitHub token for changesets/action
       # Using https://github.com/secretflow/bot
@@ -98,26 +98,28 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           add-paths: |
-            artifacts/${{ matrix.project }}/latest
-          commit-message: 'chore(${{ matrix.project }}): Update docs to ${{
+            artifacts/${{ matrix.project[0] }}/latest
+          commit-message:
+            'chore(${{ matrix.project[0] }}): Update docs to ${{
             steps.get-project-sha.outputs.sha }}'
-          branch: 'docs/${{ matrix.project }}'
+          branch: 'docs/${{ matrix.project[0] }}'
           delete-branch: true
-          title: 'chore(${{ matrix.project }}): Update docs'
+          title: 'chore(${{ matrix.project[0] }}): Update docs'
           reviewers: |
             tonywu6
           token: ${{ env.BOT_TOKEN }}
           body: |
-            This PR updates documentation artifacts for ${{ matrix.project }}.
+            This PR updates documentation artifacts for ${{ matrix.project[0] }}.
 
             Built from `${{ steps.get-project-sha.outputs.sha-short }}` | [commit] | [docs]
 
-            [commit]: https://github.com/secretflow/${{ matrix.project }}/commit/${{ steps.get-project-sha.outputs.sha }}
-            [docs]: https://github.com/secretflow/${{ matrix.project }}/tree/${{ steps.get-project-sha.outputs.sha }}/docs
+            [commit]: https://github.com/secretflow/${{ matrix.project[0] }}/commit/${{ steps.get-project-sha.outputs.sha }}
+            [docs]: https://github.com/secretflow/${{ matrix.project[0] }}/tree/${{ steps.get-project-sha.outputs.sha }}/docs
 
       - name: 'Enable auto-merge'
         if: ${{ steps.create-pull-request.outputs.pull-request-url != '' }}
-        run: gh pr merge ${{ steps.create-pull-request.outputs.pull-request-url }}
+        run:
+          gh pr merge ${{ steps.create-pull-request.outputs.pull-request-url }}
           --auto --squash --delete-branch
         env:
           GH_TOKEN: ${{ github.token }}
