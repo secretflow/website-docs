@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/kuscia/raw/afbd52621c2c14c0a838a0ebc4954ee1689be56a/docs/development/register_custom_image.md
-git_last_modified_commit: c94d4c75e85d30c189172029469f0da9f489e143
-git_last_modified_time: '2023-12-08T20:51:13+08:00'
-git_origin_url: https://github.com/secretflow/kuscia/blob/afbd52621c2c14c0a838a0ebc4954ee1689be56a/docs/development/register_custom_image.md
+git_download_url: https://github.com/secretflow/kuscia/raw/c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9/docs/development/register_custom_image.md
+git_last_modified_commit: c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9
+git_last_modified_time: '2023-12-15T18:58:59+08:00'
+git_origin_url: https://github.com/secretflow/kuscia/blob/c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9/docs/development/register_custom_image.md
 git_owner: secretflow
 git_repo: kuscia
-git_revision_commit: afbd52621c2c14c0a838a0ebc4954ee1689be56a
-git_revision_time: '2023-12-12T11:52:31+08:00'
+git_revision_commit: c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9
+git_revision_time: '2023-12-15T18:58:59+08:00'
 ---
 
 :target{#id1}
@@ -69,7 +69,7 @@ docker cp ${USER}-kuscia-autonomy-alice:/home/kuscia/scripts/tools/register_app_
 - `{{IMAGE_NAME}}`: 自定义算法镜像名称
 - `{{IMAGE_TAG}}`: 自定义算法镜像标签
 
-若需注册非 Secretflow 算法镜像，请先准备自定义算法镜像的 AppImage 模版文件，该文件命名规则为`{算法镜像对应的 Kuscia AppImage 名称}-image.yaml`。
+若需注册非 Secretflow 算法镜像，请先准备自定义算法镜像的 AppImage 模版文件，该文件命名规则为`{算法镜像对应的 Kuscia AppImage 名称}.yaml`。
 其中符号`{}`中的内容需和`register_app_image.sh`脚本`-n` Flag 指定的参数值一致。
 
 :target{#id5}

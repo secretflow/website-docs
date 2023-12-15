@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/kuscia/raw/afbd52621c2c14c0a838a0ebc4954ee1689be56a/docs/deployment/kuscia_config_cn.md
-git_last_modified_commit: bdea9a1f97178c4b34dacfdf4a95b49d0951f899
-git_last_modified_time: '2023-12-06T13:36:22+08:00'
-git_origin_url: https://github.com/secretflow/kuscia/blob/afbd52621c2c14c0a838a0ebc4954ee1689be56a/docs/deployment/kuscia_config_cn.md
+git_download_url: https://github.com/secretflow/kuscia/raw/c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9/docs/deployment/kuscia_config_cn.md
+git_last_modified_commit: c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9
+git_last_modified_time: '2023-12-15T18:58:59+08:00'
+git_origin_url: https://github.com/secretflow/kuscia/blob/c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9/docs/deployment/kuscia_config_cn.md
 git_owner: secretflow
 git_repo: kuscia
-git_revision_commit: afbd52621c2c14c0a838a0ebc4954ee1689be56a
-git_revision_time: '2023-12-12T11:52:31+08:00'
+git_revision_commit: c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9
+git_revision_time: '2023-12-15T18:58:59+08:00'
 ---
 
 :target{#kuscia}
@@ -32,7 +32,9 @@ Kuscia的配置文件由公共配置和每个模式的特殊配置组成， 具�
 mode: Lite
 # 节点ID
 domainID: alice
-# 节点私钥配置, 用于节点间的通信认证, 节点应用的证书签发， 经过 base64 编码。
+# 节点私钥配置, 用于节点间的通信认证, 节点应用的证书签发
+# 注意: 目前节点私钥仅支持 pkcs#1 格式的: "BEGIN RSA PRIVATE KEY/END RSA PRIVATE KEY"
+# 执行命令 "docker run -it --rm secretflow-registry.cn-hangzhou.cr.aliyuncs.com/secretflow/kuscia scripts/deploy/generate_rsa_key.sh" 生成私钥
 domainKeyData: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNRDhDQVFBQ0NRREdsY1Y3MTd5V3l3SURBUUFCQWdrQXR5RGVueG0wUGVFQ0JRRHJVTGUvQWdVQTJBcUQ5UUlFCmFuYkxtd0lFZWFaYUxRSUZBSjZ1S2tjPQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo
 # 日志级别 INFO、DEBUG、WARN
 logLevel: INFO
@@ -90,7 +92,7 @@ datastoreEndpoint: ""
 
 - `mode`: 当前 Kuscia 节点部署模式 支持 Lite、Master、Autonomy（不区分大小写）, 不同部署模式详情请参考[这里](../reference/architecture_cn.mdx)
 - `domainID`: 当前 Kuscia 实例的 [节点 ID](../reference/concepts/domain_cn.mdx)， 需要符合 DNS 子域名规则要求，详情请参考[这里](https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names)
-- `domainKeyData`: 节点私钥配置, 用于节点间的通信认证, 节点应用的证书签发， 经过 base64 编码。 可以通过命令 `openssl genrsa 2048 | base64` 生成
+- `domainKeyData`: 节点私钥配置, 用于节点间的通信认证, 节点应用的证书签发， 经过 base64 编码。 可以通过命令 `docker run -it --rm secretflow-registry.cn-hangzhou.cr.aliyuncs.com/secretflow/kuscia scripts/deploy/generate_rsa_key.sh` 生成
 - `logLevel`: 日志级别 INFO、DEBUG、WARN，默认 INFO
 - `liteDeployToken`: 节点连接 master 的部署 token，用于节点向 master 注册证书， 只在节点第一次向 master 注册证书时有效，详情请参考[节点中心化部署](deploy_master_lite_cn.mdx)
 - `masterEndpoint`: 节点连接 master 的地址，比如 [https://172.18.0.2:1080](https://172.18.0.2:1080)

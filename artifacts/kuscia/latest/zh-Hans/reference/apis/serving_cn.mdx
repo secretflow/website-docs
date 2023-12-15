@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/kuscia/raw/afbd52621c2c14c0a838a0ebc4954ee1689be56a/docs/reference/apis/serving_cn.md
-git_last_modified_commit: c4523156169f0d0720d8b3523127447a6d098ad8
-git_last_modified_time: '2023-10-30T11:52:56+08:00'
-git_origin_url: https://github.com/secretflow/kuscia/blob/afbd52621c2c14c0a838a0ebc4954ee1689be56a/docs/reference/apis/serving_cn.md
+git_download_url: https://github.com/secretflow/kuscia/raw/c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9/docs/reference/apis/serving_cn.md
+git_last_modified_commit: c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9
+git_last_modified_time: '2023-12-15T18:58:59+08:00'
+git_origin_url: https://github.com/secretflow/kuscia/blob/c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9/docs/reference/apis/serving_cn.md
 git_owner: secretflow
 git_repo: kuscia
-git_revision_commit: afbd52621c2c14c0a838a0ebc4954ee1689be56a
-git_revision_time: '2023-12-12T11:52:31+08:00'
+git_revision_commit: c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9
+git_revision_time: '2023-12-15T18:58:59+08:00'
 ---
 
 :target{#serving}
@@ -1352,7 +1352,7 @@ git_revision_time: '2023-12-12T11:52:31+08:00'
       </td>
 
       <td>
-        [Endpoint](#serving-endpoint)\[]
+        [ServingPartyEndpoint](#serving-party-endpoint)\[]
       </td>
 
       <td>
@@ -1360,15 +1360,15 @@ git_revision_time: '2023-12-12T11:52:31+08:00'
       </td>
 
       <td>
-        应用访问地址列表
+        应用对外暴露的访问地址信息
       </td>
     </tr>
   </tbody>
 </table>
 
-:target{#serving-endpoint}
+:target{#serving-party-endpoint}
 
-### Endpoint
+### ServingPartyEndpoint
 
 <table>
   <thead>
@@ -1394,6 +1394,42 @@ git_revision_time: '2023-12-12T11:52:31+08:00'
   <tbody>
     <tr>
       <td>
+        port\_name
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        应用服务端口名称，详细解释请参考[<span>AppImage</span>](../concepts/appimage_cn.mdx) `deployTemplates.spec.containers.ports.name`
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        scope
+      </td>
+
+      <td>
+        string
+      </td>
+
+      <td>
+        必填
+      </td>
+
+      <td>
+        应用服务使用范围, 详细解释请参考[<span>AppImage</span>](../concepts/appimage_cn.mdx) `deployTemplates.spec.containers.ports.scope`
+      </td>
+    </tr>
+
+    <tr>
+      <td>
         endpoint
       </td>
 
@@ -1402,11 +1438,11 @@ git_revision_time: '2023-12-12T11:52:31+08:00'
       </td>
 
       <td>
-        否
+        必填
       </td>
 
       <td>
-        应用访问地址
+        应用服务访问地址
       </td>
     </tr>
   </tbody>
