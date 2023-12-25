@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/kuscia/raw/c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9/docs/reference/apis/kusciajob_cn.md
-git_last_modified_commit: c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9
-git_last_modified_time: '2023-12-15T18:58:59+08:00'
-git_origin_url: https://github.com/secretflow/kuscia/blob/c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9/docs/reference/apis/kusciajob_cn.md
+git_download_url: https://github.com/secretflow/kuscia/raw/cdf8fea273ddec092fa9b4f22fc3ded837ad3dcd/docs/reference/apis/kusciajob_cn.md
+git_last_modified_commit: b1c00628b40f7699f7bebc423d2f0e755d5413b0
+git_last_modified_time: '2023-12-25T16:32:09+08:00'
+git_origin_url: https://github.com/secretflow/kuscia/blob/cdf8fea273ddec092fa9b4f22fc3ded837ad3dcd/docs/reference/apis/kusciajob_cn.md
 git_owner: secretflow
 git_repo: kuscia
-git_revision_commit: c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9
-git_revision_time: '2023-12-15T18:58:59+08:00'
+git_revision_commit: cdf8fea273ddec092fa9b4f22fc3ded837ad3dcd
+git_revision_time: '2023-12-25T18:00:13+08:00'
 ---
 
 :target{#kusciajob}
@@ -1309,7 +1309,7 @@ protobuf 文件。
       </td>
 
       <td>
-        总体状态
+        作业状态, 参考 [State](#state)
       </td>
     </tr>
 
@@ -1519,7 +1519,7 @@ protobuf 文件。
       </td>
 
       <td>
-        [TaskState](#task-state)
+        string
       </td>
 
       <td>
@@ -1527,7 +1527,7 @@ protobuf 文件。
       </td>
 
       <td>
-        总体状态
+        参与方任务状态, 参考 [State](#state)
       </td>
     </tr>
 
@@ -1935,7 +1935,7 @@ protobuf 文件。
       </td>
 
       <td>
-        任务状态，参考 [TaskState](#task-state)
+        任务状态，参考 [State](#state)
       </td>
     </tr>
 
@@ -2111,9 +2111,9 @@ protobuf 文件。
   </tbody>
 </table>
 
-:target{#task-state}
+:target{#state}
 
-### TaskState
+### State
 
 <table>
   <thead>
@@ -2135,11 +2135,25 @@ protobuf 文件。
   <tbody>
     <tr>
       <td>
-        Pending
+        Unknown
       </td>
 
       <td>
         0
+      </td>
+
+      <td>
+        未知
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Pending
+      </td>
+
+      <td>
+        1
       </td>
 
       <td>
@@ -2153,7 +2167,7 @@ protobuf 文件。
       </td>
 
       <td>
-        1
+        2
       </td>
 
       <td>
@@ -2167,7 +2181,7 @@ protobuf 文件。
       </td>
 
       <td>
-        2
+        3
       </td>
 
       <td>
@@ -2181,7 +2195,7 @@ protobuf 文件。
       </td>
 
       <td>
-        3
+        4
       </td>
 
       <td>
