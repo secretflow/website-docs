@@ -7,6 +7,7 @@ sidebar:
     link: {id: getting_started/index.mdx, label: 入门教程, type: doc}
     type: category
   - items:
+      - {id: reference/overview.mdx, label: 概述, type: doc}
       - {id: reference/architecture_cn.mdx, label: 架构, type: doc}
       - items:
           - {id: reference/concepts/domain_cn.mdx, label: Domain, type: doc}
@@ -36,6 +37,8 @@ sidebar:
         link: {id: reference/apis/index.mdx, label: Kuscia API, type: doc}
         type: category
       - items:
+          - {id: reference/troubleshoot/kuscia_vs_ray.mdx, label: Kuscia 与 Ray 的区别,
+            type: doc}
           - {id: reference/troubleshoot/wslstartdocker.mdx, label: 使用 WSL 注意事项, type: doc}
           - {id: reference/troubleshoot/deployfailed.mdx, label: 部署失败, type: doc}
           - {id: reference/troubleshoot/networkauthorizationcheck.mdx, label: 授权错误排查,
