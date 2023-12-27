@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/heu/raw/cac7efa4d6e4909ff2bb8cdd021a1d6e6fb91ba5/docs/getting_started/faq.rst
-git_last_modified_commit: 4fe78aa67d7f0c7540e07c9632fb51dfef959aaa
-git_last_modified_time: '2023-02-07T17:27:45+08:00'
-git_origin_url: https://github.com/secretflow/heu/blob/cac7efa4d6e4909ff2bb8cdd021a1d6e6fb91ba5/docs/getting_started/faq.rst
+git_download_url: https://github.com/secretflow/heu/raw/b85b40fc758becee1325f367cf97cd126884f1ef/docs/getting_started/faq.rst
+git_last_modified_commit: afa15a0ad009cb5d5e40bd1dce885b9e4d472083
+git_last_modified_time: '2023-12-27T14:52:22+08:00'
+git_origin_url: https://github.com/secretflow/heu/blob/b85b40fc758becee1325f367cf97cd126884f1ef/docs/getting_started/faq.rst
 git_owner: secretflow
 git_repo: heu
-git_revision_commit: cac7efa4d6e4909ff2bb8cdd021a1d6e6fb91ba5
-git_revision_time: '2023-11-28T19:18:38+08:00'
+git_revision_commit: b85b40fc758becee1325f367cf97cd126884f1ef
+git_revision_time: '2023-12-27T16:48:17+08:00'
 ---
 
 :target{#id1}
@@ -29,7 +29,7 @@ Yes, HEU supports both Intel and Apple Silicon CPU based macOS.
 
 Please check whether the installation environment meets the requirements:
 
-1. Python version must be 3.8
+1. 检查 [Pypi](https://pypi.org/project/sf-heu) 上面是否存在与您的 Python 环境匹配的 sf-heu 包
 2. Pip version must be 22.0+
 3. Check whether the OS version meets the requirements, see [installation documentation](installation.mdx) for details.
 
@@ -37,18 +37,69 @@ Please check whether the installation environment meets the requirements:
 
 ### Docs HEU support other versions of Python
 
-The package in the PyPI repository only supports the Python 3.8 environment. If you want to support more Python versions, you can try \:doc\:compiling from source\<./installation>. Additionally, you need to modify the declaration regarding the Python version in this file\<https\://github.com/secretflow/heu/blob/main/heu/pylib/BUILD.bazel>.
+支持。为了节约 Pypi 仓库存储空间，dev 版本仅发布基于 Python 3.8 的二进制包，beta 及以上的版本将会发布所有 Python 版本的二进制包。对于 dev 版本，您也可以自助 [从源码编译](installation.mdx) 所需的 Python 版本的二进制包
 
-Due to the constraints of Pybind’s characteristics, the Python version used for running HEU must match the Python version used for compilation. For instance, if Python 3.10 is used for compilation, it also must be used for execution.
+:target{#id3}
 
-:target{#id4}
+## 功能咨询
 
-## Functionally relevant
+:target{#heu}
+
+### HEU 支持哪些半同态算法？
+
+Paillier、Okamoto–Uchiyama、EC ElGamal、Damgard-Jurik、DGK，其中部分算法还实现了硬件加速的版本，详见 [算法选择](algo_choice.mdx)。
 
 :target{#heu-fhe}
 
 ### What features does HEU currently provide, and does it support FHE?
 
-HEU is a leading PHE Library in the industry, supporting encryption and decryption, plaintext-ciphertext addition and subtraction, and ciphertext-plaintext multiplication calculations. It provides APIs in both C++ and Python. You can use HEU as a pure library, or you can use it as a secure computing device through the Secretflow \<[https://github.com/secretflow/secretflow](https://github.com/secretflow/secretflow)>\_ programming framework.
+HEU is a leading PHE Library in the industry, supporting encryption and decryption, plaintext-ciphertext addition and subtraction, and ciphertext-plaintext multiplication calculations. It provides APIs in both C++ and Python. You can use HEU as a pure library, or you can use it as a secure computing device through the Secretflow \<[https://github.com/secretflow/secretflow](https://github.com/secretflow/secretflow)>\_\_ programming framework.
 
 Support for FHE functionality is on the way, which will additionally support operations such as ciphertext multiplication and ciphertext comparison. Please stay tuned.
+
+:target{#id4}
+
+### 请问HEU支持硬件加速的详细说明在哪？
+
+- 如果您是使用者：HEU 是否使用硬件加速是由 SchemaType 参数决定的，比如 HEU 目前接入了 Intel IPCL 库，支持 avx512ifma 以及 QAT 加速，在机器上已经安装相应硬件，且创建\`HeKit\`对象时\`SchemaType\`选择\`IPCL\`，那么 IPCL 支持的硬件加速能力即可启用，关于详细的算法能力可参考 [此处](algo_choice.mdx)。
+- 如果您是开发者：假如您有一些硬件加速卡想让隐语兼容，可参考这个接入文档：[https://www.secretflow.org.cn/docs/heu/zh\_CN/development/phe\_dev.html](https://www.secretflow.org.cn/docs/heu/zh_CN/development/phe_dev.html)
+
+:target{#fpaillier-zpaillier}
+
+### FPaillier 和 ZPaillier 代表了什么？
+
+Q：SchemaType.FPaillier 和 SchemaType.ZPaillier分别代表什么含义？提供这两个选择是否存在什么需要trade-off的东西？
+[Github Issue](https://github.com/secretflow/secretflow/issues/139)
+
+A：这两个是 Paillier 算法的不同实现。在 C++ API 层面，FPaillier 与 ZPaillier 有一些不同，FPaillier 对标 Python-Paillier， 相当于把 Python-Paillier 的逻辑用C++翻译了一遍，其特点是算法层面支持浮点数加密，原理是把 scale 比特数作为明文打包在密文中，密态运算阶段算法会自行对齐、更新 scale 值，其它未做过多优化。而 ZPaillier 是我们实现的一个高度优化的 Paillier 版本，只支持整数加密，性能比 FPaillier 高很多。目前 Python API 并没有暴露浮点运算接口，因此 FPaillier 的功能不能得到全部发挥，故不推荐使用，任何情况下都应该选择 ZPaillier。
+
+:target{#heu-spu-runtime-config-enable-action-trace}
+
+### heu 是否有类似 spu runtime config 的 enable\_action\_trace 开关？
+
+[Github Issue](https://github.com/secretflow/heu/issues/11)
+
+HEU 目前还没有引入编译器层，也没有引入 IR，因此没有 trace 开关，如果您对 HEU 感兴趣，可以参考 [快速入门](quick_start.mdx)，并结合 [HEU 代码](https://github.com/secretflow/heu/blob/beta/heu/library/phe/phe.h) 看下，整体不复杂
+
+:target{#id5}
+
+## 接口使用
+
+:target{#id6}
+
+### 如果想执行浮点数加解密，有什么推荐的方式么？
+
+[Github Issue](https://github.com/secretflow/secretflow/issues/139)
+
+加密浮点数需要借助 Encoder，请参考 [快速入门](quick_start.mdx) 和 [矩阵运算](numpy.mdx) 中关于 Encoder 的介绍。
+
+:target{#id7}
+
+### 能否提供一个HEU运算的例子
+
+[Github Issue](https://github.com/secretflow/secretflow/issues/54)
+
+取决于您如何使用 HEU, HEU 有两层含义，第一他是 secretflow 中的一个 device，第二他本身也是一个同态加密的 library：
+
+- 当做 Library 使用，即独立于 Secretflow 单独使用 HEU，请参考 [快速入门](quick_start.mdx)
+- 当做 device 使用：Secretflow 对 HEU Library 做了一些简单的封装，抽象成了 Device，Device 初始化主要需要指定：i) HEU 逻辑设备由哪几个参与方组成，每个参与方的角色是什么？是 evaluator 还是 sk\_keeper。ii) HEU 内部运行的 HE 算法和参数是什么。 iii) HEU 与其它 Device 交互所需要的信息，例如 SPU 用的 scale 是什么。 HEU Device 的文档目前相对欠缺，我们后面会补充，当前有一个基于 [HEU + SPU 的 LR 实现(即 HESS-LR)](https://github.com/secretflow/secretflow/blob/main/secretflow/ml/linear/hess_sgd/model.py)，您可以参考 HESS-LR 获取 HEU Device 的用法。
