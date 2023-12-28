@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/psi/raw/d6d2fb10ecdc79307ad7036be6a521fadb32e1f4/docs/reference/psi_v2_config.md
-git_last_modified_commit: d6d2fb10ecdc79307ad7036be6a521fadb32e1f4
-git_last_modified_time: '2023-12-06T18:39:16+08:00'
-git_origin_url: https://github.com/secretflow/psi/blob/d6d2fb10ecdc79307ad7036be6a521fadb32e1f4/docs/reference/psi_v2_config.md
+git_download_url: https://github.com/secretflow/psi/raw/ab4b73bfa04d121a280694ea53dac06f1435df13/docs/reference/psi_v2_config.md
+git_last_modified_commit: 1a914680c1fceeb259915b2f690bfe2a4670f06e
+git_last_modified_time: '2023-12-21T21:24:38+08:00'
+git_origin_url: https://github.com/secretflow/psi/blob/ab4b73bfa04d121a280694ea53dac06f1435df13/docs/reference/psi_v2_config.md
 git_owner: secretflow
 git_repo: psi
-git_revision_commit: d6d2fb10ecdc79307ad7036be6a521fadb32e1f4
-git_revision_time: '2023-12-06T18:39:16+08:00'
+git_revision_commit: ab4b73bfa04d121a280694ea53dac06f1435df13
+git_revision_time: '2023-12-27T17:22:40+08:00'
 ---
 
 :target{#psi-v2-configuration}
@@ -20,7 +20,6 @@ git_revision_time: '2023-12-06T18:39:16+08:00'
 - Messages
   - [DebugOptions](#debugoptions)
   - [EcdhConfig](#ecdhconfig)
-  - [InnerJoinConfig](#innerjoinconfig)
   - [InputConfig](#inputconfig)
   - [InternalRecoveryRecord](#internalrecoveryrecord)
   - [KkrtConfig](#kkrtconfig)
@@ -31,8 +30,6 @@ git_revision_time: '2023-12-06T18:39:16+08:00'
   - [RecoveryCheckpoint](#recoverycheckpoint)
   - [RecoveryConfig](#recoveryconfig)
   - [Rr22Config](#rr22config)
-  - [Table](#table)
-  - [Table.Row](#table-row)
 - Enums
   - [IoType](#iotype)
   - [Protocol](#protocol)
@@ -154,144 +151,6 @@ Configs for ECDH protocol.
   </tbody>
 </table>
 
-:target{#innerjoinconfig}
-
-### InnerJoinConfig
-
-Internal usage only at this moment.
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        Field
-      </td>
-
-      <td>
-        Type
-      </td>
-
-      <td>
-        Description
-      </td>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>
-        input\_path
-      </td>
-
-      <td>
-        [<span> string</span>](#string)
-      </td>
-
-      <td>
-        Path of origin input.
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        role
-      </td>
-
-      <td>
-        [ Role](#role)
-      </td>
-
-      <td>
-        The role of party,
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        keys
-      </td>
-
-      <td>
-        [<span>repeated string</span>](#string)
-      </td>
-
-      <td>
-        Keys for PSI.
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        sorted\_input\_path
-      </td>
-
-      <td>
-        [<span> string</span>](#string)
-      </td>
-
-      <td>
-        Path of sorted input depending on keys.
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        unique\_input\_keys\_cnt\_path
-      </td>
-
-      <td>
-        [<span> string</span>](#string)
-      </td>
-
-      <td>
-        Path of unique keys and cnt
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        self\_intersection\_cnt\_path
-      </td>
-
-      <td>
-        [<span> string</span>](#string)
-      </td>
-
-      <td>
-        Path of PSI output with unique\_input\_keys\_cnt\_path as input.
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        peer\_intersection\_cnt\_path
-      </td>
-
-      <td>
-        [<span> string</span>](#string)
-      </td>
-
-      <td>
-        Path of received peer intersection count.
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        output\_path
-      </td>
-
-      <td>
-        [<span> string</span>](#string)
-      </td>
-
-      <td>
-        The path of output for inner join.
-      </td>
-    </tr>
-  </tbody>
-</table>
-
 :target{#inputconfig}
 
 ### InputConfig
@@ -341,20 +200,6 @@ Input configuration.
 
       <td>
         Required for FILE.
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        raw
-      </td>
-
-      <td>
-        [ Table](#table)
-      </td>
-
-      <td>
-        Required for RAW.
       </td>
     </tr>
   </tbody>
@@ -490,20 +335,6 @@ Output configuration.
   </thead>
 
   <tbody>
-    <tr>
-      <td>
-        input\_type\_followed
-      </td>
-
-      <td>
-        [<span> bool</span>](#bool)
-      </td>
-
-      <td>
-        If true, type of output would be the same as input type. And type would be ngelected.
-      </td>
-    </tr>
-
     <tr>
       <td>
         type
@@ -651,6 +482,168 @@ Any items related to PSI protocols.
 The top level of Configs.
 run(PsiConfig)->PsiReport
 
+Advanced Joins
+Type: Inner Join
+e.g. If input of receiver is
+
+```default
+| key1 | value1|
+|------|-------|
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| y    | 4     |
+```
+
+and input of sender is
+
+```default
+| key2 | value2|
+|------|-------|
+| x    | a     |
+| x    | b     |
+| z    | c     |
+```
+
+After inner join.
+The output of receiver is:
+
+```default
+| key1 | value1|
+|------|-------|
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+```
+
+The output of sender is
+
+```default
+| key2 | value2|
+|------|-------|
+| x    | a     |
+| x    | b     |
+| x    | a     |
+| x    | b     |
+| x    | a     |
+| x    | b     |
+```
+
+Type: Left Join
+After left join.
+The output of left side is:
+
+```default
+| key1 | value1|
+|------|-------|
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| y    | 4     |
+```
+
+The output of right side is
+
+```default
+| key2 | value2|
+|------|-------|
+| x    | a     |
+| x    | b     |
+| x    | a     |
+| x    | b     |
+| x    | a     |
+| x    | b     |
+| n/a  | n/a   |
+```
+
+Type: Right Join
+After right join.
+The output of left side is:
+
+```default
+| key1 | value1|
+|------|-------|
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| n/a  | n/a   |
+```
+
+The output of right side is
+
+```default
+| key2 | value2|
+|------|-------|
+| x    | a     |
+| x    | b     |
+| x    | a     |
+| x    | b     |
+| x    | a     |
+| x    | b     |
+| z    | c     |
+```
+
+Type: Full Join
+After full join.
+The output of left side is:
+
+```default
+| key1 | value1|
+|------|-------|
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| x    | 1     |
+| x    | 2     |
+| x    | 3     |
+| y    | 4     |
+| n/a  | n/a   |
+```
+
+The output of right side is
+
+```default
+| key2 | value2|
+|------|-------|
+| x    | a     |
+| x    | b     |
+| x    | a     |
+| x    | b     |
+| x    | a     |
+| x    | b     |
+| n/a  | n/a   |
+| z    | c     |
+```
+
+Type: Difference
+After difference.
+The output of left side is:
+
+```default
+| key1 | value1|
+|------|-------|
+| y    | 4     |
+| n/a  | n/a   |
+```
+
+The output of right side is
+
+```default
+| key2 | value2|
+|------|-------|
+| n/a  | n/a   |
+| z    | c     |
+```
+
 <table>
   <thead>
     <tr>
@@ -769,7 +762,7 @@ run(PsiConfig)->PsiReport
 
     <tr>
       <td>
-        check\_duplicates
+        skip\_duplicates\_check
       </td>
 
       <td>
@@ -777,13 +770,13 @@ run(PsiConfig)->PsiReport
       </td>
 
       <td>
-        If true, a precheck of duplicated items will be conducted. An early exception would be throw before PSI.
+        If true, the check of duplicated items will be skiped.
       </td>
     </tr>
 
     <tr>
       <td>
-        output\_difference
+        disable\_alignment
       </td>
 
       <td>
@@ -791,21 +784,7 @@ run(PsiConfig)->PsiReport
       </td>
 
       <td>
-        It true, output defference instead of intersection.
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        sort\_output
-      </td>
-
-      <td>
-        [<span> bool</span>](#bool)
-      </td>
-
-      <td>
-        It true, output is sorted according to keys in InputConfig.
+        It true, output is not promised to be aligned.
       </td>
     </tr>
 
@@ -847,7 +826,7 @@ run(PsiConfig)->PsiReport
       </td>
 
       <td>
-        Required if advanced\_join\_type is ADVANCED\_JOIN\_TYPE\_INNER\_JOIN.
+        Required if advanced\_join\_type is ADVANCED\_JOIN\_TYPE\_LEFT\_JOIN or ADVANCED\_JOIN\_TYPE\_RIGHT\_JOIN.
       </td>
     </tr>
 
@@ -916,20 +895,6 @@ Execution Report.
 
       <td>
         The count of intersection. Get `-1` when self party can not get result.
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        output
-      </td>
-
-      <td>
-        [ Table](#table)
-      </td>
-
-      <td>
-        Maybe used if output type is RAW.
       </td>
     </tr>
   </tbody>
@@ -1157,99 +1122,6 @@ Configs for RR22 protocol.
   </tbody>
 </table>
 
-:target{#table}
-
-### Table
-
-Stores input or output data.
-For IoType::IO\_TYPE\_MEM\_RAW.
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        Field
-      </td>
-
-      <td>
-        Type
-      </td>
-
-      <td>
-        Description
-      </td>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>
-        header
-      </td>
-
-      <td>
-        [ Table.Row](#table-row)
-      </td>
-
-      <td>
-        none
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        data
-      </td>
-
-      <td>
-        [repeated Table.Row](#table-row)
-      </td>
-
-      <td>
-        none
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-:target{#table-row}
-
-### Table.Row
-
-<table>
-  <thead>
-    <tr>
-      <td>
-        Field
-      </td>
-
-      <td>
-        Type
-      </td>
-
-      <td>
-        Description
-      </td>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>
-        values
-      </td>
-
-      <td>
-        [<span>repeated string</span>](#string)
-      </td>
-
-      <td>
-        none
-      </td>
-    </tr>
-  </tbody>
-</table>
-
 :target{#enums}
 
 ## Enums
@@ -1257,6 +1129,8 @@ For IoType::IO\_TYPE\_MEM\_RAW.
 :target{#iotype}
 
 ### IoType
+
+TODO(junfeng): support more io types including oss, sql, etc.
 
 <table>
   <thead>
@@ -1301,20 +1175,6 @@ For IoType::IO\_TYPE\_MEM\_RAW.
 
       <td>
         Local csv file.
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        IO\_TYPE\_MEM\_RAW
-      </td>
-
-      <td>
-        2
-      </td>
-
-      <td>
-        With Table pb msg.
       </td>
     </tr>
   </tbody>
@@ -1406,88 +1266,14 @@ PSI protocols.
 
 ### PsiConfig.AdvancedJoinType
 
-Advanced modes which allow duplicate keys.
-Advanced mode: Inner Join
-If selected, check\_duplicates is invalid.
-If selected, both parties could have duplicate keys.
+Advanced Join allow duplicate keys.
 
-```default
-e.g. If input of receiver is
-| key1 | value1|
-|------|-------|
-| x    | 1     |
-| x    | 2     |
-| x    | 3     |
-| y    | 4     |
-and input of sender is
-| key2 | value2|
-|------|-------|
-| x    | a     |
-| x    | b     |
-| z    | c     |
-
-After inner join.
-The ourput of receiver is:
-| key1 | value1|
-|------|-------|
-| x    | 1     |
-| x    | 2     |
-| x    | 3     |
-| x    | 1     |
-| x    | 2     |
-| x    | 3     |
-The output of sender is
-| key2 | value2|
-|------|-------|
-| x    | a     |
-| x    | b     |
-| x    | a     |
-| x    | b     |
-| x    | a     |
-| x    | b     |
-```
-
-Advanced mode: Left Join
-If selected, check\_duplicates is invalid.
-If selected, both parties could have duplicate keys.
-
-```default
-e.g. If input of left side is
-| key1 | value1|
-|------|-------|
-| x    | 1     |
-| x    | 2     |
-| x    | 3     |
-| y    | 4     |
-and input of right side is
-| key2 | value2|
-|------|-------|
-| x    | a     |
-| x    | b     |
-| z    | c     |
-
-After inner join.
-The ourput of left side is:
-| key1 | value1|
-|------|-------|
-| x    | 1     |
-| x    | 2     |
-| x    | 3     |
-| x    | 1     |
-| x    | 2     |
-| x    | 3     |
-| y    | 4     |
-The output of right side is
-| key2 | value2|
-|------|-------|
-| x    | a     |
-| x    | b     |
-| x    | a     |
-| x    | b     |
-| x    | a     |
-| x    | b     |
-| n/a  | n/a   |
-```
+- If selected, duplicates\_check is skipped.
+- If selected, both parties are allowed to contain duplicate keys.
+- If use left join, full join or difference, the size of difference set of
+  left party is revealed to right party.
+- If use right join, full join or difference, the size of difference set of
+  right party is revealed to left party.
 
 <table>
   <thead>
@@ -1542,6 +1328,48 @@ The output of right side is
 
       <td>
         2
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ADVANCED\_JOIN\_TYPE\_RIGHT\_JOIN
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ADVANCED\_JOIN\_TYPE\_FULL\_JOIN
+      </td>
+
+      <td>
+        4
+      </td>
+
+      <td>
+        none
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        ADVANCED\_JOIN\_TYPE\_DIFFERENCE
+      </td>
+
+      <td>
+        5
       </td>
 
       <td>
@@ -1736,8 +1564,6 @@ Role of parties.
 ### ContextDescProto
 
 Configuration for link config.
-
-NOTE for ‘recv time’
 
 ‘recv time’ is the max time that a party will wait for a given event.
 for example:
