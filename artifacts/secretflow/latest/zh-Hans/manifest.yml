@@ -101,6 +101,21 @@ sidebar:
               - items:
                   - items:
                       - items:
+                          - {id: source/secretflow.component.io.core.component.io.core.bins.mdx,
+                            label: secretflow.component.io.core.bins package, type: doc}
+                          - {id: source/secretflow.component.io.core.component.io.core.linear_model.mdx,
+                            label: secretflow.component.io.core.linear_model package,
+                            type: doc}
+                        label: secretflow.component.io.core package
+                        link: {id: source/secretflow.component.io.component.io.core.mdx,
+                          label: secretflow.component.io.core package, type: doc}
+                        type: category
+                    label: secretflow.component.io package
+                    link: {id: source/secretflow.component.component.io.mdx, label: secretflow.component.io
+                        package, type: doc}
+                    type: category
+                  - items:
+                      - items:
                           - {id: source/secretflow.component.ml.boost.component.ml.boost.sgb.mdx,
                             label: secretflow.component.ml.boost.sgb package, type: doc}
                           - {id: source/secretflow.component.ml.boost.component.ml.boost.ss_xgb.mdx,
@@ -118,8 +133,21 @@ sidebar:
                         package, type: doc}
                     type: category
                   - items:
+                      - {id: source/secretflow.component.preprocessing.component.preprocessing.binning.mdx,
+                        label: secretflow.component.preprocessing.binning package,
+                        type: doc}
                       - {id: source/secretflow.component.preprocessing.component.preprocessing.core.mdx,
                         label: secretflow.component.preprocessing.core package, type: doc}
+                      - {id: source/secretflow.component.preprocessing.component.preprocessing.data_prep.mdx,
+                        label: secretflow.component.preprocessing.data_prep package,
+                        type: doc}
+                      - {id: source/secretflow.component.preprocessing.component.preprocessing.filter.mdx,
+                        label: secretflow.component.preprocessing.filter package,
+                        type: doc}
+                      - {id: 
+                          source/secretflow.component.preprocessing.component.preprocessing.unified_single_party_ops.mdx,
+                        label: secretflow.component.preprocessing.unified_single_party_ops
+                          package, type: doc}
                     label: secretflow.component.preprocessing package
                     link: {id: source/secretflow.component.component.preprocessing.mdx,
                       label: secretflow.component.preprocessing package, type: doc}
@@ -179,25 +207,6 @@ sidebar:
                         label: secretflow.ic.handler.protocol_family package, type: doc}
                     label: secretflow.ic.handler package
                     link: {id: source/secretflow.ic.ic.handler.mdx, label: secretflow.ic.handler
-                        package, type: doc}
-                    type: category
-                  - items:
-                      - {id: source/secretflow.ic.proto.ic.proto.common.mdx, label: secretflow.ic.proto.common
-                          package, type: doc}
-                      - items:
-                          - {id: source/secretflow.ic.proto.handshake.ic.proto.handshake.algos.mdx,
-                            label: secretflow.ic.proto.handshake.algos package, type: doc}
-                          - {id: source/secretflow.ic.proto.handshake.ic.proto.handshake.protocol_family.mdx,
-                            label: secretflow.ic.proto.handshake.protocol_family package,
-                            type: doc}
-                        label: secretflow.ic.proto.handshake package
-                        link: {id: source/secretflow.ic.proto.ic.proto.handshake.mdx,
-                          label: secretflow.ic.proto.handshake package, type: doc}
-                        type: category
-                      - {id: source/secretflow.ic.proto.ic.proto.runtime.mdx, label: secretflow.ic.proto.runtime
-                          package, type: doc}
-                    label: secretflow.ic.proto package
-                    link: {id: source/secretflow.ic.ic.proto.mdx, label: secretflow.ic.proto
                         package, type: doc}
                     type: category
                   - {id: source/secretflow.ic.ic.proxy.mdx, label: secretflow.ic.proxy

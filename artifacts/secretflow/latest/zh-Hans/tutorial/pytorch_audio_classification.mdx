@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/tutorial/pytorch_audio_classification.ipynb
-git_last_modified_commit: 1a295f42a326ec16544d2f680250474170c287aa
-git_last_modified_time: '2023-10-27T15:10:22+08:00'
-git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/tutorial/pytorch_audio_classification.ipynb
+git_download_url: https://github.com/secretflow/secretflow/raw/f2c46f98224a42f29bca20751a569bbfac39f750/docs/tutorial/pytorch_audio_classification.ipynb
+git_last_modified_commit: b06e3ccb5bfcf23b0e982da3023a85436f82e00b
+git_last_modified_time: '2023-12-25T14:23:18+08:00'
+git_origin_url: https://github.com/secretflow/secretflow/blob/f2c46f98224a42f29bca20751a569bbfac39f750/docs/tutorial/pytorch_audio_classification.ipynb
 git_owner: secretflow
 git_repo: secretflow
-git_revision_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
-git_revision_time: '2023-12-06T20:08:22+08:00'
+git_revision_commit: f2c46f98224a42f29bca20751a569bbfac39f750
+git_revision_time: '2024-01-03T19:41:12+08:00'
 ---
 
 :target{#基于-PyTorch-在-SecretFlow-中实现水平联邦音频分类任务}
@@ -122,11 +122,11 @@ git_revision_time: '2023-12-06T20:08:22+08:00'
   <Notebook.CodeArea prompt="[6]:" stderr={false} type="input">
     ```python
     filename = "./data/SpeechCommands/speech_commands_v0.02/yes/00f0204f_nohash_0.wav"
-    waveform, sample_rate = torchaudio.load(filepath=filename, num_frames=3)
+    waveform, sample_rate = torchaudio.load(uri=filename, num_frames=3)
     print(f'waveform tensor with 3 frames:  {waveform} \n')
-    waveform, sample_rate = torchaudio.load(filepath=filename, num_frames=3, frame_offset=2)
+    waveform, sample_rate = torchaudio.load(uri=filename, num_frames=3, frame_offset=2)
     print(f'waveform tensor with 2 frame_offsets: {waveform} \n')
-    waveform, sample_rate = torchaudio.load(filepath=filename)
+    waveform, sample_rate = torchaudio.load(uri=filename)
     print(f'waveform tensor:  {waveform}')
     ```
   </Notebook.CodeArea>
@@ -605,7 +605,6 @@ git_revision_time: '2023-12-06T20:08:22+08:00'
     import matplotlib.pyplot as plt
     from torch.utils.data import Dataset, DataLoader
     from torchvision import datasets, models, transforms
-    from torchinfo import summary
     import pandas as pd
     import os
     ```
@@ -851,20 +850,6 @@ git_revision_time: '2023-12-06T20:08:22+08:00'
   <Notebook.CodeArea prompt="" stderr={false} type="output">
     <pre>
       {"Epoch 1\n-------------------------------\nloss: 0.693147  [    0/ 6388]\nloss: 0.678901  [ 1500/ 6388]\nloss: 0.443748  [ 3000/ 6388]\nloss: 0.523017  [ 4500/ 6388]\nloss: 0.512554  [ 6000/ 6388]\n\nTest Error:\nacc: 91.4%, avg loss: 0.014311\n\nEpoch 2\n-------------------------------\nloss: 0.232422  [    0/ 6388]\nloss: 0.589198  [ 1500/ 6388]\nloss: 0.150064  [ 3000/ 6388]\nloss: 0.189455  [ 4500/ 6388]\nloss: 0.152220  [ 6000/ 6388]\n\nTest Error:\nacc: 92.7%, avg loss: 0.012255\n\nEpoch 3\n-------------------------------\nloss: 0.045995  [    0/ 6388]\nloss: 0.130162  [ 1500/ 6388]\nloss: 0.151662  [ 3000/ 6388]\nloss: 0.162012  [ 4500/ 6388]\nloss: 0.914063  [ 6000/ 6388]\n\nTest Error:\nacc: 93.4%, avg loss: 0.010353\n\nEpoch 4\n-------------------------------\nloss: 0.075109  [    0/ 6388]\nloss: 0.336659  [ 1500/ 6388]\nloss: 0.084331  [ 3000/ 6388]\nloss: 0.118936  [ 4500/ 6388]\nloss: 0.131541  [ 6000/ 6388]\n\nTest Error:\nacc: 94.4%, avg loss: 0.009808\n\nEpoch 5\n-------------------------------\nloss: 0.085149  [    0/ 6388]\nloss: 0.173272  [ 1500/ 6388]\nloss: 0.296961  [ 3000/ 6388]\nloss: 0.057803  [ 4500/ 6388]\nloss: 0.119692  [ 6000/ 6388]\n\nTest Error:\nacc: 94.2%, avg loss: 0.009273\n\nEpoch 6\n-------------------------------\nloss: 0.476337  [    0/ 6388]\nloss: 0.116197  [ 1500/ 6388]\nloss: 0.058058  [ 3000/ 6388]\nloss: 0.086271  [ 4500/ 6388]\nloss: 0.248736  [ 6000/ 6388]\n\nTest Error:\nacc: 94.4%, avg loss: 0.008735\n\nEpoch 7\n-------------------------------\nloss: 0.077507  [    0/ 6388]\nloss: 0.100408  [ 1500/ 6388]\nloss: 0.831771  [ 3000/ 6388]\nloss: 0.111290  [ 4500/ 6388]\nloss: 0.106297  [ 6000/ 6388]\n\nTest Error:\nacc: 94.9%, avg loss: 0.008226\n\nEpoch 8\n-------------------------------\nloss: 0.120034  [    0/ 6388]\nloss: 0.148116  [ 1500/ 6388]\nloss: 0.136060  [ 3000/ 6388]\nloss: 0.082970  [ 4500/ 6388]\nloss: 0.011689  [ 6000/ 6388]\n\nTest Error:\nacc: 95.4%, avg loss: 0.008405\n\nEpoch 9\n-------------------------------\nloss: 0.173588  [    0/ 6388]\nloss: 0.092450  [ 1500/ 6388]\nloss: 0.111218  [ 3000/ 6388]\nloss: 0.132205  [ 4500/ 6388]\nloss: 0.119570  [ 6000/ 6388]\n\nTest Error:\nacc: 95.7%, avg loss: 0.007495\n\nEpoch 10\n-------------------------------\nloss: 0.090931  [    0/ 6388]\nloss: 0.037991  [ 1500/ 6388]\nloss: 0.082023  [ 3000/ 6388]\nloss: 0.321072  [ 4500/ 6388]\nloss: 0.166948  [ 6000/ 6388]\n\nTest Error:\nacc: 95.8%, avg loss: 0.007072\n\nEpoch 11\n-------------------------------\nloss: 0.026505  [    0/ 6388]\nloss: 0.081491  [ 1500/ 6388]\nloss: 0.039262  [ 3000/ 6388]\nloss: 0.257153  [ 4500/ 6388]\nloss: 0.204995  [ 6000/ 6388]\n\nTest Error:\nacc: 95.7%, avg loss: 0.007461\n\nEpoch 12\n-------------------------------\nloss: 0.167367  [    0/ 6388]\nloss: 0.077338  [ 1500/ 6388]\nloss: 0.048410  [ 3000/ 6388]\nloss: 0.153318  [ 4500/ 6388]\nloss: 0.030383  [ 6000/ 6388]\n\nTest Error:\nacc: 95.9%, avg loss: 0.006969\n\nEpoch 13\n-------------------------------\nloss: 0.054312  [    0/ 6388]\nloss: 0.135297  [ 1500/ 6388]\nloss: 0.121914  [ 3000/ 6388]\nloss: 0.141828  [ 4500/ 6388]\nloss: 0.064397  [ 6000/ 6388]\n\nTest Error:\nacc: 95.9%, avg loss: 0.007261\n\nEpoch 14\n-------------------------------\nloss: 0.081329  [    0/ 6388]\nloss: 0.105171  [ 1500/ 6388]\nloss: 0.091839  [ 3000/ 6388]\nloss: 0.060654  [ 4500/ 6388]\nloss: 0.019211  [ 6000/ 6388]\n\nTest Error:\nacc: 96.2%, avg loss: 0.006350\n\nEpoch 15\n-------------------------------\nloss: 0.027931  [    0/ 6388]\nloss: 0.088221  [ 1500/ 6388]\nloss: 0.165891  [ 3000/ 6388]\nloss: 0.177692  [ 4500/ 6388]\nloss: 0.019100  [ 6000/ 6388]\n\nTest Error:\nacc: 95.9%, avg loss: 0.006869\n\nDone!\n"}
-    </pre>
-  </Notebook.CodeArea>
-</Notebook.Cell>
-
-<Notebook.Cell>
-  <Notebook.CodeArea prompt="[40]:" stderr={false} type="input">
-    ```python
-    summary(model, input_size=(15, 3, 201, 81))
-    ```
-  </Notebook.CodeArea>
-
-  <Notebook.CodeArea prompt="[40]:" stderr={false} type="output">
-    <pre>
-      {"==========================================================================================\nLayer (type:depth-idx)                   Output Shape              Param #\n==========================================================================================\nCNNet                                    [15, 2]                   --\n├─Conv2d: 1-1                            [15, 32, 197, 77]         2,432\n├─Conv2d: 1-2                            [15, 64, 94, 34]          51,264\n├─Dropout2d: 1-3                         [15, 64, 94, 34]          --\n├─Flatten: 1-4                           [15, 51136]               --\n├─Linear: 1-5                            [15, 50]                  2,556,850\n├─Linear: 1-6                            [15, 2]                   102\n==========================================================================================\nTotal params: 2,610,648\nTrainable params: 2,610,648\nNon-trainable params: 0\nTotal mult-adds (G): 3.05\n==========================================================================================\nInput size (MB): 2.93\nForward/backward pass size (MB): 82.80\nParams size (MB): 10.44\nEstimated Total Size (MB): 96.17\n==========================================================================================\n"}
     </pre>
   </Notebook.CodeArea>
 </Notebook.Cell>
@@ -1410,7 +1395,7 @@ git_revision_time: '2023-12-06T20:08:22+08:00'
   </Notebook.CodeArea>
 
   <Notebook.FancyOutput prompt="" type="output">
-    ![](../_assets/tutorial_pytorch_audio_classification_96_0.png)
+    ![](../_assets/tutorial_pytorch_audio_classification_95_0.png)
   </Notebook.FancyOutput>
 </Notebook.Cell>
 

@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/tutorial/teeu.md
-git_last_modified_commit: 2771a450790fa157868104fe21ab84ea39399868
-git_last_modified_time: '2023-06-14T15:47:24+08:00'
-git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/tutorial/teeu.md
+git_download_url: https://github.com/secretflow/secretflow/raw/f2c46f98224a42f29bca20751a569bbfac39f750/docs/tutorial/teeu.md
+git_last_modified_commit: b06e3ccb5bfcf23b0e982da3023a85436f82e00b
+git_last_modified_time: '2023-12-25T14:23:18+08:00'
+git_origin_url: https://github.com/secretflow/secretflow/blob/f2c46f98224a42f29bca20751a569bbfac39f750/docs/tutorial/teeu.md
 git_owner: secretflow
 git_repo: secretflow
-git_revision_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
-git_revision_time: '2023-12-06T20:08:22+08:00'
+git_revision_commit: f2c46f98224a42f29bca20751a569bbfac39f750
+git_revision_time: '2024-01-03T19:41:12+08:00'
 ---
 
 :target{#teeu-getting-started-guide}
@@ -145,7 +145,7 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
   - `host`为 AuthManager 的服务监听地址
   - `ca_cert`为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
 
-假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Alice 的机器上执行 `python demo.py`。
+假设我们把代码保存为 `demo.py`，然后在 Alice 的机器上执行 `python demo.py`。
 
 ```python
 import secretflow as sf
@@ -237,7 +237,7 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 - `host`为 AuthManager 的服务监听地址
 - `ca_cert`为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
 
-假设我们把代码保存为 [demo.py](http://demo.py)，然后在Bob的机器上执行 `python demo.py`。
+假设我们把代码保存为 `demo.py`，然后在Bob的机器上执行 `python demo.py`。
 
 ```python
 import secretflow as sf
@@ -803,7 +803,7 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
   - `mrenclave`为 AuthManager 模块的 MRENCLAVE，在部署 AuthManager 的步骤中您应该已经获得了该值。
 - 使用前面获得的 TEEU 的 MRENCLAVE，填充正确的值: `teeu = TEEU('carol', mr_enclave='mr_enclave of TEEU')`
 
-配置完成后，假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Alice 的机器上执行 `python demo.py`。
+配置完成后，假设我们把代码保存为 `demo.py`，然后在 Alice 的机器上执行 `python demo.py`。
 
 ```python
 import secretflow as sf
@@ -895,7 +895,7 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
   - `mrenclave`为 AuthManager 模块的 MRENCLAVE，在部署 AuthManager 的步骤中您应该已经获得了该值。
 - 使用前面获得的 TEEU 的 MRENCLAVE，填充正确的值: `teeu = TEEU('carol', mr_enclave='mr_enclave of TEEU')`
 
-配置完成后，假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Bob 的机器上执行 `python demo.py`。
+配置完成后，假设我们把代码保存为 `demo.py`，然后在 Bob 的机器上执行 `python demo.py`。
 
 ```python
 import secretflow as sf
