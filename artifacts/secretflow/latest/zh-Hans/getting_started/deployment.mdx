@@ -1,17 +1,91 @@
 ---
-git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/getting_started/deployment.md
-git_last_modified_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
-git_last_modified_time: '2023-12-06T20:08:22+08:00'
-git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/getting_started/deployment.md
+git_download_url: https://github.com/secretflow/secretflow/raw/f2c46f98224a42f29bca20751a569bbfac39f750/docs/getting_started/deployment.md
+git_last_modified_commit: 251cf0804e0d94e1113af3d696622c05362c1862
+git_last_modified_time: '2024-01-03T17:03:19+08:00'
+git_origin_url: https://github.com/secretflow/secretflow/blob/f2c46f98224a42f29bca20751a569bbfac39f750/docs/getting_started/deployment.md
 git_owner: secretflow
 git_repo: secretflow
-git_revision_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
-git_revision_time: '2023-12-06T20:08:22+08:00'
+git_revision_commit: f2c46f98224a42f29bca20751a569bbfac39f750
+git_revision_time: '2024-01-03T19:41:12+08:00'
 ---
 
 :target{#deployment}
 
 # 部署
+
+<strong>SecretFlow provides two deployment options: simulation and production. The distinctions between them are outlined in the accompanying table. Please review the details thoughtfully and select the deployment approach that best suits your requirements.</strong>
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Deployment Mode
+      </td>
+
+      <td>
+        Scenarios
+      </td>
+
+      <td>
+        How to deploy Ray
+      </td>
+
+      <td>
+        How to run code
+      </td>
+
+      <td>
+        Code difference
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        仿真
+      </td>
+
+      <td>
+        Conducting experiments in the local network environment of a single organization.
+      </td>
+
+      <td>
+        A Ray cluster composed of simulated nodes.
+      </td>
+
+      <td>
+        Run code once on any node.
+      </td>
+
+      <td>
+        Fill `parties` parameter in `sf.init`.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        生产模式
+      </td>
+
+      <td>
+        Formal production environments, such as collaboration among multiple institutions.
+      </td>
+
+      <td>
+        Each institution deploys its own independent Ray cluster.
+      </td>
+
+      <td>
+        Every institution needs to execute the code simultaneously.
+      </td>
+
+      <td>
+        Fill `cluster_config` parameter in `sf.init`, and the rest of the code is identical to that in simulation mode.
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 :target{#pre-knowledge-about-ray}
 
@@ -103,7 +177,8 @@ ray start --head --node-ip-address="ip" --port="port" --resources='{"alice": 16}
 ray start --address="ip:port" --resources='{"bob": 16}' --disable-usage-stats
 ```
 
-当屏幕输出中出现 “Ray runtime started.” 意味着节点启动成功。现在由两个Ray节点构成的Ray集群已经搭建完毕。其中，头节点模拟机构alice，从节点模拟机构bob。
+The node starts successfully if you see “Ray runtime started.” in the screen output.
+A Ray cluster consisting of two Ray nodes has been built by now, while the head node simulates `alice` and the slave node simulates `bob`.
 
 你也可以继续重复上述步骤以启动带有其他参与方标识的节点。
 
@@ -111,7 +186,8 @@ ray start --address="ip:port" --resources='{"bob": 16}' --disable-usage-stats
 
 #### 启动SecretFlow
 
-现在你可以启动SecretFlow。下面这段代码表示alice和bob分别执行了一个返回输入值的函数。
+Now you can start SecretFlow and run your code.
+The following code shows that alice and bob each execute a function that returns the input value.
 
 ---
 
@@ -384,7 +460,7 @@ spu = sf.SPU(cluster_def=cluster_def)
   在Miniconda的安装完成以后，您可以删除Miniconda的安装包
 - 创建隐语的虚拟环境， 在不同发行版上的Python版本应该完全一致
   ```bash
-  conda create --name secretflow python==3.8.15
+  conda create --name secretflow python==3.8.18
   ```
 - 激活隐语的虚拟环境
   ```bash
@@ -545,7 +621,7 @@ Demands:
 
 ```bash
 (secretflow) alice@DESKTOP-SAOB7DQ:~$ python
-Python 3.8.15 (default, Nov 24 2022, 15:19:38)
+Python 3.8.18 (default, Nov 24 2022, 15:19:38)
 [GCC 11.2.0] :: Anaconda, Inc. on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import secretflow as sf
@@ -632,7 +708,8 @@ alice首先启动ray集群。注意这里的命令是启动Ray的主节点。
 ray start --head --node-ip-address="ip" --port="port" --include-dashboard=False --disable-usage-stats
 ```
 
-屏幕输出中显示”Ray runtime started.”，则说明Ray的主节点启动成功。至此alice的Ray集群已经创建完成。
+Head node starts successfully if you see “Ray runtime started.” in the screen output.
+So far, Alice’s Ray cluster has been successfully built.
 
 `alice`使用集群配置初始化SecretFlow，并且运行代码。
 
@@ -747,8 +824,8 @@ sf.init(address='bob ray head node address', cluster_config=cluster_config)
        "key": "server key of alice in pem",
    }
 
-   sf.init(address='ip:port', 
-           cluster_config=cluster_config, 
+   sf.init(address='ip:port',
+           cluster_config=cluster_config,
            tls_config=tls_config
    )
    ```
@@ -760,8 +837,8 @@ sf.init(address='bob ray head node address', cluster_config=cluster_config)
        "key": "server key of bob in pem",
    }
 
-   sf.init(address='ip:port', 
-           cluster_config=cluster_config, 
+   sf.init(address='ip:port',
+           cluster_config=cluster_config,
            tls_config=tls_config
    )
    ```
@@ -774,8 +851,8 @@ sf.init(address='bob ray head node address', cluster_config=cluster_config)
        "numpy": ["dtype"],
    }
 
-   sf.init(address='ip:port', 
-           cluster_config=cluster_config, 
+   sf.init(address='ip:port',
+           cluster_config=cluster_config,
            cross_silo_serializing_allowed_list=allowed_list
    )
    ```

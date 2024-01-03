@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/tutorial/teeu_xgboost.md
-git_last_modified_commit: 2771a450790fa157868104fe21ab84ea39399868
-git_last_modified_time: '2023-06-14T15:47:24+08:00'
-git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/tutorial/teeu_xgboost.md
+git_download_url: https://github.com/secretflow/secretflow/raw/f2c46f98224a42f29bca20751a569bbfac39f750/docs/tutorial/teeu_xgboost.md
+git_last_modified_commit: f2c46f98224a42f29bca20751a569bbfac39f750
+git_last_modified_time: '2024-01-03T19:41:12+08:00'
+git_origin_url: https://github.com/secretflow/secretflow/blob/f2c46f98224a42f29bca20751a569bbfac39f750/docs/tutorial/teeu_xgboost.md
 git_owner: secretflow
 git_repo: secretflow
-git_revision_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
-git_revision_time: '2023-12-06T20:08:22+08:00'
+git_revision_commit: f2c46f98224a42f29bca20751a569bbfac39f750
+git_revision_time: '2024-01-03T19:41:12+08:00'
 ---
 
 :target{#teeu-example-xgboost}
@@ -145,9 +145,9 @@ def gen_data():
     return x, y
 
 # Alice generates its samples.
-x_a, y_a = alice(gen_data(), num_returns=2)()
+x_a, y_a = alice(gen_data, num_returns=2)()
 # Bob generates its samples.
-x_b, y_b = alice(gen_data(), num_returns=2)()
+x_b, y_b = alice(gen_data, num_returns=2)()
 
 from secretflow.device import TEEU
 
@@ -163,7 +163,7 @@ y_b_teeu = y_b.to(teeu, allow_funcs=xgb_demo)
 
 # Run xgb_demo.
 res = teeu(xgb_demo)([x_a_teeu, x_b_teeu], [y_a_teeu, y_b_teeu])
-
+error = sf.reveal(res)
 print(f'Train error: {error}')
 ```
 
@@ -197,7 +197,7 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
   - `host`为 AuthManager 的服务监听地址
   - `ca_cert`为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
 
-假设我们把代码保存为 [demo.py](http://demo.py)，然后在 Alice 的机器上执行 `python demo.py`。
+假设我们把代码保存为 `demo.py`，然后在 Alice 的机器上执行 `python demo.py`。
 
 ```python
 import secretflow as sf
@@ -281,9 +281,9 @@ def gen_data():
     return x, y
 
 # Alice generates its samples.
-x_a, y_a = alice(gen_data(), num_returns=2)()
+x_a, y_a = alice(gen_data, num_returns=2)()
 # Bob generates its samples.
-x_b, y_b = alice(gen_data(), num_returns=2)()
+x_b, y_b = alice(gen_data, num_returns=2)()
 
 from secretflow.device import TEEU
 
@@ -298,7 +298,7 @@ y_b_teeu = y_b.to(teeu, allow_funcs=xgb_demo)
 
 # Run xgb_demo.
 res = teeu(xgb_demo)([x_a_teeu, x_b_teeu], [y_a_teeu, y_b_teeu])
-
+error = sf.reveal(res)
 print(f'Train error: {error}')
 ```
 
@@ -332,7 +332,7 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 - `host`为 AuthManager 的服务监听地址
 - `ca_cert`为 AuthManager 的 CA 证书地址，如果 AuthManager 未启动 TLS，则不需要配置。
 
-假设我们把代码保存为 [demo.py](http://demo.py)，然后在Bob的机器上执行 `python demo.py`。
+假设我们把代码保存为 `demo.py`，然后在Bob的机器上执行 `python demo.py`。
 
 ```python
 import secretflow as sf
@@ -416,9 +416,9 @@ def gen_data():
     return x, y
 
 # Alice generates its samples.
-x_a, y_a = alice(gen_data(), num_returns=2)()
+x_a, y_a = alice(gen_data, num_returns=2)()
 # Bob generates its samples.
-x_b, y_b = alice(gen_data(), num_returns=2)()
+x_b, y_b = alice(gen_data, num_returns=2)()
 
 from secretflow.device import TEEU
 
@@ -433,7 +433,7 @@ y_b_teeu = y_b.to(teeu, allow_funcs=xgb_demo)
 
 # Run xgb_demo.
 res = teeu(xgb_demo)([x_a_teeu, x_b_teeu], [y_a_teeu, y_b_teeu])
-
+error = sf.reveal(res)
 print(f'Train error: {error}')
 ```
 
@@ -542,9 +542,9 @@ def gen_data():
     return x, y
 
 # Alice generates its samples.
-x_a, y_a = alice(gen_data(), num_returns=2)()
+x_a, y_a = alice(gen_data, num_returns=2)()
 # Bob generates its samples.
-x_b, y_b = alice(gen_data(), num_returns=2)()
+x_b, y_b = alice(gen_data, num_returns=2)()
 
 from secretflow.device import TEEU
 
@@ -559,7 +559,7 @@ y_b_teeu = y_b.to(teeu, allow_funcs=xgb_demo)
 
 # Run xgb_demo.
 res = teeu(xgb_demo)([x_a_teeu, x_b_teeu], [y_a_teeu, y_b_teeu])
-
+error = sf.reveal(res)
 print(f'Train error: {error}')
 ```
 

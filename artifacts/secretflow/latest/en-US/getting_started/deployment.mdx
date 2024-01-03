@@ -1,17 +1,91 @@
 ---
-git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/getting_started/deployment.md
-git_last_modified_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
-git_last_modified_time: '2023-12-06T20:08:22+08:00'
-git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/getting_started/deployment.md
+git_download_url: https://github.com/secretflow/secretflow/raw/f2c46f98224a42f29bca20751a569bbfac39f750/docs/getting_started/deployment.md
+git_last_modified_commit: 251cf0804e0d94e1113af3d696622c05362c1862
+git_last_modified_time: '2024-01-03T17:03:19+08:00'
+git_origin_url: https://github.com/secretflow/secretflow/blob/f2c46f98224a42f29bca20751a569bbfac39f750/docs/getting_started/deployment.md
 git_owner: secretflow
 git_repo: secretflow
-git_revision_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
-git_revision_time: '2023-12-06T20:08:22+08:00'
+git_revision_commit: f2c46f98224a42f29bca20751a569bbfac39f750
+git_revision_time: '2024-01-03T19:41:12+08:00'
 ---
 
 :target{#deployment}
 
 # Deployment
+
+<strong>SecretFlow provides two deployment options: simulation and production. The distinctions between them are outlined in the accompanying table. Please review the details thoughtfully and select the deployment approach that best suits your requirements.</strong>
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Deployment Mode
+      </td>
+
+      <td>
+        Scenarios
+      </td>
+
+      <td>
+        How to deploy Ray
+      </td>
+
+      <td>
+        How to run code
+      </td>
+
+      <td>
+        Code difference
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        Simulation
+      </td>
+
+      <td>
+        Conducting experiments in the local network environment of a single organization.
+      </td>
+
+      <td>
+        A Ray cluster composed of simulated nodes.
+      </td>
+
+      <td>
+        Run code once on any node.
+      </td>
+
+      <td>
+        Fill `parties` parameter in `sf.init`.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Production
+      </td>
+
+      <td>
+        Formal production environments, such as collaboration among multiple institutions.
+      </td>
+
+      <td>
+        Each institution deploys its own independent Ray cluster.
+      </td>
+
+      <td>
+        Every institution needs to execute the code simultaneously.
+      </td>
+
+      <td>
+        Fill `cluster_config` parameter in `sf.init`, and the rest of the code is identical to that in simulation mode.
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 :target{#pre-knowledge-about-ray}
 
@@ -401,7 +475,7 @@ The following steps are expected to be done in different distributions to set up
 - Create a virtual environment for SecretFlow
   all versions of Python in different distributions should be exactly same.
   ```bash
-  conda create --name secretflow python==3.8.15
+  conda create --name secretflow python==3.8.18
   ```
 - Activate the virtual environment of SecretFlow
   ```bash
@@ -565,7 +639,7 @@ We use `ray_ip` and `ray_port` to start SecretFlow in first distribution with th
 
 ```bash
 (secretflow) alice@DESKTOP-SAOB7DQ:~$ python
-Python 3.8.15 (default, Nov 24 2022, 15:19:38)
+Python 3.8.18 (default, Nov 24 2022, 15:19:38)
 [GCC 11.2.0] :: Anaconda, Inc. on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import secretflow as sf
@@ -772,8 +846,8 @@ In order to avoid problems such as connection timeout caused by the startup time
        "key": "server key of alice in pem",
    }
 
-   sf.init(address='ip:port', 
-           cluster_config=cluster_config, 
+   sf.init(address='ip:port',
+           cluster_config=cluster_config,
            tls_config=tls_config
    )
    ```
@@ -785,8 +859,8 @@ In order to avoid problems such as connection timeout caused by the startup time
        "key": "server key of bob in pem",
    }
 
-   sf.init(address='ip:port', 
-           cluster_config=cluster_config, 
+   sf.init(address='ip:port',
+           cluster_config=cluster_config,
            tls_config=tls_config
    )
    ```
@@ -800,8 +874,8 @@ In order to avoid problems such as connection timeout caused by the startup time
        "numpy": ["dtype"],
    }
 
-   sf.init(address='ip:port', 
-           cluster_config=cluster_config, 
+   sf.init(address='ip:port',
+           cluster_config=cluster_config,
            cross_silo_serializing_allowed_list=allowed_list
    )
    ```
