@@ -12,3 +12,4 @@ secretflow-doctools
 sphinx-intl
 # FIXME:
 polars
+interconnection
