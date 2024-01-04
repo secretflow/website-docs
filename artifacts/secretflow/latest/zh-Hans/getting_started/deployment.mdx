@@ -13,29 +13,29 @@ git_revision_time: '2024-01-04T11:45:08+08:00'
 
 # 部署
 
-<strong>SecretFlow provides two deployment options: simulation and production. The distinctions between them are outlined in the accompanying table. Please review the details thoughtfully and select the deployment approach that best suits your requirements.</strong>
+<strong>SecretFlow提供了仿真和生产两种部署模式，两者的对比如下表所示。建议您认真阅读说明，根据需求选择适合您的部署方式。</strong>
 
 <table>
   <thead>
     <tr>
       <td>
-        Deployment Mode
+        部署模式
       </td>
 
       <td>
-        Scenarios
+        场景
       </td>
 
       <td>
-        How to deploy Ray
+        如何部署Ray
       </td>
 
       <td>
-        How to run code
+        如何运行代码
       </td>
 
       <td>
-        Code difference
+        代码差异
       </td>
     </tr>
   </thead>
@@ -43,23 +43,23 @@ git_revision_time: '2024-01-04T11:45:08+08:00'
   <tbody>
     <tr>
       <td>
-        仿真
+        仿真模式
       </td>
 
       <td>
-        Conducting experiments in the local network environment of a single organization.
+        单机构内部局域网环境下的仿真实验。
       </td>
 
       <td>
-        A Ray cluster composed of simulated nodes.
+        由多个仿真节点组成的单个Ray集群。
       </td>
 
       <td>
-        Run code once on any node.
+        选择任一节点执行一遍代码。
       </td>
 
       <td>
-        Fill `parties` parameter in `sf.init`.
+        在 `sf.init` 中填写 `parties` 参数。
       </td>
     </tr>
 
@@ -69,19 +69,19 @@ git_revision_time: '2024-01-04T11:45:08+08:00'
       </td>
 
       <td>
-        Formal production environments, such as collaboration among multiple institutions.
+        正式生产环境，比如多个机构协作。
       </td>
 
       <td>
-        Each institution deploys its own independent Ray cluster.
+        每个机构都需要独立部署各自的Ray集群。
       </td>
 
       <td>
-        Every institution needs to execute the code simultaneously.
+        每个机构都需要同时执行代码
       </td>
 
       <td>
-        Fill `cluster_config` parameter in `sf.init`, and the rest of the code is identical to that in simulation mode.
+        在 `sf.init` 中填写 `cluster_config` 参数，剩余代码与仿真模式完全一样。
       </td>
     </tr>
   </tbody>
@@ -97,7 +97,7 @@ git_revision_time: '2024-01-04T11:45:08+08:00'
 
 ## 基于Kuscia部署
 
-Kuscia is a lightweight privacy-preserving computing task orchestration framework based on K3s. It provides a unified privacy-preserving computing foundation that can abstract away heterogeneous infrastructure and protocols.
+Kuscia是一款基于K3s的轻量级隐私计算任务编排框架，旨在屏蔽异构的基础设施和协议，提供统一的隐私计算底座。
 
 使用Kuscia，你可以不需要关注SecretFlow组网的细节，直接通过kubectl命令或者API接口轻松地管理和执行SecretFlow作业。此外，Kuscia还支持通信安全和并发运行SecretFlow作业。
 
@@ -105,7 +105,7 @@ Kuscia is a lightweight privacy-preserving computing task orchestration framewor
 
 :target{#simulation}
 
-## 仿真
+## 仿真模式
 
 SecretFlow被设计为可以快速仿真，既可以单机运行，也可以在多个节点上运行。
 
@@ -177,8 +177,7 @@ ray start --head --node-ip-address="ip" --port="port" --resources='{"alice": 16}
 ray start --address="ip:port" --resources='{"bob": 16}' --disable-usage-stats
 ```
 
-The node starts successfully if you see “Ray runtime started.” in the screen output.
-A Ray cluster consisting of two Ray nodes has been built by now, while the head node simulates `alice` and the slave node simulates `bob`.
+当屏幕输出中出现 “Ray runtime started.” 意味着节点启动成功。现在由两个Ray节点构成的Ray集群已经搭建完毕。其中，头节点模拟机构alice，从节点模拟机构bob。
 
 你也可以继续重复上述步骤以启动带有其他参与方标识的节点。
 
@@ -186,8 +185,7 @@ A Ray cluster consisting of two Ray nodes has been built by now, while the head 
 
 #### 启动SecretFlow
 
-Now you can start SecretFlow and run your code.
-The following code shows that alice and bob each execute a function that returns the input value.
+现在你可以启动SecretFlow。下面这段代码表示alice和bob分别执行了一个返回输入值的函数。
 
 ---
 
@@ -708,8 +706,7 @@ alice首先启动ray集群。注意这里的命令是启动Ray的主节点。
 ray start --head --node-ip-address="ip" --port="port" --include-dashboard=False --disable-usage-stats
 ```
 
-Head node starts successfully if you see “Ray runtime started.” in the screen output.
-So far, Alice’s Ray cluster has been successfully built.
+屏幕输出中显示”Ray runtime started.”，则说明Ray的主节点启动成功。至此alice的Ray集群已经创建完成。
 
 `alice`使用集群配置初始化SecretFlow，并且运行代码。
 
@@ -759,8 +756,7 @@ bob首先启动ray集群
 ray start --head --node-ip-address="ip" --port="port" --include-dashboard=False --disable-usage-stats
 ```
 
-Head node starts successfully if you see “Ray runtime started.” in the screen output.
-So far, bob’s Ray cluster has been successfully built.
+屏幕输出中显示”Ray runtime started.”，则说明Ray的主节点启动成功。至此bob的Ray集群已经创建完成。
 
 bob使用和alice类似的集群配置初始化SecretFlow，除了 `self_party` 字段稍有不同。然后运行代码。
 
