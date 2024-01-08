@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/index.rst
-git_last_modified_commit: 50d1b64da8262e4731766f3ea179d2b0baf82af3
-git_last_modified_time: '2023-11-15T17:16:11+08:00'
-git_origin_url: https://github.com/secretflow/scql/blob/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/index.rst
+git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/index.rst
+git_last_modified_commit: ca6db86740af01cdb85f73f5b6118e47efc63005
+git_last_modified_time: '2024-01-08T11:35:58+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/index.rst
 git_owner: secretflow
 git_repo: scql
-git_revision_commit: 8f90675e4a85e1c76c0ac9a5720891911bc358d8
-git_revision_time: '2023-11-17T17:19:11+08:00'
+git_revision_commit: f8a1a30688868496fb9aa22bbd75cdcfe5793e99
+git_revision_time: '2024-01-08T11:45:29+08:00'
 ---
 
 :target{#scql-documentation}
@@ -19,13 +19,13 @@ Secure Collaborative Query Language (SCQL) 是一种能够将 SQL 语句转换�
 
 ## 开始
 
-按照 [快速教程](intro/tutorial.mdx) 在本地尝试 SCQL！
+按照 [快速教程](intro/p2p-tutorial.mdx) 在本地尝试 SCQL！
 
 :target{#scql-systems}
 
 ## SCQL 系统
 
-- <strong>概述</strong>：[系统简介及架构设计](topics/system/intro.mdx) | [使用流程](topics/system/usage.mdx) | [P2P](topics/system/intro-p2p.mdx)
+- <strong>概述</strong>：[系统简介及架构设计](topics/system/intro.mdx) | [P2P vs 中心化](topics/system/deploy-arch.mdx)
 - <strong>安全性</strong>：[安全性说明](topics/security/overview.mdx)
 - <strong>参考</strong>：[SCQL 实现进度](reference/implementation-status.mdx)
 
@@ -41,21 +41,28 @@ Secure Collaborative Query Language (SCQL) 是一种能够将 SQL 语句转换�
 
 - <strong>概述</strong>：[CCL 机制简介](topics/ccl/intro.mdx)
 - <strong>指南</strong>：[CCL 常见用法与建议](topics/ccl/usage.mdx)
-- <strong>参考</strong>：[GRANT/REVOKE 语句](reference/lang/manual.mdx#scql-grant-revoke) | [如何工作](topics/ccl/intro.mdx#how-ccl-works)
+- <strong>参考</strong>：[GRANT/REVOKE 语句](topics/clients/integrate-scdb.mdx#scql-grant-revoke) | [如何工作](topics/ccl/intro.mdx#how-ccl-works)
 
 :target{#clients}
 
 ## 客户端
 
-- [关于 SCQL 客户端](topics/clients/overview.mdx)
-- [HTTP API 参考](reference/http-api.mdx)
+- <strong>P2P</strong>
+  - [Broker HTTP API 参考](reference/broker-api.mdx)
+- <strong>中心化</strong>
+  - [SCQL 客户端](topics/clients/integrate-scdb.mdx)
+  - [SCDB HTTP API 参考](reference/scdb-api.mdx)
 
 :target{#deployment}
 
 ## 部署
 
-- <strong>指南</strong>：[如何部署 SCQL 集群](topics/deployment/how-to-deploy-centralized-cluster.mdx) | [如何在 P2P 模式下部署 SCQL 集群](topics/deployment/how-to-deploy-p2p-cluster.mdx)
-- <strong>参考</strong>：[SCQL 系统配置](reference/engine-config.mdx)
+- <strong>P2P</strong>
+  - <strong>指南</strong>: [P2P 部署](topics/deployment/how-to-deploy-p2p-cluster.mdx)
+  - <strong>参考</strong>：[P2P 配置](reference/p2p-deploy-config.mdx)
+- <strong>中心化</strong>
+  - <strong>指南:</strong> [中心化部署](topics/deployment/how-to-deploy-centralized-cluster.mdx)
+  - <strong>参考</strong>：[中心化部署配置](reference/centralized-deploy-config.mdx)
 
 :target{#for-contributors}
 

@@ -1,15 +1,18 @@
 sidebar:
   - items:
-      - {id: intro/tutorial.mdx, label: Quickstart tutorial, type: doc}
-      - {id: intro/p2p-tutorial.mdx, label: P2P Quickstart Tutorial, type: doc}
+      - {id: intro/p2p-tutorial.mdx, label: Quickstart Tutorial, type: doc}
+      - {id: intro/tutorial.mdx, label: Centralized Deployment Quickstart Tutorial,
+        type: doc}
     label: Introduction
     link: {id: intro/index.mdx, label: Introduction, type: doc}
     type: category
   - items:
       - items:
           - {id: topics/system/intro.mdx, label: SCQL System Overview, type: doc}
-          - {id: topics/system/usage.mdx, label: How To Use SCQL, type: doc}
+          - {id: topics/system/usage.mdx, label: How to Use SCQL, type: doc}
           - {id: topics/system/intro-p2p.mdx, label: SCQL P2P Overview, type: doc}
+          - {id: topics/system/deploy-arch.mdx, label: 'Deployment Architecture: P2P
+              vs Centralized', type: doc}
         label: SCQL System
         type: category
       - items:
@@ -22,15 +25,15 @@ sidebar:
         label: CCL
         type: category
       - items:
-          - {id: topics/clients/overview.mdx, label: How To Integrate SCQL System,
+          - {id: topics/clients/integrate-scdb.mdx, label: How to Integrate SCDB,
             type: doc}
         label: Clients
         type: category
       - items:
           - {id: topics/deployment/how-to-deploy-centralized-cluster.mdx, label: Deployment
               with Trusted Third Party, type: doc}
-          - {id: topics/deployment/how-to-deploy-p2p-cluster.mdx, label: Deployment
-              in P2P Mode, type: doc}
+          - {id: topics/deployment/how-to-deploy-p2p-cluster.mdx, label: P2P Deployment,
+            type: doc}
         label: Deployment
         type: category
     label: Topics
@@ -44,11 +47,15 @@ sidebar:
         label: Language
         type: category
       - items:
-          - {id: reference/engine-config.mdx, label: SCQL System Config, type: doc}
+          - {id: reference/p2p-deploy-config.mdx, label: SCQL P2P Deployment Configuration,
+            type: doc}
+          - {id: reference/centralized-deploy-config.mdx, label: SCQL Centralized
+              Deployment Configuration, type: doc}
         label: System
         type: category
       - items:
-          - {id: reference/http-api.mdx, label: SCQL API, type: doc}
+          - {id: reference/broker-api.mdx, label: SCQLBroker API, type: doc}
+          - {id: reference/scdb-api.mdx, label: SCDB API, type: doc}
         label: Clients
         type: category
       - items:

@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/reference/lang/mysql-compatibility.rst
-git_last_modified_commit: b839cf8f04f94a53d9df08aec25c28ac8e48ac10
-git_last_modified_time: '2023-10-12T02:10:46-05:00'
-git_origin_url: https://github.com/secretflow/scql/blob/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/reference/lang/mysql-compatibility.rst
+git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/reference/lang/mysql-compatibility.rst
+git_last_modified_commit: df49a96e4b89e1750db42f98a3273e8489352133
+git_last_modified_time: '2024-01-05T15:00:17+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/reference/lang/mysql-compatibility.rst
 git_owner: secretflow
 git_repo: scql
-git_revision_commit: 8f90675e4a85e1c76c0ac9a5720891911bc358d8
-git_revision_time: '2023-11-17T17:19:11+08:00'
+git_revision_commit: f8a1a30688868496fb9aa22bbd75cdcfe5793e99
+git_revision_time: '2024-01-08T11:45:29+08:00'
 ---
 
 :target{#mysql-compatibility}
@@ -164,7 +164,7 @@ user> SELECT alice.plain_long AS alice_long, bob.plain_float AS bob_float, alice
 
 ##### 算术运算 (+, -, \*, /, %)
 
-- 算术运算中的两个参数都不能是 string 类型。
+- ‘%’ 运算的参数仅支持 long 类型，而其他算术运算支持除 string 以外的数据类型。
 - 如果两个参数都是 long 类型，则它们将按照 long 类型进行计算。
 - 如果其中一个参数是 float 或者 double 类型，则会将另一个参数转换为 double 进行计算。
 
@@ -172,6 +172,6 @@ user> SELECT alice.plain_long AS alice_long, bob.plain_float AS bob_float, alice
 
 ##### 聚合操作 (sum, count, avg, min, max)
 
-- 聚合操作中的所有参数都不能是 string 类型。
+- 除了 count ，聚合操作中的所有参数都不能是 string 类型。
 - 如果所有参数都是 long 类型，则它们将按照 long 类型进行计算。
 - 如果其中一个参数是 float 或者 double 类型，则会将另一个参数转换为 double 进行计算。

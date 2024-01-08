@@ -1,23 +1,30 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/intro/p2p-tutorial.rst
-git_last_modified_commit: 50d1b64da8262e4731766f3ea179d2b0baf82af3
-git_last_modified_time: '2023-11-15T17:16:11+08:00'
-git_origin_url: https://github.com/secretflow/scql/blob/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/intro/p2p-tutorial.rst
+git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/intro/p2p-tutorial.rst
+git_last_modified_commit: df49a96e4b89e1750db42f98a3273e8489352133
+git_last_modified_time: '2024-01-05T15:00:17+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/intro/p2p-tutorial.rst
 git_owner: secretflow
 git_repo: scql
-git_revision_commit: 8f90675e4a85e1c76c0ac9a5720891911bc358d8
-git_revision_time: '2023-11-17T17:19:11+08:00'
+git_revision_commit: f8a1a30688868496fb9aa22bbd75cdcfe5793e99
+git_revision_time: '2024-01-08T11:45:29+08:00'
 ---
 
-:target{#p2p-quickstart-tutorial}
+:target{#quickstart-tutorial}
 
-# P2P 快速开始
+# 快速开始
 
-:target{#tl-dr}
+在本教程中，您将在单机上部署 SCQL 系统，然后模拟两方进行联合数据分析的项目设置，最后发起联合分析查询。
 
-## 摘要
+:target{#deployment-architecture-description}
 
-使用 `docker-compose` 来部署一个独立的 P2P 模式 SCQL，然后使用 brokerctl 来配置及查询
+## 部署架构说明
+
+SCQL 支持两种部署架构：中心化和 P2P 。
+
+- 中心化：中心化部署架构依靠可信第三方部署协调服务 SCDB ，每个数据参与方只需要部署一个 SCQLEngine 计算引擎。
+- P2P ： P2P 部署架构不需要可信第三方，每个数据参与方都需要部署一个 SCQLEngine 和一个 SCQLBroker 。
+
+本教程采用 P2P 部署架构。 如果您想体验中心化部署架构，可以参考 [这里](tutorial.mdx)
 
 :target{#prerequisites}
 
@@ -63,7 +70,7 @@ bash examples/p2p-tutorial/setup.sh
   为了演示 SCQL，我们进行了以下简化操作：
 
   1. SCQLBrokers 和 SCQLEngines 使用同一个数据库服务器，但是使用不同的数据库名称进行区分。
-  2. SCQLBrokers 是通过 HTTP 协议提供服务的。然而，对于生产环境，建议使用 HTTPS 协议来代替。请查看 [<span>TLS 配置</span>](../reference/engine-config.mdx#scdb-tls) 以了解详情。
+  2. SCQLBrokers 是通过 HTTP 协议提供服务的。然而，对于生产环境，建议使用 HTTPS 协议来代替。请查看 [<span>TLS 配置</span>](../reference/p2p-deploy-config.mdx#broker-tls) 以了解详情。
   3. 演示环境中 brokerctl 可以向两个 SCQLBrokers 发送请求，但在生产环境中，SCQLBroker 应使用本地端口，并且仅监听本地请求以确保安全。
 </Container>
 
@@ -104,14 +111,14 @@ alice 的 SCQLBroker 监听 `http://localhost:8081`，而 bob 则监听 `http://
 # bob check invitation list
 ./brokerctl get invitation --host http://localhost:8082
 [fetch]
-+--------------+---------+---------+-----------+---------+---------+----------------------------------+
-| InvitationId | Status  | Inviter | ProjectId | Creator | Members |               Conf               |
-+--------------+---------+---------+-----------+---------+---------+----------------------------------+
-|            1 | Pending | alice   | demo      | alice   | [alice] | {                                |
-|              |         |         |           |         |         |   "protocol":  "SEMI2K",         |
-|              |         |         |           |         |         |   "field":  "FM64"               |
-|              |         |         |           |         |         | }                                |
-+--------------+---------+---------+-----------+---------+---------+----------------------------------+
++--------------+---------+---------+---------+-----------+---------+---------+----------------------------------+
+| InvitationId | Status  | Inviter | Invitee | ProjectId | Creator | Members |               Conf               |
++--------------+---------+---------+---------+-----------+---------+---------+----------------------------------+
+|            1 | Pending | alice   | bob     | demo      | alice   | [alice] | {                                |
+|              |         |         |         |           |         |         |   "protocol":  "SEMI2K",         |
+|              |         |         |         |           |         |         |   "field":  "FM64"               |
+|              |         |         |         |           |         |         | }                                |
++--------------+---------+---------+---------+-----------+---------+---------+----------------------------------+
 
 # bob decide to join the project with invitation-id 1
 ./brokerctl process invitation 1 --response "accept" --project-id "demo" --host http://localhost:8082

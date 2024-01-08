@@ -1,22 +1,22 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/topics/system/usage.rst
-git_last_modified_commit: b839cf8f04f94a53d9df08aec25c28ac8e48ac10
-git_last_modified_time: '2023-10-12T02:10:46-05:00'
-git_origin_url: https://github.com/secretflow/scql/blob/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/topics/system/usage.rst
+git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/topics/system/usage.rst
+git_last_modified_commit: df49a96e4b89e1750db42f98a3273e8489352133
+git_last_modified_time: '2024-01-05T15:00:17+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/topics/system/usage.rst
 git_owner: secretflow
 git_repo: scql
-git_revision_commit: 8f90675e4a85e1c76c0ac9a5720891911bc358d8
-git_revision_time: '2023-11-17T17:19:11+08:00'
+git_revision_commit: f8a1a30688868496fb9aa22bbd75cdcfe5793e99
+git_revision_time: '2024-01-08T11:45:29+08:00'
 ---
 
 :target{#how-to-use-scql}
 
-# How To Use SCQL
+# How to Use SCQL
 
 The flowchart shows how to use SCQL system, which contains two stages: prepare and query. In the prepare stage, the system is set up, and the necessary tables are created and initialized. In the query stage, queries are submitted, processed, and results are returned.
 
 <Container type="note">
-  All requests from user to SCDB can be submitted through [<span>synchronous api</span>](../../reference/http-api.mdx#sync-api) or [<span>asynchronous api</span>](../../reference/http-api.mdx#async-api).
+  All requests from user to SCDB can be submitted through [<span>synchronous api</span>](../../reference/scdb-api.mdx#sync-api) or [<span>asynchronous api</span>](../../reference/scdb-api.mdx#async-api).
 </Container>
 
 :target{#workflow}
@@ -46,7 +46,7 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
     </dt>
 
     <dd>
-      Alice or Bob creates a new database using the root user account through [<span>CREATE DATABASE Statement</span>](../../reference/lang/manual.mdx#create-database-stm), which can be considered a new project, SCQL supports running multiple projects simultaneously.
+      Alice or Bob creates a new database using the root user account through [<span>CREATE DATABASE Statement</span>](../clients/integrate-scdb.mdx#create-database-stm), which can be considered a new project, SCQL supports running multiple projects simultaneously.
     </dd>
 
     <dt>
@@ -54,7 +54,7 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
     </dt>
 
     <dd>
-      Alice creates user account “Alice” in SCDB using the root user account by [<span>CREATE USER Statement</span>](../../reference/lang/manual.mdx#create-user-stm), and grants access to the relevant database by [<span>GRANT Statement</span>](../../reference/lang/manual.mdx#scql-grant-revoke)
+      Alice creates user account “Alice” in SCDB using the root user account by [<span>CREATE USER Statement</span>](../clients/integrate-scdb.mdx#create-user-stm), and grants access to the relevant database by [<span>GRANT Statement</span>](../clients/integrate-scdb.mdx#scql-grant-revoke)
     </dd>
 
     <dt>
@@ -62,7 +62,7 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
     </dt>
 
     <dd>
-      Bob creates user account “Bob” in SCDB using the root user account by [<span>CREATE USER Statement</span>](../../reference/lang/manual.mdx#create-user-stm), and grants access to the relevant database by [<span>GRANT Statement</span>](../../reference/lang/manual.mdx#scql-grant-revoke)
+      Bob creates user account “Bob” in SCDB using the root user account by [<span>CREATE USER Statement</span>](../clients/integrate-scdb.mdx#create-user-stm), and grants access to the relevant database by [<span>GRANT Statement</span>](../clients/integrate-scdb.mdx#scql-grant-revoke)
     </dd>
 
     <dt>
@@ -70,7 +70,7 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
     </dt>
 
     <dd>
-      Alice creates table in SCDB using the account “Alice” by [<span>CREATE TABLE Statement</span>](../../reference/lang/manual.mdx#create-table).
+      Alice creates table in SCDB using the account “Alice” by [<span>CREATE TABLE Statement</span>](../clients/integrate-scdb.mdx#create-table).
     </dd>
 
     <dt>
@@ -78,7 +78,7 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
     </dt>
 
     <dd>
-      Bob creates table in SCDB using the account “Bob” by [<span>CREATE TABLE Statement</span>](../../reference/lang/manual.mdx#create-table).
+      Bob creates table in SCDB using the account “Bob” by [<span>CREATE TABLE Statement</span>](../clients/integrate-scdb.mdx#create-table).
     </dd>
 
     <dt>
@@ -110,7 +110,7 @@ The flowchart shows how to use SCQL system, which contains two stages: prepare a
     </dt>
 
     <dd>
-      Alice submits a DQL to SCDB through [<span>public/submit\_query</span>](../../reference/http-api.mdx#submit-query) or [<span>public/submit\_and\_get</span>](../../reference/http-api.mdx#submit-and-get) using the account “Alice”.
+      Alice submits a DQL to SCDB through [<span>public/submit\_query</span>](../../reference/scdb-api.mdx#submit-query) or [<span>public/submit\_and\_get</span>](../../reference/scdb-api.mdx#submit-and-get) using the account “Alice”.
     </dd>
 
     <dt>
