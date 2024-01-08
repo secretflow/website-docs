@@ -1,23 +1,30 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/intro/p2p-tutorial.rst
-git_last_modified_commit: 50d1b64da8262e4731766f3ea179d2b0baf82af3
-git_last_modified_time: '2023-11-15T17:16:11+08:00'
-git_origin_url: https://github.com/secretflow/scql/blob/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/intro/p2p-tutorial.rst
+git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/intro/p2p-tutorial.rst
+git_last_modified_commit: df49a96e4b89e1750db42f98a3273e8489352133
+git_last_modified_time: '2024-01-05T15:00:17+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/intro/p2p-tutorial.rst
 git_owner: secretflow
 git_repo: scql
-git_revision_commit: 8f90675e4a85e1c76c0ac9a5720891911bc358d8
-git_revision_time: '2023-11-17T17:19:11+08:00'
+git_revision_commit: f8a1a30688868496fb9aa22bbd75cdcfe5793e99
+git_revision_time: '2024-01-08T11:45:29+08:00'
 ---
 
-:target{#p2p-quickstart-tutorial}
+:target{#quickstart-tutorial}
 
-# P2P Quickstart Tutorial
+# Quickstart Tutorial
 
-:target{#tl-dr}
+In this tutorial, you will deploy the SCQL system on a single machine, then simulate the project settings for joint data analysis between two parties, and finally initiate a joint analysis query.
 
-## TL;DR
+:target{#deployment-architecture-description}
 
-Use `docker-compose` to deploy a standalone SCQL in P2P model, then use brokerctl to query
+## Deployment Architecture Description
+
+SCQL supports two deployment architectures: centralized and P2P.
+
+- Centralized: The centralized deployment architecture relies on a trusted third party to deploy the coordination service SCDB. Each data participant only needs to deploy a computing engine named SCQLEngine.
+- P2P: The P2P deployment architecture does not require a trusted third party. Each data participant needs to deploy an SCQLEngine and an SCQLBroker service.
+
+This tutorial uses the P2P deployment architecture. If you would like to experience the centralized deployment architecture, you can go [here](tutorial.mdx).
 
 :target{#prerequisites}
 
@@ -63,7 +70,7 @@ You could start SCQL service via [docker-compose](https://github.com/secretflow/
   To demonstrate SCQL, we conducted the following simplified operations:
 
   1. The SCQLBrokers and SCQLEngines use the same database server but are separated by distinct database names.
-  2. The SCQLBrokers are served through the HTTP protocol. However, for production environments, it is recommended to use HTTPS instead. Please check [<span>TLS Configuration</span>](../reference/engine-config.mdx#scdb-tls) for details.
+  2. The SCQLBrokers are served through the HTTP protocol. However, for production environments, it is recommended to use HTTPS instead. Please check [<span>TLS Configuration</span>](../reference/p2p-deploy-config.mdx#broker-tls) for details.
   3. The brokerctl can send requests to both SCQLBrokers, but in production environments, the SCQLBroker should use the local port and only listen to local requests for security.
 </Container>
 
@@ -104,14 +111,14 @@ SCQLBroker for alice is listening on `http://localhost:8081` while bob is on `ht
 # bob check invitation list
 ./brokerctl get invitation --host http://localhost:8082
 [fetch]
-+--------------+---------+---------+-----------+---------+---------+----------------------------------+
-| InvitationId | Status  | Inviter | ProjectId | Creator | Members |               Conf               |
-+--------------+---------+---------+-----------+---------+---------+----------------------------------+
-|            1 | Pending | alice   | demo      | alice   | [alice] | {                                |
-|              |         |         |           |         |         |   "protocol":  "SEMI2K",         |
-|              |         |         |           |         |         |   "field":  "FM64"               |
-|              |         |         |           |         |         | }                                |
-+--------------+---------+---------+-----------+---------+---------+----------------------------------+
++--------------+---------+---------+---------+-----------+---------+---------+----------------------------------+
+| InvitationId | Status  | Inviter | Invitee | ProjectId | Creator | Members |               Conf               |
++--------------+---------+---------+---------+-----------+---------+---------+----------------------------------+
+|            1 | Pending | alice   | bob     | demo      | alice   | [alice] | {                                |
+|              |         |         |         |           |         |         |   "protocol":  "SEMI2K",         |
+|              |         |         |         |           |         |         |   "field":  "FM64"               |
+|              |         |         |         |           |         |         | }                                |
++--------------+---------+---------+---------+-----------+---------+---------+----------------------------------+
 
 # bob decide to join the project with invitation-id 1
 ./brokerctl process invitation 1 --response "accept" --project-id "demo" --host http://localhost:8082

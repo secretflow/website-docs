@@ -1,0 +1,30 @@
+---
+git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/topics/system/deploy-arch.rst
+git_last_modified_commit: df49a96e4b89e1750db42f98a3273e8489352133
+git_last_modified_time: '2024-01-05T15:00:17+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/topics/system/deploy-arch.rst
+git_owner: secretflow
+git_repo: scql
+git_revision_commit: f8a1a30688868496fb9aa22bbd75cdcfe5793e99
+git_revision_time: '2024-01-08T11:45:29+08:00'
+---
+
+:target{#deployment-architecture-p2p-vs-centralized}
+
+# Deployment Architecture: P2P vs Centralized
+
+The SCQL system supports both P2P and Centralized deployment architecture.
+They look different, but share the same SCQL unified architecture.
+
+![SCQL Unified Architecture](../../_assets/scql_unified_arch.png)
+
+- The `Driver` component in the above diagram could be `Broker` in P2P deployment architecture, or `SCDB` in centralized deployment architecture.
+- The `Interpreter` component is responsible for translating the DQL query into hybrid MPC-plaintext execution graph, it is the core component of SCQL. Normally, it will be embedded in the `Driver` as lib.
+
+:target{#which-one-to-choose-p2p-or-centralized}
+
+## Which one to choose, P2P or Centralized?
+
+It depends on the actual business scenario. If there is no trusted third party to rely on, use P2P deployment architecture. If there exists a trusted third party, user could choose the centralized deployment architecture.
+
+Both P2P and Centralized deployment architecture support the same SCQL DQL syntax and MPC protocol, and the end-to-end performance is basically the same.

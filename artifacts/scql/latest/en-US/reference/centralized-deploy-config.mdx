@@ -1,23 +1,688 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/reference/engine-config.rst
-git_last_modified_commit: df49a96e4b89e1750db42f98a3273e8489352133
-git_last_modified_time: '2024-01-05T15:00:17+08:00'
-git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/reference/engine-config.rst
+git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/reference/centralized-deploy-config.rst
+git_last_modified_commit: ca6db86740af01cdb85f73f5b6118e47efc63005
+git_last_modified_time: '2024-01-08T11:35:58+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/reference/centralized-deploy-config.rst
 git_owner: secretflow
 git_repo: scql
 git_revision_commit: f8a1a30688868496fb9aa22bbd75cdcfe5793e99
 git_revision_time: '2024-01-08T11:45:29+08:00'
 ---
 
+:target{#scql-centralized-deployment-configuration}
+
+# SCQL Centralized Deployment Configuration
+
+SCQL centralized deployment architecture consists of SCDB and SCQLEngine, and the configuration instructions include these two parts.
+
+:target{#scdb-configuration}
+
+## <Target id="scdb-config-options" />SCDB Configuration
+
+SCDB uses YAML as configuration file format.
+
+:target{#example-configuration-for-scdb}
+
+### Example configuration for SCDB
+
+```yaml
+scdb_host: http://localhost:8080
+port: 8080
+protocol: http
+query_result_callback_timeout: 200ms
+session_expire_time: 1h
+session_expire_check_time: 100ms
+password_check: true
+log_level: info
+enable_audit_logger: true
+audit:
+  audit_log_file: audit/audit.log
+  audit_detail_file: audit/detail.log
+security_compromise:
+  reveal_group_mark: false
+storage:
+  type: mysql
+  conn_str: user_name:pass_word@tcp(127.0.0.1:3306)/db_name?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_idle_time: 2m
+  conn_max_lifetime: 5m
+engine:
+    timeout: 120s
+    protocol: http
+    content_type: application/json
+    spu: |
+      {
+        "protocol": "SEMI2K",
+        "field": "FM64"
+      }
+party_auth:
+  method: pubkey
+  enable_timestamp_check: true
+  validity_period: 1m
+```
+
+:target{#configuration-options-of-scdb}
+
+### Configuration Options of SCDB
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Default
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        scdb\_host
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The callback URL for the SCQLEngine to notify SCDB
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        port
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The listening port of the SCDB server
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        protocol
+      </td>
+
+      <td>
+        https
+      </td>
+
+      <td>
+        The transfer protocol of SCDB server, supports HTTP/HTTPS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        query\_result\_callback\_timeout
+      </td>
+
+      <td>
+        200ms
+      </td>
+
+      <td>
+        Timeout for SCDB to notify the query result
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        session\_expire\_time
+      </td>
+
+      <td>
+        48h
+      </td>
+
+      <td>
+        The expiration duration of a session
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        session\_expire\_check\_time
+      </td>
+
+      <td>
+        1h
+      </td>
+
+      <td>
+        The cleanup interval of expired session
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        password\_check
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        Whether to validate password strength when create a user
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        log\_level
+      </td>
+
+      <td>
+        info
+      </td>
+
+      <td>
+        The type and severity of a logged event
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        enable\_audit\_logger
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        Whether to enable audit logger
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit.audit\_log\_file
+      </td>
+
+      <td>
+        audit/audit.log
+      </td>
+
+      <td>
+        The file to save basic information about a query
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit.audit\_detail\_file
+      </td>
+
+      <td>
+        audit/detail.log
+      </td>
+
+      <td>
+        The file to save more detailed information about a query
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit.audit\_max\_size
+      </td>
+
+      <td>
+        500
+      </td>
+
+      <td>
+        The maximum size of the audit log file before it gets rotated, unit: MB
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit.audit\_max\_backups
+      </td>
+
+      <td>
+        0
+      </td>
+
+      <td>
+        The maximum number of old audit log files to retain, default 0 to retain all old log files
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit.audit\_max\_age\_days
+      </td>
+
+      <td>
+        180
+      </td>
+
+      <td>
+        The maximum number of days to retain old log files
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        audit.audit\_max\_compress
+      </td>
+
+      <td>
+        false
+      </td>
+
+      <td>
+        Whether the rotated log files should be compressed
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        security\_compromise.reveal\_group\_mark
+      </td>
+
+      <td>
+        false
+      </td>
+
+      <td>
+        Whether to reveal group\_mark directly for group by
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tls.cert\_file
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Certificate file path to enable TSL, supports crt/pem type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        tls.key\_file
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Private key file path to enable TSL, supports key/pem type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.type
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Database kind in SCDB, supports MYSQL/SQLite3, MYSQL is recommended, SQLite3 may have problems with concurrency
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.conn\_str
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Used to connect to a database
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.max\_idle\_conns
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Maximum number of connections in idle connection pool
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.max\_open\_conns
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Maximum number of open connections to the database
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.conn\_max\_idle\_time
+      </td>
+
+      <td>
+        \-1s
+      </td>
+
+      <td>
+        Maximum amount of time a connection may be idle
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.conn\_max\_lifetime
+      </td>
+
+      <td>
+        \-1s
+      </td>
+
+      <td>
+        Maximum amount of time a connection may be reused
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.timeout
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Timeout for SCDB to send message to engine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.protocol
+      </td>
+
+      <td>
+        https
+      </td>
+
+      <td>
+        The transfer protocol of Engine, support http/https
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.content\_type
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The original media type in post body from SCDB to engine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.spu.protocol
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The mpc protocol for engine to work with
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.spu.field
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        A security parameter type for engine to work with
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.spu.sigmoid\_mode
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The sigmoid approximation method for engine to work with
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party\_auth.method
+      </td>
+
+      <td>
+        pubkey
+      </td>
+
+      <td>
+        Method to authenticate the participant when registering a user, supports pubkey/token
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party\_auth.enable\_timestamp\_check
+      </td>
+
+      <td>
+        true
+      </td>
+
+      <td>
+        When using pubkey authentication, whether to check the signed timestamp to avoid [replay attacks](https://en.wikipedia.org/wiki/Replay_attack)
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party\_auth.validity\_period
+      </td>
+
+      <td>
+        30s
+      </td>
+
+      <td>
+        When enable timestamp check,  SCDB will check whether signed timestamp is within (now() - validity\_period, now())
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#config-for-securitycompromise}
+
+#### <Target id="config-security-compromise-options" />Config for SecurityCompromise
+
+SCQL provides some security compromise options, which can be selectively enabled when the security risk is acceptable to speed up the overall operation.
+
+1. <strong>reveal\_group\_mark</strong>: default disable, if enabled, SCQL will expose grouping information(size of each group) when calculating group-by-aggregation, thereby avoiding the overhead caused by pre-shuffle.  `risk`: group size will be leaked, which is equivalent to the result of count(\*)
+
+A typical config of security\_compromise can be like:
+
+```yaml
+security_compromise:
+  reveal_group_mark: false
+```
+
+:target{#config-for-storage}
+
+#### <Target id="config-storage-options" />Config for storage
+
+Database is used to store the SCQL system data, such as CCL and user information, currently support MySQL/SQLite3. You can connect to a database by setting `conn_str` and `type` in the storage config.
+
+<DefinitionList>
+  <dl>
+    <dt>
+      <DefinitionList.Term><span>type</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      The database type, which can be set as mysql/sqlite. And MySQL is recommended, which has been fully tested.
+    </dd>
+
+    <dt>
+      <DefinitionList.Term><span>conn\_str</span></DefinitionList.Term>
+    </dt>
+
+    <dd>
+      MySQL string format, see [dsn-data-source-name](https://github.com/mattn/go-sqlite3#connection-string) for more information.
+
+      > \[username\[:password]@]\[protocol\[(address)]]/dbname\[?param1=value1&…\&paramN=valueN]
+
+      MySQL string example:
+
+      > `user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true`
+
+      SQLite3 string format:
+
+      > more infos: [https://github.com/mattn/go-sqlite3#connection-string](https://github.com/mattn/go-sqlite3#connection-string).
+
+      SQLite3 string example:
+
+      > `scdb.db`
+    </dd>
+  </dl>
+</DefinitionList>
+
+A typical config of storage can be like:
+
+```yaml
+storage:
+  type: mysql
+  conn_str: user_name:pass_word@tcp(127.0.0.1:3306)/db_name?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_idle_time: 2m
+  conn_max_lifetime: 5m
+```
+
+<Container type="note">
+  To handle time.Time correctly, you need to include parseTime as a parameter. To fully support UTF-8 encoding, you need to change `charset=utf8` to `charset=utf8mb4`.
+</Container>
+
+:target{#config-for-audit}
+
+#### Config for audit
+
+Audit log are used to record the SCDB activities during query execution. It has two types: basic audit log and detail audit log.
+
+> The basic audit log are used to record the basic information of a query, such as the result and user information, while the detail audit log records more detailed information such as execution plan and CCL details. you can see [scdb\_audit](https://github.com/secretflow/scql/blob/main/pkg/audit/audit.proto) for more information.
+
+When the audit log has reaches the maximum size ( set by `audit_max_size`), SCDB will save the audit log as `name-timestamp.ext`, where the <cite>name</cite> is the filename set in `audit_log_file` without the extension, <cite>timestamp</cite> is the time at which the log was rotated formatted with local time format of <cite>2006-01-02T15-04-05.000</cite>,
+<cite>ext</cite> is the extension set in `audit_log_file`.
+
+> For example, if `audit_log_file` set as <cite>audit/audit.log</cite>, a backup created at 6:30pm on Nov 11 2016 would be saved to <cite>./audit/audit-2016-11-04T18-30-00.000.log</cite>
+
+:target{#password-check}
+
+#### Password check
+
+`password_check` serves to validate password strength. For ALTER USER, CREATE USER statements, if it’s true, the password should be at least 16 characters which including a number, a lowercase letter, a uppercase letter and a special character.
+
+:target{#config-for-tls}
+
+#### <Target id="scdb-tls" />Config for TLS
+
+If you need to enable TLS in SCDB, please refer to the following configuration.
+
+```yaml
+scdb_host: ${host of scdb service}  # eg. https://localhost:8080
+protocol: https
+tls:
+  cert_file: ${file path of server cert}  # eg. path_of_server_cert.pem
+  key_file: ${file path of server key}  # eg. path_of_server_key.pem
+engine:
+  protocol: https
+```
+
+<Container type="note">
+  Self-signed CA files may not be trusted by default, please refer to [Trouble shooting](https://github.com/secretflow/scql/tree/main/test-tools#trouble-shooting) for help.
+</Container>
+
+Additionally, it is necessary to configure the SCQLEngine to work with SSL, please refer [Config for SSL in SCQLEngine](p2p-deploy-config.mdx#scqlengine-tls).
+
+:target{#config-for-spu}
+
+#### Config for SPU
+
+SCQL supports different mpc protocol powered by SPU, you can choose different mpc protocol by setting SPU runtime config. Protocol <strong>SEMI2K</strong> is suggested, which is fully tested and support multi parties. See [SPU runtime config](https://www.secretflow.org.cn/docs/spu/en/reference/runtime_config.html) to get more information.
+
+```yaml
+spu: |
+{
+  "protocol": "SEMI2K",
+  "field": "FM64"
+}
+```
+
 :target{#scqlengine-configuration}
 
-# <Target id="engine-config-options" />SCQLEngine Configuration
+## <Target id="engine-config-options" />SCQLEngine Configuration
 
 SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
 
 :target{#example-configuration-for-scqlengine}
 
-## Example configuration for SCQLEngine
+### Example configuration for SCQLEngine
 
 ```default
 # Config for Brpc server
@@ -29,7 +694,7 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
 
 :target{#configuration-options-of-scqlengine}
 
-## Configuration Options of SCQLEngine
+### Configuration Options of SCQLEngine
 
 SCQLEngine can cooperate with upper-layer modules such as SCDB and SCQLBroker according to the deployment mode. `Driver` is used in the configuration items to represent these upper-layer modules.
 
@@ -643,7 +1308,7 @@ SCQLEngine can cooperate with upper-layer modules such as SCDB and SCQLBroker ac
 
 :target{#config-for-datasource}
 
-### <Target id="datasource-router" />Config for datasource
+#### <Target id="datasource-router" />Config for datasource
 
 datasources(MySQL/SQLite3/PostgreSQL/CSVDB/ArrowSQL) are where the SCQLEngine gets its data from.
 
@@ -671,7 +1336,7 @@ if `embed_router_conf` is empty, embed\_router will try to initialized with `db_
 
 :target{#embed-router}
 
-#### Embed router
+##### Embed router
 
 datasources in embed\_router\_conf contain information for connecting MySQL/SQLite3/PostgreSQL/CSVDB/ArrowSQL:
 
@@ -787,7 +1452,7 @@ datasources in embed\_router\_conf contain information for connecting MySQL/SQLi
 
 :target{#routing-rules}
 
-#### Routing rules
+##### Routing rules
 
 embed\_router’s rules support wildcard `*` , when given a table in format: <em>database\_name\:table\_name</em>,
 embed\_router will route to the corresponding datasource by
@@ -800,7 +1465,7 @@ Once found, SCQLEngine will try to connect database with datasource’s informat
 
 :target{#config-for-brpc-server}
 
-### Config for Brpc server
+#### Config for Brpc server
 
 SCQLEngine uses <strong>Brpc</strong> to communicate with Driver and other peer SCQLEngines, each SCQLEngine will start a Brpc service on <em>local-host\:listen\_port</em> to receive data from outside. If you want to enable Brpc builtin services, add FLAGS:
 
@@ -811,9 +1476,9 @@ SCQLEngine uses <strong>Brpc</strong> to communicate with Driver and other peer 
 
 :target{#config-for-ssl}
 
-### <Target id="scqlengine-tls" />Config for SSL
+#### <Target id="scqlengine-tls" />Config for SSL
 
-If you want to enable SSL in SCQLEngine, add FLAGS as follows. Additionally, it may be necessary to configure the Driver to work with TLS, please refer [TLS in SCDB](centralized-deploy-config.mdx#scdb-tls) or [TLS in SCQLBroker](p2p-deploy-config.mdx#broker-tls).
+If you want to enable SSL in SCQLEngine, add FLAGS as follows. Additionally, it may be necessary to configure the Driver to work with TLS, please refer [TLS in SCDB](#scdb-tls) or [TLS in SCQLBroker](p2p-deploy-config.mdx#broker-tls).
 
 ```default
 --server_enable_ssl=true
@@ -825,9 +1490,9 @@ If you want to enable SSL in SCQLEngine, add FLAGS as follows. Additionally, it 
 --driver_enable_ssl_as_client=true
 ```
 
-:target{#config-for-audit}
+:target{#id1}
 
-### Config for audit
+#### Config for audit
 
 The audit log in SCQLEngine is used to record the SCQLEngine activities during the execution of tasks from Driver. Just like the audit in Driver, it also can be divided into two types: common audit log and detail audit log.
 
@@ -840,6 +1505,6 @@ The log file is rotated in every 24:00:00 in local time, and the filename is gen
 
 :target{#config-for-party-authentication}
 
-### Config for party authentication
+#### Config for party authentication
 
 For security, SCQLEngine enables party authentication by default. SCQLEngine will check it’s public key in the Driver request matches the local public key in `private_key_pem_path`, and that the other participant’s public key also matches the one in `authorized_profile_path`.

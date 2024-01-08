@@ -1,23 +1,541 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/reference/engine-config.rst
+git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/reference/p2p-deploy-config.rst
 git_last_modified_commit: df49a96e4b89e1750db42f98a3273e8489352133
 git_last_modified_time: '2024-01-05T15:00:17+08:00'
-git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/reference/engine-config.rst
+git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/reference/p2p-deploy-config.rst
 git_owner: secretflow
 git_repo: scql
 git_revision_commit: f8a1a30688868496fb9aa22bbd75cdcfe5793e99
 git_revision_time: '2024-01-08T11:45:29+08:00'
 ---
 
+:target{#scql-p2p-deployment-configuration}
+
+# SCQL P2P Deployment Configuration
+
+SCQL P2P deployment architecture consists of SCQLBroker and SCQLEngine, and the configuration instructions include these two parts.
+
+:target{#scqlbroker-configuration}
+
+## <Target id="config-broker-server-options" />SCQLBroker Configuration
+
+SCQLBroker uses YAML as configuration file format.
+
+:target{#example-configuration-for-scqlbroker}
+
+### Example configuration for SCQLBroker
+
+```yaml
+intra_server:
+  port: 8080
+inter_server:
+  host: 0.0.0.0
+  port: 8081
+  protocol: https
+  cert_file: ${your cert file path}
+  key_file: ${your key file path}
+log_level: info
+party_code: alice
+session_expire_time: 24h
+session_expire_check_time: 1m
+party_info_file: "/home/admin/configs/party_info.json"
+private_pem_path: "/home/admin/configs/private_key.pem"
+intra_host: http://broker_alice:8080
+engine:
+  timeout: 120s
+  protocol: http
+  content_type: application/json
+  uris:
+    - for_peer: alice_for_peer:8003
+      for_self: alice_for_self:8003
+storage:
+  type: mysql
+  conn_str: "user_name:pass_word@tcp(127.0.0.1:3306)/db_name?charset=utf8mb4&parseTime=True&loc=Local&interpolateParams=true"
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_idle_time: 2m
+  conn_max_lifetime: 5m
+```
+
+:target{#configuration-options-of-scqlbroker}
+
+### Configuration Options of SCQLBroker
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+
+      <td>
+        Default
+      </td>
+
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        intra\_server.host
+      </td>
+
+      <td>
+        127.0.0.1
+      </td>
+
+      <td>
+        The host where SCQLBroker listens for IntraServer requests, default localhost for safety
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        intra\_server.port
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The port on which SCQLBroker listens for IntraServer requests
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        intra\_server.protocol
+      </td>
+
+      <td>
+        http
+      </td>
+
+      <td>
+        The transfer protocol of IntraServer, supports HTTP/HTTPS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        intra\_server.cert\_file
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Certificate file path for IntraServer to enable HTTPS, supports crt/pem type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        intra\_server.key\_file
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Private key file path for IntraServer to enable HTTPS, supports key/pem type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inter\_server.host
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The host where SCQLBroker listens for InterServer requests
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inter\_server.port
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The port on which SCQLBroker listens for InterServer requests
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inter\_server.protocol
+      </td>
+
+      <td>
+        http
+      </td>
+
+      <td>
+        The transfer protocol of InterServer, supports HTTP/HTTPS
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inter\_server.cert\_file
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Certificate file path for InterServer to enable HTTPS, supports crt/pem type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inter\_server.key\_file
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Private key file path for InterServer to enable HTTPS, supports key/pem type
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        inter\_timeout
+      </td>
+
+      <td>
+        5s
+      </td>
+
+      <td>
+        Timeout for requesting InterServe
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        log\_level
+      </td>
+
+      <td>
+        info
+      </td>
+
+      <td>
+        The type and severity of a logged event
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party\_code
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Unique identifier used to identify the party
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        party\_info\_file
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        File path that stores information of each party, including party code, public key and InterServer’s URL
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        private\_pem\_path
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Private key file path for party\_code, which will be used to sign requests to other SCQLBrokers
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        intra\_host
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The callback URL for the local SCQLEngine to notify SCQLBroker
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.timeout
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Timeout for SCQLBroker to send message to SCQLEngine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.protocol
+      </td>
+
+      <td>
+        http
+      </td>
+
+      <td>
+        The transfer protocol of SCQLEngine, support http/https
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.content\_type
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The original media type in post body from SCQLBroker to SCQLEngine
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        engine.uris
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        The URIs for local SCQLEngines, which using <strong>for\_peer</strong> to serve peer engines and <strong>for\_self</strong> to serve the SCQLBroker,
+        if <strong>for\_self</strong> is empty, <strong>for\_peer</strong> is used instead
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        security\_compromise.reveal\_group\_mark
+      </td>
+
+      <td>
+        false
+      </td>
+
+      <td>
+        Whether to reveal group\_mark directly for group by
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.type
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Database kind in SCQLBroker, supports MYSQL/SQLite3, MYSQL is recommended, SQLite3 may have problems with concurrency
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.conn\_str
+      </td>
+
+      <td>
+        none
+      </td>
+
+      <td>
+        Used to connect to a database
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.max\_idle\_conns
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Maximum number of connections in idle connection pool
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.max\_open\_conns
+      </td>
+
+      <td>
+        1
+      </td>
+
+      <td>
+        Maximum number of open connections to the database
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.conn\_max\_idle\_time
+      </td>
+
+      <td>
+        \-1s
+      </td>
+
+      <td>
+        Maximum amount of time a connection may be idle
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        storage.conn\_max\_lifetime
+      </td>
+
+      <td>
+        \-1s
+      </td>
+
+      <td>
+        Maximum amount of time a connection may be reused
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        session\_expire\_time
+      </td>
+
+      <td>
+        24h
+      </td>
+
+      <td>
+        Maximum lifespan of a job
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        session\_expire\_check\_time
+      </td>
+
+      <td>
+        1m
+      </td>
+
+      <td>
+        The interval checking whether session is timeout
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+:target{#config-for-serverconfig}
+
+#### Config for ServerConfig
+
+SCQLBroker accept intra-domain requests through IntraServer, while accept requests between different SCQLBrokers through InterServer.
+
+IntraServer is recommended to use localhost host or LAN address to avoid external attacks, while InterServer is recommended to enable HTTPS to improve security.
+
+:target{#broker-tls}
+
+Please refer to the following configuration to enable HTTPS for InterServer: (similar to IntraServer)
+
+```yaml
+inter_server:
+  host: 0.0.0.0
+  port: 8081
+  protocol: https
+  cert_file: ${your cert file path}
+  key_file: ${your key file path}
+```
+
+<Container type="note">
+  Self-signed CA files may not be trusted by default, please refer to [Trouble shooting](https://github.com/secretflow/scql/tree/main/test-tools#trouble-shooting) for help.
+
+  Please change the endpoints in <strong>party\_info.json</strong> from http to https.
+
+  We have enabled HTTPS in the [p2p examples](https://github.com/secretflow/scql/blob/main/examples/p2p-tutorial/README.md), and the initialization process of related configurations may provide some help.
+</Container>
+
+For SCQLEngine to work with SSL, please refer [Config for SSL in SCQLEngine](#scqlengine-tls).
+
+:target{#reused-config}
+
+#### Reused Config
+
+For more about SecurityCompromise, see [Config for SecurityCompromise](centralized-deploy-config.mdx#config-security-compromise-options)
+
+For more about Storage, see [Config for storage](centralized-deploy-config.mdx#config-storage-options)
+
 :target{#scqlengine-configuration}
 
-# <Target id="engine-config-options" />SCQLEngine Configuration
+## <Target id="engine-config-options" />SCQLEngine Configuration
 
 SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
 
 :target{#example-configuration-for-scqlengine}
 
-## Example configuration for SCQLEngine
+### Example configuration for SCQLEngine
 
 ```default
 # Config for Brpc server
@@ -29,7 +547,7 @@ SCQLEngine uses Gflags to manage configurations when SCQLEngine set up.
 
 :target{#configuration-options-of-scqlengine}
 
-## Configuration Options of SCQLEngine
+### Configuration Options of SCQLEngine
 
 SCQLEngine can cooperate with upper-layer modules such as SCDB and SCQLBroker according to the deployment mode. `Driver` is used in the configuration items to represent these upper-layer modules.
 
@@ -643,7 +1161,7 @@ SCQLEngine can cooperate with upper-layer modules such as SCDB and SCQLBroker ac
 
 :target{#config-for-datasource}
 
-### <Target id="datasource-router" />Config for datasource
+#### <Target id="datasource-router" />Config for datasource
 
 datasources(MySQL/SQLite3/PostgreSQL/CSVDB/ArrowSQL) are where the SCQLEngine gets its data from.
 
@@ -671,7 +1189,7 @@ if `embed_router_conf` is empty, embed\_router will try to initialized with `db_
 
 :target{#embed-router}
 
-#### Embed router
+##### Embed router
 
 datasources in embed\_router\_conf contain information for connecting MySQL/SQLite3/PostgreSQL/CSVDB/ArrowSQL:
 
@@ -787,7 +1305,7 @@ datasources in embed\_router\_conf contain information for connecting MySQL/SQLi
 
 :target{#routing-rules}
 
-#### Routing rules
+##### Routing rules
 
 embed\_router’s rules support wildcard `*` , when given a table in format: <em>database\_name\:table\_name</em>,
 embed\_router will route to the corresponding datasource by
@@ -800,7 +1318,7 @@ Once found, SCQLEngine will try to connect database with datasource’s informat
 
 :target{#config-for-brpc-server}
 
-### Config for Brpc server
+#### Config for Brpc server
 
 SCQLEngine uses <strong>Brpc</strong> to communicate with Driver and other peer SCQLEngines, each SCQLEngine will start a Brpc service on <em>local-host\:listen\_port</em> to receive data from outside. If you want to enable Brpc builtin services, add FLAGS:
 
@@ -811,9 +1329,9 @@ SCQLEngine uses <strong>Brpc</strong> to communicate with Driver and other peer 
 
 :target{#config-for-ssl}
 
-### <Target id="scqlengine-tls" />Config for SSL
+#### <Target id="scqlengine-tls" />Config for SSL
 
-If you want to enable SSL in SCQLEngine, add FLAGS as follows. Additionally, it may be necessary to configure the Driver to work with TLS, please refer [TLS in SCDB](centralized-deploy-config.mdx#scdb-tls) or [TLS in SCQLBroker](p2p-deploy-config.mdx#broker-tls).
+If you want to enable SSL in SCQLEngine, add FLAGS as follows. Additionally, it may be necessary to configure the Driver to work with TLS, please refer [TLS in SCDB](centralized-deploy-config.mdx#scdb-tls) or [TLS in SCQLBroker](#broker-tls).
 
 ```default
 --server_enable_ssl=true
@@ -827,7 +1345,7 @@ If you want to enable SSL in SCQLEngine, add FLAGS as follows. Additionally, it 
 
 :target{#config-for-audit}
 
-### Config for audit
+#### Config for audit
 
 The audit log in SCQLEngine is used to record the SCQLEngine activities during the execution of tasks from Driver. Just like the audit in Driver, it also can be divided into two types: common audit log and detail audit log.
 
@@ -840,6 +1358,6 @@ The log file is rotated in every 24:00:00 in local time, and the filename is gen
 
 :target{#config-for-party-authentication}
 
-### Config for party authentication
+#### Config for party authentication
 
 For security, SCQLEngine enables party authentication by default. SCQLEngine will check it’s public key in the Driver request matches the local public key in `private_key_pem_path`, and that the other participant’s public key also matches the one in `authorized_profile_path`.

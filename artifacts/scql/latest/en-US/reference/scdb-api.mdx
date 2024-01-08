@@ -1,19 +1,19 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/reference/http-api.rst
-git_last_modified_commit: b839cf8f04f94a53d9df08aec25c28ac8e48ac10
-git_last_modified_time: '2023-10-12T02:10:46-05:00'
-git_origin_url: https://github.com/secretflow/scql/blob/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/reference/http-api.rst
+git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/reference/scdb-api.rst
+git_last_modified_commit: df49a96e4b89e1750db42f98a3273e8489352133
+git_last_modified_time: '2024-01-05T15:00:17+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/reference/scdb-api.rst
 git_owner: secretflow
 git_repo: scql
-git_revision_commit: 8f90675e4a85e1c76c0ac9a5720891911bc358d8
-git_revision_time: '2023-11-17T17:19:11+08:00'
+git_revision_commit: f8a1a30688868496fb9aa22bbd75cdcfe5793e99
+git_revision_time: '2024-01-08T11:45:29+08:00'
 ---
 
-:target{#scql-api}
+:target{#scdb-api}
 
-# SCQL API
+# SCDB API
 
-SCQL supports two types of APIs: synchronous and asynchronous. The synchronous interface is suitable for executing fast queries, such as DDL, DCL, and simple DQL.
+SCDB supports two types of APIs: synchronous and asynchronous. The synchronous interface is suitable for executing fast queries, such as DDL, DCL, and simple DQL.
 Meanwhile, the asynchronous interface is recommended when the query may take a long time to run.
 
 :target{#asynchronous}
@@ -24,7 +24,7 @@ Meanwhile, the asynchronous interface is recommended when the query may take a l
 
 ### <Target id="submit-query" />public/submit\_query
 
-Submit the query (DDL/DCL/DQL) to SCQL, SCQL will return a session ID immediately which can be used to fetch result, and processes the query in the background.
+Submit the query (DDL/DCL/DQL) to SCDB, SCDB will return a session ID immediately which can be used to fetch result, and processes the query in the background.
 
 :target{#request}
 
@@ -601,7 +601,7 @@ Automatically send the result to the user by post the following message when the
 
 ### <Target id="submit-and-get" />public/submit\_and\_get
 
-Submit a query to SCQL, SCQL will wait for all tasks to complete before returning the result to the use.
+Submit a query to SCDB, SCDB will wait for all tasks to complete before returning the result to the use.
 
 :target{#id4}
 

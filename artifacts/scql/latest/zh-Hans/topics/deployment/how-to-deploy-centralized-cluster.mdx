@@ -1,19 +1,19 @@
 ---
-git_download_url: https://github.com/secretflow/scql/raw/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/topics/deployment/how-to-deploy-centralized-cluster.rst
-git_last_modified_commit: 8f90675e4a85e1c76c0ac9a5720891911bc358d8
-git_last_modified_time: '2023-11-17T17:19:11+08:00'
-git_origin_url: https://github.com/secretflow/scql/blob/8f90675e4a85e1c76c0ac9a5720891911bc358d8/docs/topics/deployment/how-to-deploy-centralized-cluster.rst
+git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/topics/deployment/how-to-deploy-centralized-cluster.rst
+git_last_modified_commit: bf5789bb37114a0f45d04d938337ec1af474a847
+git_last_modified_time: '2023-12-04T11:39:34+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/topics/deployment/how-to-deploy-centralized-cluster.rst
 git_owner: secretflow
 git_repo: scql
-git_revision_commit: 8f90675e4a85e1c76c0ac9a5720891911bc358d8
-git_revision_time: '2023-11-17T17:19:11+08:00'
+git_revision_commit: f8a1a30688868496fb9aa22bbd75cdcfe5793e99
+git_revision_time: '2024-01-08T11:45:29+08:00'
 ---
 
 :target{#deployment-with-trusted-third-party}
 
 # 包含可信第三方的部署
 
-本文描述了如何使用 Docker 部署中心化模式的 SCQL 系统，并且使用 scdbclient 进行查询，它与 [快速开始](../../intro/tutorial.mdx) 基本相同，只不过是部署在多台机器上。
+本文描述了如何使用 Docker 部署中心化模式的 SCQL 系统，并且使用 scdbclient 进行查询，它与 [基于中心化部署架构的快速开始](../../intro/tutorial.mdx) 基本相同，只不过是部署在多台机器上。
 
 在开始阅读这篇文档前，我们假设读者已经具备一定的 docker-compose 使用经验。如果您对 Docker Compose 不熟悉，请参阅 [Docker Compose 官方概述](https://docs.docker.com/compose/)，或者查看 [入门指南](https://docs.docker.com/compose/gettingstarted/)。
 
@@ -26,7 +26,7 @@ SCQL 系统的部署图如下图所示，它涉及到三个参与方，包括一
 ![](../../_assets/deployment.png)
 
 <Container type="note">
-  1. SCDB 使用 HTTP 协议提供服务。在生产环境建议使用 HTTPS。详情请查看 [<span>配置 TLS</span>](../../reference/engine-config.mdx#scdb-tls)。
+  1. SCDB 使用 HTTP 协议提供服务。在生产环境建议使用 HTTPS。详情请查看 [<span>配置 TLS</span>](../../reference/centralized-deploy-config.mdx#scdb-tls)。
 </Container>
 
 :target{#step-1-deploy-scqlengine}
@@ -67,9 +67,9 @@ wget raw.githubusercontent.com/secretflow/scql/main/examples/scdb-tutorial/mysql
 ```bash
 --listen_port=8080
 --datasource_router=embed
---enable_scdb_authorization=false
+--enable_driver_authorization=false
 --server_enable_ssl=false
---scdb_enable_ssl_as_client=false
+--driver_enable_ssl_as_client=false
 --peer_engine_enable_ssl_as_client=false
 --embed_router_conf={"datasources":[{"id":"ds001","name":"mysql db","kind":"MYSQL","connection_str":"db=alice;user=root;password=__MYSQL_ROOT_PASSWORD__;host=mysql;auto-reconnect=true"}],"rules":[{"db":"*","table":"*","datasource_id":"ds001"}]}
 # party authentication flags
@@ -79,7 +79,7 @@ wget raw.githubusercontent.com/secretflow/scql/main/examples/scdb-tutorial/mysql
 --authorized_profile_path=/home/admin/engine/conf/authorized_profile.json
 ```
 
-更多配置信息请查看 [引擎配置项](../../reference/engine-config.mdx#engine-config-options)
+更多配置信息请查看 [引擎配置项](../../reference/p2p-deploy-config.mdx#engine-config-options)
 
 <Container type="note" id="replace-root-password">
   `embed_router_conf` 中指定的 `connection_str` 用于连接 [1.2 设置数据集](#set-dataset) 中设置的 alice 的数据库，对于 Bob，应该连接 bob 的数据库。
@@ -220,8 +220,8 @@ scdb_host: scdb:8080
 port: 8080
 protocol: http
 query_result_callback_timeout: 3m
-session_expire_time: 3m
-session_expire_check_time: 100ms
+session_expire_time: 24h
+session_expire_check_time: 1m
 log_level: debug
 storage:
   type: mysql
@@ -245,7 +245,7 @@ party_auth:
   validity_period: 1m
 ```
 
-更多配置信息请查看 [SCDB 配置项](../../reference/engine-config.mdx#scdb-config-options)
+更多配置信息请查看 [SCDB 配置项](../../reference/centralized-deploy-config.mdx#scdb-config-options)
 
 <Container type="note">
   `conn_str` 用于连接一个名为 SCDB 的数据库，该数据库将在 2.4 节中通过 docker-compose 完成部署。您也可以根据自己的需求来设置对应的数据库连接串
@@ -392,7 +392,7 @@ go build -o scdbclient cmd/scdbclient/main.go
 
 ### 3.3 提交查询
 
-您可以开始使用 scdbclient 向 SCDBServer 提交查询并获取查询结果。您可以与在 [快速开始](../../intro/tutorial.mdx) 中执行的操作相同
+您可以开始使用 scdbclient 向 SCDBServer 提交查询并获取查询结果。您可以与在 [基于中心化部署架构的快速开始](../../intro/tutorial.mdx) 中执行的操作相同
 
 ```bash
 # use scdbclient to connect to scdbserver

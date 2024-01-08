@@ -1,0 +1,29 @@
+---
+git_download_url: https://github.com/secretflow/scql/raw/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/topics/system/deploy-arch.rst
+git_last_modified_commit: df49a96e4b89e1750db42f98a3273e8489352133
+git_last_modified_time: '2024-01-05T15:00:17+08:00'
+git_origin_url: https://github.com/secretflow/scql/blob/f8a1a30688868496fb9aa22bbd75cdcfe5793e99/docs/topics/system/deploy-arch.rst
+git_owner: secretflow
+git_repo: scql
+git_revision_commit: f8a1a30688868496fb9aa22bbd75cdcfe5793e99
+git_revision_time: '2024-01-08T11:45:29+08:00'
+---
+
+:target{#deployment-architecture-p2p-vs-centralized}
+
+# 部署架构：P2P vs 中心化
+
+SCQL 系统同时支持 P2P 和中心化部署架构。它们看起来不同，但共享相同的 SCQL 统一架构。
+
+![SCQL 统一架构](../../_assets/scql_unified_arch.png)
+
+- 图中的 `Driver` 组件可以是 P2P 部署架构中的 `Broker` ，也可以是中心化部署架构中的 `SCDB` 。
+- `Interpreter` 组件负责将 DQL 查询翻译成明密文混合执行图，它是 SCQL 的核心组件。通常作为 lib 嵌入到 `Driver` 中
+
+:target{#which-one-to-choose-p2p-or-centralized}
+
+## 如何选择部署模式，P2P 还是中心化？
+
+这取决于实际的业务场景。如果没有可信第三方可以依赖，则使用 P2P 部署架构。如果有可信第三方，则可以选择中心化部署架构。
+
+P2P 和中心化部署架构支持相同的 DQL 语法和 MPC 协议，端到端性能也基本相同。
