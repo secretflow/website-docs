@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/kuscia/raw/cdf8fea273ddec092fa9b4f22fc3ded837ad3dcd/docs/reference/overview.md
-git_last_modified_commit: b1c00628b40f7699f7bebc423d2f0e755d5413b0
-git_last_modified_time: '2023-12-25T16:32:09+08:00'
-git_origin_url: https://github.com/secretflow/kuscia/blob/cdf8fea273ddec092fa9b4f22fc3ded837ad3dcd/docs/reference/overview.md
+git_download_url: https://github.com/secretflow/kuscia/raw/4ded8d874369b27490181937494abb301d249f7c/docs/reference/overview.md
+git_last_modified_commit: 96591ccd92e300dcd4d5f1302f149ebd4b41277b
+git_last_modified_time: '2024-01-08T15:19:31+08:00'
+git_origin_url: https://github.com/secretflow/kuscia/blob/4ded8d874369b27490181937494abb301d249f7c/docs/reference/overview.md
 git_owner: secretflow
 git_repo: kuscia
-git_revision_commit: cdf8fea273ddec092fa9b4f22fc3ded837ad3dcd
-git_revision_time: '2023-12-25T18:00:13+08:00'
+git_revision_commit: 4ded8d874369b27490181937494abb301d249f7c
+git_revision_time: '2024-01-08T16:15:10+08:00'
 ---
 
 :target{#id1}
@@ -70,10 +70,9 @@ Kuscia 除解决以上问题外，也提供了任务流调度、多引擎协同�
 
 ## Kuscia是什么
 
-隐语是从蚂蚁集团内部使用隐私计算技术助力业务发展的经验中沉底而来的。在过往的隐私计算技术落地实际业务过程中共经历了三个时期：手动拉起任务时期、Coordinator 发起任务时期、Kuscia 编排任务时期。
-![Kuscia Evolution](../_assets/kuscia_evolution.png)
+隐语是从蚂蚁集团内部使用隐私计算技术助力业务发展的经验中沉淀而来的。在过往的隐私计算技术落地实际业务过程中共经历了三个时期：手动拉起任务时期、Coordinator 发起任务时期、Kuscia 编排任务时期。
 
-:target{#id5}
+![Kuscia Evolution](../_assets/kuscia_evolution.png):target{#id5}
 
 ### 手动拉起任务时期
 
@@ -90,13 +89,14 @@ Kuscia 除解决以上问题外，也提供了任务流调度、多引擎协同�
 ### Kuscia 编排任务时期
 
 Kuscia 编排任务时期，即当前开源的 Kuscia 。经历了 Coordinator 时代的经验沉淀与积累，去除了对可信第三方的依赖，重新设计了整体架构及代码。聚焦于解决隐私计算技术工业化生产落地可能遇到的共性问题（如跨域的网络互通、任务编排、异构数据源、多引擎集成、互联互通等问题）。
-在工业化落地隐私计算场景下，大部分隐私计算平台可以简化为三层去理解，分别是平台层、调度层、引擎层。对应到隐语的开源体系分别是： SecretPad、Kuscia 、SecretFlow/TrustedFlow/SCQL 。
+在工业化落地隐私计算场景下，大部分隐私计算平台可以简化为三层去理解，分别是产品层、框架层、引擎层。对应到隐语的开源体系分别是： SecretPad、Kuscia 、SecretFlow/TrustedFlow/SCQL 。
 
-- 平台层：平台层一般为图形化界面应用，是直接面向终端用户的产品，用户可通过可视化界面的操作完成隐私求交、隐私保护机器学习、隐私保护数据分析等任务。无需感知底层系统的实现细节。隐语开源的 SecretPad 即位于平台层。平台层可通过 Kuscia 层提供的 KusciaAPI 执行隐私计算任务。
-- Kuscia 层：聚焦于解决隐私计算技术工业化生产落地可能遇到的共性问题（如跨域的网络互通、任务编排、异构数据源、多引擎集成、互联互通等问题）。
+- 产品层：一般为图形化界面应用，是直接面向终端用户的产品，用户可通过可视化界面的操作完成隐私求交、隐私保护机器学习、隐私保护数据分析等任务。无需感知底层系统的实现细节。隐语开源的 SecretPad 即位于平台层。平台层可通过 Kuscia 层提供的 KusciaAPI 执行隐私计算任务。
+- 框架层：Kuscia聚焦于解决隐私计算技术工业化生产落地可能遇到的共性问题（如跨域的网络互通、任务编排、异构数据源、多引擎集成、互联互通等问题）。
 - 引擎层：完成核心的隐私计算任务，如 PSI 求交，PIR，隐私保护的特征处理、LR XGB 模型训练、模型预测等。
 
 ![Kuscia Layer](../_assets/kuscia_layer.png)
+
 通过这样的分层设计，让每一层聚焦于自己本层的核心职责。平台层专注于终端用户体验及实际的业务场景适配。Kuscia 层专注于解决隐私计算技术生产落地遇到的问题，引擎开发者专注于隐私计算任务核心逻辑的开发，无需考虑复杂的跨域网络环境及不同机构可能存在的异构数据源等问题。
 
 :target{#id7}
@@ -122,9 +122,9 @@ Kuscia 编排任务时期，即当前开源的 Kuscia 。经历了 Coordinator �
 隐私计算任务一般需要2方或2方以上参与完成，那么多方之间如何安全且便捷的通信？
 
 - 安全通信：通信安全是数据安全的基础，Kuscia 通过证书认证各参与方的身份，并在各参与方之间建立一个安全的网络通信链路（支持 MTLS 和 HTTPS ）。
-- 服务发现：为保证任务之间通信的便捷性，Kuscia 会自动为引擎提供各方的通讯地址，消除了手动配置网关、验证链路安全或确认对方身份的繁琐过程。引擎可以直接使用这些地址安全地与其他方通信。使隐私计算引擎像使用本地网络一样使用跨域网络。
-- 网络拓扑多样化：在隐私计算场景中，网络拓扑千差万别。在机构端口暴露问题上，Kuscia 可做到多任务并发运行时复用一个公网端口（一些条件下甚至不暴露公网端口），在机构间通讯链路上，支持机构间直连（无法直连时）跨机构流量转发等能力。
+- 端口复用：Kuscia可做到多任务并发运行时复用一个公网端口（一些条件下甚至可以不暴露公网端口）。
 - 高适配性：根据以往实际的部署经验，几乎所有机构的网关都支持 HTTP 转发，但并不是所有机构网关都支持4层网络转发，所以 Kuscia 选择使用 HTTP 协议转发的方式进行网络打通。
+- 代理转发：在机构之间无法直连通信的场景下，部署了Kuscia的双方可通过第三方kuscia节点（代理）完成流量转发，进而实现机构之间无法直连场景下的通信。
 
 :target{#id10}
 

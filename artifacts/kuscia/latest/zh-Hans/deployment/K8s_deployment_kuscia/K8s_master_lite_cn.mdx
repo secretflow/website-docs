@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/kuscia/raw/cdf8fea273ddec092fa9b4f22fc3ded837ad3dcd/docs/deployment/K8s_deployment_kuscia/K8s_master_lite_cn.md
-git_last_modified_commit: c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9
-git_last_modified_time: '2023-12-15T18:58:59+08:00'
-git_origin_url: https://github.com/secretflow/kuscia/blob/cdf8fea273ddec092fa9b4f22fc3ded837ad3dcd/docs/deployment/K8s_deployment_kuscia/K8s_master_lite_cn.md
+git_download_url: https://github.com/secretflow/kuscia/raw/4ded8d874369b27490181937494abb301d249f7c/docs/deployment/K8s_deployment_kuscia/K8s_master_lite_cn.md
+git_last_modified_commit: 96591ccd92e300dcd4d5f1302f149ebd4b41277b
+git_last_modified_time: '2024-01-08T15:19:31+08:00'
+git_origin_url: https://github.com/secretflow/kuscia/blob/4ded8d874369b27490181937494abb301d249f7c/docs/deployment/K8s_deployment_kuscia/K8s_master_lite_cn.md
 git_owner: secretflow
 git_repo: kuscia
-git_revision_commit: cdf8fea273ddec092fa9b4f22fc3ded837ad3dcd
-git_revision_time: '2023-12-25T18:00:13+08:00'
+git_revision_commit: 4ded8d874369b27490181937494abb301d249f7c
+git_revision_time: '2024-01-08T16:15:10+08:00'
 ---
 
 :target{#id1}
@@ -17,7 +17,11 @@ git_revision_time: '2023-12-25T18:00:13+08:00'
 
 ## 前言
 
-本教程帮助你在 k8s 集群上使用 [中心化组网模式](../../reference/architecture_cn.mdx#centralized) 来部署 Kuscia 集群。目前 kuscia 在部署到 k8s 上时，隐私计算任务的运行态仅支持 runk 模式，runp 模式正在开发中，详细参考[容器运行模式](../../reference/architecture_cn.mdx#agent)；runc 模式目前需要部署 kuscia 的 pod 有特权容器，暂时不是特别推荐，所以下文默认的模式以 runk 模式来进行部署（需要能够有权限在宿主的 K8s 上拉起任务 pod）。
+本教程帮助你在 k8s 集群上使用 [中心化组网模式](../../reference/architecture_cn.mdx#centralized) 来部署 Kuscia 集群。
+
+目前 kuscia 在部署到 k8s 上时，隐私计算任务的运行态支持 runk 和 runp 两种模式， runc 模式目前需要部署 kuscia 的 pod 有特权容器，暂时不是特别推荐。详情请参考[容器运行模式](../../reference/architecture_cn.mdx#agent)
+
+本教程默认以 runk 模式来进行部署（需要能够有权限在宿主的 K8s 上拉起任务 pod）， runp 模式的部署请参考 [使用进程运行时部署节点](../deploy_with_runp_cn.mdx)。
 
 > Tips：k8s 部署模式暂不支持训练，仅支持预测服务
 
