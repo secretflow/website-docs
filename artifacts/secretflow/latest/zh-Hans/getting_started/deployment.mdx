@@ -1,17 +1,91 @@
 ---
-git_download_url: https://github.com/secretflow/secretflow/raw/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/getting_started/deployment.md
-git_last_modified_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
-git_last_modified_time: '2023-12-06T20:08:22+08:00'
-git_origin_url: https://github.com/secretflow/secretflow/blob/215ee402b76decfeb01e97c0861cab9f5ec3f823/docs/getting_started/deployment.md
+git_download_url: https://github.com/secretflow/secretflow/raw/8cf652dadee6c02cb09a0225efa6d7c6bae31246/docs/getting_started/deployment.md
+git_last_modified_commit: 251cf0804e0d94e1113af3d696622c05362c1862
+git_last_modified_time: '2024-01-03T17:03:19+08:00'
+git_origin_url: https://github.com/secretflow/secretflow/blob/8cf652dadee6c02cb09a0225efa6d7c6bae31246/docs/getting_started/deployment.md
 git_owner: secretflow
 git_repo: secretflow
-git_revision_commit: 215ee402b76decfeb01e97c0861cab9f5ec3f823
-git_revision_time: '2023-12-06T20:08:22+08:00'
+git_revision_commit: 8cf652dadee6c02cb09a0225efa6d7c6bae31246
+git_revision_time: '2024-01-04T11:45:08+08:00'
 ---
 
 :target{#deployment}
 
 # 部署
+
+<strong>SecretFlow提供了仿真和生产两种部署模式，两者的对比如下表所示。建议您认真阅读说明，根据需求选择适合您的部署方式。</strong>
+
+<table>
+  <thead>
+    <tr>
+      <td>
+        部署模式
+      </td>
+
+      <td>
+        场景
+      </td>
+
+      <td>
+        如何部署Ray
+      </td>
+
+      <td>
+        如何运行代码
+      </td>
+
+      <td>
+        代码差异
+      </td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>
+        仿真模式
+      </td>
+
+      <td>
+        单机构内部局域网环境下的仿真实验。
+      </td>
+
+      <td>
+        由多个仿真节点组成的单个Ray集群。
+      </td>
+
+      <td>
+        选择任一节点执行一遍代码。
+      </td>
+
+      <td>
+        在 `sf.init` 中填写 `parties` 参数。
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        生产模式
+      </td>
+
+      <td>
+        正式生产环境，比如多个机构协作。
+      </td>
+
+      <td>
+        每个机构都需要独立部署各自的Ray集群。
+      </td>
+
+      <td>
+        每个机构都需要同时执行代码
+      </td>
+
+      <td>
+        在 `sf.init` 中填写 `cluster_config` 参数，剩余代码与仿真模式完全一样。
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 :target{#pre-knowledge-about-ray}
 
@@ -23,7 +97,7 @@ git_revision_time: '2023-12-06T20:08:22+08:00'
 
 ## 基于Kuscia部署
 
-Kuscia is a lightweight privacy-preserving computing task orchestration framework based on K3s. It provides a unified privacy-preserving computing foundation that can abstract away heterogeneous infrastructure and protocols.
+Kuscia是一款基于K3s的轻量级隐私计算任务编排框架，旨在屏蔽异构的基础设施和协议，提供统一的隐私计算底座。
 
 使用Kuscia，你可以不需要关注SecretFlow组网的细节，直接通过kubectl命令或者API接口轻松地管理和执行SecretFlow作业。此外，Kuscia还支持通信安全和并发运行SecretFlow作业。
 
@@ -31,7 +105,7 @@ Kuscia is a lightweight privacy-preserving computing task orchestration framewor
 
 :target{#simulation}
 
-## 仿真
+## 仿真模式
 
 SecretFlow被设计为可以快速仿真，既可以单机运行，也可以在多个节点上运行。
 
@@ -384,7 +458,7 @@ spu = sf.SPU(cluster_def=cluster_def)
   在Miniconda的安装完成以后，您可以删除Miniconda的安装包
 - 创建隐语的虚拟环境， 在不同发行版上的Python版本应该完全一致
   ```bash
-  conda create --name secretflow python==3.8.15
+  conda create --name secretflow python==3.8.18
   ```
 - 激活隐语的虚拟环境
   ```bash
@@ -545,7 +619,7 @@ Demands:
 
 ```bash
 (secretflow) alice@DESKTOP-SAOB7DQ:~$ python
-Python 3.8.15 (default, Nov 24 2022, 15:19:38)
+Python 3.8.18 (default, Nov 24 2022, 15:19:38)
 [GCC 11.2.0] :: Anaconda, Inc. on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import secretflow as sf
@@ -682,8 +756,7 @@ bob首先启动ray集群
 ray start --head --node-ip-address="ip" --port="port" --include-dashboard=False --disable-usage-stats
 ```
 
-Head node starts successfully if you see “Ray runtime started.” in the screen output.
-So far, bob’s Ray cluster has been successfully built.
+屏幕输出中显示”Ray runtime started.”，则说明Ray的主节点启动成功。至此bob的Ray集群已经创建完成。
 
 bob使用和alice类似的集群配置初始化SecretFlow，除了 `self_party` 字段稍有不同。然后运行代码。
 
@@ -747,8 +820,8 @@ sf.init(address='bob ray head node address', cluster_config=cluster_config)
        "key": "server key of alice in pem",
    }
 
-   sf.init(address='ip:port', 
-           cluster_config=cluster_config, 
+   sf.init(address='ip:port',
+           cluster_config=cluster_config,
            tls_config=tls_config
    )
    ```
@@ -760,8 +833,8 @@ sf.init(address='bob ray head node address', cluster_config=cluster_config)
        "key": "server key of bob in pem",
    }
 
-   sf.init(address='ip:port', 
-           cluster_config=cluster_config, 
+   sf.init(address='ip:port',
+           cluster_config=cluster_config,
            tls_config=tls_config
    )
    ```
@@ -774,8 +847,8 @@ sf.init(address='bob ray head node address', cluster_config=cluster_config)
        "numpy": ["dtype"],
    }
 
-   sf.init(address='ip:port', 
-           cluster_config=cluster_config, 
+   sf.init(address='ip:port',
+           cluster_config=cluster_config,
            cross_silo_serializing_allowed_list=allowed_list
    )
    ```
