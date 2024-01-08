@@ -1,0 +1,66 @@
+---
+git_download_url: https://github.com/secretflow/kuscia/raw/4ded8d874369b27490181937494abb301d249f7c/docs/deployment/deploy_check.md
+git_last_modified_commit: 96591ccd92e300dcd4d5f1302f149ebd4b41277b
+git_last_modified_time: '2024-01-08T15:19:31+08:00'
+git_origin_url: https://github.com/secretflow/kuscia/blob/4ded8d874369b27490181937494abb301d249f7c/docs/deployment/deploy_check.md
+git_owner: secretflow
+git_repo: kuscia
+git_revision_commit: 4ded8d874369b27490181937494abb301d249f7c
+git_revision_time: '2024-01-08T16:15:10+08:00'
+---
+
+:target{#id1}
+
+# 部署要求
+
+:target{#id2}
+
+## 前言
+
+kuscia 对操作系统、docker 版本、处理器型号等有一些要求，部署 kuscia 请确保您的环境符合以下要求。
+
+:target{#docker}
+
+## Docker 版本要求
+
+我们推荐使用 Docker <strong>20.10 或更高版本</strong>。docker 的安装请参考[官方文档](https://docs.docker.com/engine/install/)，docker 部署包下载参考[docker软件包](https://download.docker.com/linux/centos/7/x86_64/stable/Packages/)。
+
+:target{#id3}
+
+## 处理器要求
+
+目前 kuscia <strong>不支持 arm 架构</strong>处理器，建议使用基于 <strong>x86</strong> 架构的处理器，我们会在未来支持 arm 架构的处理器，敬请期待。
+
+:target{#id4}
+
+## 操作系统要求
+
+支持的操作系统包括：
+
+- <strong>macOS</strong>
+- <strong>CentOS 7</strong>
+- <strong>CentOS 8</strong>
+- <strong>Ubuntu 16.04 及以上版本</strong>
+- <strong>Windows</strong> (通过 [WSL2 上的 Ubuntu](https://docs.microsoft.com/en-us/windows/wsl/install-win10))
+
+:target{#id5}
+
+## 资源要求
+
+部署 kuscia 的最低资源为：
+
+- <strong>1 核 CPU</strong>
+- <strong>2 GB 内存</strong>
+- <strong>20 GB 硬盘</strong>
+
+为了确保良好的性能，建议的系统资源为：
+
+- <strong>8 核 CPU</strong>
+- <strong>16 GB 内存</strong>
+- <strong>200 GB 硬盘</strong>
+
+:target{#id6}
+
+## 网络要求
+
+如果节点之间的入口网络存在网关时，为了确保节点之间通信正常，需要网关符合一些要求，详情请参考[网络要求](networkrequirements.mdx)

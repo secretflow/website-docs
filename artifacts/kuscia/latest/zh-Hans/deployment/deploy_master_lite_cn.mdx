@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/kuscia/raw/cdf8fea273ddec092fa9b4f22fc3ded837ad3dcd/docs/deployment/deploy_master_lite_cn.md
-git_last_modified_commit: c4b58da2bec6a73bcbc79bd6cdfb5f2d3c8647d9
-git_last_modified_time: '2023-12-15T18:58:59+08:00'
-git_origin_url: https://github.com/secretflow/kuscia/blob/cdf8fea273ddec092fa9b4f22fc3ded837ad3dcd/docs/deployment/deploy_master_lite_cn.md
+git_download_url: https://github.com/secretflow/kuscia/raw/4ded8d874369b27490181937494abb301d249f7c/docs/deployment/deploy_master_lite_cn.md
+git_last_modified_commit: 96591ccd92e300dcd4d5f1302f149ebd4b41277b
+git_last_modified_time: '2024-01-08T15:19:31+08:00'
+git_origin_url: https://github.com/secretflow/kuscia/blob/4ded8d874369b27490181937494abb301d249f7c/docs/deployment/deploy_master_lite_cn.md
 git_owner: secretflow
 git_repo: kuscia
-git_revision_commit: cdf8fea273ddec092fa9b4f22fc3ded837ad3dcd
-git_revision_time: '2023-12-25T18:00:13+08:00'
+git_revision_commit: 4ded8d874369b27490181937494abb301d249f7c
+git_revision_time: '2024-01-08T16:15:10+08:00'
 ---
 
 :target{#id1}
@@ -18,6 +18,12 @@ git_revision_time: '2023-12-25T18:00:13+08:00'
 ## 前言
 
 本教程帮助你在多台机器上使用 [中心化组网模式](../reference/architecture_cn.mdx#centralized) 来部署 Kuscia 集群。
+
+:target{#id3}
+
+## 前置准备
+
+在部署 kuscia 之前，请确保环境准备齐全，包括所有必要的软件、资源、操作系统版本和网络环境等满足要求，以确保部署过程顺畅进行，详情参考[部署要求](deploy_check.mdx)
 
 :target{#token}
 
@@ -231,7 +237,7 @@ docker run --rm --pull always $KUSCIA_IMAGE cat /home/kuscia/scripts/deploy/depl
 
 > 如果 master 与多个 lite 节点部署在同一个物理机上，可以用 -p -k -g 参数指定下端口号（例如：./deploy.sh lite -n alice -t abcdefg -m [https://1.1.1.1:18080](https://1.1.1.1:18080) -p 38080 -k 2010 -g 2011），防止出现端口冲突
 
-:target{#id3}
+:target{#id4}
 
 ### 配置授权
 
@@ -270,17 +276,17 @@ docker exec -it ${USER}-kuscia-master kubectl get cdr bob-alice -o yaml
 
 <span style={{"color":"red"}}>注意：如果节点之间的入口网络存在网关时，为了确保节点与节点之间通信正常，需要网关符合一些要求，详情请参考[<span>这里</span>](networkrequirements.mdx)</span>
 
-:target{#id4}
+:target{#id5}
 
 ### 运行任务
 
 接下来，我们运行一个测试任务以验证部署是否成功。
 
-:target{#id5}
+:target{#id6}
 
 #### 准备数据
 
-:target{#id6}
+:target{#id7}
 
 ##### 获取测试数据集
 
@@ -296,7 +302,7 @@ docker run --rm --pull always $KUSCIA_IMAGE cat /home/kuscia/var/storage/data/al
 docker run --rm --pull always $KUSCIA_IMAGE cat /home/kuscia/var/storage/data/bob.csv > kuscia-lite-bob-data/bob.csv
 ```
 
-:target{#id7}
+:target{#id8}
 
 ##### 创建测试数据表
 
@@ -307,7 +313,7 @@ docker exec -it ${USER}-kuscia-master scripts/deploy/create_domaindata_alice_tab
 docker exec -it ${USER}-kuscia-master scripts/deploy/create_domaindata_bob_table.sh bob
 ```
 
-:target{#id8}
+:target{#id9}
 
 ##### 创建测试数据表授权
 
@@ -323,7 +329,7 @@ docker exec -it ${USER}-kuscia-lite-alice curl https://127.0.0.1:8070/api/v1/dat
 docker exec -it ${USER}-kuscia-lite-bob curl https://127.0.0.1:8070/api/v1/datamesh/domaindatagrant/create -X POST -H 'content-type: application/json' -d '{"author":"bob","domaindata_id":"bob-table","grant_domain":"alice"}' --cacert var/certs/ca.crt --cert var/certs/ca.crt --key var/certs/ca.key
 ```
 
-:target{#id9}
+:target{#id10}
 
 #### 执行测试作业
 
