@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/spu/raw/0883c15512c9e4d3e4ec7bbe27e038fd084a2eee/docs/reference/np_op_status.md
-git_last_modified_commit: c1a5f3e5349f6280f6e4547bf239277cef2525b4
-git_last_modified_time: '2023-08-04T21:42:22+08:00'
-git_origin_url: https://github.com/secretflow/spu/blob/0883c15512c9e4d3e4ec7bbe27e038fd084a2eee/docs/reference/np_op_status.md
+git_download_url: https://github.com/secretflow/spu/raw/207435da0de58cf3352ad4c7c73d97f9ef3ba9ba/docs/reference/np_op_status.md
+git_last_modified_commit: 9df1e6867138f4b941821cc24d14f1762007d0ca
+git_last_modified_time: '2023-12-08T14:57:59+08:00'
+git_origin_url: https://github.com/secretflow/spu/blob/207435da0de58cf3352ad4c7c73d97f9ef3ba9ba/docs/reference/np_op_status.md
 git_owner: secretflow
 git_repo: spu
-git_revision_commit: 0883c15512c9e4d3e4ec7bbe27e038fd084a2eee
-git_revision_time: '2023-12-01T19:50:19+08:00'
+git_revision_commit: 207435da0de58cf3352ad4c7c73d97f9ef3ba9ba
+git_revision_time: '2024-01-08T11:48:55+08:00'
 ---
 
 :target{#jax-numpy-operators-status}
@@ -621,14 +621,18 @@ JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax
 
 ### Status
 
-Not supported by compiler or runtime. But we could implement on demand in future.
-Please check <em>Note</em> for details.
+<strong>PASS</strong>
+Please check <em>Supported Dtypes</em> as well.
 
 :target{#id54}
 
-### Note
+### Supported Dtypes
 
-stablehlo.cosine
+- float32
+- int16
+- int32
+- uint16
+- uint32
 
 :target{#cosh}
 
@@ -1279,20 +1283,27 @@ JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax
 
 ### Status
 
-<strong>PASS</strong>
-Please check <em>Supported Dtypes</em> as well.
-
-:target{#id113}
-
-### Supported Dtypes
-
-- float32
+Not supported by design. We couldn’t fix this in near future.
+Please check <em>Note</em> for details.
 
 :target{#isposinf}
 
 ## isposinf
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.isposinf.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.isposinf.html)
+
+:target{#id113}
+
+### Status
+
+Not supported by design. We couldn’t fix this in near future.
+Please check <em>Note</em> for details.
+
+:target{#isreal}
+
+## isreal
+
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.isreal.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.isreal.html)
 
 :target{#id114}
 
@@ -1306,12 +1317,16 @@ Please check <em>Supported Dtypes</em> as well.
 ### Supported Dtypes
 
 - float32
+- int16
+- int32
+- uint16
+- uint32
 
-:target{#isreal}
+:target{#isrealobj}
 
-## isreal
+## isrealobj
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.isreal.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.isreal.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.isrealobj.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.isrealobj.html)
 
 :target{#id116}
 
@@ -1330,11 +1345,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#isrealobj}
+:target{#kron}
 
-## isrealobj
+## kron
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.isrealobj.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.isrealobj.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.kron.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.kron.html)
 
 :target{#id118}
 
@@ -1353,43 +1368,20 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#kron}
-
-## kron
-
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.kron.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.kron.html)
-
-:target{#id120}
-
-### Status
-
-<strong>PASS</strong>
-Please check <em>Supported Dtypes</em> as well.
-
-:target{#id121}
-
-### Supported Dtypes
-
-- float32
-- int16
-- int32
-- uint16
-- uint32
-
 :target{#lcm}
 
 ## lcm
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.lcm.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.lcm.html)
 
-:target{#id122}
+:target{#id120}
 
 ### Status
 
 Not supported by compiler or runtime. But we could implement on demand in future.
 Please check <em>Note</em> for details.
 
-:target{#id123}
+:target{#id121}
 
 ### Note
 
@@ -1401,14 +1393,14 @@ secret while
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.ldexp.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.ldexp.html)
 
-:target{#id124}
+:target{#id122}
 
 ### Status
 
 Result is incorrect.
 Please check <em>Note</em> for details.
 
-:target{#id125}
+:target{#id123}
 
 ### Note
 
@@ -1420,14 +1412,14 @@ IEEE-754
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.left\_shift.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.left_shift.html)
 
-:target{#id126}
+:target{#id124}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id127}
+:target{#id125}
 
 ### Supported Dtypes
 
@@ -1441,6 +1433,30 @@ Please check <em>Supported Dtypes</em> as well.
 ## less
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.less.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.less.html)
+
+:target{#id126}
+
+### Status
+
+<strong>PASS</strong>
+Please check <em>Supported Dtypes</em> as well.
+
+:target{#id127}
+
+### Supported Dtypes
+
+- bool\_
+- float32
+- int16
+- int32
+- uint16
+- uint32
+
+:target{#less-equal}
+
+## less\_equal
+
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.less\_equal.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.less_equal.html)
 
 :target{#id128}
 
@@ -1460,11 +1476,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#less-equal}
+:target{#log}
 
-## less\_equal
+## log
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.less\_equal.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.less_equal.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.log.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.log.html)
 
 :target{#id130}
 
@@ -1477,18 +1493,17 @@ Please check <em>Supported Dtypes</em> as well.
 
 ### Supported Dtypes
 
-- bool\_
 - float32
 - int16
 - int32
 - uint16
 - uint32
 
-:target{#log}
+:target{#log10}
 
-## log
+## log10
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.log.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.log.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.log10.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.log10.html)
 
 :target{#id132}
 
@@ -1507,11 +1522,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#log10}
+:target{#log1p}
 
-## log10
+## log1p
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.log10.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.log10.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.log1p.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.log1p.html)
 
 :target{#id134}
 
@@ -1530,20 +1545,20 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#log1p}
+:target{#id136}
 
 ## log1p
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.log1p.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.log1p.html)
 
-:target{#id136}
+:target{#id137}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id137}
+:target{#id138}
 
 ### Supported Dtypes
 
@@ -1553,11 +1568,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#id138}
+:target{#log2}
 
-## log1p
+## log2
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.log1p.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.log1p.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.log2.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.log2.html)
 
 :target{#id139}
 
@@ -1576,11 +1591,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#log2}
+:target{#logaddexp}
 
-## log2
+## logaddexp
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.log2.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.log2.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.logaddexp.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.logaddexp.html)
 
 :target{#id141}
 
@@ -1594,16 +1609,12 @@ Please check <em>Supported Dtypes</em> as well.
 ### Supported Dtypes
 
 - float32
-- int16
-- int32
-- uint16
-- uint32
 
-:target{#logaddexp}
+:target{#logaddexp2}
 
-## logaddexp
+## logaddexp2
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.logaddexp.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.logaddexp.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.logaddexp2.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.logaddexp2.html)
 
 :target{#id143}
 
@@ -1618,11 +1629,11 @@ Please check <em>Supported Dtypes</em> as well.
 
 - float32
 
-:target{#logaddexp2}
+:target{#logical-and}
 
-## logaddexp2
+## logical\_and
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.logaddexp2.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.logaddexp2.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.logical\_and.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.logical_and.html)
 
 :target{#id145}
 
@@ -1635,13 +1646,18 @@ Please check <em>Supported Dtypes</em> as well.
 
 ### Supported Dtypes
 
+- bool\_
 - float32
+- int16
+- int32
+- uint16
+- uint32
 
-:target{#logical-and}
+:target{#logical-not}
 
-## logical\_and
+## logical\_not
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.logical\_and.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.logical_and.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.logical\_not.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.logical_not.html)
 
 :target{#id147}
 
@@ -1661,11 +1677,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#logical-not}
+:target{#logical-or}
 
-## logical\_not
+## logical\_or
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.logical\_not.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.logical_not.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.logical\_or.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.logical_or.html)
 
 :target{#id149}
 
@@ -1685,11 +1701,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#logical-or}
+:target{#logical-xor}
 
-## logical\_or
+## logical\_xor
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.logical\_or.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.logical_or.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.logical\_xor.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.logical_xor.html)
 
 :target{#id151}
 
@@ -1709,11 +1725,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#logical-xor}
+:target{#maximum}
 
-## logical\_xor
+## maximum
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.logical\_xor.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.logical_xor.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.maximum.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.maximum.html)
 
 :target{#id153}
 
@@ -1733,11 +1749,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#maximum}
+:target{#mean}
 
-## maximum
+## mean
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.maximum.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.maximum.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.mean.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.mean.html)
 
 :target{#id155}
 
@@ -1747,30 +1763,6 @@ JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax
 Please check <em>Supported Dtypes</em> as well.
 
 :target{#id156}
-
-### Supported Dtypes
-
-- bool\_
-- float32
-- int16
-- int32
-- uint16
-- uint32
-
-:target{#mean}
-
-## mean
-
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.mean.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.mean.html)
-
-:target{#id157}
-
-### Status
-
-<strong>PASS</strong>
-Please check <em>Supported Dtypes</em> as well.
-
-:target{#id158}
 
 ### Supported Dtypes
 
@@ -1786,14 +1778,14 @@ Please check <em>Supported Dtypes</em> as well.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.minimum.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.minimum.html)
 
-:target{#id159}
+:target{#id157}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id160}
+:target{#id158}
 
 ### Supported Dtypes
 
@@ -1809,6 +1801,29 @@ Please check <em>Supported Dtypes</em> as well.
 ## mod
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.mod.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.mod.html)
+
+:target{#id159}
+
+### Status
+
+<strong>PASS</strong>
+Please check <em>Supported Dtypes</em> as well.
+
+:target{#id160}
+
+### Supported Dtypes
+
+- float32
+- int16
+- int32
+- uint16
+- uint32
+
+:target{#modf}
+
+## modf
+
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.modf.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.modf.html)
 
 :target{#id161}
 
@@ -1827,11 +1842,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#modf}
+:target{#multiply}
 
-## modf
+## multiply
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.modf.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.modf.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.multiply.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.multiply.html)
 
 :target{#id163}
 
@@ -1841,29 +1856,6 @@ JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax
 Please check <em>Supported Dtypes</em> as well.
 
 :target{#id164}
-
-### Supported Dtypes
-
-- float32
-- int16
-- int32
-- uint16
-- uint32
-
-:target{#multiply}
-
-## multiply
-
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.multiply.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.multiply.html)
-
-:target{#id165}
-
-### Status
-
-<strong>PASS</strong>
-Please check <em>Supported Dtypes</em> as well.
-
-:target{#id166}
 
 ### Supported Dtypes
 
@@ -1880,7 +1872,7 @@ Please check <em>Supported Dtypes</em> as well.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.nanargmax.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.nanargmax.html)
 
-:target{#id167}
+:target{#id165}
 
 ### Status
 
@@ -1893,7 +1885,7 @@ Please check <em>Note</em> for details.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.nanargmin.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.nanargmin.html)
 
-:target{#id168}
+:target{#id166}
 
 ### Status
 
@@ -1906,7 +1898,7 @@ Please check <em>Note</em> for details.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.nanmean.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.nanmean.html)
 
-:target{#id169}
+:target{#id167}
 
 ### Status
 
@@ -1919,7 +1911,7 @@ Please check <em>Note</em> for details.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.nanprod.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.nanprod.html)
 
-:target{#id170}
+:target{#id168}
 
 ### Status
 
@@ -1932,7 +1924,7 @@ Please check <em>Note</em> for details.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.nansum.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.nansum.html)
 
-:target{#id171}
+:target{#id169}
 
 ### Status
 
@@ -1945,14 +1937,14 @@ Please check <em>Note</em> for details.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.negative.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.negative.html)
 
-:target{#id172}
+:target{#id170}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id173}
+:target{#id171}
 
 ### Supported Dtypes
 
@@ -1968,14 +1960,14 @@ Please check <em>Supported Dtypes</em> as well.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.nextafter.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.nextafter.html)
 
-:target{#id174}
+:target{#id172}
 
 ### Status
 
 Result is incorrect.
 Please check <em>Note</em> for details.
 
-:target{#id175}
+:target{#id173}
 
 ### Note
 
@@ -1987,14 +1979,14 @@ IEEE-754
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.not\_equal.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.not_equal.html)
 
-:target{#id176}
+:target{#id174}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id177}
+:target{#id175}
 
 ### Supported Dtypes
 
@@ -2010,6 +2002,29 @@ Please check <em>Supported Dtypes</em> as well.
 ## outer
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.outer.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.outer.html)
+
+:target{#id176}
+
+### Status
+
+<strong>PASS</strong>
+Please check <em>Supported Dtypes</em> as well.
+
+:target{#id177}
+
+### Supported Dtypes
+
+- float32
+- int16
+- int32
+- uint16
+- uint32
+
+:target{#polyval}
+
+## polyval
+
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.polyval.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.polyval.html)
 
 :target{#id178}
 
@@ -2028,11 +2043,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#polyval}
+:target{#positive}
 
-## polyval
+## positive
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.polyval.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.polyval.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.positive.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.positive.html)
 
 :target{#id180}
 
@@ -2051,11 +2066,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#positive}
+:target{#power}
 
-## positive
+## power
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.positive.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.positive.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.power.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.power.html)
 
 :target{#id182}
 
@@ -2074,11 +2089,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#power}
+:target{#prod}
 
-## power
+## prod
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.power.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.power.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.prod.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.prod.html)
 
 :target{#id184}
 
@@ -2088,29 +2103,6 @@ JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax
 Please check <em>Supported Dtypes</em> as well.
 
 :target{#id185}
-
-### Supported Dtypes
-
-- float32
-- int16
-- int32
-- uint16
-- uint32
-
-:target{#prod}
-
-## prod
-
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.prod.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.prod.html)
-
-:target{#id186}
-
-### Status
-
-<strong>PASS</strong>
-Please check <em>Supported Dtypes</em> as well.
-
-:target{#id187}
 
 ### Supported Dtypes
 
@@ -2127,14 +2119,14 @@ Please check <em>Supported Dtypes</em> as well.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.rad2deg.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.rad2deg.html)
 
-:target{#id188}
+:target{#id186}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id189}
+:target{#id187}
 
 ### Supported Dtypes
 
@@ -2146,14 +2138,14 @@ Please check <em>Supported Dtypes</em> as well.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.ravel.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.ravel.html)
 
-:target{#id190}
+:target{#id188}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id191}
+:target{#id189}
 
 ### Supported Dtypes
 
@@ -2170,14 +2162,14 @@ Please check <em>Supported Dtypes</em> as well.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.real.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.real.html)
 
-:target{#id192}
+:target{#id190}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id193}
+:target{#id191}
 
 ### Supported Dtypes
 
@@ -2193,14 +2185,14 @@ Please check <em>Supported Dtypes</em> as well.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.reciprocal.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.reciprocal.html)
 
-:target{#id194}
+:target{#id192}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id195}
+:target{#id193}
 
 ### Supported Dtypes
 
@@ -2212,14 +2204,14 @@ Please check <em>Supported Dtypes</em> as well.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.remainder.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.remainder.html)
 
-:target{#id196}
+:target{#id194}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id197}
+:target{#id195}
 
 ### Supported Dtypes
 
@@ -2235,14 +2227,14 @@ Please check <em>Supported Dtypes</em> as well.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.right\_shift.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.right_shift.html)
 
-:target{#id198}
+:target{#id196}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id199}
+:target{#id197}
 
 ### Supported Dtypes
 
@@ -2257,14 +2249,14 @@ Please check <em>Supported Dtypes</em> as well.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.rint.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.rint.html)
 
-:target{#id200}
+:target{#id198}
 
 ### Status
 
 Not supported by compiler or runtime. But we could implement on demand in future.
 Please check <em>Note</em> for details.
 
-:target{#id201}
+:target{#id199}
 
 ### Note
 
@@ -2275,6 +2267,29 @@ stablehlo.round\_nearest\_even
 ## sign
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.sign.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.sign.html)
+
+:target{#id200}
+
+### Status
+
+<strong>PASS</strong>
+Please check <em>Supported Dtypes</em> as well.
+
+:target{#id201}
+
+### Supported Dtypes
+
+- float32
+- int16
+- int32
+- uint16
+- uint32
+
+:target{#signbit}
+
+## signbit
+
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.signbit.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.signbit.html)
 
 :target{#id202}
 
@@ -2293,11 +2308,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#signbit}
+:target{#sin}
 
-## signbit
+## sin
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.signbit.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.signbit.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.sin.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.sin.html)
 
 :target{#id204}
 
@@ -2316,43 +2331,28 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#sin}
-
-## sin
-
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.sin.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.sin.html)
-
-:target{#id206}
-
-### Status
-
-Not supported by compiler or runtime. But we could implement on demand in future.
-Please check <em>Note</em> for details.
-
-:target{#id207}
-
-### Note
-
-stablehlo.sine
-
 :target{#sinc}
 
 ## sinc
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.sinc.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.sinc.html)
 
-:target{#id208}
+:target{#id206}
 
 ### Status
 
-Not supported by compiler or runtime. But we could implement on demand in future.
-Please check <em>Note</em> for details.
+<strong>PASS</strong>
+Please check <em>Supported Dtypes</em> as well.
 
-:target{#id209}
+:target{#id207}
 
-### Note
+### Supported Dtypes
 
-stablehlo.sine
+- float32
+- int16
+- int32
+- uint16
+- uint32
 
 :target{#sinh}
 
@@ -2360,24 +2360,51 @@ stablehlo.sine
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.sinh.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.sinh.html)
 
-:target{#id210}
+:target{#id208}
 
 ### Status
 
-Not supported by compiler or runtime. But we could implement on demand in future.
-Please check <em>Note</em> for details.
+<strong>PASS</strong>
+Please check <em>Supported Dtypes</em> as well.
 
-:target{#id211}
+:target{#id209}
 
-### Note
+### Supported Dtypes
 
-stablehlo.cosine
+- float32
+- int16
+- int32
+- uint16
+- uint32
 
 :target{#sqrt}
 
 ## sqrt
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.sqrt.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.sqrt.html)
+
+:target{#id210}
+
+### Status
+
+<strong>PASS</strong>
+Please check <em>Supported Dtypes</em> as well.
+
+:target{#id211}
+
+### Supported Dtypes
+
+- float32
+- int16
+- int32
+- uint16
+- uint32
+
+:target{#square}
+
+## square
+
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.square.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.square.html)
 
 :target{#id212}
 
@@ -2396,11 +2423,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#square}
+:target{#subtract}
 
-## square
+## subtract
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.square.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.square.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.subtract.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.subtract.html)
 
 :target{#id214}
 
@@ -2419,11 +2446,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#subtract}
+:target{#sum}
 
-## subtract
+## sum
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.subtract.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.subtract.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.sum.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.sum.html)
 
 :target{#id216}
 
@@ -2433,29 +2460,6 @@ JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax
 Please check <em>Supported Dtypes</em> as well.
 
 :target{#id217}
-
-### Supported Dtypes
-
-- float32
-- int16
-- int32
-- uint16
-- uint32
-
-:target{#sum}
-
-## sum
-
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.sum.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.sum.html)
-
-:target{#id218}
-
-### Status
-
-<strong>PASS</strong>
-Please check <em>Supported Dtypes</em> as well.
-
-:target{#id219}
 
 ### Supported Dtypes
 
@@ -2470,18 +2474,18 @@ Please check <em>Supported Dtypes</em> as well.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.tan.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.tan.html)
 
-:target{#id220}
+:target{#id218}
 
 ### Status
 
 Not supported by compiler or runtime. But we could implement on demand in future.
 Please check <em>Note</em> for details.
 
-:target{#id221}
+:target{#id219}
 
 ### Note
 
-stablehlo.sine
+stablehlo.tan
 
 :target{#tanh}
 
@@ -2489,14 +2493,14 @@ stablehlo.sine
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.tanh.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.tanh.html)
 
-:target{#id222}
+:target{#id220}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id223}
+:target{#id221}
 
 ### Supported Dtypes
 
@@ -2512,14 +2516,14 @@ Please check <em>Supported Dtypes</em> as well.
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.transpose.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.transpose.html)
 
-:target{#id224}
+:target{#id222}
 
 ### Status
 
 <strong>PASS</strong>
 Please check <em>Supported Dtypes</em> as well.
 
-:target{#id225}
+:target{#id223}
 
 ### Supported Dtypes
 
@@ -2535,6 +2539,29 @@ Please check <em>Supported Dtypes</em> as well.
 ## true\_divide
 
 JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.true\_divide.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.true_divide.html)
+
+:target{#id224}
+
+### Status
+
+<strong>PASS</strong>
+Please check <em>Supported Dtypes</em> as well.
+
+:target{#id225}
+
+### Supported Dtypes
+
+- float32
+- int16
+- int32
+- uint16
+- uint32
+
+:target{#trunc}
+
+## trunc
+
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.trunc.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.trunc.html)
 
 :target{#id226}
 
@@ -2553,11 +2580,11 @@ Please check <em>Supported Dtypes</em> as well.
 - uint16
 - uint32
 
-:target{#trunc}
+:target{#unwrap}
 
-## trunc
+## unwrap
 
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.trunc.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.trunc.html)
+JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.unwrap.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.unwrap.html)
 
 :target{#id228}
 
@@ -2567,29 +2594,6 @@ JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax
 Please check <em>Supported Dtypes</em> as well.
 
 :target{#id229}
-
-### Supported Dtypes
-
-- float32
-- int16
-- int32
-- uint16
-- uint32
-
-:target{#unwrap}
-
-## unwrap
-
-JAX NumPy Document link: [https://jax.readthedocs.io/en/latest/\_autosummary/jax.numpy.unwrap.html](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.unwrap.html)
-
-:target{#id230}
-
-### Status
-
-<strong>PASS</strong>
-Please check <em>Supported Dtypes</em> as well.
-
-:target{#id231}
 
 ### Supported Dtypes
 
