@@ -14,7 +14,6 @@ sidebar:
         label: API
         type: category
       - items:
-          - {id: reference/psi_config.mdx, label: SPU PSI Configuration, type: doc}
           - {id: reference/runtime_config.mdx, label: SPU Runtime Configuration, type: doc}
         label: Config
         type: category
@@ -39,11 +38,6 @@ sidebar:
         type: doc}
       - {id: tutorials/develop_your_first_mpc_application.mdx, label: Develop Your
           First MPC-Application, type: doc}
-      - items:
-          - {id: tutorials/psi.mdx, label: PSI QuickStart, type: doc}
-          - {id: tutorials/pir.mdx, label: PIR QuickStart, type: doc}
-        label: PSI / PIR
-        type: category
     label: Tutorials
     link: {id: tutorials/index.mdx, label: Tutorials, type: doc}
     type: category
@@ -66,11 +60,6 @@ sidebar:
       - items:
           - {id: development/add_protocols.mdx, label: Adding New MPC Protocols, type: doc}
         label: Extending SPU
-        type: category
-      - items:
-          - {id: development/psi_protocol_intro.mdx, label: PSI Protocols Introduction,
-            type: doc}
-        label: PSI / PIR
         type: category
     label: Development
     link: {id: development/index.mdx, label: Development, type: doc}

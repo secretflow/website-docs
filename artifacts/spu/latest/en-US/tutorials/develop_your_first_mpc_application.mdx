@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/spu/raw/0883c15512c9e4d3e4ec7bbe27e038fd084a2eee/docs/tutorials/develop_your_first_mpc_application.ipynb
-git_last_modified_commit: 366e954a67a916cd6957ef5e0c872e5b0da435ae
-git_last_modified_time: '2023-08-07T15:50:22+08:00'
-git_origin_url: https://github.com/secretflow/spu/blob/0883c15512c9e4d3e4ec7bbe27e038fd084a2eee/docs/tutorials/develop_your_first_mpc_application.ipynb
+git_download_url: https://github.com/secretflow/spu/raw/207435da0de58cf3352ad4c7c73d97f9ef3ba9ba/docs/tutorials/develop_your_first_mpc_application.ipynb
+git_last_modified_commit: 76d2b8bd3aa321c9c808ca60ba5f16c45c8024d5
+git_last_modified_time: '2023-12-19T18:12:21+08:00'
+git_origin_url: https://github.com/secretflow/spu/blob/207435da0de58cf3352ad4c7c73d97f9ef3ba9ba/docs/tutorials/develop_your_first_mpc_application.ipynb
 git_owner: secretflow
 git_repo: spu
-git_revision_commit: 0883c15512c9e4d3e4ec7bbe27e038fd084a2eee
-git_revision_time: '2023-12-01T19:50:19+08:00'
+git_revision_commit: 207435da0de58cf3352ad4c7c73d97f9ef3ba9ba
+git_revision_time: '2024-01-08T11:48:55+08:00'
 ---
 
 :target{#Develop-Your-First-MPC-Application}
@@ -682,9 +682,9 @@ In this part, we concentrate more on why huge error occurs. To achieve this goal
 
 Before diving into the problem deeper, we highly recommend the reader to read:
 
-1. [spu\_inside](https://www.secretflow.org.cn/docs/spu/en/getting_started/tutorials/spu_inside.html#Tracing): gives some introductions how spu works inside for float-point operations.
-2. [pitfall](https://www.secretflow.org.cn/docs/spu/en/reference/fxp.html): spu implements math function(like `reciprocal`, `log` and so on) with approximation algorithm, so some precision issue will occur when inputs fall into some intervals. We list some known issue about this.
-3. [protocols](https://www.secretflow.org.cn/docs/spu/en/reference/mpc_status.html): list all protocols spu implements now. Generally speaking, for 2pc, it’s safe to use cheetah, while for 3pc, ABY3 is the only choice.
+1. [spu\_inside](https://www.secretflow.org.cn/docs/spu/latest/en-US/tutorials/spu_inside#Tracing): gives some introductions how spu works inside for float-point operations.
+2. [pitfall](https://www.secretflow.org.cn/docs/spu/latest/en-US/development/fxp): spu implements math function(like `reciprocal`, `log` and so on) with approximation algorithm, so some precision issue will occur when inputs fall into some intervals. We list some known issue about this.
+3. [protocols](https://www.secretflow.org.cn/docs/spu/latest/en-US/reference/mpc_status): list all protocols spu implements now. Generally speaking, for 2pc, it’s safe to use cheetah, while for 3pc, ABY3 is the only choice.
 
 First define a function just like `fit_and_predict` to get dk\_arr.
 
@@ -998,7 +998,7 @@ Indeed, there are some other interesting things in SSLR. Here, due to length lim
 
 #### Rsqrt v.s. Norm
 
-We can recall that the `compute_dk_func` function defined in Part 1 contains a `method` arg, and we just ignore this arg before. Indeed, we can tell simulator to print more information like [spu\_inside](https://www.secretflow.org.cn/docs/spu/en/getting_started/tutorials/spu_inside.html#Tracing) do: enable <strong>hlo</strong>(High Level Operations) trace and profile on. Then we can figure out which op has been invoked and its time cost.
+We can recall that the `compute_dk_func` function defined in Part 1 contains a `method` arg, and we just ignore this arg before. Indeed, we can tell simulator to print more information like [spu\_inside](https://www.secretflow.org.cn/docs/spu/latest/en-US/tutorials/spu_inside#Tracing) do: enable <strong>hlo</strong>(High Level Operations) trace and profile on. Then we can figure out which op has been invoked and its time cost.
 
 Here, we list some advantages of using `jax.lax.rsqrt` rather than `jnp.linalg.norm`:
 

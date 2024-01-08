@@ -1,12 +1,12 @@
 ---
-git_download_url: https://github.com/secretflow/spu/raw/0883c15512c9e4d3e4ec7bbe27e038fd084a2eee/docs/reference/runtime_config.md
-git_last_modified_commit: c1a5f3e5349f6280f6e4547bf239277cef2525b4
-git_last_modified_time: '2023-08-04T21:42:22+08:00'
-git_origin_url: https://github.com/secretflow/spu/blob/0883c15512c9e4d3e4ec7bbe27e038fd084a2eee/docs/reference/runtime_config.md
+git_download_url: https://github.com/secretflow/spu/raw/207435da0de58cf3352ad4c7c73d97f9ef3ba9ba/docs/reference/runtime_config.md
+git_last_modified_commit: 9df1e6867138f4b941821cc24d14f1762007d0ca
+git_last_modified_time: '2023-12-08T14:57:59+08:00'
+git_origin_url: https://github.com/secretflow/spu/blob/207435da0de58cf3352ad4c7c73d97f9ef3ba9ba/docs/reference/runtime_config.md
 git_owner: secretflow
 git_repo: spu
-git_revision_commit: 0883c15512c9e4d3e4ec7bbe27e038fd084a2eee
-git_revision_time: '2023-12-01T19:50:19+08:00'
+git_revision_commit: 207435da0de58cf3352ad4c7c73d97f9ef3ba9ba
+git_revision_time: '2024-01-08T11:48:55+08:00'
 ---
 
 :target{#spu-runtime-configuration}
@@ -481,7 +481,7 @@ The SPU runtime configuration.
 
     <tr>
       <td>
-        enable\_processor\_dump
+        enable\_runtime\_snapshot
       </td>
 
       <td>
@@ -495,7 +495,7 @@ The SPU runtime configuration.
 
     <tr>
       <td>
-        processor\_dump\_dir
+        snapshot\_dump\_dir
       </td>
 
       <td>
@@ -677,6 +677,20 @@ The SPU runtime configuration.
 
     <tr>
       <td>
+        sine\_cosine\_iters
+      </td>
+
+      <td>
+        [<span> int64</span>](#int64)
+      </td>
+
+      <td>
+        Sine/Cosine approximation iterations
+      </td>
+    </tr>
+
+    <tr>
+      <td>
         beaver\_type
       </td>
 
@@ -741,7 +755,7 @@ The SPU runtime configuration.
       </td>
 
       <td>
-        inter op parallel, aka, DAG level parallel.
+        Inter op parallel, aka, DAG level parallel.
       </td>
     </tr>
 
@@ -755,7 +769,7 @@ The SPU runtime configuration.
       </td>
 
       <td>
-        intra op parallel, aka, hal/mpc level parallel.
+        Intra op parallel, aka, hal/mpc level parallel.
       </td>
     </tr>
 
@@ -769,7 +783,7 @@ The SPU runtime configuration.
       </td>
 
       <td>
-        disable kernel level vectorization.
+        Disable kernel level vectorization.
       </td>
     </tr>
 
@@ -783,7 +797,21 @@ The SPU runtime configuration.
       </td>
 
       <td>
-        inter op concurrency.
+        Inter op concurrency.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        experimental\_enable\_colocated\_optimization
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        Enable use of private type
       </td>
     </tr>
   </tbody>
@@ -994,6 +1022,20 @@ The spu Value proto, used for spu value serialization.
 
       <td>
         The data type.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        is\_complex
+      </td>
+
+      <td>
+        [<span> bool</span>](#bool)
+      </td>
+
+      <td>
+        none
       </td>
     </tr>
 
@@ -1430,6 +1472,20 @@ The protocol kind.
         The famous [Cheetah](https://eprint.iacr.org/2022/207) protocol, a very fast 2PC protocol.
       </td>
     </tr>
+
+    <tr>
+      <td>
+        SECURENN
+      </td>
+
+      <td>
+        5
+      </td>
+
+      <td>
+        A semi-honest 3PC-protocol for Neural Network, P2 as the helper, ([https://eprint.iacr.org/2018/442](https://eprint.iacr.org/2018/442))
+      </td>
+    </tr>
   </tbody>
 </table>
 
@@ -1589,39 +1645,11 @@ buffer, we have to let spu know which type the plaintext buffer is.
 
     <tr>
       <td>
-        PT\_F32
-      </td>
-
-      <td>
-        9
-      </td>
-
-      <td>
-        float
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        PT\_F64
-      </td>
-
-      <td>
-        10
-      </td>
-
-      <td>
-        double
-      </td>
-    </tr>
-
-    <tr>
-      <td>
         PT\_I128
       </td>
 
       <td>
-        11
+        9
       </td>
 
       <td>
@@ -1635,7 +1663,7 @@ buffer, we have to let spu know which type the plaintext buffer is.
       </td>
 
       <td>
-        12
+        10
       </td>
 
       <td>
@@ -1649,7 +1677,7 @@ buffer, we have to let spu know which type the plaintext buffer is.
       </td>
 
       <td>
-        13
+        11
       </td>
 
       <td>
@@ -1663,11 +1691,67 @@ buffer, we have to let spu know which type the plaintext buffer is.
       </td>
 
       <td>
-        14
+        30
       </td>
 
       <td>
         half
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_F32
+      </td>
+
+      <td>
+        31
+      </td>
+
+      <td>
+        float
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_F64
+      </td>
+
+      <td>
+        32
+      </td>
+
+      <td>
+        double
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_CF32
+      </td>
+
+      <td>
+        50
+      </td>
+
+      <td>
+        complex float
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        PT\_CF64
+      </td>
+
+      <td>
+        51
+      </td>
+
+      <td>
+        complex double
       </td>
     </tr>
   </tbody>
@@ -1705,7 +1789,7 @@ buffer, we have to let spu know which type the plaintext buffer is.
       </td>
 
       <td>
-        assume first party (rank0) as trusted party to generate beaver triple.
+        Assume first party (rank0) as trusted party to generate beaver triple. WARNING: It is NOT SAFE and SHOULD NOT BE used in production.
       </td>
     </tr>
 
@@ -1719,7 +1803,7 @@ buffer, we have to let spu know which type the plaintext buffer is.
       </td>
 
       <td>
-        generate beaver triple through an additional trusted third party.
+        Generate beaver triple through an additional trusted third party.
       </td>
     </tr>
 
@@ -1733,7 +1817,7 @@ buffer, we have to let spu know which type the plaintext buffer is.
       </td>
 
       <td>
-        generate beaver triple through multi-party.
+        Generate beaver triple through multi-party.
       </td>
     </tr>
   </tbody>
@@ -2079,6 +2163,20 @@ performance significantly.
 
       <td>
         Visible(public) for all parties.
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        VIS\_PRIVATE
+      </td>
+
+      <td>
+        3
+      </td>
+
+      <td>
+        Visible for only one party
       </td>
     </tr>
   </tbody>
